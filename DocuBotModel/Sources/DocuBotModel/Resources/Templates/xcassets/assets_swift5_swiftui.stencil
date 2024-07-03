@@ -1,0 +1,58 @@
+// swiftlint:disable all
+// Generated using SwiftGen — https://github.com/SwiftGen/SwiftGen
+
+{% if catalogs %}
+{% set forceNamespaces %}{{param.forceProvidesNamespaces|default:"false"}}{% endset %}
+{% set accessModifier %}{% if param.publicAccess %}public{% else %}internal{% endif %}{% endset %}
+import SwiftUI
+
+{% macro casesBlock assets type prefix %}
+  {% for asset in assets %}
+  {% if asset.type == type %}
+  static var {% if prefix %}{{prefix}}{% endif %}{{asset.name|swiftIdentifier:"pretty"|lowerFirstWord|escapeReservedKeywords}} : {{type|capitalize}} { {{type|capitalize}}("{{asset.value}}", bundle: BundleToken.bundle) }
+  {% elif asset.items and ( forceNamespaces == "true" or asset.isNamespaced == "true" ) %}
+    {% set prefixed_asset %}{% if prefix == "" %}{{asset.name|lowerFirstWord|swiftIdentifier:"pretty"}}_{% else %}{{prefix}}{{asset.name|lowerFirstWord|swiftIdentifier:"pretty"}}_{% endif %}{% endset %}
+    {% call casesBlock asset.items type prefixed_asset %}
+  {% elif asset.items %}
+  {% call casesBlock asset.items type prefix %}
+  {% endif %}
+  {% endfor %}
+{% endmacro %}
+{{accessModifier}} extension Color {
+  {% if catalogs.count > 1 %}
+  {% for catalog in catalogs %}
+  // {{catalog.name}}.xcassets
+    {% set prefixed_catalog %}{{catalog.name|swiftIdentifier:"pretty"|lowerFirstWord}}_{% endset %}
+    {% if forceNamespaces == "true" %} {% call casesBlock catalog.assets "color" prefixed_catalog %}{% else %}{% call casesBlock catalog.assets "color" "" %}{% endif %}
+  {% endfor %}
+  {% else %}
+  // {{catalogs.first.name}}.xcassets
+  {% set prefixed_catalog %}{{catalogs.first.name|swiftIdentifier:"pretty"|lowerFirstWord}}_{% endset %}
+  {% if forceNamespaces == "true" %} {% call casesBlock catalogs.first.assets "color" prefixed_catalog %}{% else %}{% call casesBlock catalogs.first.assets "color" "" %}{% endif %}
+  {% endif %}
+}
+
+{{accessModifier}} extension Image {
+  {% if catalogs.count > 1 %}
+  {% for catalog in catalogs %}
+  // {{catalog.name}}.xcassets
+    {% set prefixed_catalog %}{{catalog.name|swiftIdentifier:"pretty"|lowerFirstWord}}_{% endset %}
+    {% if forceNamespaces == "true" %} {% call casesBlock catalog.assets "image" prefixed_catalog %}{% else %}{% call casesBlock catalog.assets "image" "" %}{% endif %}
+  {% endfor %}
+  {% else %}
+  // {{catalogs.first.name}}.xcassets
+  {% set prefixed_catalog %}{{catalogs.first.name|swiftIdentifier:"pretty"|lowerFirstWord}}_{% endset %}
+  {% if forceNamespaces == "true" %} {% call casesBlock catalogs.first.assets "image" prefixed_catalog %}{% else %}{% call casesBlock catalogs.first.assets "image" "" %}{% endif %}
+  {% endif %}
+}
+
+{% if resourceCount.image > 0 %}
+{% endif %}
+private final class BundleToken {
+  static let bundle: Bundle = {
+    Bundle(for: BundleToken.self)
+  }()
+}
+{% else %}
+// No assets found
+{% endif %}

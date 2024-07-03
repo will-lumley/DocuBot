@@ -1,0 +1,18 @@
+# Generate for everything in Localizable.strings
+ strings:
+   inputs:
+     - Resources/
+   outputs:
+     - templateName: structured-swift5
+       output: Resources/Generated/L10n+Generated.swift
+
+# Generate for everything in Assets.xcassets
+ xcassets:
+   inputs:
+     - Resources/Assets.xcassets
+   outputs:
+     #- templatePath: ../Configurations/Templates/xcassets/assets_swift5_swiftui.stencil
+     - templateName: swift5
+       params:
+         forceProvidesNamespaces: true
+       output: Resources/Generated/Assets+Generated.swift
