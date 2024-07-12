@@ -1,6 +1,15 @@
 {
-  "originHash" : "dada23633d438979961adaecda21d585dc1b6e5c6ccb3b3c95d30a726b7da42c",
+  "originHash" : "3720a8e80c4d5f2e5d78eaa6c9daeaeb144deb10694cd1c81df947a2ea25d815",
   "pins" : [
+    {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift.git",
+      "state" : {
+        "revision" : "639fa9168d36931b36a79e60dc06b7d23852f1f4",
+        "version" : "6.27.0"
+      }
+    },
     {
       "identity" : "lottie-ios",
       "kind" : "remoteSourceControl",
@@ -40,10 +49,10 @@
     {
       "identity" : "vexil",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/unsignedapps/Vexil",
+      "location" : "https://github.com/unsignedapps/Vexil.git",
       "state" : {
-        "revision" : "9d6165d5ac2337605c4ba0999f6d4bdfc002c739",
-        "version" : "2.2.2"
+        "branch" : "main",
+        "revision" : "9d6165d5ac2337605c4ba0999f6d4bdfc002c739"
       }
     }
   ],

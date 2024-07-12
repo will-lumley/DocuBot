@@ -7,7 +7,7 @@ let package = Package(
     name: "DocuBotService",
     defaultLocalization: "en",
     platforms: [
-        .macOS(.v10_15)
+        .macOS(.v13)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -18,13 +18,20 @@ let package = Package(
     dependencies: [
         .package(path: "../DocuBotModel"),
         .package(path: "../DocuBotToolbox"),
-        .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2")
+        .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
+        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.21.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "DocuBotService",
+            dependencies: [
+                "DocuBotModel",
+                "DocuBotToolbox",
+
+                .product(name: "GRDB", package: "GRDB.swift"),
+            ],
             plugins: [
                .plugin(name: "SwiftGenPlugin", package: "SwiftGenPlugin")
             ]
