@@ -54,7 +54,7 @@ private extension ServiceContainer {
     }
 
     func configurePersistenceService() {
-        self.register(service: GRDBService())
+        self.register(service: GRDBService(serviceContainer: self))
     }
 
     func configureLogService() {
@@ -69,7 +69,6 @@ private extension ServiceContainer {
     func configureServices() {
         self.configureFlagService()
         self.register(service: LocalUserDefaultsService())
-        self.register(service: GRDBService())
         self.configureLogService()
         self.configurePersistenceService()
     }
@@ -78,6 +77,7 @@ private extension ServiceContainer {
         self.register(service: MockFlagService())
         self.register(service: LocalUserDefaultsService())
         self.register(service: PrintLogService())
+        self.register(service: GRDBService(serviceContainer: self))
     }
 
 }

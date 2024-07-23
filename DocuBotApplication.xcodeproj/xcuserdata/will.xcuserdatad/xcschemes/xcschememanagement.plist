@@ -9,15 +9,18 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>DocuBotApplication.xcscheme_^#shared#^_</key>
+		<key>Settings.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>Settings.xcscheme_^#shared#^_</key>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>BE4518792C35244600F9E9E5</key>
 		<dict>
-			<key>orderHint</key>
-			<integer>2</integer>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

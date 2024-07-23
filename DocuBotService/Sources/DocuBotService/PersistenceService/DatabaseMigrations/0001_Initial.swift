@@ -13,10 +13,47 @@ struct Initial: DatabaseMigration {
         "0001_Initial"
     }
 
-    func perform(db: Database) {
-        let foo = 4
-        print("Foo: \(foo)")
+    func perform(db: Database) throws {
+        // Create projects table
+        try db.create(table: "projects") { table in
+            table.column("id", .integer)
+                .unique()
+                .primaryKey(autoincrement: true)
+            table.column("path", .text)
+                .notNull()
+            table.column("name", .text)
+                .notNull()
+            table.column("createdAt", .datetime)
+                .notNull()
+        }
+
+        // Create chats table
+        try db.create(table: "chats") { table in
+            table.column("id", .integer)
+                .unique()
+                .primaryKey(autoincrement: true)
+            table.column("name", .text)
+                .notNull()
+            table.column("project", .integer)
+                .notNull()
+            table.column("createdAt", .datetime)
+                .notNull()
+        }
+
+        // Create messages table
+        try db.create(table: "messages") { table in
+            table.column("id", .integer)
+                .unique()
+                .primaryKey(autoincrement: true)
+            table.column("content", .text)
+                .notNull()
+            table.column("author", .blob)
+                .notNull()
+            table.column("chat", .integer)
+                .notNull()
+            table.column("createdAt", .datetime)
+                .notNull()
+        }
     }
 
 }
-
