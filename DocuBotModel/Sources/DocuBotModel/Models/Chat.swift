@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Chat {
+public struct Chat: Hashable {
 
     // MARK: - Properties
 

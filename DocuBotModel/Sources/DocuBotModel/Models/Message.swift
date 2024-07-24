@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Message {
+public struct Message: Hashable {
 
     // MARK: - Types
 

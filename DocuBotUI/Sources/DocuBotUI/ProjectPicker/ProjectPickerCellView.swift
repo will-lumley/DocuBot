@@ -18,21 +18,17 @@ public struct ProjectPickerCellView: View {
     // MARK: - View
 
     public var body: some View {
-        VStack {
-            Image(systemSymbol: .booksVerticalFill)
-                .resizable()
-                .frame(width: 70, height: 70)
-
+        VStack(alignment: .leading) {
             Text(viewModel.title)
                 .font(.headline)
                 .padding([.horizontal])
-                .padding(.bottom, 8)
+                .padding(.bottom, 2)
 
             Text(viewModel.subtitle)
                 .font(.footnote)
                 .padding([.horizontal])
+                .padding(.bottom, 4)
         }
-        .padding()
     }
 }
 

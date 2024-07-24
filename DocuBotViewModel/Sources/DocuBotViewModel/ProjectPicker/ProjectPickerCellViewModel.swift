@@ -32,6 +32,20 @@ extension ProjectPickerCellViewModel: Identifiable {
 
 }
 
+// MARK: - Hashable
+
+extension ProjectPickerCellViewModel: Hashable {
+
+    public static func == (lhs: ProjectPickerCellViewModel, rhs: ProjectPickerCellViewModel) -> Bool {
+        return lhs.project == rhs.project
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.project)
+    }
+
+}
+
 // MARK: - Public
 
 public extension ProjectPickerCellViewModel {

@@ -35,7 +35,9 @@ struct IconButton: View {
         .buttonStyle(PlainButtonStyle())
         .disabled(viewModel.isEnabled == false)
         .onHover { hovering in
-            self.isHovered = hovering
+            withAnimation(.easeIn(duration: 0.075)) {
+                self.isHovered = hovering
+            }
         }
     }
 

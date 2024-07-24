@@ -28,60 +28,94 @@ public struct ProjectPickerView: View {
         ZStack(alignment: .topLeading) {
 
             HStack(spacing: 0) {
-                VStack {
-                    Image("DocuBot")
-                        .resizable()
-                        .frame(width: 150, height: 150)
-                        .shadow(radius: 15)
-
-                    Text(viewModel.title)
-                        .font(.title)
-                        .padding(.top)
-                        .padding(.bottom, 4)
-
-                    Text(viewModel.subtitle1)
-                        .font(.subheadline)
-
-                    Text(viewModel.subtitle2)
-                        .font(.subheadline)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                // This background makes the view translucent and pretty
-                .background(
-                    Rectangle()
-                        .translucentWindowEffect()
-                )
-
-                // This gesture allows this view to drag the window around
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            if initialLocation == .zero {
-                                initialLocation = value.startLocation
-                            }
-                            self.moveWindow(by: value.translation)
-                        }
-                        .onEnded { _ in
-                            initialLocation = .zero
-                        }
-                )
-
-                VStack {
-                    Text("THERE")
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.blue)
+                welcomeView
+                projectListView
             }
-            .frame(width: 500, height: 400)
+            .frame(width: 650, height: 400)
 
             IconButton(viewModel: viewModel.closeButton)
-                .padding(.leading, 8)
+                .padding(.leading, 12)
                 .padding(.top, -16)
         }
     }
 
-    private func moveWindow(by offset: CGSize) {
+}
+
+// MARK: - Private
+
+private extension ProjectPickerView {
+
+    var welcomeView: some View {
+        VStack {
+            Image("DocuBot")
+                .resizable()
+                .frame(width: 150, height: 150)
+                .shadow(radius: 15)
+
+            Text(viewModel.title)
+                .font(.title)
+                .padding(.top)
+                .padding(.bottom, 4)
+
+            Text(viewModel.subtitle1)
+                .font(.subheadline)
+
+            Text(viewModel.subtitle2)
+                .font(.subheadline)
+
+            Divider()
+                .padding()
+
+            MenuButton(viewModel: viewModel.loadNewProjectButton)
+            MenuButton(viewModel: viewModel.viewSourceCodeButton)
+            MenuButton(viewModel: viewModel.emailDeveloper)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+        // This background makes the view translucent and pretty
+        .background(
+            Rectangle()
+                .translucentWindowEffect()
+        )
+
+        // This gesture allows this view to drag the window around via this view
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    if initialLocation == .zero {
+                        initialLocation = value.startLocation
+                    }
+                    self.moveWindow(by: value.translation)
+                }
+                .onEnded { _ in
+                    initialLocation = .zero
+                }
+        )
+    }
+
+    var projectListView: some View {
+        VStack {
+            if viewModel.projectCellViewModels.isEmpty {
+                EmptyListView(configuration: viewModel.emptyProjectConfiguration)
+            } else {
+                List(
+                    viewModel.projectCellViewModels,
+                    selection: Binding(
+                        get: { viewModel.selectedProject },
+                        set: {
+                            viewModel.selectedProject = $0
+                        }
+                    )
+                ) { cellViewModel in
+                    ProjectPickerCellView(viewModel: cellViewModel)
+                }
+                .padding(.top, -24)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    func moveWindow(by offset: CGSize) {
         if let window = NSApplication.shared.windows.first {
             var newFrame = window.frame
             newFrame.origin.x += offset.width
@@ -89,7 +123,6 @@ public struct ProjectPickerView: View {
             window.setFrame(newFrame, display: true)
         }
     }
-
 }
 
 // MARK: - Preview

@@ -1,3 +1,8 @@
 "ProjectPicker.title" = "Welcome to DocuBot";
 "ProjectPicker.subtitle1" = "Developed by William Lumley";
 "ProjectPicker.subtitle2" = "v%@(%@)";
+"ProjectPicker.loadNewProject" = "Load New Project";
+"ProjectPicker.viewSourceCode" = "View Source Code";
+"ProjectPicker.emailDeveloper" = "Email the Developer";
+"ProjectPicker.emptyProjectTitle" = "Your project list is empty";
+"ProjectPicker.emptyProjectSubtitle" = "Your insights await – load a new project to get started";
