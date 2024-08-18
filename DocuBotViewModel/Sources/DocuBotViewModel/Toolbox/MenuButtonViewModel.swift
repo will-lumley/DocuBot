@@ -24,7 +24,7 @@ public final class MenuButtonViewModel: ObservableObject {
 
     // MARK: - Lifecycle
 
-    init(text: String, onSelect: @escaping OnSelect = { }) {
+    public init(text: String, onSelect: @escaping OnSelect = { }) {
         self.text = text
         self.onSelect = onSelect
     }

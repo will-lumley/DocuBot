@@ -25,6 +25,24 @@ struct Initial: DatabaseMigration {
                 .notNull()
             table.column("createdAt", .datetime)
                 .notNull()
+            table.column("updatedAt", .datetime)
+                .notNull()
+        }
+
+        // Create projects settings table
+        try db.create(table: "project-settings") { table in
+            table.column("id", .integer)
+                .unique()
+                .primaryKey(autoincrement: true)
+            table.column("project", .integer)
+                .notNull()
+                .references("projects", onDelete: .cascade)
+            table.column("supportedFormats", .blob)
+                .notNull()
+            table.column("createdAt", .datetime)
+                .notNull()
+            table.column("updatedAt", .datetime)
+                .notNull()
         }
 
         // Create chats table
@@ -36,6 +54,7 @@ struct Initial: DatabaseMigration {
                 .notNull()
             table.column("project", .integer)
                 .notNull()
+                .references("projects", onDelete: .cascade)
             table.column("createdAt", .datetime)
                 .notNull()
         }
@@ -51,6 +70,7 @@ struct Initial: DatabaseMigration {
                 .notNull()
             table.column("chat", .integer)
                 .notNull()
+                .references("chats", onDelete: .cascade)
             table.column("createdAt", .datetime)
                 .notNull()
         }

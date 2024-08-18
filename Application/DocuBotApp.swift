@@ -6,6 +6,7 @@
 //
 
 import DocuBotUI
+import DocuBotViewModel
 import SwiftUI
 
 @main
@@ -36,5 +37,20 @@ struct DocuBotApp: App {
         }
         .windowResizability(.contentSize)
         .windowStyle(HiddenTitleBarWindowStyle())
+
+        // This is our CreateProject window
+        WindowGroup(for: CreateProjectViewModel.OpenWindowPackage.self) { $package in
+            if let package {
+                CreateProjectView(
+                    viewModel: .init(
+                        directory: package.directory,
+                        serviceContainer: delegate.serviceContainer
+                    )
+                )
+            }
+        }
+        .windowResizability(.contentSize)
+
     }
+
 }

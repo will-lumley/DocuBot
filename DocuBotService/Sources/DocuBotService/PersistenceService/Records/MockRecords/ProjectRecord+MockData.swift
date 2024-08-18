@@ -33,13 +33,15 @@ extension ProjectRecord {
         id: Int = 0,
         path: String = "",
         name: String = "",
-        createdAt: Date = Date()
+        createdAt: Date = Date(),
+        updatedAt: Date = Date()
     ) -> ProjectRecord {
         .init(
             id: id,
             path: path,
             name: name,
-            createdAt: createdAt
+            createdAt: createdAt,
+            updatedAt: updatedAt
         )
     }
 

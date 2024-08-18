@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "BE4518792C35244600F9E9E5"
-               BuildableName = "DocuBotApplication.app"
+               BuildableName = "DocuBot.app"
                BlueprintName = "DocuBotApplication"
                ReferencedContainer = "container:DocuBotApplication.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BE4518792C35244600F9E9E5"
-            BuildableName = "DocuBotApplication.app"
+            BuildableName = "DocuBot.app"
             BlueprintName = "DocuBotApplication"
             ReferencedContainer = "container:DocuBotApplication.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "BE4518792C35244600F9E9E5"
-            BuildableName = "DocuBotApplication.app"
+            BuildableName = "DocuBot.app"
             BlueprintName = "DocuBotApplication"
             ReferencedContainer = "container:DocuBotApplication.xcodeproj">
          </BuildableReference>

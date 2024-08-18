@@ -18,17 +18,31 @@ public struct ProjectPickerCellView: View {
     // MARK: - View
 
     public var body: some View {
-        VStack(alignment: .leading) {
-            Text(viewModel.title)
-                .font(.headline)
-                .padding([.horizontal])
-                .padding(.bottom, 2)
+        HStack {
+            VStack(alignment: .leading) {
+                Text(viewModel.title)
+                    .font(.headline)
+                    .padding([.horizontal])
+                    .padding(.bottom, 2)
+                    .padding(.top, 4)
 
-            Text(viewModel.subtitle)
-                .font(.footnote)
-                .padding([.horizontal])
-                .padding(.bottom, 4)
+                Text(viewModel.subtitle)
+                    .font(.footnote)
+                    .padding([.horizontal])
+                     .padding(.bottom, 4)
+            }
+
+            Spacer()
+
+            Button(action: viewModel.openButtonSelected, label: {
+                Image(systemSymbol: .arrowForwardCircle)
+                    .resizable()
+                    .frame(width: 20, height: 20)
+            })
+            .buttonStyle(PlainButtonStyle())
+            .padding(.horizontal)
         }
+
     }
 }
 

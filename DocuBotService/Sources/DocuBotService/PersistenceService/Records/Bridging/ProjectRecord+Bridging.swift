@@ -17,7 +17,8 @@ public extension ProjectRecord {
             id: model.id,
             path: model.path,
             name: model.name,
-            createdAt: model.createdAt
+            createdAt: model.createdAt,
+            updatedAt: model.updatedAt
         )
     }
 
@@ -32,7 +33,8 @@ public extension Project {
             id: record.id,
             path: record.path,
             name: record.name,
-            createdAt: record.createdAt
+            createdAt: record.createdAt,
+            updatedAt: record.updatedAt
         )
     }
 

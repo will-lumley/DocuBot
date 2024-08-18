@@ -7,6 +7,8 @@
 
 // Having to import AppKit is very sad, but necessary to open the URL
 import AppKit
+import Combine
+import DocuBotModel
 import DocuBotService
 import DocuBotToolbox
 import Foundation
@@ -16,17 +18,31 @@ public class ProjectPickerViewModel: DocuBotViewModel {
     // MARK: - Types
 
     public typealias OnCloseWindow = () -> Void
+    public typealias OnDelete = () -> Void
+
+    public enum OpenWindow {
+        case createProject(CreateProjectViewModel.OpenWindowPackage)
+    }
 
     // MARK: - Properties
-
-    /// The Cell ViewModel that has been selected by our user
-    @Published public var selectedProject: ProjectPickerCellViewModel?
 
     /// The closure that will be called when the CloseWindow button is selected
     private let onCloseWindow: OnCloseWindow
 
     /// The ViewModels that represent our project cells/rows
     @Published public var projectCellViewModels = [ProjectPickerCellViewModel]()
+
+    /// This will be called when we want to open a new window, along with the info that dictates which window
+    @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
+
+    /// This will be called when this ViewModel wants the UI layer to close/dismiss the current window
+    @Published public var onDismiss = PassthroughSubject<Void, Never>()
+
+    /// This closure will be called if a user confirms they want to delete a project
+    private var deleteProjectAction: OnDelete?
+
+    /// Indicative of if we want to display/hide our Delete Project confirmation dialog
+    @Published public var deleteProjectConfirmationDialogPresented = false
 
     // MARK: - Lifecycle
 
@@ -38,15 +54,9 @@ public class ProjectPickerViewModel: DocuBotViewModel {
     public override func configureBindings() {
         super.configureBindings()
 
-        self.$selectedProject
-            .sink {
-                print("Selected Project: \($0?.title)")
-            }
-            .store(in: &cancellables)
-
         // Connect our ProjectCellViewModels to our DB layer
         persistenceService.getProjects()
-            .map { $0.map(ProjectPickerCellViewModel.init) }
+            .map { $0.map { ProjectPickerCellViewModel(project: $0, delegate: self) } }
             .replaceError(with: [])
             .assign(to: &$projectCellViewModels)
     }
@@ -72,14 +82,12 @@ public extension ProjectPickerViewModel {
         return L10n.ProjectPicker.subtitle2(versionNumber, buildNumber)
     }
 
-    var closeButton: IconButtonViewModel {
-        .init(symbol: .xmarkCircle, hoverSymbol: .xmarkCircleFill, onSelect: onCloseWindow)
+    var loadNewProjectButtonTitle: String {
+        L10n.ProjectPicker.loadNewProject
     }
 
-    var loadNewProjectButton: MenuButtonViewModel {
-        .init(text: L10n.ProjectPicker.loadNewProject) {
-            print("LOAD NEW PROJECT")
-        }
+    var closeButton: IconButtonViewModel {
+        .init(symbol: .xmarkCircle, hoverSymbol: .xmarkCircleFill, onSelect: onCloseWindow)
     }
 
     var viewSourceCodeButton: MenuButtonViewModel {
@@ -107,11 +115,97 @@ public extension ProjectPickerViewModel {
         )
     }
 
+    var deleteProjectConfirmationDialog: ConfirmationDialogConfiguration {
+        .init(
+            title: L10n.ProjectPicker.Delete.Confirmation.title,
+            buttons: [
+                .init(
+                    title: L10n.ProjectPicker.Delete.Confirmation.deleteButton,
+                    role: .destructive,
+                    action: {
+                        self.deleteProjectAction?()
+                    }
+                ),
+                .init(
+                    title: L10n.ProjectPicker.Delete.Confirmation.cancelButton,
+                    role: .cancel,
+                    action: { }
+                ),
+            ]
+        )
+    }
+
+    func contextMenuConfigurations(for cell: ProjectPickerCellViewModel) -> [ContextMenuConfiguration] {
+        return [
+            .init(text: L10n.ProjectPicker.ProjectContextMenu.open) {
+                self.open(project: cell.project)
+            },
+            .init(text: L10n.ProjectPicker.ProjectContextMenu.delete) {
+                self.promptDeletion(project: cell.project)
+            },
+            .init(text: L10n.ProjectPicker.ProjectContextMenu.showInFinder) {
+                self.showInFinder(project: cell.project)
+            }
+        ]
+    }
+
+    func delete(project: Project) {
+        Task {
+            do {
+                let success = try await persistenceService.delete(project: project)
+                if success == false {
+                    print("Error: no deleting")
+                }
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+    }
+
+    func selectDirectoryForNewProject(_ url: URL) {
+        print("URL: \(url)")
+
+        // Close our window
+        self.onDismiss.send(())
+
+        // Open the CreateProject window
+        self.onOpen.send(
+            .createProject(.init(directory: url))
+        )
+    }
+
 }
 
 // MARK: - Private
 
 private extension ProjectPickerViewModel {
+
+    func open(project: Project) {
+        // TODO: Implement this
+        print("Opened: \(project.name)")
+    }
+
+    func promptDeletion(project: Project) {
+        self.deleteProjectConfirmationDialogPresented = true
+        self.deleteProjectAction = {
+            self.delete(project: project)
+        }
+    }
+
+    func showInFinder(project: Project) {
+        let url = URL(filePath: project.path)
+        NSWorkspace.shared.activateFileViewerSelecting([url])
+    }
+
+}
+
+// MARK: - ProjectPickerCellViewModelDelegate
+
+extension ProjectPickerViewModel: ProjectPickerCellViewModelDelegate {
+
+    public func openProject(_ project: Project) {
+        self.open(project: project)
+    }
 
 }
 

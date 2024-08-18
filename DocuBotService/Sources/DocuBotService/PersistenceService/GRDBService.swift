@@ -58,7 +58,13 @@ class GRDBService: PersistenceService {
             .eraseToAnyPublisher()
     }
 
-    func getChats(for project: ProjectRecord) -> AnyPublisher<[Chat], Error> {
+    func delete(project: Project) async throws -> Bool {
+        return try await self.dbQueue.write { database in
+            try ProjectRecord.deleteOne(database, id: project.id)
+        }
+    }
+
+    func getChats(for project: Project) -> AnyPublisher<[Chat], Error> {
         return ValueObservation.tracking { db in
             try ChatRecord.fetchAll(db)
         }
@@ -67,7 +73,7 @@ class GRDBService: PersistenceService {
             .eraseToAnyPublisher()
     }
 
-    func getMessages(for chat: ChatRecord) -> AnyPublisher<[Message], Error> {
+    func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error> {
         return ValueObservation.tracking { db in
             try MessageRecord.fetchAll(db)
         }
@@ -132,9 +138,9 @@ private extension GRDBService {
         }
 
         do {
-            // Import all the messages
+            // Import all the projects
             try self.dbQueue.write { db in
-                try MessageRecord.mocks().forEach {
+                try ProjectRecord.mocks().forEach {
                     try $0.insert(db)
                 }
             }
@@ -146,14 +152,16 @@ private extension GRDBService {
                 }
             }
 
-            // Import all the projects
+            // Import all the messages
             try self.dbQueue.write { db in
-                try ProjectRecord.mocks().forEach {
+                try db.execute(sql: "PRAGMA foreign_keys = OFF")
+
+                try MessageRecord.mocks().forEach {
                     try $0.insert(db)
                 }
             }
         } catch {
-            fatalError("Failed to inject demo deta. \(error)")
+            print("Failed to inject demo data. \(error)")
         }
     }
     

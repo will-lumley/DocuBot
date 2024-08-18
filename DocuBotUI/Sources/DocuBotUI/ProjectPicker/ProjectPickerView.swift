@@ -12,9 +12,14 @@ public struct ProjectPickerView: View {
 
     // MARK: - Properties
 
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.openWindow) var openWindow
+
     @StateObject var viewModel: ProjectPickerViewModel
     @State private var dragOffset = CGSize.zero
     @State private var initialLocation: CGPoint = .zero
+
+    @State var selectedProject: ProjectPickerCellViewModel?
 
     // MARK: - Lifecycle
 
@@ -37,6 +42,17 @@ public struct ProjectPickerView: View {
                 .padding(.leading, 12)
                 .padding(.top, -16)
         }
+
+        .confirmationDialog(
+            viewModel.deleteProjectConfirmationDialog.title,
+            isPresented: $viewModel.deleteProjectConfirmationDialogPresented,
+            actions: {
+                ForEach(viewModel.deleteProjectConfirmationDialog.buttons) { button in
+                    Button(button.title, role: button.role.buttonRole, action: button.action)
+                }
+            }
+        )
+        .dialogIcon(.init(systemSymbol: .trashCircleFill))
     }
 
 }
@@ -66,7 +82,22 @@ private extension ProjectPickerView {
             Divider()
                 .padding()
 
-            MenuButton(viewModel: viewModel.loadNewProjectButton)
+            MenuButton(
+                viewModel: .init(text: viewModel.loadNewProjectButtonTitle) {
+                    let panel = NSOpenPanel()
+                    panel.canChooseDirectories = true
+                    panel.canCreateDirectories = false
+                    panel.allowsMultipleSelection = false
+                    panel.begin { response in
+                        if response == .OK {
+                            guard let url = panel.urls.first else {
+                                return
+                            }
+                            viewModel.selectDirectoryForNewProject(url)
+                        }
+                    }
+                }
+            )
             MenuButton(viewModel: viewModel.viewSourceCodeButton)
             MenuButton(viewModel: viewModel.emailDeveloper)
         }
@@ -91,6 +122,19 @@ private extension ProjectPickerView {
                     initialLocation = .zero
                 }
         )
+
+        // Listen to our OnDismiss listener
+        .onReceive(viewModel.onDismiss) { _ in
+            self.dismiss()
+        }
+
+        // Listen to our OnOpen listener
+        .onReceive(viewModel.onOpen) { open in
+            switch open {
+            case .createProject(let package):
+                self.openWindow(value: package)
+            }
+        }
     }
 
     var projectListView: some View {
@@ -98,17 +142,15 @@ private extension ProjectPickerView {
             if viewModel.projectCellViewModels.isEmpty {
                 EmptyListView(configuration: viewModel.emptyProjectConfiguration)
             } else {
-                List(
-                    viewModel.projectCellViewModels,
-                    selection: Binding(
-                        get: { viewModel.selectedProject },
-                        set: {
-                            viewModel.selectedProject = $0
-                        }
-                    )
-                ) { cellViewModel in
+                List(viewModel.projectCellViewModels) { cellViewModel in
                     ProjectPickerCellView(viewModel: cellViewModel)
+                        .contextMenu {
+                            ForEach(viewModel.contextMenuConfigurations(for: cellViewModel)) { configuration in
+                                Button(configuration.text, action: configuration.onSelect)
+                            }
+                        }
                 }
+                // Yucky dirty hack to compensate for the lack of toolbar
                 .padding(.top, -24)
             }
         }
