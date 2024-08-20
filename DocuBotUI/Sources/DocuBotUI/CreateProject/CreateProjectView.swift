@@ -35,8 +35,33 @@ public struct CreateProjectView: View {
             Form {
 
                 Section(viewModel.generalSectionTitle) {
-                    LabeledContent(viewModel.projectDirectoryTitle, value: viewModel.projectDirectory)
+
+                    LabeledContent {
+                        HStack {
+                            Text(viewModel.directoryText)
+
+                            Button {
+                                let panel = NSOpenPanel()
+                                panel.canChooseDirectories    = true
+                                panel.canCreateDirectories    = false
+                                panel.allowsMultipleSelection = false
+                                panel.canChooseFiles          = false
+                                panel.begin { response in
+                                    if response == .OK {
+                                        guard let url = panel.urls.first else {
+                                            return
+                                        }
+                                        viewModel.directory = url
+                                    }
+                                }
+                            } label: {
+                                Image(systemSymbol: .folder)
+                            }
+                        }
                         .truncationMode(.middle)
+                    } label: {
+                        Text(viewModel.projectDirectoryTitle)
+                    }
 
                     Picker(viewModel.languageTitle, selection: $viewModel.selectedLanguage) {
                         ForEach(viewModel.availableLanguages) { language in
@@ -116,9 +141,16 @@ public struct CreateProjectView: View {
                 )
             }
             .formStyle(GroupedFormStyle())
+
+            Button(viewModel.createProjectButtonTitle) {
+                viewModel.createProjectButtonSelected()
+            }
+            .buttonStyle(BorderedProminentButtonStyle())
+            .padding()
+            .disabled(viewModel.continueButtonEnabled == false)
         }
         .navigationTitle(viewModel.windowTitle)
-        .frame(minWidth: 500, minHeight: 600)
+        .frame(minWidth: 525, minHeight: 600)
     }
 
 }

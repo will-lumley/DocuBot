@@ -82,22 +82,7 @@ private extension ProjectPickerView {
             Divider()
                 .padding()
 
-            MenuButton(
-                viewModel: .init(text: viewModel.loadNewProjectButtonTitle) {
-                    let panel = NSOpenPanel()
-                    panel.canChooseDirectories = true
-                    panel.canCreateDirectories = false
-                    panel.allowsMultipleSelection = false
-                    panel.begin { response in
-                        if response == .OK {
-                            guard let url = panel.urls.first else {
-                                return
-                            }
-                            viewModel.selectDirectoryForNewProject(url)
-                        }
-                    }
-                }
-            )
+            MenuButton(viewModel: viewModel.newProjectButton)
             MenuButton(viewModel: viewModel.viewSourceCodeButton)
             MenuButton(viewModel: viewModel.emailDeveloper)
         }

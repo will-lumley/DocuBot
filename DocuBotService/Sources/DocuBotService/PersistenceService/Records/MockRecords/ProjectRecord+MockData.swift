@@ -33,6 +33,7 @@ extension ProjectRecord {
         id: Int = 0,
         path: String = "",
         name: String = "",
+        documentationChecksum: String = "",
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) -> ProjectRecord {
@@ -40,6 +41,7 @@ extension ProjectRecord {
             id: id,
             path: path,
             name: name,
+            documentationChecksum: documentationChecksum,
             createdAt: createdAt,
             updatedAt: updatedAt
         )
