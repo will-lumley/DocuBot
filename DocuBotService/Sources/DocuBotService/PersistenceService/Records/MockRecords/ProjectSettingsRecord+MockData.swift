@@ -43,6 +43,7 @@ extension ProjectSettingsRecord {
         projectID: Int = 0,
         supportedFormats: [DocumentationFormat] = DocumentationFormat.allCases,
         respondWithDocumentsOnly: Bool = false,
+        language: Language = .english,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) -> ProjectSettingsRecord {
@@ -50,7 +51,8 @@ extension ProjectSettingsRecord {
             id: id,
             projectID: projectID,
             supportedFormats: supportedFormats,
-            respondWithDocumentsOnly: respondWithDocumentsOnly,
+            respondWithDocumentsOnly: respondWithDocumentsOnly, 
+            language: language,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

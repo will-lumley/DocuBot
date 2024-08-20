@@ -13,11 +13,21 @@
 "ProjectPicker.ProjectContextMenu.delete" = "Delete";
 "ProjectPicker.ProjectContextMenu.showInFinder" = "Show in Finder";
 
+"CreateProject.formTitle" = "Project Settings";
 "CreateProject.windowTitle" = "Create Project";
+
+"CreateProject.Configuration.GeneralSection.title" = "General";
 "CreateProject.Configuration.ProjectDirectory.title" = "Project Directory";
-"CreateProject.Configuration.Format.title" = "What format is your documentation in?";
+"CreateProject.Configuration.Language.title" = "Language";
+
+"CreateProject.Configuration.Language.english" = "English";
+"CreateProject.Configuration.Language.espanol" = "Español";
+
+"CreateProject.Configuration.FormatSection.title" = "What format is your documentation in?";
 "CreateProject.Configuration.Format.txt" = ".txt";
 "CreateProject.Configuration.Format.md" = ".md";
 "CreateProject.Configuration.Format.rtf" = ".rtf";
 "CreateProject.Configuration.Format.html" = ".html";
+"CreateProject.Configuration.Format.other" = "Other";
+"CreateProject.Configuration.Format.addFormatButton" = "Add Custom Format";
 "CreateProject.createButton" = "Create Project";
