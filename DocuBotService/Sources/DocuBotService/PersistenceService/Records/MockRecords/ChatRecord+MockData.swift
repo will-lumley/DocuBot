@@ -41,6 +41,7 @@ extension ChatRecord {
         .init(
             id: id,
             name: name,
+            nameType: .automatic,
             project: project,
             createdAt: createdAt
         )

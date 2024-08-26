@@ -7,11 +7,11 @@
 
 import Foundation
 
-public struct Project: Hashable {
+public struct Project: Hashable, Codable {
 
     // MARK: - Properties
 
-    public let id: Int
+    public let id: Int?
     public let path: String
     public let name: String
     public let documentationChecksum: String
@@ -21,7 +21,14 @@ public struct Project: Hashable {
 
     // MARK: - Lifecycle
 
-    public init(id: Int, path: String, name: String, documentationChecksum: String, createdAt: Date, updatedAt: Date) {
+    public init(
+        id: Int?,
+        path: String,
+        name: String,
+        documentationChecksum: String,
+        createdAt: Date,
+        updatedAt: Date
+    ) {
         self.id = id
         self.path = path
         self.name = name

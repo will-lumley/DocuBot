@@ -23,6 +23,7 @@
 "CreateProject.Configuration.Language.english" = "English";
 "CreateProject.Configuration.Language.espanol" = "Español";
 
+"CreateProject.Configuration.Name.title" = "Project Name";
 "CreateProject.Configuration.FormatSection.title" = "What format is your documentation in?";
 "CreateProject.Configuration.Format.txt" = ".txt";
 "CreateProject.Configuration.Format.md" = ".md";
@@ -32,3 +33,16 @@
 "CreateProject.Configuration.Format.addFormatButton" = "Add Custom Format";
 "CreateProject.createButton" = "Create Project";
 "CreateProject.Configuration.Directory.select" = "Select a Directory";
+
+"Project.EmptyChat.title" = "No Chats";
+"Project.EmptyChat.subtitle" = "Create a chat with the button below to get started";
+
+"Project.EmptyMessages.title" = "No Messages";
+"Project.EmptyMessages.subtitle" = "Type something into the textfield below to get started";
+"Project.Delete.Confirmation.title" = "Are you sure you want to delete this chat?";
+"Project.Delete.Confirmation.deleteButton" = "Delete this Chat";
+"Project.Delete.Confirmation.cancelButton" = "Cancel";
+"Project.NewChat.defaultTitle" = "New Chat";
+"Project.Chat.NothingSelected.title" = "No chat selected";
+"Project.ChatContextMenu.rename" = "Rename";
+"Project.ChatContextMenu.delete" = "Delete";

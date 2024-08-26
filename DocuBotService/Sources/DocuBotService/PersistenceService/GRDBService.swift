@@ -49,6 +49,12 @@ class GRDBService: PersistenceService {
         self.injectDemoData()
     }
 
+    func insert(project: Project) async throws {
+        try await self.dbQueue.write { db in
+            try ProjectRecord(model: project).insert(db)
+        }
+    }
+
     func getProjects() -> AnyPublisher<[Project], Error> {
         return ValueObservation.tracking { db in
             try ProjectRecord.fetchAll(db)
@@ -59,23 +65,37 @@ class GRDBService: PersistenceService {
     }
 
     func delete(project: Project) async throws -> Bool {
-        return try await self.dbQueue.write { database in
-            try ProjectRecord.deleteOne(database, id: project.id)
+        return try await self.dbQueue.write { db in
+            try ProjectRecord.deleteOne(db, id: project.id)
         }
     }
 
     func getChats(for project: Project) -> AnyPublisher<[Chat], Error> {
         return ValueObservation.tracking { db in
-            try ChatRecord.fetchAll(db)
+             try ChatRecord.fetchAll(db)
+                .filter { $0.project == project.id }
         }
             .publisher(in: self.dbQueue)
             .map { $0.map(Chat.init) }
             .eraseToAnyPublisher()
     }
 
+    func insert(chat: Chat) async throws {
+        try await self.dbQueue.write { db in
+            try ChatRecord(model: chat).insert(db)
+        }
+    }
+
+    func delete(chat: Chat) async throws -> Bool {
+        try await self.dbQueue.write { db in
+            try ChatRecord.deleteOne(db, id: chat.id)
+        }
+    }
+
     func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error> {
         return ValueObservation.tracking { db in
             try MessageRecord.fetchAll(db)
+                .filter { $0.chat == chat.id }
         }
             .publisher(in: self.dbQueue)
             .map { $0.map(Message.init) }

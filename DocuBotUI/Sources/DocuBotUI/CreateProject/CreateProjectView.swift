@@ -51,7 +51,7 @@ public struct CreateProjectView: View {
                                         guard let url = panel.urls.first else {
                                             return
                                         }
-                                        viewModel.directory = url
+                                        viewModel.projectDirectory = url
                                     }
                                 }
                             } label: {
@@ -62,6 +62,8 @@ public struct CreateProjectView: View {
                     } label: {
                         Text(viewModel.projectDirectoryTitle)
                     }
+
+                    TextField(viewModel.projectNameTitle, text: $viewModel.projectName)
 
                     Picker(viewModel.languageTitle, selection: $viewModel.selectedLanguage) {
                         ForEach(viewModel.availableLanguages) { language in
