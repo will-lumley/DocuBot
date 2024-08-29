@@ -30,8 +30,8 @@ public struct ProjectSettings: Hashable {
 
     // MARK: - Properties
 
-    public let id: Int
-    public let projectID: Int
+    public let id: Int64?
+    public let projectID: Int64
 
     public let supportedFormats: [DocumentationFormat]
     public let respondWithDocumentsOnly: Bool
@@ -43,8 +43,8 @@ public struct ProjectSettings: Hashable {
     // MARK: - Lifecycle
 
     public init(
-        id: Int,
-        projectID: Int,
+        id: Int64? = nil,
+        projectID: Int64,
         supportedFormats: [DocumentationFormat],
         respondWithDocumentsOnly: Bool,
         language: Language,

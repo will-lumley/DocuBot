@@ -9,21 +9,15 @@ import DocuBotModel
 import Foundation
 
 public protocol ChatCellViewModelDelegate {
-    func chatSelected(_ project: Chat)
+    func chatRenamed(_ chat: Chat, _ newName: String)
 }
 
 public class ChatCellViewModel: ObservableObject {
 
     // MARK: - Types
 
-    public enum State {
-        case display
-        case rename
-    }
-
     // MARK: - Properties
 
-    @Published public var state: State = .display
     @Published public var renameTitle = ""
 
     let chat: Chat
@@ -33,6 +27,7 @@ public class ChatCellViewModel: ObservableObject {
 
     init(chat: Chat, delegate: ChatCellViewModelDelegate? = nil) {
         self.chat = chat
+        self.renameTitle = self.chat.name
         self.delegate = delegate
     }
 
@@ -46,7 +41,7 @@ public class ChatCellViewModel: ObservableObject {
 
 extension ChatCellViewModel: Identifiable {
 
-    public var id: Int {
+    public var id: Int64 {
         self.chat.id ?? -1
     }
 
@@ -56,8 +51,8 @@ extension ChatCellViewModel: Identifiable {
 
 public extension ChatCellViewModel {
 
-    var title: String {
-        self.chat.name
+    func renameTextFieldEntered() {
+        self.delegate?.chatRenamed(self.chat, self.renameTitle)
     }
 
 }

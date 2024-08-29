@@ -33,9 +33,9 @@ extension ChatRecord {
     }
 
     static func mock(
-        id: Int = 0,
+        id: Int64 = 0,
         name: String = "",
-        project: Int = 0,
+        project: Int64 = 0,
         createdAt: Date = Date()
     ) -> ChatRecord {
         .init(

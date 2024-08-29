@@ -46,7 +46,7 @@ public class ProjectViewModel: DocuBotViewModel {
 
         // Connect our CellViewModels to our DB layer
         persistenceService.getChats(for: self.project)
-            .map { $0.map { ChatCellViewModel(chat: $0) } }
+            .map { $0.map { ChatCellViewModel(chat: $0, delegate: self) } }
             .replaceError(with: [])
             .assign(to: &$chats)
 
@@ -65,18 +65,9 @@ public class ProjectViewModel: DocuBotViewModel {
 
 public extension ProjectViewModel {
 
-    var createChatButton: IconButtonViewModel {
-        .init(symbol: .plus) {
+    var createChatButton: ToolbarButtonViewModel {
+        .init(symbol: .squareAndPencil) {
             self.createNewChat()
-        }
-    }
-
-    var deleteChatButton: IconButtonViewModel {
-        .init(symbol: .minus) {
-            guard let selectedChat = self.selectedChat else {
-                return
-            }
-            self.promptDeleteChat(chat: selectedChat.chat)
         }
     }
 
@@ -119,7 +110,7 @@ public extension ProjectViewModel {
     func contextMenuConfigurations(for cell: ChatCellViewModel) -> [ContextMenuConfiguration] {
         return [
             .init(text: L10n.Project.ChatContextMenu.rename) {
-                cell.state = .rename
+                
             },
             .init(text: L10n.Project.ChatContextMenu.delete) {
                 self.promptDeleteChat(chat: cell.chat)
@@ -142,7 +133,6 @@ private extension ProjectViewModel {
 
     func createNewChat() {
         let chat = Chat(
-            id: nil,
             name: L10n.Project.NewChat.defaultTitle,
             nameType: .automatic,
             projectID: self.project.id ?? -1,
@@ -151,7 +141,13 @@ private extension ProjectViewModel {
 
         Task {
             do {
-                try await persistenceService.insert(chat: chat)
+                let inserted = try await persistenceService.insert(chat: chat)
+
+                // Select the Chat that we just created
+                DispatchQueue.main.async {
+                    let insertedCell = self.chats?.first { $0.chat.id == inserted.id }
+                    self.selectedChat = insertedCell
+                }
             } catch {
                 fatalError(error.localizedDescription)
             }
@@ -168,6 +164,26 @@ private extension ProjectViewModel {
             } catch {
                 fatalError(error.localizedDescription)
             }
+        }
+    }
+
+}
+
+// MARK: - ChatCellViewModelDelegate
+
+extension ProjectViewModel: ChatCellViewModelDelegate {
+
+    public func chatRenamed(_ chat: Chat, _ newName: String) {
+        Task {
+            // Update the `name` and the `nameType
+            let newChat = Chat(
+                id: chat.id,
+                name: newName,
+                nameType: .userSet,
+                projectID: chat.projectID,
+                createdAt: chat.createdAt
+            )
+            try await persistenceService.update(chat: newChat)
         }
     }
 

@@ -30,7 +30,7 @@ extension ProjectRecord {
     }
 
     static func mock(
-        id: Int = 0,
+        id: Int64 = 0,
         path: String = "",
         name: String = "",
         documentationChecksum: String = "",

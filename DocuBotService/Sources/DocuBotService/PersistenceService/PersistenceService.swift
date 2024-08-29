@@ -11,13 +11,16 @@ import Foundation
 
 public protocol PersistenceService: Service {
 
-    func insert(project: Project) async throws
+    func insert(project: Project) async throws -> Project
     func getProjects() -> AnyPublisher<[Project], Error>
     func delete(project: Project) async throws -> Bool
 
+    func insert(settings: ProjectSettings) async throws -> ProjectSettings
+
     func getChats(for project: Project) -> AnyPublisher<[Chat], Error>
-    func insert(chat: Chat) async throws
+    func insert(chat: Chat) async throws -> Chat
     func delete(chat: Chat) async throws -> Bool
+    func update(chat: Chat) async throws
 
     func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error>
 

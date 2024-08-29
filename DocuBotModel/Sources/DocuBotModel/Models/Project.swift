@@ -11,7 +11,7 @@ public struct Project: Hashable, Codable {
 
     // MARK: - Properties
 
-    public let id: Int?
+    public let id: Int64?
     public let path: String
     public let name: String
     public let documentationChecksum: String
@@ -22,7 +22,7 @@ public struct Project: Hashable, Codable {
     // MARK: - Lifecycle
 
     public init(
-        id: Int?,
+        id: Int64? = nil,
         path: String,
         name: String,
         documentationChecksum: String,

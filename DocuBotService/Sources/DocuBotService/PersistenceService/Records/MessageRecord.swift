@@ -19,14 +19,18 @@ public struct MessageRecord: Record {
 
     // MARK: - Properties
 
-    public let id: Int?
+    public var id: Int64?
     public let content: String
     public let author: Author
-    public let chat: Int
+    public let chat: Int64
     public let createdAt: Date
 
     public static var databaseTableName: String {
         "messages"
+    }
+
+    mutating func didInsert(with rowID: Int64, for column: String?) {
+        self.id = rowID
     }
 
 }

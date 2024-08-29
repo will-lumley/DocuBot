@@ -29,18 +29,14 @@ public struct WelcomeProjectCellView: View {
                 Text(viewModel.subtitle)
                     .font(.footnote)
                     .padding([.horizontal])
-                     .padding(.bottom, 4)
+                    .padding(.bottom, 4)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
             }
 
             Spacer()
 
-            Button(action: viewModel.openButtonSelected, label: {
-                Image(systemSymbol: .arrowForwardCircle)
-                    .resizable()
-                    .frame(width: 20, height: 20)
-            })
-            .buttonStyle(PlainButtonStyle())
-            .padding(.horizontal)
+            IconButton(viewModel: viewModel.openButton)
         }
 
     }

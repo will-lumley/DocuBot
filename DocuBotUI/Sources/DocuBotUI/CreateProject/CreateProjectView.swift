@@ -13,6 +13,9 @@ public struct CreateProjectView: View {
 
     // MARK: - Properties
 
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.openWindow) var openWindow
+
     @StateObject var viewModel: CreateProjectViewModel
 
     // MARK: - Lifecycle
@@ -153,6 +156,20 @@ public struct CreateProjectView: View {
         }
         .navigationTitle(viewModel.windowTitle)
         .frame(minWidth: 525, minHeight: 600)
+
+        // Listen to our OnDismiss listener
+        .onReceive(viewModel.onDismiss) { _ in
+            self.dismiss()
+        }
+
+        // Listen to our OnOpen listener
+        .onReceive(viewModel.onOpen) { open in
+            switch open {
+            case .project(let package):
+                self.openWindow(value: package)
+            }
+        }
+
     }
 
 }

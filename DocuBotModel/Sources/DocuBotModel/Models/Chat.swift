@@ -19,20 +19,20 @@ public struct Chat: Hashable, Codable {
 
     // MARK: - Properties
 
-    public let id: Int?
+    public let id: Int64?
     public let name: String
     public let nameType: NameType
-    public let projectID: Int
+    public let projectID: Int64
     public private(set) var messages = [Message]()
     public let createdAt: Date
 
     // MARK: - Lifecycle
 
     public init(
-        id: Int?,
+        id: Int64? = nil,
         name: String,
         nameType: NameType,
-        projectID: Int,
+        projectID: Int64,
         createdAt: Date
     ) {
         self.id = id

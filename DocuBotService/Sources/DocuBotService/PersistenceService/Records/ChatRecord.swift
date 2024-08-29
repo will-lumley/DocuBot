@@ -20,14 +20,18 @@ public struct ChatRecord: Record {
 
     // MARK: - Properties
 
-    public var id: Int?
+    public var id: Int64?
     public let name: String
     public let nameType: NameType
-    public let project: Int
+    public let project: Int64
     public let createdAt: Date
 
     public static var databaseTableName: String {
         "chats"
+    }
+
+    public mutating func didInsert(_ inserted: InsertionSuccess) {
+        self.id = inserted.rowID
     }
 
 }

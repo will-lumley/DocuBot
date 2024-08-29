@@ -12,7 +12,7 @@ struct ToolbarButton: View {
 
     // MARK: - Properties
 
-    @ObservedObject var viewModel: IconButtonViewModel
+    @ObservedObject var viewModel: ToolbarButtonViewModel
     @State private var isHovered = false
 
     // MARK: - View
@@ -22,13 +22,23 @@ struct ToolbarButton: View {
             action: viewModel.selected,
             label: {
                 if let hoverSymbol = viewModel.hoverSymbol, self.isHovered {
-                    Image(systemSymbol: hoverSymbol)
-                        .font(Font.body.weight(.bold))
-                        .imageScale(.large)
+                    VStack {
+                        Image(systemSymbol: hoverSymbol)
+                            .font(Font.body.weight(.bold))
+                            .imageScale(.large)
+                        if let name = viewModel.name {
+                            Text(name)
+                        }
+                    }
                 } else {
-                    Image(systemSymbol: viewModel.symbol)
-                        .font(Font.body.weight(.bold))
-                        .imageScale(.large)
+                    VStack {
+                        Image(systemSymbol: viewModel.symbol)
+                            .font(Font.body.weight(.bold))
+                            .imageScale(.large)
+                        if let name = viewModel.name {
+                            Text(name)
+                        }
+                    }
                 }
             }
         )

@@ -32,8 +32,8 @@ public class WelcomeProjectCellViewModel: ObservableObject {
 
 extension WelcomeProjectCellViewModel: Identifiable {
 
-    public var id: Int {
-        self.project.id ?? -1
+    public var id: Int64 {
+        self.project.id ?? Int64(-1)
     }
 
 }
@@ -64,8 +64,10 @@ public extension WelcomeProjectCellViewModel {
         self.project.path
     }
 
-    func openButtonSelected() {
-        self.delegate?.openProject(self.project)
+    var openButton: IconButtonViewModel {
+        .init(symbol: .arrowForwardCircle, hoverSymbol: .arrowForwardCircleFill) {
+            self.delegate?.openProject(self.project)
+        }
     }
 
 }

@@ -10,13 +10,18 @@ import DocuBotModel
 import DocuBotService
 import Foundation
 
+import CoreGraphics
+import SwiftUI
+
 public class ChatViewModel: DocuBotViewModel, Identifiable {
 
     // MARK: - Types
 
     // MARK: - Properties
 
-    public var id: Int {
+    @Published public var text = ""
+
+    public var id: Int64 {
         self.chat.id ?? -1
     }
 
@@ -38,10 +43,6 @@ public class ChatViewModel: DocuBotViewModel, Identifiable {
 // MARK: - Public
 
 public extension ChatViewModel {
-
-    var foo: String {
-        self.chat.name
-    }
 
     var emptyMessageConfiguration: EmptyListConfiguration {
         .init(
