@@ -15,11 +15,10 @@ import SwiftUI
 
 public class ChatViewModel: DocuBotViewModel, Identifiable {
 
-    // MARK: - Types
-
     // MARK: - Properties
 
-    @Published public var text = ""
+    @Published public var chatText = ""
+    @Published public var messages: [MessageCellViewModel]?
 
     public var id: Int64 {
         self.chat.id ?? -1
@@ -36,6 +35,12 @@ public class ChatViewModel: DocuBotViewModel, Identifiable {
 
     public override func configureBindings() {
         super.configureBindings()
+
+        // Connect our MessageCellViewModels to our DB layer
+        persistenceService.getMessages(for: self.chat)
+            .map { $0.map { MessageCellViewModel(message: $0) } }
+            .replaceError(with: [])
+            .assign(to: &$messages)
     }
 
 }
@@ -50,6 +55,10 @@ public extension ChatViewModel {
             subtitle: L10n.Project.EmptyChat.subtitle,
             icon: .message
         )
+    }
+
+    func enterSelected() {
+        print("ENTER SELECTED")
     }
 
 }

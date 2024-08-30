@@ -266,7 +266,6 @@ public extension CreateProjectViewModel {
                         )
                     )
                 }
-
             } catch {
                 fatalError(error.localizedDescription)
             }
