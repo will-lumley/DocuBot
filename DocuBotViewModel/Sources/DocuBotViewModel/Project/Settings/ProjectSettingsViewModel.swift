@@ -65,15 +65,26 @@ public class ProjectSettingsViewModel: DocuBotViewModel {
         self.directoryText = self.project.path
         self.selectedLanguage = self.projectSettings.language
 
-        var formatConfigurations = [DocumentationFormatConfiguration]()
-        for (index, format) in projectSettings.supportedFormats.enumerated() {
+        var formatConfigurations = Format.allCases
+            .enumerated()
+            .map { index, format in
+                DocumentationFormatConfiguration(
+                    order: index,
+                    format: format,
+                    isEnabled: projectSettings.isEnabled(format)
+                )
+            }
+
+        print("Other: \(projectSettings.otherFormats)")
+        for (index, format) in projectSettings.otherFormats.enumerated() {
             let configuration = DocumentationFormatConfiguration(
-                order: index,
+                order: index + formatConfigurations.count,
                 format: format,
                 isEnabled: true
             )
             formatConfigurations.append(configuration)
         }
+        print("formatConfigurations: \(formatConfigurations)")
         self.formatConfigurations = formatConfigurations
 
         super.init(serviceContainer: serviceContainer)
@@ -223,7 +234,34 @@ public extension ProjectSettingsViewModel {
     }
 
     func saveButtonSelected() {
-        print("SAVE")
+        Task {
+            guard let projectID = self.project.id else {
+                return
+            }
+
+            let supportedFormats = self.formatConfigurations
+                .filter { $0.isEnabled }
+                .map(\.format)
+
+            let settings = ProjectSettings(
+                id: self.projectSettings.id,
+                projectID: projectID,
+                supportedFormats: supportedFormats,
+                respondWithDocumentsOnly: false,
+                language: self.selectedLanguage,
+                createdAt: self.projectSettings.createdAt,
+                updatedAt: .now
+            )
+
+            do {
+                try await persistenceService.update(projectSettings: settings)
+                DispatchQueue.main.async {
+                    self.onDismiss.send(())
+                }
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+        }
     }
 
 }
@@ -231,10 +269,7 @@ public extension ProjectSettingsViewModel {
 // MARK: - Private
 
 private extension ProjectSettingsViewModel {
-
-    func configureFromProjectSettings() {
-        
-    }
+    
 }
 
 // MARK: - Preview

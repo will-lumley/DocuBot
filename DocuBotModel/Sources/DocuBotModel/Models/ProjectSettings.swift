@@ -64,9 +64,33 @@ public struct ProjectSettings: Hashable, Codable {
 
 }
 
+// MARK: - Public
+
+public extension ProjectSettings {
+
+    var otherFormats: [DocumentationFormat] {
+        self.supportedFormats
+            .filter { $0.isOther }
+    }
+
+    func isEnabled(_ format: DocumentationFormat) -> Bool {
+        return self.supportedFormats.contains(format)
+    }
+
+}
+
 // MARK: - ProjectSettings.DocumentationFormat
 
 public extension ProjectSettings.DocumentationFormat {
+
+    var isOther: Bool {
+        switch self {
+        case .other:
+            return true
+        default:
+            return false
+        }
+    }
 
     var extensionName: String {
         switch self {
