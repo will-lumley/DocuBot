@@ -140,6 +140,12 @@ internal enum L10n {
       internal static let showInFinder = L10n.tr("Localizable", "ProjectPicker.ProjectContextMenu.showInFinder", fallback: "Show in Finder")
     }
   }
+  internal enum ProjectSettings {
+    /// Save Settings
+    internal static let saveButton = L10n.tr("Localizable", "ProjectSettings.saveButton", fallback: "Save Settings")
+    /// Project Settings
+    internal static let windowTitle = L10n.tr("Localizable", "ProjectSettings.windowTitle", fallback: "Project Settings")
+  }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces

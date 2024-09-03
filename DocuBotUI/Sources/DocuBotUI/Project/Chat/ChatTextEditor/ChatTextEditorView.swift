@@ -11,6 +11,7 @@ struct ChatTextEditorView: NSViewRepresentable {
 
     // MARK: - Types
 
+    public typealias OnTextChanged = ((String) -> Void)
     public typealias OnEnterSelected = (() -> Void)
 
     // MARK: - Properties
@@ -36,12 +37,22 @@ struct ChatTextEditorView: NSViewRepresentable {
                 self.height = newHeight
             }
         }
+        textEditor.onTextChange = { newText in
+            DispatchQueue.main.async {
+                self.text = newText
+            }
+        }
         return textEditor
     }
 
     func updateNSView(_ view: ChatTextEditor, context: Context) {
-        // The window may have been resized, let's re-adjust
         DispatchQueue.main.async {
+            // The Binding<String> may have changed, let's re-apply
+            if view.text != self.text {
+                view.text = self.text
+            }
+
+            // The window may have been resized, let's re-adjust
             view.adjustTextViewHeight()
         }
     }

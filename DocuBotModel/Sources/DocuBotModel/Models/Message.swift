@@ -26,7 +26,13 @@ public struct Message: Hashable, Codable {
 
     // MARK: - Lifecycle
 
-    public init(id: Int64?, content: String, author: Author, chatID: Int64, createdAt: Date) {
+    public init(
+        id: Int64? = nil,
+        content: String,
+        author: Author,
+        chatID: Int64,
+        createdAt: Date
+    ) {
         self.id = id
         self.content = content
         self.author = author

@@ -26,6 +26,20 @@ public class MessageCellViewModel: ObservableObject {
 
 }
 
+// MARK: - Public
+
+public extension MessageCellViewModel {
+
+    var originIsUser: Bool {
+        self.message.author == .user
+    }
+
+    var messageContent: String {
+        self.message.content
+    }
+
+}
+
 // MARK: - Identifiable
 
 extension MessageCellViewModel: Identifiable {

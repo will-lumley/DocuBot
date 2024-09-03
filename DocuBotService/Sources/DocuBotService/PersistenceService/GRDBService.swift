@@ -10,7 +10,7 @@ import Foundation
 import GRDB
 import DocuBotModel
 
-class GRDBService: PersistenceService {    
+class GRDBService: PersistenceService {
 
     // MARK: - Types
 
@@ -82,10 +82,21 @@ class GRDBService: PersistenceService {
         }
     }
 
+    func getProjectSettings(for project: Project) async throws -> ProjectSettings {
+        return try await dbQueue.read { db in
+            let request = ProjectSettingsRecord.filter(Column("project") == project.id)
+            guard let record = try ProjectSettingsRecord.fetchOne(db, request) else {
+                throw PersistenceError.valueNotFound
+            }
+
+            return ProjectSettings(record: record)
+        }
+    }
+
     func getChats(for project: Project) -> AnyPublisher<[Chat], Error> {
         return ValueObservation.tracking { db in
-             try ChatRecord.fetchAll(db)
-                .filter { $0.project == project.id }
+            let request = ChatRecord.filter(Column("project") == project.id)
+            return try ChatRecord.fetchAll(db, request)
         }
             .publisher(in: self.dbQueue)
             .map { $0.map(Chat.init) }
@@ -115,12 +126,21 @@ class GRDBService: PersistenceService {
 
     func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error> {
         return ValueObservation.tracking { db in
-            try MessageRecord.fetchAll(db)
-                .filter { $0.chat == chat.id }
+            let request = MessageRecord.filter(Column("chat") == chat.id)
+            return try MessageRecord.fetchAll(db, request)
         }
             .publisher(in: self.dbQueue)
             .map { $0.map(Message.init) }
             .eraseToAnyPublisher()
+    }
+
+    func insert(message: Message) async throws -> Message {
+        return try await self.dbQueue.write { db in
+            var record = MessageRecord(model: message)
+            try record.insert(db)
+
+            return Message(record: record)
+        }
     }
 
 }

@@ -31,6 +31,9 @@ class ChatTextEditor: NSView, NSTextViewDelegate {
     /// The closure that will be called when the user has indicated they want to send the message
     public var onEnterSelected: ChatTextEditorView.OnEnterSelected?
 
+    /// The closure that will be called when the text content changes
+    public var onTextChange: ChatTextEditorView.OnTextChanged?
+
     /// The closure that will be called when we've deemed the height to change
     /// due to modified text or view/window resizing
     public var onHeightChange: OnHeightChange?
@@ -63,6 +66,15 @@ class ChatTextEditor: NSView, NSTextViewDelegate {
 
 extension ChatTextEditor {
 
+    var text: String {
+        get {
+            self.textView.string
+        }
+        set {
+            self.textView.string = newValue
+        }
+    }
+
     func adjustTextViewHeight() {
         // Recalculate the height based on the current size
         let usedRect = self.layoutManager.usedRect(for: self.textContainer)
@@ -88,7 +100,6 @@ extension ChatTextEditor {
             onHeightChange?(height)
         }
 
-        print("Height: \(height)")
         self.previousHeight = height
     }
 
@@ -163,6 +174,10 @@ private extension ChatTextEditor {
 // MARK: - ChatTextViewEventDelegate
 
 extension ChatTextEditor: ChatTextView.EventDelegate {
+
+    func textChanged() {
+        self.onTextChange?(self.text)
+    }
 
     func enterSelected() {
         // Our `TextView` has indicated that the enter key has been

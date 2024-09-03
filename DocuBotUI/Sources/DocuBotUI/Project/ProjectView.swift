@@ -13,6 +13,8 @@ public struct ProjectView: View {
 
     // MARK: - Properties
 
+    @Environment(\.openWindow) var openWindow
+
     @StateObject var viewModel: ProjectViewModel
 
     // MARK: - Lifecycle
@@ -42,8 +44,6 @@ public struct ProjectView: View {
                             }
                             .listStyle(.sidebar)
                         }
-                    } else {
-                        EmptyView()
                     }
                 }
             },
@@ -71,7 +71,16 @@ public struct ProjectView: View {
         .dialogIcon(.init(systemSymbol: .trashCircleFill))
 
         .toolbar {
+            ToolbarButton(viewModel: viewModel.openSettingsButton)
             ToolbarButton(viewModel: viewModel.createChatButton)
+        }
+
+        // Listen to our OnOpen listener
+        .onReceive(viewModel.onOpen) { open in
+            switch open {
+            case .settings(let package):
+                self.openWindow(value: package)
+            }
         }
 
         .navigationTitle(viewModel.windowTitle)

@@ -12,6 +12,7 @@ class ChatTextView: NSTextView {
     // MARK: - Types
 
     protocol EventDelegate {
+        func textChanged()
         func recalculateHeight()
         func enterSelected()
     }
@@ -54,7 +55,7 @@ class ChatTextView: NSTextView {
 
         self.isRichText = false
         self.isEditable = true
-        self.font = .systemFont(ofSize: 16)
+        self.font = .systemFont(ofSize: 14)
     }
 
     override func flagsChanged(with event: NSEvent) {
@@ -89,6 +90,7 @@ class ChatTextView: NSTextView {
 
     override func didChangeText() {
         super.didChangeText()
+        self.eventDelegate?.textChanged()
         self.eventDelegate?.recalculateHeight()
     }
 
