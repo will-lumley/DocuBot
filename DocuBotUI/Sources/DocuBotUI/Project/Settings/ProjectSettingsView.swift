@@ -78,29 +78,31 @@ public struct ProjectSettingsView: View {
                 Section(
                     content: {
                         ForEach(viewModel.formatConfigurations) { configuration in
-                            
+
                             if configuration.format.isOther {
                                 // This is our `other` format
-                                HStack {
-                                    TextField("", text: .init(
-                                        get: {
-                                            return configuration.format.otherStr ?? ""
-                                        },
-                                        set: { newValue in
-                                            viewModel.update(formatConfiguration: configuration, otherStr: newValue)
-                                        })
-                                    )
-                                    .textFieldStyle(.roundedBorder)
-                                    .disabled(configuration.isEnabled == false)
-//                                    .frame(maxWidth: .infinity, alignment: .leading)
-//                                    .padding(.leading, -8)
+                                Toggle(isOn: .constant(true)) {
+                                    HStack {
+                                        TextField("", text: .init(
+                                            get: {
+                                                return configuration.format.otherStr ?? ""
+                                            },
+                                            set: { newValue in
+                                                viewModel.update(formatConfiguration: configuration, otherStr: newValue)
+                                            })
+                                        )
+                                        .textFieldStyle(.roundedBorder)
+                                        .disabled(configuration.isEnabled == false)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.leading, -8)
 
-//                                    Button {
-//                                        viewModel.remove(formatConfiguration: configuration)
-//                                    } label: {
-//                                        Image(systemSymbol: .trash)
-//                                            .padding(1)
-//                                    }
+                                        Button {
+                                            viewModel.remove(formatConfiguration: configuration)
+                                        } label: {
+                                            Image(systemSymbol: .trash)
+                                                .padding(1)
+                                        }
+                                    }
                                 }
                             } else {
                                 // This is our standard format

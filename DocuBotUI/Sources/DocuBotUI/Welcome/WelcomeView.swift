@@ -96,6 +96,7 @@ private extension WelcomeView {
                 .padding()
 
             MenuButton(viewModel: viewModel.newProjectButton)
+                .keyboardShortcut("n", modifiers: .command)
             MenuButton(viewModel: viewModel.viewSourceCodeButton)
             MenuButton(viewModel: viewModel.emailDeveloper)
         }

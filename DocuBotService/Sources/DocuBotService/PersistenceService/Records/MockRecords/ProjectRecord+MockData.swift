@@ -33,6 +33,7 @@ extension ProjectRecord {
         id: Int64 = 0,
         path: String = "",
         name: String = "",
+        isDirty: Bool = false,
         documentationChecksum: String = "",
         createdAt: Date = Date(),
         updatedAt: Date = Date()

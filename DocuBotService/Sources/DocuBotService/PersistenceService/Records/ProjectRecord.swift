@@ -15,6 +15,8 @@ public struct ProjectRecord: Record {
     public var id: Int64?
     public let path: String
     public let name: String
+    public let urlBookmarkData: Data
+    public let urlBookmarkDataIsStale: Bool
     public let documentationChecksum: String
     public let createdAt: Date
     public let updatedAt: Date

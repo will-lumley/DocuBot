@@ -82,6 +82,7 @@ public extension WelcomeProjectCellViewModel {
                 id: 1,
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project_1",
+                isDirty: false,
                 documentationChecksum: "123",
                 createdAt: .now,
                 updatedAt: .now

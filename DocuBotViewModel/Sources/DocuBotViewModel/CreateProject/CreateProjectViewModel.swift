@@ -225,15 +225,15 @@ public extension CreateProjectViewModel {
             .map(\.format)
 
         // Extract all our relevant documents (each document = one string)
-        let documents = self.loadDocumentationFiles(from: directory, formats: formats)
+        let documents = Project.loadDocumentationFiles(from: directory, formats: formats)
         guard let checksum = try? documents.generateChecksum() else {
             return
         }
-        print("Checksum: \(checksum)")
 
         let project = Project(
             path: directory.path(),
             name: self.projectName,
+            isDirty: false, 
             documentationChecksum: checksum,
             createdAt: .now,
             updatedAt: .now
@@ -262,8 +262,12 @@ public extension CreateProjectViewModel {
                 )
                 _ = try await persistenceService.insert(settings: settings)
 
-                // Open the Window with the project that we just inserted
                 DispatchQueue.main.async {
+
+                    // Close this current window
+                    self.onDismiss.send(())
+                    
+                    // Open the Window with the project that we just inserted
                     self.onOpen.send(
                         .project(
                             .init(project: inserted)
@@ -274,27 +278,6 @@ public extension CreateProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
-    }
-
-}
-
-// MARK: - Private
-
-private extension CreateProjectViewModel {
-
-    func loadDocumentationFiles(from directory: URL, formats: [Format]) -> [Document] {
-        var strs = [String]()
-        let enumerator = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: nil)
-
-        while let fileURL = enumerator?.nextObject() as? URL {
-            if formats.map(\.extensionName).contains(fileURL.pathExtension) {
-                if let content = try? String(contentsOf: fileURL) {
-                    strs.append(content)
-                }
-            }
-        }
-
-        return strs.map(Document.init)
     }
 
 }
