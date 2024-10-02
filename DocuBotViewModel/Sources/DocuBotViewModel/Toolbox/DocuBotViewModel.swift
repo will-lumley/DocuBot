@@ -19,6 +19,10 @@ public class DocuBotViewModel: ObservableObject {
         serviceContainer.flagService
     }
 
+    var gptService: GPTService {
+        serviceContainer.gptService
+    }
+
     var logService: LogService {
         serviceContainer.logService
     }

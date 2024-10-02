@@ -17,6 +17,8 @@ struct DocuBotApp: App {
     @Environment(\.openWindow) var openWindow
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
+    @State private var isWelcomeViewOpen: Bool = false
+
     // MARK: - View
 
     var body: some Scene {
@@ -25,14 +27,35 @@ struct DocuBotApp: App {
             WelcomeView(
                 viewModel: .init(serviceContainer: delegate.serviceContainer)
             )
+            .onAppear {
+                self.isWelcomeViewOpen = true
+            }
+            .onDisappear {
+                self.isWelcomeViewOpen = false
+            }
         }
         .windowResizability(.contentSize)
         .windowStyle(HiddenTitleBarWindowStyle())
+        .onChange(of: isWelcomeViewOpen) { oldValue, newValue in
+            if newValue == false {
+                // If WelcomeView is closed, reset the state
+                self.isWelcomeViewOpen = false
+            }
+        }
         .commands {
             // Open our Welcome View
             CommandGroup(after: .windowArrangement, addition: {
                 Button("Welcome to DocuBot") {
-                    self.openWindow(id: WelcomeView.id)
+                    // If we haven't got the welcome window open, open it
+                    if self.isWelcomeViewOpen == false {
+                        self.openWindow(id: WelcomeView.id)
+                        self.isWelcomeViewOpen = true
+                    }
+
+                    // We already have it open, just focus it
+                    else {
+                        self.focusWelcomeWindow()
+                    }
                 }
                 .keyboardShortcut("1", modifiers: [.command, .shift])
             })
@@ -75,6 +98,15 @@ struct DocuBotApp: App {
         }
         .windowResizability(.contentSize)
 
+    }
+
+    private func focusWelcomeWindow() {
+        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == WelcomeView.id }) {
+            window.makeKeyAndOrderFront(nil)
+
+            // Bring the app to the front if needed
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
 }

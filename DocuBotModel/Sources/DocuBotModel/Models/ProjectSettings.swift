@@ -26,6 +26,16 @@ public struct ProjectSettings: Hashable, Codable {
         case html
         case md
         case other(String)
+
+        init(rawValue: String) {
+            switch rawValue {
+            case "rtf": self = .rtf
+            case "txt": self = .txt
+            case "html": self = .html
+            case "md": self = .md
+            default: self = .other(rawValue)
+            }
+        }
     }
 
     // MARK: - Properties

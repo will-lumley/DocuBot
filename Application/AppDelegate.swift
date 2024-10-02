@@ -28,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - AppDelegate
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        _ = serviceContainer.gptService
         serviceContainer.logService.log(with: .info, "Starting application.")
     }
 

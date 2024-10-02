@@ -60,6 +60,17 @@ class GRDBService: PersistenceService {
         }
     }
 
+    func getProject(id: Int64) async throws -> Project {
+        return try await dbQueue.read { db in
+            let request = ProjectRecord.filter(Column("id") == id)
+            guard let record = try ProjectRecord.fetchOne(db, request) else {
+                throw PersistenceError.valueNotFound
+            }
+
+            return Project(record: record)
+        }
+    }
+
     func getProjects() -> AnyPublisher<[Project], Error> {
         return ValueObservation.tracking { db in
             try ProjectRecord.fetchAll(db)

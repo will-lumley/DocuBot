@@ -39,7 +39,7 @@ public struct MessageCellView: View {
             .padding(.vertical, 6)
             .background(
                 RoundedRectangle(cornerRadius: 15, style: .circular)
-                    .fill(viewModel.originIsUser ? Color.blue : Color.gray)
+                    .fill(viewModel.originIsUser ? Color.blue : Color.clear)
             )
     }
 

@@ -59,7 +59,8 @@ public struct CreateProjectView: View {
                                             includingResourceValuesForKeys: nil,
                                             relativeTo: nil
                                         )
-                                        
+
+                                        viewModel.projectDirectoryBookmarkData = bookmarkData
                                         viewModel.projectDirectory = url
                                     }
                                 }

@@ -209,27 +209,16 @@ private extension ProjectViewModel {
         Task {
             do {
                 // Pull out the settings
-                let settings = try await persistenceService.getProjectSettings(for: project)
+                let settings = try await persistenceService.getProjectSettings(
+                    for: project
+                )
 
-                // Check if the project is dirty
-                let result = try self.project.checkIfDirty(with: settings)
-
-                switch result {
-                case .clean:
-                    print("Yay we're clean")
-                case .dirty(newChecksum: let newChecksum):
-                    print("NewChecksum: \(newChecksum)")
-                    // Update the checksum
-                    self.project.documentationChecksum = newChecksum
-                    self.project.isDirty = true
-
-                    // Update the DB
-                    try await persistenceService.update(project: self.project)
-                }
+                // Ensure our project has up to date documents
+                try self.project.sync(settings)
+                print("Project synced")
             } catch {
                 fatalError(error.localizedDescription)
             }
-            
         }
     }
 
@@ -266,7 +255,8 @@ public extension ProjectViewModel {
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project 1",
                 isDirty: false,
-                documentationChecksum: "123abc",
+                urlBookmarkData: nil,
+                urlBookmarkDataIsStale: true,
                 createdAt: .now,
                 updatedAt: .now
             ),

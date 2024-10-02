@@ -33,8 +33,8 @@ extension ProjectRecord {
         id: Int64 = 0,
         path: String = "",
         name: String = "",
-        isDirty: Bool = false,
-        documentationChecksum: String = "",
+        urlBookmarkData: Data? = nil,
+        urlBookmarkDataIsStale: Bool = false,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) -> ProjectRecord {
@@ -42,7 +42,8 @@ extension ProjectRecord {
             id: id,
             path: path,
             name: name,
-            documentationChecksum: documentationChecksum,
+            urlBookmarkData: urlBookmarkData,
+            urlBookmarkDataIsStale: urlBookmarkDataIsStale,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

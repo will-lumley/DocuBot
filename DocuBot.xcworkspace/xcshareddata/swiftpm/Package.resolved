@@ -1,13 +1,30 @@
 {
-  "originHash" : "3720a8e80c4d5f2e5d78eaa6c9daeaeb144deb10694cd1c81df947a2ea25d815",
+  "originHash" : "e41dad5224bb7dc8e4c18421118b05bfe7c4b7ef0abe7e87a21dd784a39a3663",
   "pins" : [
     {
       "identity" : "grdb.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/groue/GRDB.swift.git",
       "state" : {
-        "revision" : "639fa9168d36931b36a79e60dc06b7d23852f1f4",
-        "version" : "6.27.0"
+        "revision" : "2cf6c756e1e5ef6901ebae16576a7e4e4b834622",
+        "version" : "6.29.3"
+      }
+    },
+    {
+      "identity" : "llama.cpp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ggerganov/llama.cpp/",
+      "state" : {
+        "revision" : "2fb9267887d24a431892ce4dccc75c7095b0d54d"
+      }
+    },
+    {
+      "identity" : "llm.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eastriverlee/LLM.swift/",
+      "state" : {
+        "branch" : "pinned",
+        "revision" : "b16717e33aff0f4fc61f876addb63e23fe2e611b"
       }
     },
     {
