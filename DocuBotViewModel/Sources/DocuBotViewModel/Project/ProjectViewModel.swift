@@ -206,6 +206,7 @@ private extension ProjectViewModel {
     }
 
     func sync() {
+        print("Starting sync")
         Task {
             do {
                 // Pull out the settings
@@ -213,13 +214,43 @@ private extension ProjectViewModel {
                     for: project
                 )
 
+                // Setup our DocumentBuilder
+                let documentBuilder = DocumentParser(self.project, settings)
+
+                // Parse through the Documents
+                let result = try await documentBuilder.createAndParse()
+
+                // Persist the result
+                self.project.documentationChecksum = result.checksum
+                try await self.persistProject()
+                try await self.persist(documents: result.documents)
+
                 // Ensure our project has up to date documents
-                try self.project.sync(settings)
-                print("Project synced")
-            } catch {
+                // try self.project.sync(settings)
+                print("Project synced with \(result.documents.count) docs")
+            }
+            catch DocumentParser.DocumentError.bookmarkIsStale {
+                self.project.urlBookmarkDataIsStale = true
+                try await self.persistProject()
+            }
+            catch {
                 fatalError(error.localizedDescription)
             }
         }
+    }
+
+    func persistProject() async throws {
+        _ = try await persistenceService.update(project: project)
+    }
+
+    func persist(documents: [Document]) async throws {
+        // Delete all the pre-existing documents
+        let toBeDeleted = try await persistenceService.getDocuments(for: self.project)
+        _ = try await persistenceService.delete(documents: toBeDeleted)
+
+        // Insert all the new ones
+        let persisted = try await persistenceService.insert(documents: documents)
+        self.project.load(documents: persisted)
     }
 
 }

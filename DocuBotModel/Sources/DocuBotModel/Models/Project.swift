@@ -6,26 +6,20 @@
 //
 
 import Foundation
+import SimilaritySearchKit
 
 public struct Project: Hashable, Codable {
 
     // MARK: - Types
 
-    public enum DirtyCheckResult {
-        case clean
-        case dirty(newChecksum: String)
-    }
-
-    public enum DocumentError: Error {
-        case invalidPath
-        case failedToLoad
-        case noBookmarkData
-        case bookmarkIsStale
+    public enum DocumentFetchError: Error {
+        case noDocumentsFound
+        case noIndexing
     }
 
     // MARK: - Properties
 
-    /// The unique property for this project. Is `null` if the project hasn't been
+    /// The unique property for this project. Is `nil` if the project hasn't been
     /// inserted into the DB yet
     public let id: Int64?
 
@@ -105,9 +99,40 @@ public extension Project {
         self.chats = chats
     }
 
-    mutating func sync(_ settings: ProjectSettings) throws {
-        // Load our documents into memory
-        try self.loadDocuments(settings)
+    mutating func load(documents: [Document]) {
+        self.documents = documents
+    }
+
+    func fetchRelevantDocumentation(for query: String) async throws -> [SimilarityIndex.SearchResult] {
+        guard let documents = self.documents else {
+            throw Project.DocumentFetchError.noDocumentsFound
+        }
+
+        // Create our index
+        let similarityIndex = await SimilarityIndex(
+            model: NativeEmbeddings(),
+            metric: CosineSimilarity()
+        )
+
+        // Add each document to our index
+        for document in documents {
+            guard let embeddings = document.embeddings else {
+                continue
+            }
+
+            print("Adding document: \(document.id ?? -1)")
+            for embedding in embeddings {
+                await similarityIndex.addItem(
+                    id: UUID().uuidString,
+                    text: embedding.chunk,
+                    metadata: ["id": "\(document.id ?? -1)"],
+                    embedding: embedding.embedding
+                )
+            }
+        }
+
+        let results = await similarityIndex.search(query)
+        return results
     }
 
 }
@@ -116,65 +141,6 @@ public extension Project {
 
 private extension Project {
 
-    mutating func loadDocuments(_ settings: ProjectSettings) throws {
-        guard let urlBookmarkData else {
-            throw DocumentError.noBookmarkData
-        }
-        var isStale = false
-        let directory = try URL(
-            resolvingBookmarkData: urlBookmarkData,
-            options: .withSecurityScope,
-            relativeTo: nil,
-            bookmarkDataIsStale: &isStale
-        )
-
-        // Update our `isStale` status
-        self.urlBookmarkDataIsStale = isStale
-
-        // Open up our access
-        guard directory.startAccessingSecurityScopedResource() else {
-            throw DocumentError.bookmarkIsStale
-        }
-
-        let formats = settings.supportedFormats
-        let enumerator = FileManager.default.enumerator(
-            at: directory,
-            includingPropertiesForKeys: nil
-        )
-
-        // Create/Reset our document array
-        self.documents = .init()
-
-        // Enumerate over each file in the directory
-        while let fileURL = enumerator?.nextObject() as? URL {
-            let rawFileExtension = fileURL.pathExtension
-            let fileExtension = ProjectSettings.DocumentationFormat(rawValue: rawFileExtension)
-
-            // If this file has the extension that user indicated that they're
-            // okay with us touching.
-            guard formats.contains(fileExtension) else {
-                continue
-            }
-
-            // Extract the documents content as a string file
-            guard let content = try? String(String(contentsOf: fileURL)) else {
-                continue
-            }
-
-            let document = Document(
-                url: fileURL,
-                fileFormat: fileExtension,
-                content: content
-            )
-            self.documents?.append(document)
-        }
-
-        // Close our access
-        directory.stopAccessingSecurityScopedResource()
-
-        // Generate our checksum so we can tell for later if we need to re-sync
-        let checksum = try self.documents?.generateChecksum()
-        self.documentationChecksum = checksum
-    }
+    
 
 }
