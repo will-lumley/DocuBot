@@ -7,6 +7,7 @@
 
 import Foundation
 import SimilaritySearchKit
+import SimilaritySearchKitDistilbert
 
 public struct Project: Hashable, Codable {
 
@@ -110,7 +111,7 @@ public extension Project {
 
         // Create our index
         let similarityIndex = await SimilarityIndex(
-            model: NativeEmbeddings(),
+            model: DistilbertEmbeddings(),
             metric: CosineSimilarity()
         )
 
@@ -120,7 +121,6 @@ public extension Project {
                 continue
             }
 
-            print("Adding document: \(document.id ?? -1)")
             for embedding in embeddings {
                 await similarityIndex.addItem(
                     id: UUID().uuidString,

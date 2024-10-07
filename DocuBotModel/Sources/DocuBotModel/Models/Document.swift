@@ -62,6 +62,16 @@ public struct Document: Hashable, Codable {
 
 }
 
+// MARK: - Public
+
+public extension Document {
+
+    var llmReference: String {
+        L10n.Document.LlmReference.template(self.url.path(), self.content)
+    }
+
+}
+
 // MARK: - [Document]
 
 public extension Array where Element == Document {
