@@ -54,9 +54,11 @@ public class CreateProjectViewModel: DocuBotViewModel {
     @Published public var selectedLanguage: ProjectSettings.Language
 
     /// This will be called when we want to open a new window, along with the info that dictates which window
+    @MainActor
     @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
 
     /// This will be called when this ViewModel wants the UI layer to close/dismiss the current window
+    @MainActor
     @Published public var onDismiss = PassthroughSubject<Void, Never>()
 
     // MARK: - Lifecycle
@@ -217,6 +219,10 @@ public extension CreateProjectViewModel {
         self.formatConfigurations.remove(at: index)
     }
 
+    func foo() async {
+        print("")
+    }
+
     func createProjectButtonSelected() {
         guard let directory = self.projectDirectory else {
             return
@@ -236,37 +242,38 @@ public extension CreateProjectViewModel {
             do {
                 // Insert the Project into the DB
                 let inserted = try await persistenceService.insert(project: project)
-                guard let id = inserted.id else {
-                    return
-                }
+                
+//                guard let id = inserted.id else {
+//                    return
+//                }
 
-                let supportedFormats = self.formatConfigurations
-                    .filter { $0.isEnabled }
-                    .map(\.format)
+//                let supportedFormats = self.formatConfigurations
+//                    .filter { $0.isEnabled }
+//                    .map(\.format)
+//
+//                // Insert the ProjectSettings into the DB
+//                let settings = ProjectSettings(
+//                    projectID: id,
+//                    supportedFormats: supportedFormats,
+//                    respondWithDocumentsOnly: false,
+//                    language: self.selectedLanguage,
+//                    createdAt: .now,
+//                    updatedAt: .now
+//                )
+//                _ = try await persistenceService.insert(settings: settings)
 
-                // Insert the ProjectSettings into the DB
-                let settings = ProjectSettings(
-                    projectID: id,
-                    supportedFormats: supportedFormats,
-                    respondWithDocumentsOnly: false,
-                    language: self.selectedLanguage,
-                    createdAt: .now,
-                    updatedAt: .now
-                )
-                _ = try await persistenceService.insert(settings: settings)
-
-                DispatchQueue.main.async {
+//                DispatchQueue.main.async {
 
                     // Close this current window
-                    self.onDismiss.send(())
-                    
-                    // Open the Window with the project that we just inserted
-                    self.onOpen.send(
-                        .project(
-                            .init(project: inserted)
-                        )
-                    )
-                }
+//                    self.onDismiss.send(())
+//
+//                    // Open the Window with the project that we just inserted
+//                    self.onOpen.send(
+//                        .project(
+//                            .init(project: inserted)
+//                        )
+//                    )
+//                }
             } catch {
                 fatalError(error.localizedDescription)
             }

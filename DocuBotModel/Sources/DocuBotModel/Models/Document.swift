@@ -9,11 +9,11 @@ import CryptoKit
 import Foundation
 import SimilaritySearchKit
 
-public struct Document: Hashable, Codable {
+public struct Document: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
-    public struct Embedding: Hashable, Codable {
+    public struct Embedding: Hashable, Codable, Sendable {
         public let chunk: String
         public let embedding: [Float]
 

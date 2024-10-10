@@ -152,16 +152,16 @@ public extension WelcomeViewModel {
     }
 
     func delete(project: Project) {
-        Task {
-            do {
-                let success = try await persistenceService.delete(project: project)
-                if success == false {
-                    fatalError("Error: no deleting")
-                }
-            } catch {
-                fatalError(error.localizedDescription)
-            }
-        }
+//        Task {
+//            do {
+//                let success = try await persistenceService.delete(project: project)
+//                if success == false {
+//                    fatalError("Error: no deleting")
+//                }
+//            } catch {
+//                fatalError(error.localizedDescription)
+//            }
+//        }
     }
 
 }

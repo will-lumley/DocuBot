@@ -129,6 +129,7 @@ public extension ProjectViewModel {
     }
 
     func openSettings() {
+        /*
         Task {
             do {
                 let settings = try await persistenceService.getProjectSettings(for: project)
@@ -143,6 +144,7 @@ public extension ProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
+         */
     }
 
     func contextMenuConfigurations(for cell: ChatCellViewModel) -> [ContextMenuConfiguration] {
@@ -177,6 +179,7 @@ private extension ProjectViewModel {
             createdAt: .now
         )
 
+        /*
         Task {
             do {
                 let inserted = try await persistenceService.insert(chat: chat)
@@ -190,9 +193,11 @@ private extension ProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
+         */
     }
 
     func delete(chat: Chat) {
+        /*
         Task {
             do {
                 _ = try await persistenceService.delete(chat: chat)
@@ -203,10 +208,12 @@ private extension ProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
+         */
     }
 
     func sync() {
         print("Starting sync")
+        /*
         Task {
             do {
                 // Pull out the settings
@@ -237,6 +244,7 @@ private extension ProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
+         */
     }
 
     func persistProject() async throws {
@@ -260,17 +268,17 @@ private extension ProjectViewModel {
 extension ProjectViewModel: ChatCellViewModelDelegate {
 
     public func chatRenamed(_ chat: Chat, _ newName: String) {
-        Task {
-            // Update the `name` and the `nameType
-            let newChat = Chat(
-                id: chat.id,
-                name: newName,
-                nameType: .userSet,
-                projectID: chat.projectID,
-                createdAt: chat.createdAt
-            )
-            try await persistenceService.update(chat: newChat)
-        }
+//        Task {
+//            // Update the `name` and the `nameType
+//            let newChat = Chat(
+//                id: chat.id,
+//                name: newName,
+//                nameType: .userSet,
+//                projectID: chat.projectID,
+//                createdAt: chat.createdAt
+//            )
+//            try await persistenceService.update(chat: newChat)
+//        }
     }
 
 }

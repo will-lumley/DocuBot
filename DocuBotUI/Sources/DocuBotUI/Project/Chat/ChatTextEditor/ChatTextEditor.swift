@@ -7,7 +7,8 @@
 
 import AppKit
 
-class ChatTextEditor: NSView, NSTextViewDelegate {
+@MainActor
+final class ChatTextEditor: NSView, NSTextViewDelegate {
 
     // MARK: - Types
 

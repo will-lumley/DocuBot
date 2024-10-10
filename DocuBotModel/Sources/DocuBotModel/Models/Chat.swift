@@ -7,11 +7,11 @@
 
 import Foundation
 
-public struct Chat: Hashable, Codable {
+public struct Chat: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
-    public enum NameType: Hashable, Codable {
+    public enum NameType: Hashable, Codable, Sendable {
         case userSet
         case docuBotSet
         case automatic

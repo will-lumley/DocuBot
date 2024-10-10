@@ -124,7 +124,7 @@ private extension DocumentParser {
             print(String(format: "Progress: %.2f%%", Double(currentFile) / Double(totalFileCount) * 100))
 
             // Extract the documents content as a string file
-            guard let content = try? String(String(contentsOf: url)) else {
+            guard let content = try? String(String(contentsOf: url, encoding: .utf8)) else {
                 continue
             }
 
@@ -161,7 +161,7 @@ private extension DocumentParser {
         let chunkSize = 100
         let chunkOverlap = 20
 
-        let (chunks, tokens) = self.tokenSplitter.split(
+        let (chunks, _) = self.tokenSplitter.split(
             text: content,
             chunkSize: chunkSize,
             overlapSize: chunkOverlap

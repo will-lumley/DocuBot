@@ -12,12 +12,12 @@ public struct ProjectSettingsRecord: Record {
 
     // MARK: - Types
 
-    public enum Language: String, Hashable, Codable {
+    public enum Language: String, Hashable, Codable, Sendable {
         case english
         case espanol
     }
 
-    public enum DocumentationFormat: Hashable, Codable, CaseIterable {
+    public enum DocumentationFormat: Hashable, Codable, CaseIterable, Sendable {
         public static var allCases: [ProjectSettingsRecord.DocumentationFormat] {
             [.rtf, .txt, .html, .md]
         }

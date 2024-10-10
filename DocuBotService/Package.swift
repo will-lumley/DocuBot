@@ -1,4 +1,4 @@
-// swift-tools-version: 5.10
+// swift-tools-version: 6.0.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -7,7 +7,7 @@ let package = Package(
     name: "DocuBotService",
     defaultLocalization: "en",
     platforms: [
-        .macOS(.v14)
+        .macOS(.v15)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -20,7 +20,10 @@ let package = Package(
         .package(path: "../DocuBotToolbox"),
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
         .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.29.0"),
-        .package(url: "https://github.com/eastriverlee/LLM.swift/", branch: "pinned"),
+        .package(
+            url: "https://github.com/ShenghaiWang/SwiftLlama.git",
+            revision: "abc2dd58ae445c15ea17aa0684259dbd1c772225"
+        ),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -30,8 +33,8 @@ let package = Package(
             dependencies: [
                 "DocuBotModel",
                 "DocuBotToolbox",
+                "SwiftLlama",
 
-                .product(name: "LLM", package: "LLM.swift"),
                 .product(name: "GRDB", package: "GRDB.swift"),
             ],
             plugins: [

@@ -95,6 +95,7 @@ public extension ChatViewModel {
         self.chatText = ""
         self.loadingState = .loading
 
+        /*
         Task {
             do {
                 // Get the documents that are most relevant to this query
@@ -102,6 +103,7 @@ public extension ChatViewModel {
 
                 // Create a polished query with our relevant documents in tow
                 let formattedQuery = self.createQuery(with: documents, for: query)
+                print(formattedQuery)
 
                 // Shoot it over to the LLM
                 await self.queryGPT(with: formattedQuery)
@@ -109,6 +111,7 @@ public extension ChatViewModel {
                 fatalError(error.localizedDescription)
             }
         }
+         */
     }
 
 }
@@ -139,6 +142,7 @@ private extension ChatViewModel {
     }
 
     func insert(message: Message) {
+        /*
         Task {
             do {
                 print("Inserted Message: \(message.content)")
@@ -149,6 +153,7 @@ private extension ChatViewModel {
                 fatalError(error.localizedDescription)
             }
         }
+         */
     }
 
     func getProject(fetchDocuments: Bool) async throws -> Project {
@@ -186,6 +191,7 @@ private extension ChatViewModel {
     }
 
     func queryGPT(with message: String) async {
+        /*
         do {
             // Pull out our project
             let project = try await persistenceService.getProject(id: chat.projectID)
@@ -220,6 +226,7 @@ private extension ChatViewModel {
         } catch {
             fatalError(error.localizedDescription)
         }
+         */
     }
 
 }

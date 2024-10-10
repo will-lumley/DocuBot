@@ -12,7 +12,7 @@ public struct DocumentRecord: Record {
 
     // MARK: - Types
 
-    public struct Embedding: Hashable, Codable {
+    public struct Embedding: Hashable, Codable, Sendable {
         public let chunk: String
         public let embedding: [Float]
     }
