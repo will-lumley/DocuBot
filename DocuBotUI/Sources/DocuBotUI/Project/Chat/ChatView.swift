@@ -7,8 +7,8 @@
 
 import DocuBotViewModel
 import SFSafeSymbols
-import SwiftUI
 import SwiftfulLoadingIndicators
+import SwiftUI
 
 public struct ChatView: View {
 
@@ -76,7 +76,7 @@ public struct ChatView: View {
                                 proxy.scrollTo(ChatViewModel.LoadingState.loading, anchor: .bottom)
                             case .partial(let content):
                                 proxy.scrollTo(content, anchor: .bottom)
-                            case .none:()
+                            case .none: ()
                             }
                         }
                     }

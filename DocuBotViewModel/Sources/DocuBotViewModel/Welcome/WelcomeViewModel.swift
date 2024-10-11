@@ -13,7 +13,7 @@ import DocuBotService
 import DocuBotToolbox
 import Foundation
 
-public class WelcomeViewModel: DocuBotViewModel {
+public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
@@ -43,7 +43,7 @@ public class WelcomeViewModel: DocuBotViewModel {
 
     // MARK: - Lifecycle
 
-    public override func configureBindings() {
+    override public func configureBindings() {
         super.configureBindings()
 
         // Connect our ProjectCellViewModels to our DB layer
@@ -132,7 +132,7 @@ public extension WelcomeViewModel {
                     title: L10n.ProjectPicker.Delete.Confirmation.cancelButton,
                     role: .cancel,
                     action: { }
-                ),
+                )
             ]
         )
     }
@@ -152,16 +152,16 @@ public extension WelcomeViewModel {
     }
 
     func delete(project: Project) {
-//        Task {
-//            do {
-//                let success = try await persistenceService.delete(project: project)
-//                if success == false {
-//                    fatalError("Error: no deleting")
-//                }
-//            } catch {
-//                fatalError(error.localizedDescription)
-//            }
-//        }
+        Task {
+            do {
+                let success = try await persistenceService.delete(project: project)
+                if success == false {
+                    fatalError("Error: no deleting")
+                }
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+        }
     }
 
 }

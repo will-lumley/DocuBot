@@ -5,10 +5,10 @@
 //  Created by William Lumley on 22/7/2024.
 //
 
-import Foundation
 import DocuBotModel
+import Foundation
 
-public protocol WelcomeProjectCellViewModelDelegate {
+public protocol WelcomeProjectCellViewModelDelegate: AnyObject {
     func openProject(_ project: Project)
 }
 

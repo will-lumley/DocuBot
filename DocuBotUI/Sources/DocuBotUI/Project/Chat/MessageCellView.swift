@@ -5,19 +5,19 @@
 //  Created by William Lumley on 4/7/2024.
 //
 
-import DocuBotViewModel
-import SwiftUI
 import AppKit
+import DocuBotViewModel
 import SFSafeSymbols
+import SwiftUI
 
 public struct MessageCellView: View {
-    
+
     // MARK: - Properties
-    
+
     @StateObject var viewModel: MessageCellViewModel
-    
+
     // MARK: - View
-    
+
     public var body: some View {
         if viewModel.originIsUser {
             HStack {
@@ -31,7 +31,7 @@ public struct MessageCellView: View {
             }
         }
     }
-    
+
     var messageView: some View {
         Text(viewModel.messageContent)
             .font(.body)

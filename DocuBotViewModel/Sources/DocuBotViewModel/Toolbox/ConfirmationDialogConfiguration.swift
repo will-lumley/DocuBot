@@ -9,25 +9,25 @@ import Combine
 import Foundation
 
 public struct ConfirmationDialogConfiguration {
-    
+
     // MARK: - Types
-    
+
     public typealias OnSelect = () -> Void
-    
+
     public struct ButtonConfiguration {
-        
+
         public enum Role {
             case destructive
             case cancel
         }
-        
+
         public let title: String
         public let role: Role
         public let action: OnSelect
     }
-    
+
     // MARK: - Properties
-    
+
     public let title: String
     public let buttons: [ButtonConfiguration]
 

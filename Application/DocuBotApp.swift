@@ -36,7 +36,7 @@ struct DocuBotApp: App {
         }
         .windowResizability(.contentSize)
         .windowStyle(HiddenTitleBarWindowStyle())
-        .onChange(of: isWelcomeViewOpen) { oldValue, newValue in
+        .onChange(of: isWelcomeViewOpen) { _, newValue in
             if newValue == false {
                 // If WelcomeView is closed, reset the state
                 self.isWelcomeViewOpen = false
@@ -89,7 +89,7 @@ struct DocuBotApp: App {
             if let package {
                 ProjectSettingsView(
                     viewModel: .init(
-                        project: package.project, 
+                        project: package.project,
                         projectSettings: package.projectSettings,
                         serviceContainer: delegate.serviceContainer
                     )

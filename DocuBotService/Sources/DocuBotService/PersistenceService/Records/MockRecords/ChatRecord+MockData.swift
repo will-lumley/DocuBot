@@ -28,7 +28,7 @@ extension ChatRecord {
                 name: "Main",
                 project: 3,
                 createdAt: .now
-            ),
+            )
         ]
     }
 

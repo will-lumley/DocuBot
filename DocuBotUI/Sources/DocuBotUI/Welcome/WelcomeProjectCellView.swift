@@ -6,8 +6,8 @@
 //
 
 import DocuBotViewModel
-import SwiftUI
 import SFSafeSymbols
+import SwiftUI
 
 public struct WelcomeProjectCellView: View {
 

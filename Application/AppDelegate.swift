@@ -5,8 +5,8 @@
 //  Created by William Lumley on 4/7/2024.
 //
 
-import DocuBotService
 import AppKit
+import DocuBotService
 
 class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -32,5 +32,4 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         serviceContainer.logService.log(with: .info, "Starting application.")
     }
 
-    
 }

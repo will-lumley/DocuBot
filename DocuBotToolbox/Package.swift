@@ -13,7 +13,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotToolbox",
-            targets: ["DocuBotToolbox"]),
+            targets: ["DocuBotToolbox"])
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
@@ -33,6 +33,6 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotToolboxTests",
-            dependencies: ["DocuBotToolbox"]),
+            dependencies: ["DocuBotToolbox"])
     ]
 )

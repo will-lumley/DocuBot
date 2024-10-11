@@ -92,5 +92,4 @@ public extension Array where Element == Document {
         return hash.map { String(format: "%02x", $0) }.joined()
     }
 
-
 }

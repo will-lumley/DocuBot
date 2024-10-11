@@ -71,7 +71,7 @@ public extension ProjectSettings {
             id: record.id,
             projectID: record.project,
             supportedFormats: formats,
-            respondWithDocumentsOnly: record.respondWithDocumentsOnly, 
+            respondWithDocumentsOnly: record.respondWithDocumentsOnly,
             language: language,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt

@@ -27,21 +27,21 @@ public struct ProjectSettingsView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            
+
             Text(viewModel.title)
                 .font(.title)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding([.horizontal, .top])
-            
+
             Form {
-                
+
                 Section(viewModel.generalSectionTitle) {
-                    
+
                     LabeledContent {
                         HStack {
                             Text(viewModel.directoryText)
-                            
+
                             Button {
                                 let panel = NSOpenPanel()
                                 panel.canChooseDirectories    = true
@@ -64,9 +64,9 @@ public struct ProjectSettingsView: View {
                     } label: {
                         Text(viewModel.projectDirectoryTitle)
                     }
-                    
+
                     TextField(viewModel.projectNameTitle, text: $viewModel.projectName)
-                    
+
                     Picker(viewModel.languageTitle, selection: $viewModel.selectedLanguage) {
                         ForEach(viewModel.availableLanguages) { language in
                             Text(language.name)
@@ -74,7 +74,7 @@ public struct ProjectSettingsView: View {
                     }
                     .pickerStyle(.menu)
                 }
-                
+
                 Section(
                     content: {
                         ForEach(viewModel.formatConfigurations) { configuration in
@@ -135,7 +135,7 @@ public struct ProjectSettingsView: View {
                 )
             }
             .formStyle(GroupedFormStyle())
-            
+
             Button(viewModel.saveButtonTitle) {
                 viewModel.saveButtonSelected()
             }
@@ -145,7 +145,7 @@ public struct ProjectSettingsView: View {
         }
         .navigationTitle(viewModel.windowTitle)
         .frame(minWidth: 525, minHeight: 600)
-        
+
         // Listen to our OnDismiss listener
         .onReceive(viewModel.onDismiss) { _ in
             self.dismiss()

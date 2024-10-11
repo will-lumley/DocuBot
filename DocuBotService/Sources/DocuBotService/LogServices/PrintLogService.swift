@@ -24,7 +24,8 @@ class PrintLogService: LogService {
     // MARK: - LogService
 
     func log(with type: LogType, _ string: String) {
-        print("[DOCUBOT] \(type.name) \(string)") // swiftlint:disable:this direct_print
+        // swiftlint:disable:next direct_print
+        print("[DOCUBOT] \(type.name) \(string)")
     }
 
 }

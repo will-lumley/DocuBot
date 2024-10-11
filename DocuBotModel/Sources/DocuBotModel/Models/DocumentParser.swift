@@ -5,10 +5,10 @@
 //  Created by William Lumley on 3/10/2024.
 //
 
+import DocuBotToolbox
 import Foundation
 import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
-import DocuBotToolbox
 
 public class DocumentParser {
 
@@ -64,7 +64,9 @@ private extension DocumentParser {
 
     /// Extracts documentation files from a secured directory on disk.
     ///
-    /// This method securely accesses a directory using a previously stored bookmark, enumerates over the files in that directory, and returns an array of `Document` objects representing the documentation files found. It ensures that only valid documentation files are processed and handles stale bookmarks.
+    /// This method securely accesses a directory using a previously stored bookmark, enumerates over the files
+    /// in that directory, and returns an array of `Document` objects representing the documentation files found.
+    /// It ensures that only valid documentation files are processed and handles stale bookmarks.
     ///
     /// - Throws:
     ///   - `DocumentError.noBookmarkData` if the bookmark data for accessing the directory is missing.
@@ -119,9 +121,11 @@ private extension DocumentParser {
             }
 
             currentFile += 1
+            // swiftlint:disable direct_print
             print("File: \(url)")
             print("Progress: \(currentFile)/\(totalFileCount)")
             print(String(format: "Progress: %.2f%%", Double(currentFile) / Double(totalFileCount) * 100))
+            // swiftlint:enable direct_print
 
             // Extract the documents content as a string file
             guard let content = try? String(String(contentsOf: url, encoding: .utf8)) else {
@@ -185,7 +189,8 @@ private extension DocumentParser {
 
     /// Verifies whether the file at the provided URL has a valid documentation format.
     ///
-    /// This method checks if the file extension matches one of the allowed documentation formats specified in the user's settings.
+    /// This method checks if the file extension matches one of the allowed documentation
+    /// formats specified in the user's settings.
     ///
     /// - Parameter url: The URL of the file to validate.
     /// - Returns: A Boolean value indicating whether the file is in a valid documentation format.
@@ -204,7 +209,8 @@ private extension DocumentParser {
 
     /// Counts the number of valid documentation files in the directory at the specified URL.
     ///
-    /// This method recursively enumerates through the directory and checks each file to see if it matches one of the allowed documentation formats specified in the user's settings.
+    /// This method recursively enumerates through the directory and checks each file to see
+    /// if it matches one of the allowed documentation formats specified in the user's settings.
     ///
     /// - Parameter url: The URL of the directory to search through.
     /// - Returns: The number of valid documentation files found in the directory.

@@ -34,22 +34,22 @@ class ChatTextView: NSTextView {
         self.eventDelegate = eventDelegate
         self.setup()
     }
-    
+
     override init(frame frameRect: NSRect, textContainer container: NSTextContainer?) {
         super.init(frame: frameRect, textContainer: container)
         self.setup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         self.setup()
     }
-    
+
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.setup()
     }
-    
+
     private func setup() {
         self.usesAdaptiveColorMappingForDarkAppearance = true
         self.backgroundColor = Asset.chatTextView.color

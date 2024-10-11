@@ -1,4 +1,4 @@
-// swiftlint:disable all
+// swiftlint:disable all blanket_disable_command
 // Generated using SwiftGen — https://github.com/SwiftGen/SwiftGen
 
 #if os(macOS)

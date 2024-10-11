@@ -19,7 +19,8 @@ public class ServiceContainer {
     // MARK: - Lifecycle
 
     public init(isTesting: Bool = false) {
-        print("[DOCUBOT] [INFO] Creating ServiceContainer. Testing: \(isTesting)") // swiftlint:disable:this direct_print
+        // swiftlint:disable:next direct_print
+        print("[DOCUBOT] [INFO] Creating ServiceContainer. Testing: \(isTesting)")
         if isTesting {
             self.configureTestServices()
         } else {

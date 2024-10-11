@@ -136,11 +136,3 @@ public extension Project {
     }
 
 }
-
-// MARK: - Private
-
-private extension Project {
-
-    
-
-}

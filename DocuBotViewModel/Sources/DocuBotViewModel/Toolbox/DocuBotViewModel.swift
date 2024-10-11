@@ -6,8 +6,8 @@
 //
 
 import Combine
-import Foundation
 import DocuBotService
+import Foundation
 
 public class DocuBotViewModel: ObservableObject {
 
@@ -61,4 +61,3 @@ public class DocuBotViewModel: ObservableObject {
     }
 
 }
-

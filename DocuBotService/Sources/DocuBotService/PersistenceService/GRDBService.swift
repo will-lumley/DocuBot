@@ -6,9 +6,9 @@
 //
 
 import Combine
+import DocuBotModel
 import Foundation
 import GRDB
-import DocuBotModel
 
 class GRDBService: PersistenceService {
 
@@ -170,6 +170,8 @@ class GRDBService: PersistenceService {
             var record = MessageRecord(model: message)
             try record.insert(db)
 
+            print("Record.Content: \(record.content)")
+
             return Message(record: record)
         }
     }
@@ -202,7 +204,7 @@ class GRDBService: PersistenceService {
                 let insertedDocument = Document(record: record)
                 insertedDocuments.append(insertedDocument)
             }
-            
+
             return insertedDocuments
         }
     }
@@ -298,8 +300,9 @@ private extension GRDBService {
                 }
             }
         } catch {
+            // swiftlint:disable:next direct_print
             print("Failed to inject demo data. \(error)")
         }
     }
-    
+
 }

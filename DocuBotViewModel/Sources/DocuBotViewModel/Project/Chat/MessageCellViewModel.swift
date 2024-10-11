@@ -28,10 +28,6 @@ public class MessageCellViewModel: ObservableObject {
         self.message = message
     }
 
-    func configureBindings() {
-        
-    }
-
 }
 
 // MARK: - Public
