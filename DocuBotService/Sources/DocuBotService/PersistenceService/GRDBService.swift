@@ -170,8 +170,6 @@ class GRDBService: PersistenceService {
             var record = MessageRecord(model: message)
             try record.insert(db)
 
-            print("Record.Content: \(record.content)")
-
             return Message(record: record)
         }
     }

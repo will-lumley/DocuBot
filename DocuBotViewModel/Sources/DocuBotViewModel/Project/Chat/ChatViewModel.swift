@@ -192,7 +192,6 @@ private extension ChatViewModel {
             // Pass on our input to our GPT Service
             try await self.gptService.respond(
                 to: message,
-                from: self.chat,
                 from: project,
                 onUpdate: { newPart in
                     // Add the new bit of string to our partialMessage

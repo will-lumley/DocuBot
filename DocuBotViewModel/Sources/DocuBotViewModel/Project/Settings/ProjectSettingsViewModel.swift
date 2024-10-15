@@ -143,30 +143,33 @@ public extension ProjectSettingsViewModel {
     }
 
     var projectNameTitle: String {
-        L10n.CreateProject.Configuration.Name.title
+        L10n.CreateProject.GeneralSection.Name.title
     }
 
     var generalSectionTitle: String {
-        L10n.CreateProject.Configuration.GeneralSection.title
+        L10n.CreateProject.GeneralSection.title
     }
 
     var projectDirectoryTitle: String {
-        L10n.CreateProject.Configuration.ProjectDirectory.title
+        L10n.CreateProject.GeneralSection.Directory.title
     }
 
     var languageTitle: String {
-        L10n.CreateProject.Configuration.Language.title
+        L10n.CreateProject.GeneralSection.Language.title
     }
 
     var formatSectionTitle: String {
-        L10n.CreateProject.Configuration.FormatSection.title
+        L10n.CreateProject.FormatSection.title
     }
 
     var saveButtonTitle: String {
         L10n.ProjectSettings.saveButton
     }
 
-    func set(formatConfiguration: DocumentationFormatConfiguration, isEnabled: Bool) {
+    func set(
+        formatConfiguration: DocumentationFormatConfiguration,
+        isEnabled: Bool
+    ) {
         guard let index = formatConfigurations.firstIndex(where: { $0.id == formatConfiguration.id }) else {
             return
         }

@@ -1,5 +1,5 @@
 //
-//  CreateProjectViewModel.swift
+//  ConfigureProjectViewModel.swift
 //
 //
 //  Created by William Lumley on 14/8/2024.
@@ -10,27 +10,32 @@ import DocuBotModel
 import DocuBotService
 import Foundation
 
-public class CreateProjectViewModel: DocuBotViewModel, @unchecked Sendable {
+public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @unchecked Sendable {
 
     // MARK: - Types
 
-    actor ProjectState {
-        var projectDirectory: URL?
-        var projectName: String = ""
-        var formatConfigurations: [CreateProjectViewModel.DocumentationFormatConfiguration] = []
+    public enum HelpType {
+        case seed
+        case topK
+        case topP
+        case contextLength
+        case temperature
+        case batchSize
+        case stopSequence
+        case maxTokenCount
+    }
+
+    public enum LoadState {
+        case idle
+        case creating
+        case created
     }
 
     public enum OpenWindow {
         case project(ProjectViewModel.OpenWindowPackage)
     }
 
-    public struct OpenWindowPackage: Hashable, Codable {
-
-    }
-
-    public typealias Format = ProjectSettings.DocumentationFormat
-
-    public struct DocumentationFormatConfiguration: Identifiable {
+    public struct FormatConfiguration: Identifiable {
         public let order: Int
         public let format: Format
         public let isEnabled: Bool
@@ -40,34 +45,53 @@ public class CreateProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         }
     }
 
-    public enum LoadState {
-        case idle
-        case creating
-        case created
-    }
+    public typealias Format = ProjectSettings.DocumentationFormat
 
     // MARK: - Properties
 
-    @Published public var loadState = LoadState.idle
-    @Published public var continueButtonEnabled = false
-    @Published public var directoryText: String
-    public let availableLanguages = ProjectSettings.Language.allCases
+    public var id = UUID()
 
-    public var projectDirectoryBookmarkData: Data?
     @Published public var projectDirectory: URL?
+    @Published public var directoryText: String
     @Published public var projectName = ""
-    @Published public var formatConfigurations: [DocumentationFormatConfiguration]
     @Published public var selectedLanguage: ProjectSettings.Language
 
-    /// This will be called when we want to open a new window, along with the info that dictates which window
+    @Published public var formatConfigurations: [FormatConfiguration]
+
+    @Published public var seed: Int = 1234
+    @Published public var topK: Int = 40
+    @Published public var topP: Float = 0.9
+    @Published public var contextLength: Int = 2048
+    @Published public var temperature: Float = 0.2
+    @Published public var batchSize: Int = 2048
+    @Published public var stopSequence: String = ""
+    @Published public var maxTokenCount: Int = 1024*1024
+
+    @Published public var loadState = LoadState.idle
+    @Published public var continueButtonEnabled = false
+
+    /// The encrypted data that makes up the secure directory bookmark
+    public var projectDirectoryBookmarkData: Data?
+
+    /// All the languages available for the user to choose from
+    public let availableLanguages = ProjectSettings.Language.allCases
+
+    /// This will be called to open a new window, along with the info that dictates which window
     @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
 
-    /// This will be called when this ViewModel wants the UI layer to close/dismiss the current window
+    /// This will be called when this ViewModel wants the UI layer to close the current window
     @Published public var onDismiss = PassthroughSubject<Void, Never>()
+
+    /// This is used to create or close an `Alert`
+    @Published public var alertConfiguration: AlertConfiguration?
+
+    @Published public var helpConfiguration: HelpConfiguration?
 
     // MARK: - Lifecycle
 
-    override public init(serviceContainer: ServiceContainer) {
+    override public init(
+        serviceContainer: ServiceContainer
+    ) {
         self.directoryText = L10n.CreateProject.Configuration.Directory.select
         self.selectedLanguage = .english
 
@@ -83,7 +107,8 @@ public class CreateProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     override public func configureBindings() {
         super.configureBindings()
 
-        // If there's even one "true"/checked format, then we'll enable the Continue Button
+        // If there's even one "true"/checked format, then
+        // we'll enable the Continue Button
         let formatValidation = self.$formatConfigurations
             .map { $0.map { $0.isEnabled } } // Map it into an array of `Bool`s
             .map { $0.contains(true) }       // Check if there's even one `true`
@@ -123,7 +148,7 @@ public class CreateProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
 // MARK: - Public
 
-public extension CreateProjectViewModel {
+public extension ConfigureProjectViewModel {
 
     var windowTitle: String {
         L10n.CreateProject.windowTitle
@@ -134,30 +159,41 @@ public extension CreateProjectViewModel {
     }
 
     var projectNameTitle: String {
-        L10n.CreateProject.Configuration.Name.title
+        L10n.CreateProject.GeneralSection.Name.title
     }
 
+    // MARK: General Section
+
     var generalSectionTitle: String {
-        L10n.CreateProject.Configuration.GeneralSection.title
+        L10n.CreateProject.GeneralSection.title
+    }
+
+    var generalSectionSubtitle: String {
+        L10n.CreateProject.GeneralSection.subtitle
     }
 
     var projectDirectoryTitle: String {
-        L10n.CreateProject.Configuration.ProjectDirectory.title
+        L10n.CreateProject.GeneralSection.Directory.title
     }
 
     var languageTitle: String {
-        L10n.CreateProject.Configuration.Language.title
+        L10n.CreateProject.GeneralSection.Language.title
     }
+
+    // MARK: Format Section
 
     var formatSectionTitle: String {
-        L10n.CreateProject.Configuration.FormatSection.title
+        L10n.CreateProject.FormatSection.title
     }
 
-    var createProjectButtonTitle: String {
-        L10n.CreateProject.createButton
+    var formatSectionSubtitle: String {
+        L10n.CreateProject.FormatSection.subtitle
     }
 
-    func set(formatConfiguration: DocumentationFormatConfiguration, isEnabled: Bool) {
+    func set(
+        formatConfiguration: FormatConfiguration,
+        isEnabled: Bool
+    ) {
         guard let index = formatConfigurations.firstIndex(where: { $0.id == formatConfiguration.id }) else {
             return
         }
@@ -165,7 +201,7 @@ public extension CreateProjectViewModel {
         let oldConfiguration = self.formatConfigurations[index]
 
         // We only want to flip the `isEnabled`
-        let newConfiguration = DocumentationFormatConfiguration(
+        let newConfiguration = FormatConfiguration(
             order: oldConfiguration.order,
             format: oldConfiguration.format,
             isEnabled: isEnabled
@@ -174,7 +210,10 @@ public extension CreateProjectViewModel {
         self.formatConfigurations[index] = newConfiguration
     }
 
-    func update(formatConfiguration: DocumentationFormatConfiguration, otherStr: String) {
+    func update(
+        formatConfiguration: FormatConfiguration,
+        otherStr: String
+    ) {
         guard let index = formatConfigurations.firstIndex(where: { $0.id == formatConfiguration.id }) else {
             return
         }
@@ -191,7 +230,7 @@ public extension CreateProjectViewModel {
         let format = Format.other(formattedOtherStr)
 
         // We only want to update the `format`
-        let newConfiguration = DocumentationFormatConfiguration(
+        let newConfiguration = FormatConfiguration(
             order: oldConfiguration.order,
             format: format,
             isEnabled: oldConfiguration.isEnabled
@@ -210,7 +249,7 @@ public extension CreateProjectViewModel {
         )
     }
 
-    func remove(formatConfiguration: DocumentationFormatConfiguration) {
+    func remove(formatConfiguration: FormatConfiguration) {
         // We only want to remove `other` formats
         guard formatConfiguration.format.isOther else {
             return
@@ -221,6 +260,58 @@ public extension CreateProjectViewModel {
         }
 
         self.formatConfigurations.remove(at: index)
+    }
+
+    // MARK: Advanced Section
+
+    var advancedSectionTitle: String {
+        L10n.CreateProject.AdvancedSection.title
+    }
+
+    var advancedSectionSubitle: String {
+        L10n.CreateProject.AdvancedSection.subtitle
+    }
+
+    var seedTitle: String {
+        L10n.CreateProject.AdvancedSection.seed
+    }
+
+    var topKTitle: String {
+        L10n.CreateProject.AdvancedSection.topK
+    }
+
+    var topPTitle: String {
+        L10n.CreateProject.AdvancedSection.topP
+    }
+
+    var contextLengthTitle: String {
+        L10n.CreateProject.AdvancedSection.contextLength
+    }
+
+    var temperatureTitle: String {
+        L10n.CreateProject.AdvancedSection.temperature
+    }
+
+    var batchSizeTitle: String {
+        L10n.CreateProject.AdvancedSection.batchSize
+    }
+
+    var stopSequenceTitle: String {
+        L10n.CreateProject.AdvancedSection.stopSequence
+    }
+
+    var maxTokenCountTitle: String {
+        L10n.CreateProject.AdvancedSection.maxTokenCount
+    }
+
+    var resetDefaultButtonTitle: String {
+        L10n.CreateProject.AdvancedSection.resetDefaults
+    }
+
+    // MARK: Other
+
+    var createProjectButtonTitle: String {
+        L10n.CreateProject.createButton
     }
 
     func createProjectButtonSelected() {
@@ -274,18 +365,38 @@ public extension CreateProjectViewModel {
                     )
                 }
             } catch {
-                fatalError(error.localizedDescription)
+                self.alertConfiguration = .init(
+                    title: L10n.CreateProject.Error.FailedToCreate.title,
+                    message: error.localizedDescription
+                )
             }
         }
+    }
+
+    func helpButtonSelected(with type: HelpType) {
+        self.helpConfiguration = .init(type: type) {
+            self.helpConfiguration = nil
+        }
+    }
+
+    func resetDefaultValuesButtonSelected() {
+        self.seed = 1234
+        self.topK = 40
+        self.topP = 0.9
+        self.contextLength = 2048
+        self.temperature = 0.2
+        self.batchSize = 2048
+        self.stopSequence = ""
+        self.maxTokenCount = 1024*1024
     }
 
 }
 
 // MARK: - Preview
 
-public extension CreateProjectViewModel {
+public extension ConfigureProjectViewModel {
 
-    static var mock: CreateProjectViewModel {
+    static var mock: ConfigureProjectViewModel {
         .init(
             serviceContainer: .mock
         )

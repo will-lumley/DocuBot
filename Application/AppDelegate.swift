@@ -30,6 +30,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = serviceContainer.gptService
         serviceContainer.logService.log(with: .info, "Starting application.")
+
+        NSWindow.allowsAutomaticWindowTabbing = false
     }
 
 }

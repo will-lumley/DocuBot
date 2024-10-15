@@ -157,5 +157,5 @@ public struct ProjectSettingsView: View {
 // MARK: - Preview
 
 #Preview {
-    ProjectView(viewModel: .mock)
+    LegacyProjectView(viewModel: .mock)
 }
