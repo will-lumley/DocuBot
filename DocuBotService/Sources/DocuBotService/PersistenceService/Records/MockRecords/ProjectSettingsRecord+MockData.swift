@@ -44,6 +44,14 @@ extension ProjectSettingsRecord {
         supportedFormats: [DocumentationFormat] = DocumentationFormat.allCases,
         respondWithDocumentsOnly: Bool = false,
         language: Language = .english,
+        seed: Int = 1024,
+        topK: Int = 40,
+        topP: Double = 0.2,
+        contextLength: Int = 100,
+        temperature: Double = 0.2,
+        batchSize: Int = 1024,
+        stopSequence: String? = nil,
+        maxTokenCount: Int = 1024,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) -> ProjectSettingsRecord {
@@ -53,6 +61,14 @@ extension ProjectSettingsRecord {
             supportedFormats: supportedFormats,
             respondWithDocumentsOnly: respondWithDocumentsOnly,
             language: language,
+            seed: seed,
+            topK: topK,
+            topP: topP,
+            contextLength: contextLength,
+            temperature: temperature,
+            batchSize: batchSize,
+            stopSequence: stopSequence,
+            maxTokenCount: maxTokenCount,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

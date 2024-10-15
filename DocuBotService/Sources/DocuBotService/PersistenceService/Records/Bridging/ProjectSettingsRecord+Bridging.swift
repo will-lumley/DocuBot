@@ -22,6 +22,14 @@ public extension ProjectSettingsRecord {
             supportedFormats: formats,
             respondWithDocumentsOnly: model.respondWithDocumentsOnly,
             language: language,
+            seed: model.seed,
+            topK: model.topK,
+            topP: model.topP,
+            contextLength: model.contextLength,
+            temperature: model.temperature,
+            batchSize: model.batchSize,
+            stopSequence: model.stopSequence,
+            maxTokenCount: model.maxTokenCount,
             createdAt: model.createdAt,
             updatedAt: model.updatedAt
         )
@@ -73,6 +81,14 @@ public extension ProjectSettings {
             supportedFormats: formats,
             respondWithDocumentsOnly: record.respondWithDocumentsOnly,
             language: language,
+            seed: record.seed,
+            topK: record.topK,
+            topP: record.topP,
+            contextLength: record.contextLength,
+            temperature: record.temperature,
+            batchSize: record.batchSize,
+            stopSequence: record.stopSequence,
+            maxTokenCount: record.maxTokenCount,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt
         )

@@ -5,6 +5,7 @@
 //  Created by William Lumley on 25/8/2024.
 //
 
+/*
 import DocuBotViewModel
 import SFSafeSymbols
 import SwiftUI
@@ -100,3 +101,4 @@ public struct LegacyProjectView: View {
 #Preview {
     LegacyProjectView(viewModel: .mock)
 }
+*/

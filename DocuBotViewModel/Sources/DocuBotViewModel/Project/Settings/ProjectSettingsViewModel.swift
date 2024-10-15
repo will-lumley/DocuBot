@@ -237,50 +237,50 @@ public extension ProjectSettingsViewModel {
 
     func saveButtonSelected() {
         Task {
-            guard let projectID = self.project.id else {
-                return
-            }
-            guard let projectDirectory = self.projectDirectory else {
-                return
-            }
+//            guard let projectID = self.project.id else {
+//                return
+//            }
+//            guard let projectDirectory = self.projectDirectory else {
+//                return
+//            }
+//
+//            let supportedFormats = self.formatConfigurations
+//                .filter { $0.isEnabled }
+//                .map(\.format)
+//
+//            let project = Project(
+//                id: self.project.id,
+//                path: projectDirectory.path(),
+//                name: self.projectName,
+//                isDirty: false,
+//                urlBookmarkData: self.projectDirectoryBookmarkData,
+//                urlBookmarkDataIsStale: false,
+//                createdAt: self.project.createdAt,
+//                updatedAt: .now
+//            )
 
-            let supportedFormats = self.formatConfigurations
-                .filter { $0.isEnabled }
-                .map(\.format)
-
-            let project = Project(
-                id: self.project.id,
-                path: projectDirectory.path(),
-                name: self.projectName,
-                isDirty: false,
-                urlBookmarkData: self.projectDirectoryBookmarkData,
-                urlBookmarkDataIsStale: false,
-                createdAt: self.project.createdAt,
-                updatedAt: .now
-            )
-
-            let settings = ProjectSettings(
-                id: self.projectSettings.id,
-                projectID: projectID,
-                supportedFormats: supportedFormats,
-                respondWithDocumentsOnly: false,
-                language: self.selectedLanguage,
-                createdAt: self.projectSettings.createdAt,
-                updatedAt: .now
-            )
-
-            do {
-                // Update the DB
-                try await persistenceService.update(projectSettings: settings)
-                try await persistenceService.update(project: project)
-
-                // Close this window
-                DispatchQueue.main.async {
-                    self.onDismiss.send(())
-                }
-            } catch {
-                fatalError(error.localizedDescription)
-            }
+//            let settings = ProjectSettings(
+//                id: self.projectSettings.id,
+//                projectID: projectID,
+//                supportedFormats: supportedFormats,
+//                respondWithDocumentsOnly: false,
+//                language: self.selectedLanguage,
+//                createdAt: self.projectSettings.createdAt,
+//                updatedAt: .now
+//            )
+//
+//            do {
+//                // Update the DB
+//                try await persistenceService.update(projectSettings: settings)
+//                try await persistenceService.update(project: project)
+//
+//                // Close this window
+//                DispatchQueue.main.async {
+//                    self.onDismiss.send(())
+//                }
+//            } catch {
+//                fatalError(error.localizedDescription)
+//            }
         }
     }
 
@@ -307,6 +307,14 @@ public extension ProjectSettingsViewModel {
                 supportedFormats: [.rtf, .html],
                 respondWithDocumentsOnly: true,
                 language: .english,
+                seed: 100,
+                topK: 100,
+                topP: 100,
+                contextLength: 100,
+                temperature: 100,
+                batchSize: 100,
+                stopSequence: "model.stopSequence",
+                maxTokenCount: 100,
                 createdAt: .now,
                 updatedAt: .now
             ),

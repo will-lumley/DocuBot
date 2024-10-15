@@ -5,6 +5,7 @@
 //  Created by William Lumley on 14/8/2024.
 //
 
+/*
 import Combine
 import DocuBotModel
 import DocuBotService
@@ -239,3 +240,4 @@ public extension ChatViewModel {
     }
 
 }
+*/
