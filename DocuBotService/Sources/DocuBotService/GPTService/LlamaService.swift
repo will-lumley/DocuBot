@@ -22,13 +22,20 @@ class LlamaService: GPTService {
     // MARK: - Properties
 
     /// Our interface to llama.cpp
-    private let llama: SwiftLlama
+    private var llama: SwiftLlama?
 
     // MARK: - Lifecycle
 
     init() {
+
+    }
+
+    // MARK: - GPTService
+
+    func prime(with settings: ProjectSettings) {
+        let modelName = "llama-2-7b-chat.Q5_K_S"
         guard let modelPath = Bundle.main.path(
-            forResource: "llama-2-7b-chat.Q5_K_S",
+            forResource: modelName,
             ofType: "gguf"
         ) else {
             fatalError("Failed to find model")
@@ -36,39 +43,36 @@ class LlamaService: GPTService {
 
         // Create our LLM
         do {
-            let configuration = Configuration()
-            self.llama = try SwiftLlama(modelPath: modelPath, modelConfiguration: configuration)
+            // Create the configuration from the settings
+            let configuration = Configuration(settings: settings)
+
+            // Create our LLM
+            self.llama = try SwiftLlama(
+                modelPath: modelPath,
+                modelConfiguration: configuration
+            )
         } catch {
             fatalError("Failed to create LLM. \(error)")
         }
-    }
 
-    // MARK: - GPTService
+    }
 
     func respond(
         to query: String,
-        from project: Project,
-        onUpdate: @escaping OutputUpdated,
-        onComplete: @escaping OutputComplete
-    ) async throws {
+        with systemMessage: String,
+        onUpdate: OutputUpdated?
+    ) async throws -> String {
+        guard let llama else {
+            fatalError()
+        }
+
         // Create our prompt
         let prompt = Prompt(
             type: .llama3,
-            systemPrompt: self.systemMessage,
+            systemPrompt: systemMessage,
             userMessage: query,
             history: []
         )
-
-        /*
-         chat.messages.map { message in
-             switch message.author {
-             case .docubot:
-                 return .init(user: "", bot: message.content)
-             case .user:
-                 return .init(user: message.content, bot: "")
-             }
-         }
-         */
 
         // We'll keep an eye on how many newlines there are
         // so we can stop the AI from spamming \n
@@ -78,7 +82,7 @@ class LlamaService: GPTService {
         var output = ""
 
         // Iterate over every value we have
-        for try await value in await self.llama.start(for: prompt) {
+        for try await value in await llama.start(for: prompt) {
             // Strip the null terminators from the string
             let formattedValue = value.replacingOccurrences(of: "\0", with: "")
 
@@ -92,7 +96,7 @@ class LlamaService: GPTService {
 
             // Send out the update to the caller
             Task {
-                await onUpdate(formattedValue)
+                await onUpdate?(formattedValue)
             }
 
             // If we're a newline, update the newline count
@@ -101,27 +105,24 @@ class LlamaService: GPTService {
             }
         }
 
-        // We've left the for loop, so we're done here
-        Task {
-            await onComplete(output.trimmingTrailingNewlines())
-        }
+        return output.trimmingTrailingNewlines()
     }
 
 }
 
-// MARK: - Private
+private extension Configuration {
 
-private extension LlamaService {
-
-    var systemMessage: String {
-        """
-        You are a helpful assistant named DocuBot.
-        DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries.
-        You have been trained on a directory that contains the relevant documentation.
-        You are expected to answer the user's questions to their code base.
-        You should only respond to user messages and not repeat or continue your own previous responses.
-        Do not reply to this message.
-        """
+    init(settings: ProjectSettings) {
+        self.init(
+            seed: settings.seed,
+            topK: settings.topK,
+            topP: Float(settings.topP),
+            nCTX: settings.contextLength,
+            temperature: Float(settings.temperature),
+            batchSize: settings.batchSize,
+            stopSequence: settings.stopSequence,
+            maxTokenCount: settings.maxTokenCount
+        )
     }
 
 }

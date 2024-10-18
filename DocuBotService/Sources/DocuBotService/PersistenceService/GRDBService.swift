@@ -71,6 +71,18 @@ class GRDBService: PersistenceService {
         }
     }
 
+    func getProject(id: Int64) -> AnyPublisher<Project, Never> {
+        return ValueObservation.tracking { db in
+            let request = ProjectRecord.filter(Column("id") == id)
+            return try ProjectRecord.fetchOne(db, request)
+        }
+        .publisher(in: self.dbQueue)
+        .replaceError(with: nil)
+        .compactMap { $0 }
+        .map(Project.init)
+        .eraseToAnyPublisher()
+    }
+
     func getProjects() -> AnyPublisher<[Project], Error> {
         return ValueObservation.tracking { db in
             try ProjectRecord.fetchAll(db)

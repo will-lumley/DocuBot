@@ -27,7 +27,6 @@ let package = Package(
             name: "DocuBotModel",
             dependencies: [
                 "DocuBotToolbox",
-                // "SimilaritySearchKit",
                 .product(name: "SimilaritySearchKit", package: "similarity-search-kit"),
                 .product(name: "SimilaritySearchKitDistilbert", package: "similarity-search-kit"),
                 .product(name: "SimilaritySearchKitMiniLMMultiQA", package: "similarity-search-kit"),

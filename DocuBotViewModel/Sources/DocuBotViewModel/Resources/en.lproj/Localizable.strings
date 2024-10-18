@@ -15,84 +15,103 @@
 "Welcome.Error.FailedToDelete.title" = "Failed to Delete Project";
 "Welcome.Error.FailedToDelete.message" = "DocuBot failed to delete the project. Please try again.";
 
+"EmbeddingModel.Distilbert.title" = "Distilbert";
+"EmbeddingModel.MiniLme.title" = "Mini LME";
+"EmbeddingModel.MultiQaMiniLme.title" = "Multi QA Mini LME";
 
-"CreateProject.formTitle" = "Create your new project";
-"CreateProject.windowTitle" = "Create Project";
+"SimilarityMetric.Cosine.title" = "Cosine";
+"SimilarityMetric.DotProduct.title" = "Dot Product";
+"SimilarityMetric.EuclideanDistance.title" = "Euclidean Distance";
 
-"CreateProject.GeneralSection.title" = "General";
-"CreateProject.GeneralSection.subtitle" = "Tell us a bit about your project.";
-"CreateProject.GeneralSection.Name.title" = "Project Name";
-"CreateProject.GeneralSection.Directory.title" = "Project Directory";
-"CreateProject.Configuration.Directory.select" = "Select a Directory";
-"CreateProject.GeneralSection.Language.title" = "Language";
-"CreateProject.GeneralSection.Language.english" = "English";
-"CreateProject.GeneralSection.Language.espanol" = "Español";
+"ConfigureProject.formTitle" = "Create your new project";
+"ConfigureProject.windowTitle" = "Create Project";
 
-"CreateProject.FormatSection.title" = "What format is your documentation in?";
-"CreateProject.FormatSection.subtitle" = "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.";
-"CreateProject.FormatSection.Format.txt" = ".txt";
-"CreateProject.FormatSection.Format.md" = ".md";
-"CreateProject.FormatSection.Format.rtf" = ".rtf";
-"CreateProject.FormatSection.Format.html" = ".html";
-"CreateProject.FormatSection.Format.other" = "Other";
-"CreateProject.FormatSection.Format.addFormatButton" = "Add Custom Format";
+"ConfigureProject.GeneralSection.title" = "General";
+"ConfigureProject.GeneralSection.subtitle" = "Tell us a bit about your project.";
+"ConfigureProject.GeneralSection.Name.title" = "Project Name";
+"ConfigureProject.GeneralSection.Directory.title" = "Project Directory";
+"ConfigureProject.Configuration.Directory.select" = "Select a Directory";
+"ConfigureProject.GeneralSection.Language.title" = "Language";
+"ConfigureProject.GeneralSection.Language.english" = "English";
+"ConfigureProject.GeneralSection.Language.espanol" = "Español";
 
-"CreateProject.AdvancedSection.seed" = "Seed";
-"CreateProject.AdvancedSection.topK" = "Top K";
-"CreateProject.AdvancedSection.topP" = "Top P";
-"CreateProject.AdvancedSection.contextLength" = "Context Length";
-"CreateProject.AdvancedSection.temperature" = "Temperature";
-"CreateProject.AdvancedSection.batchSize" = "Batch Size";
-"CreateProject.AdvancedSection.stopSequence" = "Stop Sequence";
-"CreateProject.AdvancedSection.maxTokenCount" = "Maximum Token Count";
-"CreateProject.AdvancedSection.resetDefaults" = "Reset Default Values";
+"ConfigureProject.FormatSection.title" = "What format is your documentation in?";
+"ConfigureProject.FormatSection.subtitle" = "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.";
+"ConfigureProject.FormatSection.Format.txt" = ".txt";
+"ConfigureProject.FormatSection.Format.md" = ".md";
+"ConfigureProject.FormatSection.Format.rtf" = ".rtf";
+"ConfigureProject.FormatSection.Format.html" = ".html";
+"ConfigureProject.FormatSection.Format.other" = "Other";
+"ConfigureProject.FormatSection.Format.addFormatButton" = "Add Custom Format";
 
-"CreateProject.Help.Seed.title" = "What does seed do?";
-"CreateProject.Help.Seed.content" = "The seed value is used to initialise the random number generator, which influences how the model generates text.\n\nBy setting a seed, you ensure that the generation process is deterministic - running the same input with the same seed will result in the same output. This is useful for reproducibility.";
+"ConfigureProject.AdvancedSection.seed" = "Seed";
+"ConfigureProject.AdvancedSection.topK" = "Top K";
+"ConfigureProject.AdvancedSection.topP" = "Top P";
+"ConfigureProject.AdvancedSection.contextLength" = "Context Length";
+"ConfigureProject.AdvancedSection.temperature" = "Temperature";
+"ConfigureProject.AdvancedSection.batchSize" = "Batch Size";
+"ConfigureProject.AdvancedSection.stopSequence" = "Stop Sequence";
+"ConfigureProject.AdvancedSection.maxTokenCount" = "Maximum Token Count";
+"ConfigureProject.AdvancedSection.resetDefaults" = "Reset Default Values";
 
-"CreateProject.Help.TopK.title" = "What does top-k do?";
-"CreateProject.Help.TopK.content" = "Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).\n\nBy default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred.";
+"ConfigureProject.AdvancedSection.systemPrompt" = "System Prompt";
+"ConfigureProject.AdvancedSection.embeddingModel" = "Embedding Model";
+"ConfigureProject.AdvancedSection.similarityMetric" = "Similarity Metric";
 
-"CreateProject.Help.TopP.title" = "What does top-p do?";
-"CreateProject.Help.TopP.content" = "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation.";
+"ConfigureProject.AdvancedSection.SystemPrompt.default" = "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base.";
 
-"CreateProject.Help.ContextLength.title" = "What does context length do?";
-"CreateProject.Help.ContextLength.content" = "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.";
+"ConfigureProject.Help.SystemPrompt.title" = "What does system prompt do?";
+"ConfigureProject.Help.SystemPrompt.content" = "A system message provides background context or guidance to the model to help it generate appropriate responses.\n\nIt defines the model’s role, tone, and behavior. For example, a system message might instruct the model to act as a helpful assistant, limiting its answers to a specific knowledge domain.";
 
-"CreateProject.Help.Temperature.title" = "What does temperature do?";
-"CreateProject.Help.Temperature.content" = "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens.";
+"ConfigureProject.Help.EmbeddingModel.title" = "What does the embedding model do?";
+"ConfigureProject.Help.EmbeddingModel.content" = "An embedding model transforms input data (like text) into numerical vectors that represent the semantic meaning of the data.\n\nThese embeddings are used to measure relationships and similarities between different pieces of content, allowing the model to understand the context and meaning of the input.\n\nDistilBERT is a small version of the BERT model that has been fine tuned for question & answers.\nMiniLM All, is a smaller model, but it is much faster.\nMulti-QA MiniLM is a small & fast model that has been fine tuned for question & answering.";
 
-"CreateProject.Help.BatchSize.title" = "What does batch size do?";
-"CreateProject.Help.BatchSize.content" = "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.";
+"ConfigureProject.Help.SimilarityMetric.title" = "What does the similarity metric do?";
+"ConfigureProject.Help.SimilarityMetric.content" = "A similarity metric is a mathematical function used to compare the embeddings of two pieces of data.\n\nIt helps quantify how closely related two inputs are. Common similarity metrics include cosine similarity, which measures the angle between two vectors, and Euclidean distance, which measures the straight-line distance between them.";
 
-"CreateProject.Help.StopSequence.title" = "What does stop sequence do?";
-"CreateProject.Help.StopSequence.content" = "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition.";
+"ConfigureProject.Help.Seed.title" = "What does seed do?";
+"ConfigureProject.Help.Seed.content" = "The seed value is used to initialise the random number generator, which influences how the model generates text.\n\nBy setting a seed, you ensure that the generation process is deterministic - running the same input with the same seed will result in the same output. This is useful for reproducibility.";
 
-"CreateProject.Help.MaxTokenCount.title" = "What does max token count do?";
-"CreateProject.Help.MaxTokenCount.content" = "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.";
+"ConfigureProject.Help.TopK.title" = "What does top-k do?";
+"ConfigureProject.Help.TopK.content" = "Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).\n\nBy default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred.";
 
-"CreateProject.createButton" = "Create Project";
-"CreateProject.Error.FailedToCreate.title" = "Failed to Create Project";
+"ConfigureProject.Help.TopP.title" = "What does top-p do?";
+"ConfigureProject.Help.TopP.content" = "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation.";
 
-"CreateProject.AdvancedSection.title" = "Advanced Configuration";
-"CreateProject.AdvancedSection.subtitle" = "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.";
+"ConfigureProject.Help.ContextLength.title" = "What does context length do?";
+"ConfigureProject.Help.ContextLength.content" = "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.";
 
+"ConfigureProject.Help.Temperature.title" = "What does temperature do?";
+"ConfigureProject.Help.Temperature.content" = "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens.";
 
-"Project.EmptyChat.title" = "No Chats";
-"Project.EmptyChat.subtitle" = "Create a chat with the button below to get started";
+"ConfigureProject.Help.BatchSize.title" = "What does batch size do?";
+"ConfigureProject.Help.BatchSize.content" = "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.";
 
-"Project.EmptyMessages.title" = "No Messages";
-"Project.EmptyMessages.subtitle" = "Type something into the textfield below to get started";
-"Project.Delete.Confirmation.title" = "Are you sure you want to delete this chat?";
-"Project.Delete.Confirmation.deleteButton" = "Delete this Chat";
-"Project.Delete.Confirmation.cancelButton" = "Cancel";
-"Project.NewChat.defaultTitle" = "New Chat";
-"Project.Chat.NothingSelected.title" = "No chat selected";
+"ConfigureProject.Help.StopSequence.title" = "What does stop sequence do?";
+"ConfigureProject.Help.StopSequence.content" = "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition.";
+
+"ConfigureProject.Help.MaxTokenCount.title" = "What does max token count do?";
+"ConfigureProject.Help.MaxTokenCount.content" = "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.";
+
+"ConfigureProject.createButton" = "Create Project";
+"ConfigureProject.Error.FailedToCreate.title" = "Failed to Create Project";
+
+"ConfigureProject.AdvancedSection.title" = "Advanced Configuration";
+"ConfigureProject.AdvancedSection.subtitle" = "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.";
+
+"Project.SyncStage.ExtractingDocuments.title" = "Reading documents from disk";
+"Project.SyncStage.ExtractingDocuments.subtitle" = "This shouldn't take too long.";
+"Project.SyncStage.TrainingDocuments.title" = "DocuBot is studying %@ 🙇‍♂️";
+"Project.SyncStage.TrainingDocuments.subtitle" = "We've gone through %@ out of %@ documents. Sit tight!";
+"Project.SyncStage.BuildingQuestions.title" = "Building some example questions for you 💡";
+"Project.SyncStage.BuildingQuestions.subtitle" = "We've made %@ out of %@ questions. Not long now!";
+
 "Project.ChatContextMenu.rename" = "Rename";
 "Project.ChatContextMenu.delete" = "Delete";
-"Project.LlmQueryPrompt.template" = "Given the following extracted parts of a long document and a question, create a final answer with references (\"SOURCES\").
-            If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-            ALWAYS return a \"SOURCES\" part in your answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:";
+
+"Project.LlmExampleQuestionPrompt.systemMessage" = "You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.\nWhen asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.\nRemember: do not include phrases like \"I hope this helps\" or \"Let me know if you need anything else.\" Focus only on delivering the requested content without deviation.";
+"Project.LlmExampleQuestionPrompt.prompt" = "Here is an excerpt from a file.\n\n%@\n\nBased on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.";
+ "Project.LlmQueryPrompt.template" = "Given the following extracted parts of a long document and a question, create a final answer. If you don't know the answer, just say that you don't know. Don't try to make up an answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:";
 "Project.queryTitle" = "Ask any question about your project.";
 
 "ProjectSettings.windowTitle" = "Project Settings";

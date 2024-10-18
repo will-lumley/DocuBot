@@ -202,6 +202,40 @@ public struct ConfigureProjectView: View {
 
     private var advancedSection: some View {
         Section {
+            // EmbeddingModel
+            LabeledContent {
+                Picker("", selection: $viewModel.embeddingModel) {
+                    ForEach(
+                        viewModel.availableEmbeddingModels, id: \.self
+                    ) { model in
+                        Text(model.title)
+                    }
+                }
+            } label: {
+                HStack {
+                    HelpButton {
+                        viewModel.helpButtonSelected(with: .embeddingModel)
+                    }
+                    Text(viewModel.embeddingModelTitle)
+                }
+            }
+
+            // SimilarityMetric
+            LabeledContent {
+                Picker("", selection: $viewModel.similarityMetric) {
+                    ForEach(viewModel.availableSimilarityMetrics, id: \.self) { model in
+                        Text(model.title)
+                    }
+                }
+            } label: {
+                HStack {
+                    HelpButton {
+                        viewModel.helpButtonSelected(with: .similarityMetric)
+                    }
+                    Text(viewModel.similarityMetricTitle)
+                }
+            }
+
             // Seed
             LabeledContent {
                 TextField(
@@ -329,6 +363,17 @@ public struct ConfigureProjectView: View {
                 }
             }
 
+            // SystemPrompt
+            LabeledContent {
+                TextField("", text: $viewModel.systemPrompt)
+            } label: {
+                HStack {
+                    HelpButton {
+                        viewModel.helpButtonSelected(with: .systemPrompt)
+                    }
+                    Text(viewModel.systemPromptTitle)
+                }
+            }
         } header: {
             Text(viewModel.advancedSectionTitle)
                 .font(.headline)

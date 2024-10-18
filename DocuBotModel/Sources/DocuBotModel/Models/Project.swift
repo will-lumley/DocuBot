@@ -54,6 +54,9 @@ public struct Project: Hashable, Codable, Sendable {
     /// Will be `nil` until `loadChats(chats:)` is called.
     public var chats: [Chat]?
 
+    /// An array of example questions that are relevant to this Project.
+    public var exampleQuestions: [String]
+
     /// When this project was created
     public let createdAt: Date
 
@@ -69,6 +72,7 @@ public struct Project: Hashable, Codable, Sendable {
         isDirty: Bool,
         urlBookmarkData: Data?,
         urlBookmarkDataIsStale: Bool,
+        exampleQuestions: [String],
         createdAt: Date,
         updatedAt: Date
     ) {
@@ -78,6 +82,7 @@ public struct Project: Hashable, Codable, Sendable {
         self.isDirty = isDirty
         self.urlBookmarkData = urlBookmarkData
         self.urlBookmarkDataIsStale = urlBookmarkDataIsStale
+        self.exampleQuestions = exampleQuestions
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -104,15 +109,18 @@ public extension Project {
         self.documents = documents
     }
 
-    func fetchRelevantDocumentation(for query: String) async throws -> [SimilarityIndex.SearchResult] {
+    func fetchRelevantDocumentation(
+        for query: String,
+        with settings: ProjectSettings
+    ) async throws -> [SimilarityIndex.SearchResult] {
         guard let documents = self.documents else {
             throw Project.DocumentFetchError.noDocumentsFound
         }
 
         // Create our index
         let similarityIndex = await SimilarityIndex(
-            model: DistilbertEmbeddings(),
-            metric: CosineSimilarity()
+            model: settings.embeddingModel.embeddingsProtocol,
+            metric: settings.similarityMetric.metricProtocol
         )
 
         // Add each document to our index

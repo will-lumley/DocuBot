@@ -3,22 +3,4 @@
    uuid = "F5641CA8-A07F-4432-A1DD-68018DB71AF2"
    type = "0"
    version = "2.0">
-   <Breakpoints>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "ECBA5078-DEBB-4233-83C0-2116B05B70F7"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../../../../../Library/Developer/Xcode/DerivedData/DocuBot-dktjunbgtjdqzidzkkbsnvuuyvdj/SourcePackages/checkouts/similarity-search-kit/Sources/SimilaritySearchKit/Core/Embeddings/Splitters/TokenSplitter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
-            landmarkName = "split(text:chunkSize:overlapSize:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-   </Breakpoints>
 </Bucket>

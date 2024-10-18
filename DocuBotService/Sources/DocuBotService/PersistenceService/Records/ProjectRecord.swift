@@ -17,6 +17,7 @@ public struct ProjectRecord: Record {
     public let name: String
     public let urlBookmarkData: Data?
     public let urlBookmarkDataIsStale: Bool
+    public var exampleQuestions: [String]
     public let createdAt: Date
     public let updatedAt: Date
 

@@ -19,6 +19,7 @@ public extension ProjectRecord {
             name: model.name,
             urlBookmarkData: model.urlBookmarkData,
             urlBookmarkDataIsStale: model.urlBookmarkDataIsStale,
+            exampleQuestions: model.exampleQuestions,
             createdAt: model.createdAt,
             updatedAt: model.updatedAt
         )
@@ -38,6 +39,7 @@ public extension Project {
             isDirty: false,
             urlBookmarkData: record.urlBookmarkData,
             urlBookmarkDataIsStale: record.urlBookmarkDataIsStale,
+            exampleQuestions: record.exampleQuestions,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt
         )

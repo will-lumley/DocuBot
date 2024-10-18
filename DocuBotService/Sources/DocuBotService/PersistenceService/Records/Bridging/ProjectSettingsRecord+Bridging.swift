@@ -13,8 +13,16 @@ import Foundation
 public extension ProjectSettingsRecord {
 
     init(model: ProjectSettings) {
-        let formats = model.supportedFormats.map(ProjectSettingsRecord.DocumentationFormat.init)
         let language = ProjectSettingsRecord.Language(model: model.language)
+        let formats = model.supportedFormats.map {
+            ProjectSettingsRecord.DocumentationFormat(model: $0)
+        }
+        let embeddingModel = ProjectSettingsRecord.EmbeddingModel(
+            model: model.embeddingModel
+        )
+        let similarityMetric = ProjectSettingsRecord.SimilarityMetric(
+            model: model.similarityMetric
+        )
 
         self.init(
             id: model.id,
@@ -22,6 +30,9 @@ public extension ProjectSettingsRecord {
             supportedFormats: formats,
             respondWithDocumentsOnly: model.respondWithDocumentsOnly,
             language: language,
+            systemPrompt: model.systemPrompt,
+            embeddingModel: embeddingModel,
+            similarityMetric: similarityMetric,
             seed: model.seed,
             topK: model.topK,
             topP: model.topP,
@@ -67,6 +78,30 @@ public extension ProjectSettingsRecord.Language {
 
 }
 
+public extension ProjectSettingsRecord.EmbeddingModel {
+
+    init(model: ProjectSettings.EmbeddingModel) {
+        switch model {
+        case .distilbert: self = .distilbert
+        case .miniLmAll: self = .miniLmAll
+        case .multiQaMiniLm: self = .multiQaMiniLm
+        }
+    }
+
+}
+
+public extension ProjectSettingsRecord.SimilarityMetric {
+
+    init(model: ProjectSettings.SimilarityMetric) {
+        switch model {
+        case .cosine: self = .cosine
+        case .dotProduct: self = .dotProduct
+        case .euclideanDistance: self = .euclideanDistance
+        }
+    }
+
+}
+
 // MARK: - Model
 
 public extension ProjectSettings {
@@ -75,12 +110,22 @@ public extension ProjectSettings {
         let formats = record.supportedFormats.map(ProjectSettings.DocumentationFormat.init)
         let language = ProjectSettings.Language(record: record.language)
 
+        let embeddingModel = ProjectSettings.EmbeddingModel(
+            record: record.embeddingModel
+        )
+        let similarityMetric = ProjectSettings.SimilarityMetric(
+            record: record.similarityMetric
+        )
+
         self.init(
             id: record.id,
             projectID: record.project,
             supportedFormats: formats,
             respondWithDocumentsOnly: record.respondWithDocumentsOnly,
             language: language,
+            systemPrompt: record.systemPrompt,
+            embeddingModel: embeddingModel,
+            similarityMetric: similarityMetric,
             seed: record.seed,
             topK: record.topK,
             topP: record.topP,
@@ -121,6 +166,30 @@ public extension ProjectSettings.Language {
         switch record {
         case .english: self = .english
         case .espanol: self = .espanol
+        }
+    }
+
+}
+
+public extension ProjectSettings.EmbeddingModel {
+
+    init(record: ProjectSettingsRecord.EmbeddingModel) {
+        switch record {
+        case .distilbert: self = .distilbert
+        case .miniLmAll: self = .miniLmAll
+        case .multiQaMiniLm: self = .multiQaMiniLm
+        }
+    }
+
+}
+
+public extension ProjectSettings.SimilarityMetric {
+
+    init(record: ProjectSettingsRecord.SimilarityMetric) {
+        switch record {
+        case .cosine: self = .cosine
+        case .dotProduct: self = .dotProduct
+        case .euclideanDistance: self = .euclideanDistance
         }
     }
 
