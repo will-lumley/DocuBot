@@ -138,60 +138,6 @@ class GRDBService: PersistenceService {
         }
     }
 
-    // MARK: Chats
-
-    func getChats(for project: Project) -> AnyPublisher<[Chat], Error> {
-        return ValueObservation.tracking { db in
-            let request = ChatRecord.filter(Column("project") == project.id)
-            return try ChatRecord.fetchAll(db, request)
-        }
-            .publisher(in: self.dbQueue)
-            .map { $0.map(Chat.init) }
-            .eraseToAnyPublisher()
-    }
-
-    func insert(chat: Chat) async throws -> Chat {
-        return try await self.dbQueue.write { db in
-            var record = ChatRecord(model: chat)
-            try record.insert(db)
-
-            return Chat(record: record)
-        }
-    }
-
-    func delete(chat: Chat) async throws -> Bool {
-        try await self.dbQueue.write { db in
-            try ChatRecord.deleteOne(db, id: chat.id)
-        }
-    }
-
-    func update(chat: Chat) async throws {
-        try await self.dbQueue.write { db in
-            try ChatRecord(model: chat).update(db)
-        }
-    }
-
-    // MARK: Messages
-
-    func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error> {
-        return ValueObservation.tracking { db in
-            let request = MessageRecord.filter(Column("chat") == chat.id)
-            return try MessageRecord.fetchAll(db, request)
-        }
-            .publisher(in: self.dbQueue)
-            .map { $0.map(Message.init) }
-            .eraseToAnyPublisher()
-    }
-
-    func insert(message: Message) async throws -> Message {
-        return try await self.dbQueue.write { db in
-            var record = MessageRecord(model: message)
-            try record.insert(db)
-
-            return Message(record: record)
-        }
-    }
-
     // MARK: Documents
 
     func getDocuments(ids: [Int64]) async throws -> [Document] {
@@ -302,19 +248,6 @@ private extension GRDBService {
                 }
             }
 
-            // Import all the chats
-            try self.dbQueue.write { db in
-                for var record in ChatRecord.mocks() {
-                    try record.insert(db)
-                }
-            }
-
-            // Import all the messages
-            try self.dbQueue.write { db in
-                for var record in MessageRecord.mocks() {
-                    try record.insert(db)
-                }
-            }
         } catch {
             // swiftlint:disable:next direct_print
             print("Failed to inject demo data. \(error)")
