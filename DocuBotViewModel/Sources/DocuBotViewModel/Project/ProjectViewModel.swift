@@ -338,11 +338,6 @@ private extension ProjectViewModel {
             with: settings
         )
 
-        for result in results {
-            print("Result: \(result)")
-            print("")
-        }
-
         return results
             .prefix(3)
             .map(\.text)

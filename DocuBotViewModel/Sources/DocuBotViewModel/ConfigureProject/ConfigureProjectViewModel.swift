@@ -29,6 +29,18 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case maxTokenCount
     }
 
+    public enum FormValidationError: LocalizedError {
+        case missingDirectory
+        case missingName
+        case missingFormat
+        case missingSeed
+        case missingTopK
+        case missingContextLength
+        case missingBatchSize
+        case missingMaxTokenCount
+        case missingSystemPrompt
+    }
+
     public enum OpenWindow {
         case project(ProjectViewModel.OpenWindowPackage)
     }
@@ -84,8 +96,6 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var batchSize: Int
     @Published public var stopSequence: String?
     @Published public var maxTokenCount: Int
-
-    @Published public var continueButtonEnabled = false
 
     /// The encrypted data that makes up the secure directory bookmark
     public var projectDirectoryBookmarkData: Data?
@@ -192,21 +202,6 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     override public func configureBindings() {
         super.configureBindings()
-
-        // If there's even one "true"/checked format, then
-        // we'll enable the Continue Button
-        let formatValidation = self.$formatConfigurations
-            .map { $0.map { $0.isEnabled } } // Map it into an array of `Bool`s
-            .map { $0.contains(true) }       // Check if there's even one `true`
-
-        // The directory cannot be nil
-        let directoryValidation = self.$projectDirectory
-            .map { $0 != nil }
-
-        // Combine the validation publishers
-        Publishers.CombineLatest(formatValidation, directoryValidation)
-            .map { $0 && $1 } // All validations must be met
-            .assign(to: &$continueButtonEnabled)
 
         // When the directory is updated, update the name
         self.$projectDirectory
@@ -421,6 +416,9 @@ public extension ConfigureProjectViewModel {
     func createProjectButtonSelected() {
         Task {
             do {
+                // Ensure we have a valid form
+                try self.checkFormValidation()
+
                 // Insert the Project into the DB
                 let project = try self.finalisedProject()
                 let inserted = try await self.persist(project: project)
@@ -601,6 +599,56 @@ private extension ConfigureProjectViewModel {
         }
     }
 
+    func checkFormValidation() throws(FormValidationError) {
+        // Check our project directory
+        if self.projectDirectory == nil {
+            throw .missingDirectory
+        }
+
+        // Check our project name
+        if self.projectName.isEmpty {
+            throw .missingName
+        }
+
+        // Check that we have at least one single valid format
+        let formatValidation = self.formatConfigurations
+            .map { $0.isEnabled }
+            .contains(true)
+        if formatValidation == false {
+            throw .missingFormat
+        }
+
+        // Check our seed
+        if self.seed <= 0 {
+            throw .missingSeed
+        }
+
+        // Check our TopK
+        if self.topK <= 0 {
+            throw .missingTopK
+        }
+
+        // Check our ContextLength
+        if self.contextLength <= 0 {
+            throw .missingContextLength
+        }
+
+        // Check our BatchSize
+        if self.batchSize <= 0 {
+            throw .missingBatchSize
+        }
+
+        // Check our MaxTokenCount
+        if self.maxTokenCount <= 0 {
+            throw .missingMaxTokenCount
+        }
+
+        // Check our SystemPrompt
+        if self.systemPrompt.isEmpty {
+            throw .missingSystemPrompt
+        }
+    }
+
 }
 
 // MARK: - ConfigurationError
@@ -611,6 +659,35 @@ public extension ConfigureProjectViewModel.ConfigurationError {
         switch self {
         case .noDirectory:
             return L10n.Error.ConfigureProject.ConfigurationError.noDirectory
+        }
+    }
+
+}
+
+// MARK: - FormValidationError
+
+public extension ConfigureProjectViewModel.FormValidationError {
+    
+    var errorDescription: String? {
+        switch self {
+        case .missingName:
+            return L10n.Error.ConfigureProject.FormValidation.missingName
+        case .missingFormat:
+            return L10n.Error.ConfigureProject.FormValidation.missingFormat
+        case .missingSeed:
+            return L10n.Error.ConfigureProject.FormValidation.missingSeed
+        case .missingTopK:
+            return L10n.Error.ConfigureProject.FormValidation.missingTopK
+        case .missingContextLength:
+            return L10n.Error.ConfigureProject.FormValidation.missingContextLength
+        case .missingBatchSize:
+            return L10n.Error.ConfigureProject.FormValidation.missingBatchSize
+        case .missingMaxTokenCount:
+            return L10n.Error.ConfigureProject.FormValidation.missingMaxTokenCount
+        case .missingSystemPrompt:
+            return L10n.Error.ConfigureProject.FormValidation.missingSystemPrompt
+        case .missingDirectory:
+            return L10n.Error.ConfigureProject.FormValidation.missingDirectory
         }
     }
 

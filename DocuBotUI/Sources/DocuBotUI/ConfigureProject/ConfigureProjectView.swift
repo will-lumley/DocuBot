@@ -48,7 +48,6 @@ public struct ConfigureProjectView: View {
             }
             .buttonStyle(BorderedProminentButtonStyle())
             .padding()
-            .disabled(viewModel.continueButtonEnabled == false)
         }
         .frame(minWidth: 475, minHeight: 600)
 
