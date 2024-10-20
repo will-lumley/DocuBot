@@ -61,7 +61,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             do {
                 // Prime our LLM with our settings
                 let settings = try await self.getProjectSettings()
-                gptService.prime(with: settings)
+                try gptService.prime(with: settings)
             } catch {
                 await MainActor.run {
                     self.alertConfiguration = .init(
@@ -246,15 +246,21 @@ private extension ProjectViewModel {
 
                         completedQuestions += 1
 
-                        let systemMessage = L10n.Project.LlmExampleQuestionPrompt.systemMessage
-                        return try? await self.gptService.respond(to: prompt, with: systemMessage, onUpdate: nil)
+                        let question = try? await self.gptService.respond(
+                            to: prompt,
+                            with: settings.systemPrompt,
+                            onUpdate: nil
+                        )
+                        logService.log(with: .info, "Built question: \(String(describing: question))")
+
+                        return question
                     }
                     .compactMap(\.self)
                     .map { $0.replacingOccurrences(of: "Question: ", with: " ") }
                     .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
 
                 // Update the project properties
-                DispatchQueue.main.async {
+                DispatchQueue.main.sync {
                     self.project.documentationChecksum = result.checksum
                     self.project.exampleQuestions = exampleQuestions
                 }
@@ -281,7 +287,7 @@ private extension ProjectViewModel {
     }
 
     func persistProject() async throws {
-        _ = try await persistenceService.update(project: project)
+        _ = try await persistenceService.update(project: self.project)
     }
 
     func persist(documents: [Document]) async throws {
@@ -293,7 +299,9 @@ private extension ProjectViewModel {
 
         // Insert all the new ones
         let persisted = try await persistenceService.insert(documents: documents)
-        self.project.load(documents: persisted)
+        await MainActor.run {
+            self.project.load(documents: persisted)
+        }
     }
 
     func getProject(fetchDocuments: Bool) async throws -> Project {

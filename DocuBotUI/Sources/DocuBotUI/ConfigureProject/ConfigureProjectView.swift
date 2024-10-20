@@ -83,7 +83,7 @@ public struct ConfigureProjectView: View {
             // Project Directory
             LabeledContent {
                 HStack {
-                    Text(viewModel.directoryText)
+                    Text(viewModel.projectDirectoryText)
                         .truncationMode(.middle)
                         .frame(maxWidth: 245, alignment: .trailing)
                         .lineLimit(1)
@@ -96,17 +96,7 @@ public struct ConfigureProjectView: View {
                         panel.canChooseFiles          = false
                         panel.begin { response in
                             if response == .OK {
-                                guard let url = panel.urls.first else {
-                                    return
-                                }
-                                let bookmarkData = try? url.bookmarkData(
-                                    options: .securityScopeAllowOnlyReadAccess,
-                                    includingResourceValuesForKeys: nil,
-                                    relativeTo: nil
-                                )
-
-                                viewModel.projectDirectoryBookmarkData = bookmarkData
-                                viewModel.projectDirectory = url
+                                viewModel.directorySelected(panel.urls.first)
                             }
                         }
                     } label: {

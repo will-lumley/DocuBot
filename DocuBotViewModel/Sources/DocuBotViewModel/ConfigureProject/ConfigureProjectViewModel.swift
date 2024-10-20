@@ -66,7 +66,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     public let projectInfo: ProjectInfo?
 
     @Published public var projectDirectory: URL?
-    @Published public var directoryText: String
+    @Published public var projectDirectoryText = ""
     @Published public var projectName = ""
     @Published public var selectedLanguage: ProjectSettings.Language
 
@@ -117,12 +117,13 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         projectInfo: ProjectInfo? = nil,
         serviceContainer: ServiceContainer
     ) {
+        // If we're modifying an existing project/settings
         if let projectInfo {
-            let directory = URL(fileURLWithPath: projectInfo.project.path)
             self.projectInfo = projectInfo
-            self.projectDirectory = directory
+
+            self.projectDirectory = URL(fileURLWithPath: projectInfo.project.path)
+            self.projectName = projectInfo.project.name
             self.selectedLanguage = projectInfo.settings.language
-            self.directoryText = directory.lastPathComponent
 
             var formatConfigurations = Format.allCases
                 .enumerated()
@@ -155,11 +156,13 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.batchSize = projectInfo.settings.batchSize
             self.stopSequence = projectInfo.settings.stopSequence
             self.maxTokenCount = projectInfo.settings.maxTokenCount
-        } else {
-            self.projectInfo = nil
+        }
 
-            self.directoryText = L10n.ConfigureProject.Configuration.Directory.select
+        // This is a brand new project/settings
+        else {
+            self.projectInfo = nil
             self.selectedLanguage = .english
+            self.projectDirectoryText = L10n.ConfigureProject.Configuration.Directory.select
 
             self.formatConfigurations = Format.allCases
                 .enumerated()
@@ -205,26 +208,10 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             .map { $0 && $1 } // All validations must be met
             .assign(to: &$continueButtonEnabled)
 
-        // When the directory is updated
-        self.$projectDirectory
-            .map { directory in
-                // If the directory exists, return the path
-                if let directory {
-                    return directory.path()
-                }
-
-                // Return the placeholder text if there's no directory
-                else {
-                    return L10n.ConfigureProject.Configuration.Directory.select
-                }
-            }
-            .assign(to: &$directoryText)
-
         // When the directory is updated, update the name
         self.$projectDirectory
-            .compactMap { $0 }
-            .map { $0.lastPathComponent }
-            .assign(to: &$projectName)
+            .compactMap { $0?.path() }
+            .assign(to: &$projectDirectoryText)
     }
 
 }
@@ -242,10 +229,6 @@ public extension ConfigureProjectViewModel {
        }
     }
 
-    var projectNameTitle: String {
-        L10n.ConfigureProject.GeneralSection.Name.title
-    }
-
     // MARK: General Section
 
     var generalSectionTitle: String {
@@ -254,6 +237,10 @@ public extension ConfigureProjectViewModel {
 
     var generalSectionSubtitle: String {
         L10n.ConfigureProject.GeneralSection.subtitle
+    }
+
+    var projectNameTitle: String {
+        L10n.ConfigureProject.GeneralSection.Name.title
     }
 
     var projectDirectoryTitle: String {
@@ -406,6 +393,22 @@ public extension ConfigureProjectViewModel {
 
     // MARK: Other
 
+    func directorySelected(_ directory: URL?) {
+        guard let directory else {
+            return
+        }
+
+        let bookmarkData = try? directory.bookmarkData(
+            options: .securityScopeAllowOnlyReadAccess,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        )
+
+        self.projectDirectory = directory
+        self.projectDirectoryBookmarkData = bookmarkData
+        self.projectName = directory.lastPathComponent
+    }
+
     var createProjectButtonTitle: String {
         switch self.configureType {
         case .creating:
@@ -532,6 +535,7 @@ private extension ConfigureProjectViewModel {
         // We're modifying an existing project
         if let projectInfo = self.projectInfo {
             return ProjectSettings(
+                id: projectInfo.settings.id,
                 projectID: projectInfo.settings.projectID,
                 supportedFormats: supportedFormats,
                 respondWithDocumentsOnly: false,
