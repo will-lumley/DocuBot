@@ -162,7 +162,7 @@ public extension Project.ProjectError {
 
 }
 
-// MARK: - ProjectError
+// MARK: - DocumentFetchError
 
 public extension Project.DocumentFetchError {
 

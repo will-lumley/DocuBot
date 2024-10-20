@@ -13,6 +13,14 @@ public struct Document: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
+    public enum DocumentError: LocalizedError {
+        case missingID
+    }
+
+    public enum ChecksumGenerationError: LocalizedError {
+        case failedConversion
+    }
+
     public struct Embedding: Hashable, Codable, Sendable {
         public let chunk: String
         public let embedding: [Float]
@@ -21,10 +29,6 @@ public struct Document: Hashable, Codable, Sendable {
             self.chunk = chunk
             self.embedding = embedding
         }
-    }
-
-    public enum ChecksumGenerationError: LocalizedError {
-        case failedConversion
     }
 
     // MARK: - Properties
@@ -89,6 +93,19 @@ public extension Array where Element == Document {
         }
 
         return checksum
+    }
+
+}
+
+// MARK: - DocumentError
+
+public extension Document.DocumentError {
+
+    var errorDescription: String? {
+        switch self {
+        case .missingID:
+            return L10n.Error.Document.missingID
+        }
     }
 
 }

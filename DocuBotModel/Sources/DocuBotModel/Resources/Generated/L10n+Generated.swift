@@ -25,6 +25,8 @@ internal enum L10n {
       internal static let bookmarkIsStale = L10n.tr("Localizable", "Error.Document.bookmarkIsStale", fallback: "Bookmark is stale. Please try syncing again.")
       /// Failed to generate a checksum for document.
       internal static let checksumGeneration = L10n.tr("Localizable", "Error.Document.checksumGeneration", fallback: "Failed to generate a checksum for document.")
+      /// Failed to perform the operation due to missing document ID.
+      internal static let missingID = L10n.tr("Localizable", "Error.Document.missingID", fallback: "Failed to perform the operation due to missing document ID.")
       /// No bookmark data found. Please try syncing again.
       internal static let noBookmarkData = L10n.tr("Localizable", "Error.Document.noBookmarkData", fallback: "No bookmark data found. Please try syncing again.")
     }
