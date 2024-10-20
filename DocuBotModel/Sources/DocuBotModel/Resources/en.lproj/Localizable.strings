@@ -1,1 +1,9 @@
+"Error.Project.missingID" = "Failed to perform the operation due to missing project ID.";
+"Error.Project.DocumentFetch.noDocumentsFound" = "Failed to fetch documents as no documents found for the project.";
+"Error.Project.DocumentFetch.noIndexing" = "Failed to perform the operation as document indexing has not been completed.";
+
+"Error.Document.noBookmarkData" = "No bookmark data found. Please try syncing again.";
+"Error.Document.bookmarkIsStale" = "Bookmark is stale. Please try syncing again.";
+"Error.Document.checksumGeneration" = "Failed to generate a checksum for document.";
+
 "Document.LlmReference.template" = "SOURCES: %@\n%@";

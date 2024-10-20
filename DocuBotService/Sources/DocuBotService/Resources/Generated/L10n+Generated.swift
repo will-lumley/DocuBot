@@ -10,6 +10,12 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
+  internal enum Error {
+    internal enum Persistence {
+      /// Failed to find value.
+      internal static let valueNotFound = L10n.tr("Localizable", "Error.Persistence.valueNotFound", fallback: "Failed to find value.")
+    }
+  }
   internal enum Log {
     internal enum LogType {
       /// [ERROR]

@@ -44,12 +44,15 @@ public struct ProjectView: View {
                 .keyboardShortcut(",", modifiers: .command)
         }
 
-        // Listen to our OnOpen listener
-        .onReceive(viewModel.onOpen) { open in
-            switch open {
-            case .settings(let package):
-                self.openWindow(value: package)
-            }
+        .sheet(item: $viewModel.configureProjectViewModel) { viewModel in
+            ConfigureProjectView(viewModel: viewModel)
+        }
+
+        .alert(item: $viewModel.alertConfiguration) { configuration in
+            Alert(
+                title: Text(configuration.title),
+                message: Text(configuration.message)
+            )
         }
 
         .navigationTitle(viewModel.windowTitle)
@@ -61,6 +64,7 @@ public struct ProjectView: View {
             Text(viewModel.queryTitle)
                 .font(.title)
                 .bold()
+                .padding()
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
@@ -86,10 +90,12 @@ public struct ProjectView: View {
             .cornerRadius(35)
             .padding(.horizontal)
 
-            Text(viewModel.responseText)
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .multilineTextAlignment(.leading)
+            ScrollView {
+                Text(viewModel.responseText)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+            }
         }
         .disabled(viewModel.syncStage != nil)
         .blur(radius: (viewModel.syncStage != nil) ? 3 : 0)

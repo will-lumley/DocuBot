@@ -50,7 +50,6 @@ public struct ConfigureProjectView: View {
             .padding()
             .disabled(viewModel.continueButtonEnabled == false)
         }
-        .navigationTitle(viewModel.windowTitle)
         .frame(minWidth: 475, minHeight: 600)
 
         // Listen to our OnDismiss listener

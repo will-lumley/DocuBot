@@ -11,12 +11,6 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
   internal enum ConfigureProject {
-    /// Create Project
-    internal static let createButton = L10n.tr("Localizable", "ConfigureProject.createButton", fallback: "Create Project")
-    /// Create your new project
-    internal static let formTitle = L10n.tr("Localizable", "ConfigureProject.formTitle", fallback: "Create your new project")
-    /// Create Project
-    internal static let windowTitle = L10n.tr("Localizable", "ConfigureProject.windowTitle", fallback: "Create Project")
     internal enum AdvancedSection {
       /// Batch Size
       internal static let batchSize = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.batchSize", fallback: "Batch Size")
@@ -57,11 +51,17 @@ internal enum L10n {
         internal static let select = L10n.tr("Localizable", "ConfigureProject.Configuration.Directory.select", fallback: "Select a Directory")
       }
     }
-    internal enum Error {
-      internal enum FailedToCreate {
-        /// Failed to Create Project
-        internal static let title = L10n.tr("Localizable", "ConfigureProject.Error.FailedToCreate.title", fallback: "Failed to Create Project")
-      }
+    internal enum Creating {
+      /// Create Project
+      internal static let createButton = L10n.tr("Localizable", "ConfigureProject.Creating.createButton", fallback: "Create Project")
+      /// Create your new project
+      internal static let formTitle = L10n.tr("Localizable", "ConfigureProject.Creating.formTitle", fallback: "Create your new project")
+    }
+    internal enum Editing {
+      /// Update Project
+      internal static let createButton = L10n.tr("Localizable", "ConfigureProject.Editing.createButton", fallback: "Update Project")
+      /// Update your project
+      internal static let formTitle = L10n.tr("Localizable", "ConfigureProject.Editing.formTitle", fallback: "Update your project")
     }
     internal enum FormatSection {
       /// We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.
@@ -214,6 +214,48 @@ internal enum L10n {
       internal static let title = L10n.tr("Localizable", "EmbeddingModel.MultiQaMiniLme.title", fallback: "Multi QA Mini LME")
     }
   }
+  internal enum Error {
+    internal enum ConfigureProject {
+      internal enum ConfigurationError {
+        /// No directory selected.
+        internal static let noDirectory = L10n.tr("Localizable", "Error.ConfigureProject.ConfigurationError.noDirectory", fallback: "No directory selected.")
+      }
+      internal enum Creating {
+        internal enum FailedToCreate {
+          /// Failed to Create Project
+          internal static let title = L10n.tr("Localizable", "Error.ConfigureProject.Creating.FailedToCreate.title", fallback: "Failed to Create Project")
+        }
+      }
+      internal enum Editing {
+        internal enum FailedToCreate {
+          /// Failed to Update Project
+          internal static let title = L10n.tr("Localizable", "Error.ConfigureProject.Editing.FailedToCreate.title", fallback: "Failed to Update Project")
+        }
+      }
+    }
+    internal enum Project {
+      internal enum FailedToExtractSettings {
+        /// Failed to get Project Settings
+        internal static let title = L10n.tr("Localizable", "Error.Project.FailedToExtractSettings.title", fallback: "Failed to get Project Settings")
+      }
+      internal enum FailedToSync {
+        /// Failed to Sync
+        internal static let title = L10n.tr("Localizable", "Error.Project.FailedToSync.title", fallback: "Failed to Sync")
+      }
+      internal enum GptTalk {
+        /// Failed to get communicate with the LLM
+        internal static let title = L10n.tr("Localizable", "Error.Project.GptTalk.title", fallback: "Failed to get communicate with the LLM")
+      }
+    }
+    internal enum Welcome {
+      internal enum FailedToDelete {
+        /// DocuBot failed to delete the project. Please try again.
+        internal static let message = L10n.tr("Localizable", "Error.Welcome.FailedToDelete.message", fallback: "DocuBot failed to delete the project. Please try again.")
+        /// Failed to Delete Project
+        internal static let title = L10n.tr("Localizable", "Error.Welcome.FailedToDelete.title", fallback: "Failed to Delete Project")
+      }
+    }
+  }
   internal enum Project {
     /// Ask any question about your project.
     internal static let queryTitle = L10n.tr("Localizable", "Project.queryTitle", fallback: "Ask any question about your project.")
@@ -322,14 +364,6 @@ internal enum L10n {
         internal static let deleteButton = L10n.tr("Localizable", "Welcome.Delete.Confirmation.deleteButton", fallback: "Delete this Project")
         /// Are you sure you want to delete this project?
         internal static let title = L10n.tr("Localizable", "Welcome.Delete.Confirmation.title", fallback: "Are you sure you want to delete this project?")
-      }
-    }
-    internal enum Error {
-      internal enum FailedToDelete {
-        /// DocuBot failed to delete the project. Please try again.
-        internal static let message = L10n.tr("Localizable", "Welcome.Error.FailedToDelete.message", fallback: "DocuBot failed to delete the project. Please try again.")
-        /// Failed to Delete Project
-        internal static let title = L10n.tr("Localizable", "Welcome.Error.FailedToDelete.title", fallback: "Failed to Delete Project")
       }
     }
     internal enum ProjectContextMenu {

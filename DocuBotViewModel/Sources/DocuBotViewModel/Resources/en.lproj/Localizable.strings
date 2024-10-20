@@ -1,3 +1,12 @@
+"Error.Welcome.FailedToDelete.title" = "Failed to Delete Project";
+"Error.Welcome.FailedToDelete.message" = "DocuBot failed to delete the project. Please try again.";
+"Error.ConfigureProject.Creating.FailedToCreate.title" = "Failed to Create Project";
+"Error.ConfigureProject.Editing.FailedToCreate.title" = "Failed to Update Project";
+"Error.ConfigureProject.ConfigurationError.noDirectory" = "No directory selected.";
+"Error.Project.FailedToSync.title" = "Failed to Sync";
+"Error.Project.FailedToExtractSettings.title" = "Failed to get Project Settings";
+"Error.Project.GptTalk.title" = "Failed to get communicate with the LLM";
+
 "Welcome.title" = "Welcome to DocuBot";
 "Welcome.subtitle1" = "Developed by William Lumley";
 "Welcome.subtitle2" = "v%@(%@)";
@@ -12,8 +21,6 @@
 "Welcome.ProjectContextMenu.open" = "Open";
 "Welcome.ProjectContextMenu.delete" = "Delete";
 "Welcome.ProjectContextMenu.showInFinder" = "Show in Finder";
-"Welcome.Error.FailedToDelete.title" = "Failed to Delete Project";
-"Welcome.Error.FailedToDelete.message" = "DocuBot failed to delete the project. Please try again.";
 
 "EmbeddingModel.Distilbert.title" = "Distilbert";
 "EmbeddingModel.MiniLme.title" = "Mini LME";
@@ -23,8 +30,8 @@
 "SimilarityMetric.DotProduct.title" = "Dot Product";
 "SimilarityMetric.EuclideanDistance.title" = "Euclidean Distance";
 
-"ConfigureProject.formTitle" = "Create your new project";
-"ConfigureProject.windowTitle" = "Create Project";
+"ConfigureProject.Creating.formTitle" = "Create your new project";
+"ConfigureProject.Editing.formTitle" = "Update your project";
 
 "ConfigureProject.GeneralSection.title" = "General";
 "ConfigureProject.GeneralSection.subtitle" = "Tell us a bit about your project.";
@@ -93,8 +100,8 @@
 "ConfigureProject.Help.MaxTokenCount.title" = "What does max token count do?";
 "ConfigureProject.Help.MaxTokenCount.content" = "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.";
 
-"ConfigureProject.createButton" = "Create Project";
-"ConfigureProject.Error.FailedToCreate.title" = "Failed to Create Project";
+"ConfigureProject.Creating.createButton" = "Create Project";
+"ConfigureProject.Editing.createButton" = "Update Project";
 
 "ConfigureProject.AdvancedSection.title" = "Advanced Configuration";
 "ConfigureProject.AdvancedSection.subtitle" = "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.";

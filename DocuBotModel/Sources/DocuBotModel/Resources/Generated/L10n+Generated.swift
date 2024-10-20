@@ -19,6 +19,26 @@ internal enum L10n {
       }
     }
   }
+  internal enum Error {
+    internal enum Document {
+      /// Bookmark is stale. Please try syncing again.
+      internal static let bookmarkIsStale = L10n.tr("Localizable", "Error.Document.bookmarkIsStale", fallback: "Bookmark is stale. Please try syncing again.")
+      /// Failed to generate a checksum for document.
+      internal static let checksumGeneration = L10n.tr("Localizable", "Error.Document.checksumGeneration", fallback: "Failed to generate a checksum for document.")
+      /// No bookmark data found. Please try syncing again.
+      internal static let noBookmarkData = L10n.tr("Localizable", "Error.Document.noBookmarkData", fallback: "No bookmark data found. Please try syncing again.")
+    }
+    internal enum Project {
+      /// Failed to perform the operation due to missing project ID.
+      internal static let missingID = L10n.tr("Localizable", "Error.Project.missingID", fallback: "Failed to perform the operation due to missing project ID.")
+      internal enum DocumentFetch {
+        /// Failed to fetch documents as no documents found for the project.
+        internal static let noDocumentsFound = L10n.tr("Localizable", "Error.Project.DocumentFetch.noDocumentsFound", fallback: "Failed to fetch documents as no documents found for the project.")
+        /// Failed to perform the operation as document indexing has not been completed.
+        internal static let noIndexing = L10n.tr("Localizable", "Error.Project.DocumentFetch.noIndexing", fallback: "Failed to perform the operation as document indexing has not been completed.")
+      }
+    }
+  }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces

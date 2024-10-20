@@ -9,8 +9,15 @@ import Combine
 import DocuBotModel
 import Foundation
 
-public enum PersistenceError: Error {
+public enum PersistenceError: LocalizedError {
     case valueNotFound
+
+    public var errorDescription: String? {
+        switch self {
+        case .valueNotFound:
+            return L10n.Error.Persistence.valueNotFound
+        }
+    }
 }
 
 public protocol PersistenceService: Service {
@@ -20,11 +27,11 @@ public protocol PersistenceService: Service {
     func getProject(id: Int64) -> AnyPublisher<Project, Never>
     func getProjects() -> AnyPublisher<[Project], Error>
     func delete(project: Project) async throws -> Bool
-    func update(project: Project) async throws
+    func update(project: Project) async throws -> Project
 
     func insert(settings: ProjectSettings) async throws -> ProjectSettings
     func getProjectSettings(for project: Project) async throws -> ProjectSettings
-    func update(projectSettings: ProjectSettings) async throws
+    func update(settings: ProjectSettings) async throws -> ProjectSettings
 
     func getDocuments(ids: [Int64]) async throws -> [Document]
     func getDocuments(for project: Project) async throws -> [Document]

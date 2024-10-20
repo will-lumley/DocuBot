@@ -13,7 +13,11 @@ public struct Project: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
-    public enum DocumentFetchError: Error {
+    public enum ProjectError: LocalizedError {
+        case missingID
+    }
+
+    public enum DocumentFetchError: LocalizedError {
         case noDocumentsFound
         case noIndexing
     }
@@ -141,6 +145,34 @@ public extension Project {
 
         let results = await similarityIndex.search(query)
         return results
+    }
+
+}
+
+// MARK: - ProjectError
+
+public extension Project.ProjectError {
+
+    var errorDescription: String? {
+        switch self {
+        case .missingID:
+            return L10n.Error.Project.missingID
+        }
+    }
+
+}
+
+// MARK: - ProjectError
+
+public extension Project.DocumentFetchError {
+
+    var errorDescription: String? {
+        switch self {
+        case .noDocumentsFound:
+            return L10n.Error.Project.DocumentFetch.noDocumentsFound
+        case .noIndexing:
+            return L10n.Error.Project.DocumentFetch.noIndexing
+        }
     }
 
 }

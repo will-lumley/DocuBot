@@ -73,21 +73,6 @@ struct DocuBotApp: App {
             }
         }
         .windowResizability(.contentSize)
-
-        // This is our ProjectSettings window
-        WindowGroup(for: ProjectSettingsViewModel.OpenWindowPackage.self) { $package in
-            if let package {
-                ProjectSettingsView(
-                    viewModel: .init(
-                        project: package.project,
-                        projectSettings: package.projectSettings,
-                        serviceContainer: delegate.serviceContainer
-                    )
-                )
-            }
-        }
-        .windowResizability(.contentSize)
-
     }
 
     private func focusWelcomeWindow() {

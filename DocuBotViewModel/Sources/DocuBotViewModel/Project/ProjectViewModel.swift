@@ -14,10 +14,6 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
-    public enum OpenWindow {
-        case settings(ProjectSettingsViewModel.OpenWindowPackage)
-    }
-
     /// This is a struct that contains the information used to open this view
     /// (ie. the `ProjectView`) itself.
     public struct OpenWindowPackage: Hashable, Codable {
@@ -39,9 +35,6 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Properties
 
-    /// This will be called when we want to open a new window, along with the info that dictates which window
-    @MainActor @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
-
     @Published public var chatText = "What is the difference between the SIT and Demo environment?"
     @Published public var responseText = ""
 
@@ -52,6 +45,11 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     @Published public var syncStage: SyncStage?
 
     @Published public var questionViewModels = [ProjectQuestionViewModel]()
+
+    @Published public var configureProjectViewModel: ConfigureProjectViewModel?
+
+    /// This is used to create or close an `Alert`
+    @Published public var alertConfiguration: AlertConfiguration?
 
     // MARK: - Lifecycle
 
@@ -65,7 +63,12 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
                 let settings = try await self.getProjectSettings()
                 gptService.prime(with: settings)
             } catch {
-                fatalError(error.localizedDescription)
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.FailedToExtractSettings.title,
+                        message: error.description
+                    )
+                }
             }
         }
     }
@@ -119,19 +122,20 @@ public extension ProjectViewModel {
     func openSettings() {
         Task {
             do {
-                let settings = try await persistenceService.getProjectSettings(for: project)
+                let settings = try await self.getProjectSettings()
                 DispatchQueue.main.async {
-                    self.onOpen.send(
-                        .settings(
-                            .init(
-                                project: self.project,
-                                projectSettings: settings
-                            )
-                        )
+                    self.configureProjectViewModel = .init(
+                        projectInfo: .init(project: self.project, settings: settings),
+                        serviceContainer: self.serviceContainer
                     )
                 }
             } catch {
-                fatalError(error.localizedDescription)
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.FailedToExtractSettings.title,
+                        message: error.description
+                    )
+                }
             }
         }
     }
@@ -161,7 +165,12 @@ public extension ProjectViewModel {
                 }
                 self.logService.log(with: .info, "Response: \(response)")
             } catch {
-                fatalError(error.localizedDescription)
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.GptTalk.title,
+                        message: error.description
+                    )
+                }
             }
         }
     }
@@ -175,13 +184,6 @@ public extension ProjectViewModel {
 // MARK: - Private
 
 private extension ProjectViewModel {
-
-    var projectID: Int64 {
-        guard let id = self.project.id else {
-            fatalError()
-        }
-        return id
-    }
 
     func sync() {
         self.syncStage = .extractingDocumentsFromDisk
@@ -265,13 +267,15 @@ private extension ProjectViewModel {
                 DispatchQueue.main.async {
                     self.syncStage = nil
                 }
-
-            } catch DocumentParser.DocumentError.bookmarkIsStale {
-                self.project.urlBookmarkDataIsStale = true
-                try await self.persistProject()
             } catch {
-                self.syncStage = nil
-                fatalError(error.localizedDescription)
+                await MainActor.run {
+                    self.syncStage = nil
+
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.FailedToSync.title,
+                        message: error.description
+                    )
+                }
             }
         }
     }
@@ -294,7 +298,8 @@ private extension ProjectViewModel {
 
     func getProject(fetchDocuments: Bool) async throws -> Project {
         // Fetch the project
-        var project = try await persistenceService.getProject(id: self.projectID)
+        let projectID = try self.project.id.orThrow(Project.ProjectError.missingID)
+        var project = try await persistenceService.getProject(id: projectID)
 
         // If we're not fetching the documents, just return the project
         if fetchDocuments == false {
