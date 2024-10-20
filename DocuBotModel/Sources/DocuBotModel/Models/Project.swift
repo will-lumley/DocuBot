@@ -117,7 +117,10 @@ public extension Project {
 
         // Add each document to our index
         for document in documents {
-            guard let embeddings = document.embeddings else {
+            guard
+                let embeddings = document.embeddings,
+                let documentID = document.id
+            else {
                 continue
             }
 
@@ -125,7 +128,7 @@ public extension Project {
                 await similarityIndex.addItem(
                     id: UUID().uuidString,
                     text: embedding.chunk,
-                    metadata: ["id": "\(document.id ?? -1)"],
+                    metadata: ["id": "\(documentID)"],
                     embedding: embedding.embedding
                 )
             }
