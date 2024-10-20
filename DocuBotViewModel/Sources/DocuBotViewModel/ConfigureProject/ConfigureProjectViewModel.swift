@@ -132,6 +132,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.projectInfo = projectInfo
 
             self.projectDirectory = URL(fileURLWithPath: projectInfo.project.path)
+            self.projectDirectoryBookmarkData = projectInfo.project.urlBookmarkData
             self.projectName = projectInfo.project.name
             self.selectedLanguage = projectInfo.settings.language
 
@@ -505,7 +506,7 @@ private extension ConfigureProjectViewModel {
                 isDirty: false,
                 urlBookmarkData: self.projectDirectoryBookmarkData,
                 urlBookmarkDataIsStale: false,
-                exampleQuestions: [],
+                exampleQuestions: project.exampleQuestions,
                 createdAt: project.createdAt,
                 updatedAt: .now
             )
