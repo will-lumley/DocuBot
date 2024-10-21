@@ -49,10 +49,35 @@ public struct ProjectView: View {
         }
 
         .alert(item: $viewModel.alertConfiguration) { configuration in
-            Alert(
-                title: Text(configuration.title),
-                message: Text(configuration.message)
-            )
+            if let primaryAction = configuration.primaryAction {
+                Alert(
+                    title: Text(configuration.title),
+                    message: Text(configuration.message),
+                    primaryButton: .default(
+                        Text(primaryAction.title),
+                        action: primaryAction.onSelect
+                    ),
+                    secondaryButton: .cancel()
+                )
+            } else {
+                Alert(
+                    title: Text(configuration.title),
+                    message: Text(configuration.message)
+                )
+            }
+        }
+
+        .onReceive(viewModel.triggerFolderAccessRequest) {
+            let panel = NSOpenPanel()
+            panel.canChooseDirectories    = true
+            panel.canCreateDirectories    = false
+            panel.allowsMultipleSelection = false
+            panel.canChooseFiles          = false
+            panel.begin { response in
+                if response == .OK {
+                    viewModel.directorySelected(panel.urls.first)
+                }
+            }
         }
 
         .navigationTitle(viewModel.windowTitle)

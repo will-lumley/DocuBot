@@ -31,11 +31,12 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         case buildingExampleQuestions(project: Project, progress: Progress)
     }
 
-    public typealias OnDelete = () -> Void
-
     // MARK: - Properties
 
-    @Published public var chatText = "What is the difference between the SIT and Demo environment?"
+    /// The text our user is asking
+    @Published public var chatText = ""
+
+    /// The text our LLM has responded back with
     @Published public var responseText = ""
 
     /// The project that we're focussing on within this ViewModel
@@ -44,12 +45,17 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// The syncing stage of our project
     @Published public var syncStage: SyncStage?
 
+    /// The ViewModels that make up our example questions
     @Published public var questionViewModels = [ProjectQuestionViewModel]()
 
+    /// Our "settings" ViewModel for this project
     @Published public var configureProjectViewModel: ConfigureProjectViewModel?
 
-    /// This is used to create or close an `Alert`
+    /// This is used to create or close a generic `Alert`
     @Published public var alertConfiguration: AlertConfiguration?
+
+    /// This fires when we need to request the UI level to request folder permissions
+    public let triggerFolderAccessRequest = PassthroughSubject<Void, Never>()
 
     // MARK: - Lifecycle
 
@@ -179,6 +185,35 @@ public extension ProjectViewModel {
         self.chatText = question
     }
 
+    func directorySelected(_ directory: URL?) {
+        guard let directory else {
+            return
+        }
+
+        let bookmarkData = try? directory.bookmarkData(
+            options: .securityScopeAllowOnlyReadAccess,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        )
+
+        self.project.isDirty = true
+        self.project.path = directory.path
+        self.project.urlBookmarkData = bookmarkData
+
+        Task {
+            do {
+                try await self.persistProject()
+            } catch {
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.UpdateBookmark.title,
+                        message: error.description
+                    )
+                }
+            }
+        }
+    }
+
 }
 
 // MARK: - Private
@@ -216,7 +251,7 @@ private extension ProjectViewModel {
                 // Create the example questions.
                 // Ideally this would be done on the Model layer, however due to the
                 // fact that we're using GPTService to create the questions, we're unable to do so.
-                let totalQuestions = 10
+                let totalQuestions     = 10
                 var completedQuestions = 0
 
                 // We'll pull 10 random documents from the project
@@ -273,7 +308,26 @@ private extension ProjectViewModel {
                 DispatchQueue.main.async {
                     self.syncStage = nil
                 }
+            } catch let error as DocumentParser.DocumentError {
+                logService.log(with: .error, "Failed to sync. \(error.description)")
+
+                // If we're here this means our bookmark data is stale/non-existent
+                await MainActor.run {
+                    self.syncStage = nil
+
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.StaleBookmark.title,
+                        message: L10n.Error.Project.StaleBookmark.message,
+                        primaryAction: .init(
+                            title: L10n.Error.Project.StaleBookmark.action
+                        ) {
+                            self.triggerFolderAccessRequest.send(())
+                        }
+                    )
+                }
             } catch {
+                logService.log(with: .error, "Failed to sync. \(error.description)")
+
                 await MainActor.run {
                     self.syncStage = nil
 
@@ -412,7 +466,6 @@ public extension ProjectViewModel {
                 name: "Project 1",
                 isDirty: false,
                 urlBookmarkData: nil,
-                urlBookmarkDataIsStale: true,
                 exampleQuestions: [
                     "Example example example",
                     "Example example example"

@@ -90,7 +90,7 @@ private extension DocumentParser {
 
         // Pull out our URL Bookmark Data so we can access this data securely
         let urlBookmarkData = self.project.urlBookmarkData
-        guard let urlBookmarkData else {
+        guard let urlBookmarkData, urlBookmarkData.isEmpty == false else {
             throw DocumentError.noBookmarkData
         }
 

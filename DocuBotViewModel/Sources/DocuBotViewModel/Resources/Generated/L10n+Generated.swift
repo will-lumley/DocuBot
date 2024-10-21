@@ -266,6 +266,18 @@ internal enum L10n {
         /// Failed to get communicate with the LLM
         internal static let title = L10n.tr("Localizable", "Error.Project.GptTalk.title", fallback: "Failed to get communicate with the LLM")
       }
+      internal enum StaleBookmark {
+        /// Select Folder
+        internal static let action = L10n.tr("Localizable", "Error.Project.StaleBookmark.action", fallback: "Select Folder")
+        /// It looks like the file's location has changed or is no longer accessible. Please select the file again to continue.
+        internal static let message = L10n.tr("Localizable", "Error.Project.StaleBookmark.message", fallback: "It looks like the file's location has changed or is no longer accessible. Please select the file again to continue.")
+        /// Folder Access Issue
+        internal static let title = L10n.tr("Localizable", "Error.Project.StaleBookmark.title", fallback: "Folder Access Issue")
+      }
+      internal enum UpdateBookmark {
+        /// Failed to restore folder access
+        internal static let title = L10n.tr("Localizable", "Error.Project.UpdateBookmark.title", fallback: "Failed to restore folder access")
+      }
     }
     internal enum Welcome {
       internal enum FailedToDelete {
@@ -275,6 +287,10 @@ internal enum L10n {
         internal static let title = L10n.tr("Localizable", "Error.Welcome.FailedToDelete.title", fallback: "Failed to Delete Project")
       }
     }
+  }
+  internal enum Generics {
+    /// Cancel
+    internal static let cancel = L10n.tr("Localizable", "Generics.cancel", fallback: "Cancel")
   }
   internal enum Project {
     /// Ask any question about your project.

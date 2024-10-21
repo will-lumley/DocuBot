@@ -34,7 +34,6 @@ extension ProjectRecord {
         path: String = "",
         name: String = "",
         urlBookmarkData: Data? = nil,
-        urlBookmarkDataIsStale: Bool = false,
         exampleQuestions: [String] = [],
         createdAt: Date = Date(),
         updatedAt: Date = Date()
@@ -44,7 +43,6 @@ extension ProjectRecord {
             path: path,
             name: name,
             urlBookmarkData: urlBookmarkData,
-            urlBookmarkDataIsStale: urlBookmarkDataIsStale,
             exampleQuestions: [],
             createdAt: createdAt,
             updatedAt: updatedAt
