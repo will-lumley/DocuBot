@@ -77,10 +77,19 @@ extension ChatTextEditor {
 
     var text: String {
         get {
-            self.textView.string
+            return self.textView.string
         }
         set {
             self.textView.string = newValue
+        }
+    }
+
+    var isEnabled: Bool {
+        get {
+            return self.isEnabled
+        }
+        set {
+            self.textView.isEnabled = newValue
         }
     }
 
