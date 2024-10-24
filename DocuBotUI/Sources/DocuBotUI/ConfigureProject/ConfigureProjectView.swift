@@ -39,7 +39,8 @@ public struct ConfigureProjectView: View {
             Form {
                 self.generalSection
                 self.formatSection
-                self.advancedSection
+                self.similaritySection
+                self.llmSection
             }
             .formStyle(GroupedFormStyle())
 
@@ -188,7 +189,7 @@ public struct ConfigureProjectView: View {
         )
     }
 
-    private var advancedSection: some View {
+    private var similaritySection: some View {
         Section {
             // EmbeddingModel
             LabeledContent {
@@ -224,6 +225,23 @@ public struct ConfigureProjectView: View {
                 }
             }
 
+        } header: {
+            Text(viewModel.similaritySectionTitle)
+                .font(.headline)
+
+            Text(viewModel.similaritySectionSubitle)
+                .font(.subheadline)
+
+            Button(
+                viewModel.resetDefaultButtonTitle,
+                action: viewModel.resetSimilarityOptions
+            )
+                .buttonStyle(.link)
+        }
+    }
+
+    private var llmSection: some View {
+        Section {
             // Seed
             LabeledContent {
                 TextField(
@@ -378,15 +396,15 @@ public struct ConfigureProjectView: View {
                 }
             }
         } header: {
-            Text(viewModel.advancedSectionTitle)
+            Text(viewModel.llmSectionTitle)
                 .font(.headline)
 
-            Text(viewModel.advancedSectionSubitle)
+            Text(viewModel.llmSectionSubitle)
                 .font(.subheadline)
 
             Button(
                 viewModel.resetDefaultButtonTitle,
-                action: viewModel.resetDefaultValuesButtonSelected
+                action: viewModel.resetLlmOptions
             )
                 .buttonStyle(.link)
         }
