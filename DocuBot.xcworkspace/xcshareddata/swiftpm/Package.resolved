@@ -1,5 +1,5 @@
 {
-  "originHash" : "319d9ca4a20cf30b1f0dd8903f4a6bf049230e53af8f3e2b2a4e2d99ca33e494",
+  "originHash" : "0c63c4c19b9b4409f41174240a1f6d75f9be1f92ebcac20a33c93470f6a10a69",
   "pins" : [
     {
       "identity" : "grdb.swift",
@@ -29,6 +29,15 @@
       }
     },
     {
+      "identity" : "networkimage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/gonzalezreal/NetworkImage",
+      "state" : {
+        "revision" : "2849f5323265386e200484b0d0f896e73c3411b9",
+        "version" : "6.0.1"
+      }
+    },
+    {
       "identity" : "sfsafesymbols",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SFSafeSymbols/SFSafeSymbols",
@@ -44,6 +53,24 @@
       "state" : {
         "revision" : "9bec54706c8124bb9b20a3a06d566066a9f55712",
         "version" : "0.0.15"
+      }
+    },
+    {
+      "identity" : "swift-cmark",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-cmark",
+      "state" : {
+        "revision" : "3ccff77b2dc5b96b77db3da0d68d28068593fa53",
+        "version" : "0.5.0"
+      }
+    },
+    {
+      "identity" : "swift-markdown-ui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/gonzalezreal/swift-markdown-ui",
+      "state" : {
+        "revision" : "5f613358148239d0292c0cef674a3c2314737f9e",
+        "version" : "2.4.1"
       }
     },
     {

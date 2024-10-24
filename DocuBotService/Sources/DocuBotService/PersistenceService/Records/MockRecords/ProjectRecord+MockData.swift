@@ -33,7 +33,7 @@ extension ProjectRecord {
         id: Int64 = 0,
         path: String = "",
         name: String = "",
-        urlBookmarkData: Data? = nil,
+        urlBookmarkData: Data = .init(),
         exampleQuestions: [String] = [],
         createdAt: Date = Date(),
         updatedAt: Date = Date()

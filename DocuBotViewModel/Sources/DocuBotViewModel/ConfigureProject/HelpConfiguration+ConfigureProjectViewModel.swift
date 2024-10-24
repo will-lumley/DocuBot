@@ -15,12 +15,6 @@ extension HelpConfiguration {
         onDismiss: @escaping HelpConfiguration.OnDismiss
     ) {
         switch type {
-        case .systemPrompt:
-            self.init(
-                title: Strings.SystemPrompt.title,
-                content: Strings.SystemPrompt.content,
-                onDismiss: onDismiss
-            )
         case .embeddingModel:
             self.init(
                 title: Strings.EmbeddingModel.title,
@@ -79,6 +73,18 @@ extension HelpConfiguration {
             self.init(
                 title: Strings.MaxTokenCount.title,
                 content: Strings.MaxTokenCount.content,
+                onDismiss: onDismiss
+            )
+        case .strictMode:
+            self.init(
+                title: Strings.StrictMode.title,
+                content: Strings.StrictMode.content,
+                onDismiss: onDismiss
+            )
+        case .systemPrompt:
+            self.init(
+                title: Strings.SystemPrompt.title,
+                content: Strings.SystemPrompt.content,
                 onDismiss: onDismiss
             )
         }

@@ -28,9 +28,7 @@ public extension ProjectSettingsRecord {
             id: model.id,
             project: model.projectID,
             supportedFormats: formats,
-            respondWithDocumentsOnly: model.respondWithDocumentsOnly,
             language: language,
-            systemPrompt: model.systemPrompt,
             embeddingModel: embeddingModel,
             similarityMetric: similarityMetric,
             seed: model.seed,
@@ -41,6 +39,8 @@ public extension ProjectSettingsRecord {
             batchSize: model.batchSize,
             stopSequence: model.stopSequence,
             maxTokenCount: model.maxTokenCount,
+            systemPrompt: model.systemPrompt,
+            strictMode: model.strictMode,
             createdAt: model.createdAt,
             updatedAt: model.updatedAt
         )
@@ -121,9 +121,7 @@ public extension ProjectSettings {
             id: record.id,
             projectID: record.project,
             supportedFormats: formats,
-            respondWithDocumentsOnly: record.respondWithDocumentsOnly,
             language: language,
-            systemPrompt: record.systemPrompt,
             embeddingModel: embeddingModel,
             similarityMetric: similarityMetric,
             seed: record.seed,
@@ -134,6 +132,8 @@ public extension ProjectSettings {
             batchSize: record.batchSize,
             stopSequence: record.stopSequence,
             maxTokenCount: record.maxTokenCount,
+            systemPrompt: record.systemPrompt,
+            strictMode: record.strictMode,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt
         )

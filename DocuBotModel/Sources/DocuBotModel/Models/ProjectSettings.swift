@@ -56,13 +56,10 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     public let projectID: Int64
 
     public let supportedFormats: [DocumentationFormat]
-    public let respondWithDocumentsOnly: Bool
     public let language: Language
 
-    public let systemPrompt: String
     public let embeddingModel: EmbeddingModel
     public let similarityMetric: SimilarityMetric
-
     public let seed: Int
     public let topK: Int
     public let topP: Double
@@ -71,6 +68,8 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     public let batchSize: Int
     public let stopSequence: String?
     public let maxTokenCount: Int
+    public let systemPrompt: String
+    public let strictMode: Bool
 
     public let createdAt: Date
     public let updatedAt: Date
@@ -81,9 +80,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         id: Int64? = nil,
         projectID: Int64,
         supportedFormats: [DocumentationFormat],
-        respondWithDocumentsOnly: Bool,
         language: Language,
-        systemPrompt: String,
         embeddingModel: EmbeddingModel,
         similarityMetric: SimilarityMetric,
         seed: Int,
@@ -94,6 +91,8 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         batchSize: Int,
         stopSequence: String?,
         maxTokenCount: Int,
+        systemPrompt: String,
+        strictMode: Bool,
         createdAt: Date,
         updatedAt: Date
     ) {
@@ -101,10 +100,8 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         self.projectID = projectID
 
         self.supportedFormats = supportedFormats
-        self.respondWithDocumentsOnly = respondWithDocumentsOnly
         self.language = language
 
-        self.systemPrompt = systemPrompt
         self.embeddingModel = embeddingModel
         self.similarityMetric = similarityMetric
 
@@ -116,6 +113,8 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         self.batchSize = batchSize
         self.stopSequence = stopSequence
         self.maxTokenCount = maxTokenCount
+        self.systemPrompt = systemPrompt
+        self.strictMode = strictMode
 
         self.createdAt = createdAt
         self.updatedAt = updatedAt

@@ -22,7 +22,6 @@ public struct ProjectQuestionView: View {
             VStack(alignment: .leading) {
                 Text(viewModel.content)
                     .font(.caption2)
-                    .lineLimit(3)
                     .foregroundColor(.secondary)
             }
             .padding(.vertical, 8)

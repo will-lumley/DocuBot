@@ -22,7 +22,7 @@ public final class ToolbarButtonViewModel: ObservableObject {
     @Published public var hoverSymbol: SFSymbol?
     @Published public var isEnabled = true
 
-    private let onSelect: OnSelect
+    public var onSelect: OnSelect
 
     // MARK: - Lifecycle
 

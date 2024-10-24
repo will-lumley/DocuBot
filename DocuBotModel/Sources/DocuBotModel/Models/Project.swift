@@ -35,7 +35,7 @@ public struct Project: Hashable, Codable, Sendable {
     public let name: String
 
     /// The bookmark data that the OS gave to us to securely read the directory
-    public var urlBookmarkData: Data?
+    public var urlBookmarkData: Data
 
     /// The checksum of all the documentation tokens that exist within our projects path.
     /// This is a transitive property and is only stored on the model layer.
@@ -67,7 +67,7 @@ public struct Project: Hashable, Codable, Sendable {
         path: String,
         name: String,
         isDirty: Bool,
-        urlBookmarkData: Data?,
+        urlBookmarkData: Data,
         exampleQuestions: [String],
         createdAt: Date,
         updatedAt: Date

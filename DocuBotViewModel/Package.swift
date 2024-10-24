@@ -13,13 +13,18 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotViewModel",
-            targets: ["DocuBotViewModel"])
+            targets: ["DocuBotViewModel"]
+        )
     ],
     dependencies: [
         .package(path: "../DocuBotModel"),
         .package(path: "../DocuBotService"),
         .package(path: "../DocuBotToolbox"),
 
+        .package(
+            url: "https://github.com/ZachNagengast/similarity-search-kit.git",
+            from: "0.0.15"
+        ),
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
         .package(
             url: "https://github.com/SFSafeSymbols/SFSafeSymbols",
@@ -35,7 +40,8 @@ let package = Package(
                 "DocuBotModel",
                 "DocuBotService",
                 "DocuBotToolbox",
-                "SFSafeSymbols"
+                "SFSafeSymbols",
+                .product(name: "SimilaritySearchKit", package: "similarity-search-kit")
             ],
             plugins: [
                .plugin(name: "SwiftGenPlugin", package: "SwiftGenPlugin")

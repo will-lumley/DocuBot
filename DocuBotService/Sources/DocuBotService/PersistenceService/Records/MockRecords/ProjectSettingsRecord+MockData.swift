@@ -15,7 +15,6 @@ extension ProjectSettingsRecord {
                 id: 1,
                 projectID: 1,
                 supportedFormats: ProjectSettingsRecord.DocumentationFormat.allCases,
-                respondWithDocumentsOnly: false,
                 createdAt: .now,
                 updatedAt: .now
             ),
@@ -23,7 +22,6 @@ extension ProjectSettingsRecord {
                 id: 2,
                 projectID: 2,
                 supportedFormats: [.md],
-                respondWithDocumentsOnly: true,
                 createdAt: .now,
                 updatedAt: .now
             ),
@@ -31,7 +29,6 @@ extension ProjectSettingsRecord {
                 id: 3,
                 projectID: 3,
                 supportedFormats: [.txt, .rtf, .md],
-                respondWithDocumentsOnly: false,
                 createdAt: .now,
                 updatedAt: .now
             )
@@ -42,9 +39,7 @@ extension ProjectSettingsRecord {
         id: Int64 = 0,
         projectID: Int64 = 0,
         supportedFormats: [DocumentationFormat] = DocumentationFormat.allCases,
-        respondWithDocumentsOnly: Bool = false,
         language: Language = .english,
-        systemPrompt: String = "You are a good bot",
         embeddingModel: EmbeddingModel = .distilbert,
         similarityMetric: SimilarityMetric = .cosine,
         seed: Int = 1024,
@@ -55,6 +50,8 @@ extension ProjectSettingsRecord {
         batchSize: Int = 1024,
         stopSequence: String? = nil,
         maxTokenCount: Int = 1024,
+        systemPrompt: String = "You are a good bot",
+        strictMode: Bool = false,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) -> ProjectSettingsRecord {
@@ -62,9 +59,7 @@ extension ProjectSettingsRecord {
             id: id,
             project: projectID,
             supportedFormats: supportedFormats,
-            respondWithDocumentsOnly: respondWithDocumentsOnly,
             language: language,
-            systemPrompt: systemPrompt,
             embeddingModel: embeddingModel,
             similarityMetric: similarityMetric,
             seed: seed,
@@ -75,6 +70,8 @@ extension ProjectSettingsRecord {
             batchSize: batchSize,
             stopSequence: stopSequence,
             maxTokenCount: maxTokenCount,
+            systemPrompt: systemPrompt,
+            strictMode: strictMode,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

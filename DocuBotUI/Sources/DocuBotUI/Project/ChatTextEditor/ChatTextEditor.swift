@@ -25,6 +25,7 @@ final class ChatTextEditor: NSView, NSTextViewDelegate {
     public private(set) lazy var textView = ChatTextView(
         frame: CGRect(),
         textContainer: self.textContainer,
+        placeholder: self.placeholder,
         eventDelegate: self
     )
     /*------------------------------------------------------------*/
@@ -39,6 +40,7 @@ final class ChatTextEditor: NSView, NSTextViewDelegate {
     /// due to modified text or view/window resizing
     public var onHeightChange: OnHeightChange?
 
+    private var placeholder: String?
     private var previousHeight: CGFloat?
     private let maxHeight = CGFloat(250)
     private let heightPadding = CGFloat(0)
@@ -47,6 +49,12 @@ final class ChatTextEditor: NSView, NSTextViewDelegate {
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
+        self.setup()
+    }
+
+    init(placeholder: String?) {
+        self.placeholder = placeholder
+        super.init(frame: .zero)
         self.setup()
     }
 

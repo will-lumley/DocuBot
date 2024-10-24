@@ -16,7 +16,6 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     // MARK: - Types
 
     public enum HelpType {
-        case systemPrompt
         case embeddingModel
         case similarityMetric
         case seed
@@ -27,6 +26,8 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case batchSize
         case stopSequence
         case maxTokenCount
+        case systemPrompt
+        case strictMode
     }
 
     public enum FormValidationError: LocalizedError {
@@ -52,6 +53,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     public enum ConfigurationError: LocalizedError {
         case noDirectory
+        case noDirectoryBookmarkData
     }
 
     public struct FormatConfiguration: Identifiable {
@@ -70,6 +72,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     }
 
     public typealias Format = ProjectSettings.DocumentationFormat
+    public typealias OnSave = () -> Void
 
     // MARK: - Properties
 
@@ -96,6 +99,10 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var batchSize: Int
     @Published public var stopSequence: String?
     @Published public var maxTokenCount: Int
+    @Published public var strictMode: Bool
+
+    /// This will be called when the user saves their settings
+    private let onSave: OnSave?
 
     /// The encrypted data that makes up the secure directory bookmark
     public var projectDirectoryBookmarkData: Data?
@@ -125,7 +132,8 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     public init(
         projectInfo: ProjectInfo? = nil,
-        serviceContainer: ServiceContainer
+        serviceContainer: ServiceContainer,
+        onSave: OnSave? = nil
     ) {
         // If we're modifying an existing project/settings
         if let projectInfo {
@@ -167,6 +175,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.batchSize = projectInfo.settings.batchSize
             self.stopSequence = projectInfo.settings.stopSequence
             self.maxTokenCount = projectInfo.settings.maxTokenCount
+            self.strictMode = projectInfo.settings.strictMode
         }
 
         // This is a brand new project/settings
@@ -192,12 +201,14 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.batchSize = 2048
             self.stopSequence = ""
             self.maxTokenCount = 1024*1024
+            self.strictMode = false
 
             self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
             self.embeddingModel = .distilbert
             self.similarityMetric = .cosine
         }
 
+        self.onSave = onSave
         super.init(serviceContainer: serviceContainer)
     }
 
@@ -383,6 +394,10 @@ public extension ConfigureProjectViewModel {
         L10n.ConfigureProject.AdvancedSection.maxTokenCount
     }
 
+    var strictModeTitle: String {
+        L10n.ConfigureProject.AdvancedSection.strictMode
+    }
+
     var resetDefaultButtonTitle: String {
         L10n.ConfigureProject.AdvancedSection.resetDefaults
     }
@@ -390,19 +405,26 @@ public extension ConfigureProjectViewModel {
     // MARK: Other
 
     func directorySelected(_ directory: URL?) {
-        guard let directory else {
-            return
+        do {
+            guard let directory else {
+                throw ConfigurationError.noDirectory
+            }
+
+            let bookmarkData = try directory.bookmarkData(
+                options: .securityScopeAllowOnlyReadAccess,
+                includingResourceValuesForKeys: nil,
+                relativeTo: nil
+            )
+
+            self.projectDirectory = directory
+            self.projectDirectoryBookmarkData = bookmarkData
+            self.projectName = directory.lastPathComponent
+        } catch {
+            self.alertConfiguration = .init(
+                title: L10n.Error.Project.UpdateBookmark.title,
+                message: error.description
+            )
         }
-
-        let bookmarkData = try? directory.bookmarkData(
-            options: .securityScopeAllowOnlyReadAccess,
-            includingResourceValuesForKeys: nil,
-            relativeTo: nil
-        )
-
-        self.projectDirectory = directory
-        self.projectDirectoryBookmarkData = bookmarkData
-        self.projectName = directory.lastPathComponent
     }
 
     var createProjectButtonTitle: String {
@@ -430,11 +452,14 @@ public extension ConfigureProjectViewModel {
                 _ = try await self.persist(settings: settings)
 
                 await MainActor.run {
+                    // Let our caller know that we've saved our settings
+                    self.onSave?()
+
                     // Close this current window
                     self.onDismiss.send(())
 
+                    // Open the Window with the project that we just inserted, if creating
                     if self.configureType == .creating {
-                        // Open the Window with the project that we just inserted
                         self.onOpen.send(
                             .project(
                                 .init(project: inserted)
@@ -496,6 +521,9 @@ private extension ConfigureProjectViewModel {
         guard let directory = self.projectDirectory else {
             throw ConfigurationError.noDirectory
         }
+        guard let bookmarkData = self.projectDirectoryBookmarkData else {
+            throw ConfigurationError.noDirectoryBookmarkData
+        }
 
         // We're modifying an existing project
         if let project = self.projectInfo?.project {
@@ -504,7 +532,7 @@ private extension ConfigureProjectViewModel {
                 path: directory.path(),
                 name: self.projectName,
                 isDirty: false,
-                urlBookmarkData: self.projectDirectoryBookmarkData,
+                urlBookmarkData: bookmarkData,
                 exampleQuestions: project.exampleQuestions,
                 createdAt: project.createdAt,
                 updatedAt: .now
@@ -516,7 +544,7 @@ private extension ConfigureProjectViewModel {
                 path: directory.path(),
                 name: self.projectName,
                 isDirty: false,
-                urlBookmarkData: self.projectDirectoryBookmarkData,
+                urlBookmarkData: bookmarkData,
                 exampleQuestions: [],
                 createdAt: .now,
                 updatedAt: .now
@@ -535,9 +563,7 @@ private extension ConfigureProjectViewModel {
                 id: projectInfo.settings.id,
                 projectID: projectInfo.settings.projectID,
                 supportedFormats: supportedFormats,
-                respondWithDocumentsOnly: false,
                 language: self.selectedLanguage,
-                systemPrompt: self.systemPrompt,
                 embeddingModel: self.embeddingModel,
                 similarityMetric: self.similarityMetric,
                 seed: self.seed,
@@ -548,6 +574,8 @@ private extension ConfigureProjectViewModel {
                 batchSize: self.batchSize,
                 stopSequence: self.stopSequence,
                 maxTokenCount: self.maxTokenCount,
+                systemPrompt: self.systemPrompt,
+                strictMode: self.strictMode,
                 createdAt: projectInfo.settings.createdAt,
                 updatedAt: .now
             )
@@ -557,9 +585,7 @@ private extension ConfigureProjectViewModel {
             return ProjectSettings(
                 projectID: projectID,
                 supportedFormats: supportedFormats,
-                respondWithDocumentsOnly: false,
                 language: self.selectedLanguage,
-                systemPrompt: self.systemPrompt,
                 embeddingModel: self.embeddingModel,
                 similarityMetric: self.similarityMetric,
                 seed: self.seed,
@@ -570,6 +596,8 @@ private extension ConfigureProjectViewModel {
                 batchSize: self.batchSize,
                 stopSequence: self.stopSequence,
                 maxTokenCount: self.maxTokenCount,
+                systemPrompt: self.systemPrompt,
+                strictMode: self.strictMode,
                 createdAt: .now,
                 updatedAt: .now
             )
@@ -658,6 +686,8 @@ public extension ConfigureProjectViewModel.ConfigurationError {
         switch self {
         case .noDirectory:
             return L10n.Error.ConfigureProject.ConfigurationError.noDirectory
+        case .noDirectoryBookmarkData:
+            return L10n.Error.ConfigureProject.ConfigurationError.noDirectoryBookmarkData
         }
     }
 

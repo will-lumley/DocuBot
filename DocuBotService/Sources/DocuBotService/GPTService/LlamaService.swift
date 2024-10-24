@@ -86,22 +86,25 @@ class LlamaService: GPTService {
             // Strip the null terminators from the string
             let formattedValue = value.replacingOccurrences(of: "\0", with: "")
 
-            // If our last output was a newline, and this is also a newline, let's bail out
-            if newlineCount == 2 {
-                // break
-            }
-
-            // Append the value to the output
-            output += formattedValue
-
-            // Send out the update to the caller
-            Task {
-                await onUpdate?(formattedValue)
-            }
-
-            // If we're a newline, update the newline count
+            // If the current value is a newline, increment the newline count
             if formattedValue == "\n" {
                 newlineCount += 1
+            } else {
+                // Reset newline count if it's not a newline
+                newlineCount = 0
+            }
+
+            // If we've encountered 3 consecutive newlines, break the loop
+            if newlineCount == 3 {
+                // swiftlint:disable:next direct_print
+                print("[DOCUBOT] [INFO] Breaking due to newline overload.")
+                break
+            }
+
+            output += formattedValue
+
+            Task {
+                await onUpdate?(formattedValue)
             }
         }
 

@@ -47,10 +47,8 @@ public struct ProjectSettingsRecord: Record {
     public let project: Int64
 
     public let supportedFormats: [DocumentationFormat]
-    public let respondWithDocumentsOnly: Bool
     public let language: Language
 
-    public let systemPrompt: String
     public let embeddingModel: EmbeddingModel
     public let similarityMetric: SimilarityMetric
 
@@ -62,6 +60,8 @@ public struct ProjectSettingsRecord: Record {
     public let batchSize: Int
     public let stopSequence: String?
     public let maxTokenCount: Int
+    public let systemPrompt: String
+    public let strictMode: Bool
 
     public let createdAt: Date
     public let updatedAt: Date
