@@ -10,6 +10,7 @@ import DocuBotModel
 import DocuBotService
 import DocuBotToolbox
 import Foundation
+import SFSafeSymbols
 import SimilaritySearchKit
 
 public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
@@ -42,6 +43,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// The text our LLM has responded back with
     @Published public var response = ResponseStatus.none
 
+    /// Indicative of if the user is expecting a response or waiting for a response
     @Published public var expectingResponse = false
 
     /// The project that we're focussing on within this ViewModel
@@ -65,7 +67,14 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// This is used to create or close a generic `Alert`
     @Published public var alertConfiguration: AlertConfiguration?
 
+    /// The button for displaying the list of sources
     @Published public var sourcesButton: ToolbarButtonViewModel
+
+    /// The button for syncing the project
+    @Published public var syncProjectButton: ToolbarButtonViewModel
+
+    /// A warning message for the user
+    @Published public var warningMessage: String?
 
     /// This fires when we need to request the UI level to request folder permissions
     public let triggerFolderAccessRequest = PassthroughSubject<Void, Never>()
@@ -75,12 +84,12 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     public init(project: Project, serviceContainer: ServiceContainer) {
         self.project = project
         self.sourcesButton = .init(symbol: .docTextMagnifyingglass)
+        self.syncProjectButton = .init(symbol: .arrowTriangle2Circlepath)
 
         super.init(serviceContainer: serviceContainer)
 
-        self.sourcesButton.onSelect = { [weak self] in
-            self?.isShowingSources.toggle()
-        }
+        self.sourcesButton.onSelect = { [weak self] in self?.isShowingSources.toggle() }
+        self.syncProjectButton.onSelect = self.sync
 
         self.primeLlm()
     }
@@ -105,6 +114,44 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             }
             .assign(to: &$questions)
 
+        // Indicate to the user that we need to sync if the project is dirty
+        self.$project
+            .map(\.isDirty)
+            .map {
+                if $0 {
+                    SFSymbol.exclamationmarkArrowTriangle2Circlepath
+                } else {
+                    SFSymbol.arrowTriangle2Circlepath
+                }
+            }
+            .assign(to: \.symbol, on: syncProjectButton)
+            .store(in: &cancellables)
+
+        // Indicate to the user that we need to sync if the project is dirty
+        self.$project
+            .map(\.isDirty)
+            .map {
+                if $0 {
+                    ToolbarButtonViewModel.WarningState.warning
+                } else {
+                    ToolbarButtonViewModel.WarningState.none
+                }
+            }
+            .assign(to: \.warningState, on: syncProjectButton)
+            .store(in: &cancellables)
+
+        // Indicate to the user that we need to sync if the project is dirty
+        self.$project
+            .map(\.isDirty)
+            .map {
+                if $0 {
+                    L10n.Project.Warning.sync
+                } else {
+                    nil
+                }
+            }
+            .assign(to: &$warningMessage)
+
         // Enable the ViewSources button if we have any sources
         self.$sources
             .map { $0 != nil }
@@ -122,12 +169,6 @@ public extension ProjectViewModel {
     var openSettingsButton: ToolbarButtonViewModel {
         .init(symbol: .gear) {
             self.openSettings()
-        }
-    }
-
-    var syncProjectButton: ToolbarButtonViewModel {
-        .init(symbol: .arrowTriangle2Circlepath) {
-            self.sync()
         }
     }
 
@@ -410,6 +451,7 @@ private extension ProjectViewModel {
 
                 // Update the project properties
                 DispatchQueue.main.sync {
+                    self.project.isDirty = false
                     self.project.documentationChecksum = result.checksum
                     self.project.exampleQuestions = exampleQuestions
                 }
@@ -564,8 +606,9 @@ public extension ProjectViewModel {
                 id: 1,
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project 1",
-                isDirty: false,
                 urlBookmarkData: .init(),
+                documentationCheckSum: "123",
+                isDirty: false,
                 exampleQuestions: [
                     "Example example example",
                     "Example example example"

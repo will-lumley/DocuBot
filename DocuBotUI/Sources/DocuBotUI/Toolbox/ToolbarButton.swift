@@ -35,6 +35,8 @@ struct ToolbarButton: View {
                         Image(systemSymbol: viewModel.symbol)
                             .font(Font.body.weight(.bold))
                             .imageScale(.large)
+                            .foregroundStyle(self.foregroundStyle)
+
                         if let name = viewModel.name {
                             Text(name)
                         }
@@ -45,6 +47,15 @@ struct ToolbarButton: View {
         .disabled(viewModel.isEnabled == false)
         .onHover { hovering in
             self.isHovered = hovering
+        }
+    }
+
+    var foregroundStyle: some ShapeStyle {
+        switch self.viewModel.warningState {
+        case .none:
+            Color.secondary
+        case .warning:
+            Color.yellow
         }
     }
 

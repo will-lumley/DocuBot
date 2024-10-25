@@ -13,6 +13,11 @@ public final class ToolbarButtonViewModel: ObservableObject {
 
     // MARK: - Types
 
+    public enum WarningState {
+        case none
+        case warning
+    }
+
     public typealias OnSelect = () -> Void
 
     // MARK: - Properties
@@ -21,6 +26,7 @@ public final class ToolbarButtonViewModel: ObservableObject {
     @Published public var symbol: SFSymbol
     @Published public var hoverSymbol: SFSymbol?
     @Published public var isEnabled = true
+    @Published public var warningState: WarningState = .none
 
     public var onSelect: OnSelect
 

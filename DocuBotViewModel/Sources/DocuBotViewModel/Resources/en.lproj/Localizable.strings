@@ -133,6 +133,7 @@
 "Project.placeholder" = "Write your question here...";
 "Project.StrictMode.responseTemplate" = "Here's some excerpts from your documentation based on your query.\n\n";
 "Project.StrictMode.sourceTemplate" = "# %@\n\n%@\n\n";
+"Project.Warning.sync" = "The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.";
 
 "Project.SyncStage.ExtractingDocuments.title" = "Reading documents from disk";
 "Project.SyncStage.ExtractingDocuments.subtitle" = "This shouldn't take too long.";
