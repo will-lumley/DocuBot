@@ -86,7 +86,7 @@ extension ChatTextEditor {
 
     var isEnabled: Bool {
         get {
-            return self.isEnabled
+            return self.textView.isEnabled
         }
         set {
             self.textView.isEnabled = newValue

@@ -144,6 +144,7 @@ public struct ProjectView: View {
             case .response(let response):
                 ScrollView {
                     Markdown(response)
+                        .textSelection(.enabled)
                         .multilineTextAlignment(.leading)
                         .font(.system(size: 16))
                         .padding()
