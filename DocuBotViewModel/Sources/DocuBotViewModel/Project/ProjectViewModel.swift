@@ -202,7 +202,7 @@ public extension ProjectViewModel {
                         title: L10n.Error.Project.FailedToExtractSettings.title,
                         message: error.description
                     )
-                        }
+                    }
             }
         }
     }
