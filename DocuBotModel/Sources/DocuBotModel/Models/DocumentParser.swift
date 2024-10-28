@@ -57,37 +57,6 @@ public class DocumentParser {
 public extension DocumentParser {
 
     func createAndParse() async throws -> DocumentSyncReponse {
-        // Pull out the files from disk and store them in memory
-        let documents = try await self.extractFilesFromDisk()
-
-        // Generate our checksum so we can tell for later
-        // if we need to re-sync
-        let checksum = try documents.generateChecksum()
-        return .init(checksum: checksum, documents: documents)
-    }
-
-}
-
-// MARK: - Private
-
-private extension DocumentParser {
-
-    /// Extracts documentation files from a secured directory on disk.
-    ///
-    /// This method securely accesses a directory using a previously stored bookmark, enumerates over the files
-    /// in that directory, and returns an array of `Document` objects representing the documentation files found.
-    /// It ensures that only valid documentation files are processed and handles stale bookmarks.
-    ///
-    /// - Throws:
-    ///   - `DocumentError.noBookmarkData` if the bookmark data for accessing the directory is missing.
-    ///   - `DocumentError.bookmarkIsStale` if the bookmark data is stale or the security scope could not be accessed.
-    /// - Returns: An array of `Document` objects extracted from the directory.
-    ///
-    func extractFilesFromDisk() async throws -> [Document] {
-        // This is going to hold the documents that represent the files
-        // in our directory.
-        var documents = [Document]()
-
         // Pull out our URL Bookmark Data so we can access this data securely
         let urlBookmarkData = self.project.urlBookmarkData
         guard urlBookmarkData.isEmpty == false else {
@@ -108,47 +77,97 @@ private extension DocumentParser {
             throw DocumentError.bookmarkIsStale
         }
 
+        // Pull out the files from disk and store them in memory
+        let files = try await self.extractFilesFromDisk(from: directory)
+
+        // Turn each file into a Document
+        var documents = try await self.createDocuments(from: files)
+
+        // Index each document
+        documents = try await self.index(documents: documents)
+
+        // Close our access, we're done here
+        directory.stopAccessingSecurityScopedResource()
+
+        // Generate our checksum so we can tell for later if we need to re-sync
+        let checksum = try documents.generateChecksum()
+        return .init(checksum: checksum, documents: documents)
+    }
+
+    func checkProjectIsDirty() async throws -> Bool {
+        // Pull out our URL Bookmark Data so we can access this data securely
+        let urlBookmarkData = self.project.urlBookmarkData
+        guard urlBookmarkData.isEmpty == false else {
+            throw DocumentError.noBookmarkData
+        }
+
+        // Create a temporary secure URL with read access to the users document data
+        var isStale = false
+        let directory = try URL(
+            resolvingBookmarkData: urlBookmarkData,
+            options: .withSecurityScope,
+            relativeTo: nil,
+            bookmarkDataIsStale: &isStale
+        )
+
+        // Open up our access, and make sure our data isn't stale
+        guard isStale == false, directory.startAccessingSecurityScopedResource() else {
+            throw DocumentError.bookmarkIsStale
+        }
+
+        let files = try await self.extractFilesFromDisk(from: directory)
+        let documents = try await self.createDocuments(from: files)
+
+        let newChecksum = try documents.generateChecksum()
+        guard let oldChecksum = self.project.documentationChecksum else {
+            return false
+        }
+
+        print("New Checksum: \(newChecksum)")
+        print("Old Checksum: \(oldChecksum)")
+
+        return newChecksum != oldChecksum
+    }
+
+}
+
+// MARK: - Private
+
+private extension DocumentParser {
+
+    func extractFilesFromDisk(from directory: URL) async throws -> [URL] {
+        var files = [URL]()
+
         // Create an enumerator to iterate over the files in our directory
         let enumerator = FileManager.default.enumerator(
             at: directory,
             includingPropertiesForKeys: nil
         )
 
-        let totalFileCount = self.documentationCount(at: directory)
-        var currentFile = 0
-
-        let similarityIndex = await SimilarityIndex(
-            model: self.settings.embeddingModel.embeddingsProtocol,
-            metric: self.settings.similarityMetric.metricProtocol
-        )
-
         // Enumerate over each file in the directory
         while let url = enumerator?.nextObject() as? URL {
-
             // Make sure this file is a documentation type
             guard self.validDocumentation(at: url) else {
                 continue
             }
 
-            currentFile += 1
+            files.append(url)
+        }
 
-            // Update our called on the sync progress
-            self.onSyncUpdate(currentFile, totalFileCount)
+        return files
+    }
 
+    func createDocuments(from files: [URL]) async throws -> [Document] {
+        // This is going to hold the documents that represent the files
+        // in our directory.
+        var documents = [Document]()
+
+        // Enumerate over each file in the directory
+        for url in files {
             // Extract the documents content as a string file
-            guard let content = try? String(String(contentsOf: url, encoding: .utf8)) else {
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else {
                 continue
             }
-
-            // Split the content into chunks
-            let chunks = self.chunks(from: content)
-
-            // Calculate the embedded value for each chunk
-            let embedded = await chunks
-                .asyncMap { chunk in
-                    let value = await similarityIndex.getEmbedding(for: chunk)
-                    return Document.Embedding(chunk: chunk, embedding: value)
-                }
 
             guard let checksum = content.checksum else {
                 throw Document.ChecksumGenerationError.failedConversion
@@ -161,17 +180,65 @@ private extension DocumentParser {
                 content: content,
                 checksum: checksum,
                 projectID: settings.projectID,
-                embeddings: embedded,
+                embeddings: nil,
                 createdAt: .now,
                 updatedAt: .now
             )
             documents.append(document)
         }
 
-        // Close our access, we're done here
-        directory.stopAccessingSecurityScopedResource()
-
         return documents
+    }
+
+    func index(documents: [Document]) async throws -> [Document] {
+        // For tracking our progress
+        var current = 0
+        let total = documents.count
+
+        // Create our indexer with the model and metric as set by the user
+        let similarityIndex = await SimilarityIndex(
+            model: self.settings.embeddingModel.embeddingsProtocol,
+            metric: self.settings.similarityMetric.metricProtocol
+        )
+
+        // Where we'll store the documents that we index
+        var indexed = [Document]()
+
+        // Iterate over each document and index it
+        for document in documents {
+
+            // Split the content into chunks
+            let chunks = self.chunks(from: document.content)
+
+            // Calculate the embedded value for each chunk
+            let embedded = await chunks
+                .asyncMap { chunk in
+                    let value = await similarityIndex.getEmbedding(for: chunk)
+                    return Document.Embedding(chunk: chunk, embedding: value)
+                }
+
+            // Copy our content over, and add our indexing data
+            let indexedDocument = Document(
+                url: document.url,
+                fileFormat: document.fileFormat,
+                content: document.content,
+                checksum: document.checksum,
+                projectID: document.projectID,
+                embeddings: embedded,
+                createdAt: document.createdAt,
+                updatedAt: document.updatedAt
+            )
+            indexed.append(indexedDocument)
+
+            // Update our progress
+            current += 1
+
+            // Update our called on the sync progress
+            self.onSyncUpdate(current, total)
+
+        }
+
+        return indexed
     }
 
     func chunks(from content: String) -> [String] {
