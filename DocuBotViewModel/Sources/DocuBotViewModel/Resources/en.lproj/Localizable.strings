@@ -126,7 +126,7 @@
 "ConfigureProject.Editing.createButton" = "Update Project";
 
 "ConfigureProject.SimilaritySection.title" = "Similarity Metric Configuration";
-"ConfigureProject.SimilaritySection.subtitle" = "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.";
+"ConfigureProject.SimilaritySection.subtitle" = "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.\nChanging these will require a full resync of your project.";
 
 "ConfigureProject.LlmSection.title" = "LLM Configuration";
 "ConfigureProject.LlmSection.subtitle" = "Adjust advanced settings for the LLM, including model parameters and behavior to optimise performance and responsiveness. Adjust them only if you need something specific.";
