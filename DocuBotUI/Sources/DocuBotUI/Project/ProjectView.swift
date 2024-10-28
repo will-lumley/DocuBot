@@ -51,7 +51,7 @@ public struct ProjectView: View {
             ToolbarButton(viewModel: viewModel.syncProjectButton)
                 .keyboardShortcut("s", modifiers: [.command, .shift])
 
-            ToolbarButton(viewModel: viewModel.openSettingsButton)
+            ToolbarButton(viewModel: viewModel.projectSettingsButton)
                 .keyboardShortcut(",", modifiers: .command)
         }
 
