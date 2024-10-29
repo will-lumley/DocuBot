@@ -38,16 +38,7 @@ public struct Project: Hashable, Codable, Sendable {
     public var urlBookmarkData: Data
 
     /// The checksum of all the documentation tokens that exist within our projects path.
-    public var documentationChecksum: String? {
-        didSet {
-            print("Setting Checksum: \(documentationChecksum)")
-            print()
-        }
-    }
-
-    /// Indicative of if the documentation we've loaded into memory is different from the
-    /// documentation that exists in the file structure.
-    public var isDirty: Bool
+    public var documentationChecksum: String?
 
     /// An array of all the documents that belong to this Project.
     /// Will be `nil` until `loadDocuments()` is called.
@@ -56,6 +47,12 @@ public struct Project: Hashable, Codable, Sendable {
 
     /// An array of example questions that are relevant to this Project.
     public var exampleQuestions: [String]
+
+    /// The warning state that exists for this project
+    public private(set) var alertStatus: AlertStatus
+
+    /// Indicative of if we need to do a full resync when the next sync occurs
+    public var needsFullResync: Bool
 
     /// When this project was created
     public let createdAt: Date
@@ -71,18 +68,20 @@ public struct Project: Hashable, Codable, Sendable {
         name: String,
         urlBookmarkData: Data,
         documentationCheckSum: String?,
-        isDirty: Bool,
         exampleQuestions: [String],
+        alertStatus: AlertStatus,
+        needsFullResync: Bool,
         createdAt: Date,
         updatedAt: Date
     ) {
         self.id = id
         self.path = path
         self.name = name
-        self.isDirty = isDirty
         self.documentationChecksum = documentationCheckSum
         self.urlBookmarkData = urlBookmarkData
         self.exampleQuestions = exampleQuestions
+        self.alertStatus = alertStatus
+        self.needsFullResync = needsFullResync
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -136,6 +135,25 @@ public extension Project {
 
         let results = await similarityIndex.search(query)
         return results
+    }
+
+    mutating func set(alertStatus: AlertStatus) {
+        // If we're clearing out any alert status, let it pass
+        if alertStatus == .none {
+            self.alertStatus = alertStatus
+        }
+
+        // If our new alert has a higher priority, let it pass
+        if alertStatus.rawValue > self.alertStatus.rawValue {
+            self.alertStatus = alertStatus
+        }
+    }
+
+    mutating func clearDirtyStatus() {
+        // If we're dirty, we can remove the alert
+        if self.alertStatus.isDirty {
+            self.alertStatus = .none
+        }
     }
 
 }

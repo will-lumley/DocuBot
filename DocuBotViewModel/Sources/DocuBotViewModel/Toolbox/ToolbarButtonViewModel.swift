@@ -16,6 +16,7 @@ public final class ToolbarButtonViewModel: ObservableObject {
     public enum WarningState {
         case none
         case warning
+        case error
     }
 
     public typealias OnSelect = () -> Void

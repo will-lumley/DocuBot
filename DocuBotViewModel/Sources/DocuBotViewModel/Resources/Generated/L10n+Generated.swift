@@ -211,6 +211,28 @@ internal enum L10n {
       /// LLM Configuration
       internal static let title = L10n.tr("Localizable", "ConfigureProject.LlmSection.title", fallback: "LLM Configuration")
     }
+    internal enum Resync {
+      /// Save Settings
+      internal static let saveButton = L10n.tr("Localizable", "ConfigureProject.Resync.saveButton", fallback: "Save Settings")
+      /// Re-Sync Will Be Needed
+      internal static let title = L10n.tr("Localizable", "ConfigureProject.Resync.title", fallback: "Re-Sync Will Be Needed")
+      internal enum Directory {
+        /// Changing the directorywill require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
+        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Directory.message", fallback: "Changing the directorywill require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
+      }
+      internal enum Format {
+        /// Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
+        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Format.message", fallback: "Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
+      }
+      internal enum Metric {
+        /// Changing the similarity metric will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
+        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Metric.message", fallback: "Changing the similarity metric will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
+      }
+      internal enum Model {
+        /// Changing the similarity model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
+        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Model.message", fallback: "Changing the similarity model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
+      }
+    }
     internal enum SimilaritySection {
       /// These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.
       /// Changing these will require a full resync of your project.
@@ -324,6 +346,10 @@ internal enum L10n {
     internal static let placeholder = L10n.tr("Localizable", "Project.placeholder", fallback: "Write your question here...")
     /// Ask any question about your project.
     internal static let queryTitle = L10n.tr("Localizable", "Project.queryTitle", fallback: "Ask any question about your project.")
+    internal enum Error {
+      /// This project has not been synced yet. Please perform an initial sync to load and index the project's documentation.
+      internal static let firstSync = L10n.tr("Localizable", "Project.Error.firstSync", fallback: "This project has not been synced yet. Please perform an initial sync to load and index the project's documentation.")
+    }
     internal enum LlmExampleQuestionPrompt {
       /// Here is an excerpt from a file.
       /// 
@@ -387,8 +413,16 @@ internal enum L10n {
       }
     }
     internal enum Warning {
+      /// The project's location has been changed. A sync is required to ensure the latest changes are reflected.
+      internal static let directoryChanged = L10n.tr("Localizable", "Project.Warning.directoryChanged", fallback: "The project's location has been changed. A sync is required to ensure the latest changes are reflected.")
+      /// The project's specified documentation format has been changed. A sync is required to ensure the latest changes are reflected.
+      internal static let formatsChanged = L10n.tr("Localizable", "Project.Warning.formatsChanged", fallback: "The project's specified documentation format has been changed. A sync is required to ensure the latest changes are reflected.")
       /// The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.
-      internal static let sync = L10n.tr("Localizable", "Project.Warning.sync", fallback: "The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.")
+      internal static let isDirty = L10n.tr("Localizable", "Project.Warning.isDirty", fallback: "The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.")
+      /// The project's similarity metric has been changed. A sync is required to ensure the latest changes are reflected.
+      internal static let metricChanged = L10n.tr("Localizable", "Project.Warning.metricChanged", fallback: "The project's similarity metric has been changed. A sync is required to ensure the latest changes are reflected.")
+      /// The project's embedding model has been changed. A sync is required to ensure the latest changes are reflected.
+      internal static let modelChanged = L10n.tr("Localizable", "Project.Warning.modelChanged", fallback: "The project's embedding model has been changed. A sync is required to ensure the latest changes are reflected.")
     }
   }
   internal enum ProjectSettings {

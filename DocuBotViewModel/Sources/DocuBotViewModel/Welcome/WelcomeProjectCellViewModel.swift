@@ -78,17 +78,7 @@ public extension WelcomeProjectCellViewModel {
 
     static var mock: WelcomeProjectCellViewModel {
         .init(
-            project: .init(
-                id: 1,
-                path: "/Users/will/Desktop/Project_1",
-                name: "Project_1",
-                urlBookmarkData: .init(),
-                documentationCheckSum: "123",
-                isDirty: false,
-                exampleQuestions: [],
-                createdAt: .now,
-                updatedAt: .now
-            )
+            project: .mock
         )
     }
 
