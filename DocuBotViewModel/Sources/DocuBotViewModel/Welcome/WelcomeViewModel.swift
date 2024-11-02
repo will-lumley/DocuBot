@@ -17,13 +17,16 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
-    public typealias OnDelete = () -> Void
-
     public enum OpenWindow {
+        case modelManager
         case project(ProjectViewModel.OpenWindowPackage)
     }
 
+    public typealias OnDelete = () -> Void
+
     // MARK: - Properties
+
+    @Published public var modelCount: Int?
 
     /// The ViewModels that represent our project cells/rows
     @Published public var projects: [WelcomeProjectCellViewModel]?
@@ -54,6 +57,9 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
             .map { $0.map { WelcomeProjectCellViewModel(project: $0, delegate: self) } }
             .replaceError(with: [])
             .assign(to: &$projects)
+
+        persistenceService.getModelCount()
+            .assign(to: &$modelCount)
     }
 
 }
@@ -82,9 +88,6 @@ public extension WelcomeViewModel {
 
     var newProjectButton: MenuButtonViewModel {
         .init(text: L10n.Welcome.loadNewProject) {
-            // Close our window
-            // self.onDismiss.send(())
-
             // Open the CreateProject
             self.createProjectViewModel = .init(serviceContainer: self.serviceContainer)
         }
@@ -104,6 +107,12 @@ public extension WelcomeViewModel {
             let service = NSSharingService(named: NSSharingService.Name.composeEmail)
             service?.recipients = [Secrets.AppInfo.developerEmail]
             service?.perform(withItems: [""])
+        }
+    }
+
+    var openModelManager: MenuButtonViewModel {
+        .init(text: L10n.Welcome.modelManager) {
+            self.onOpen.send(.modelManager)
         }
     }
 

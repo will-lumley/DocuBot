@@ -18,6 +18,7 @@ struct DocuBotApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     @State private var isWelcomeViewOpen: Bool = false
+    @State private var isModelViewOpen: Bool = false
 
     // MARK: - View
 
@@ -54,7 +55,7 @@ struct DocuBotApp: App {
 
                     // We already have it open, just focus it
                     else {
-                        self.focusWelcomeWindow()
+                        self.focusWindow(with: WelcomeView.id)
                     }
                 }
                 .keyboardShortcut("1", modifiers: [.command, .shift])
@@ -73,11 +74,50 @@ struct DocuBotApp: App {
             }
         }
         .windowResizability(.contentSize)
+
+        // This is our ModelManager window
+        WindowGroup(id: ModelManagerView.id) {
+            ModelManagerView(
+                viewModel: .init(serviceContainer: delegate.serviceContainer)
+            )
+            .onAppear {
+                self.isModelViewOpen = true
+            }
+            .onDisappear {
+                self.isModelViewOpen = false
+            }
+        }
+        .windowResizability(.contentSize)
+        .onChange(of: isModelViewOpen) { _, newValue in
+            if newValue == false {
+                // If ModelView is closed, reset the state
+                self.isModelViewOpen = false
+            }
+        }
+        .commands {
+            // Open our ModelManager View
+            CommandGroup(after: .windowArrangement, addition: {
+                Button("Model Manager") {
+                    // If we haven't got the welcome window open, open it
+                    if self.isModelViewOpen == false {
+                        self.openWindow(id: ModelManagerView.id)
+                        self.isModelViewOpen = true
+                    }
+
+                    // We already have it open, just focus it
+                    else {
+                        self.focusWindow(with: ModelManagerView.id)
+                    }
+                }
+                .keyboardShortcut("2", modifiers: [.command, .shift])
+            })
+        }
+
     }
 
-    private func focusWelcomeWindow() {
+    private func focusWindow(with id: String) {
         if let window = NSApp.windows.first(where: {
-            $0.identifier?.rawValue == WelcomeView.id
+            $0.identifier?.rawValue == id
         }) {
             window.makeKeyAndOrderFront(nil)
 

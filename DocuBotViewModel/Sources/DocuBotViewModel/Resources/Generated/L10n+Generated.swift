@@ -341,6 +341,10 @@ internal enum L10n {
     /// Show in Finder
     internal static let showInFinder = L10n.tr("Localizable", "Generics.showInFinder", fallback: "Show in Finder")
   }
+  internal enum ModelManager {
+    /// Model Manager
+    internal static let windowTitle = L10n.tr("Localizable", "ModelManager.windowTitle", fallback: "Model Manager")
+  }
   internal enum Project {
     /// Write your question here...
     internal static let placeholder = L10n.tr("Localizable", "Project.placeholder", fallback: "Write your question here...")
@@ -454,6 +458,8 @@ internal enum L10n {
     internal static let emptyProjectTitle = L10n.tr("Localizable", "Welcome.emptyProjectTitle", fallback: "Your project list is empty")
     /// Load New Project
     internal static let loadNewProject = L10n.tr("Localizable", "Welcome.loadNewProject", fallback: "Load New Project")
+    /// Open Model Manager
+    internal static let modelManager = L10n.tr("Localizable", "Welcome.modelManager", fallback: "Open Model Manager")
     /// Developed by William Lumley
     internal static let subtitle1 = L10n.tr("Localizable", "Welcome.subtitle1", fallback: "Developed by William Lumley")
     /// v%@(%@)

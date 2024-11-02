@@ -37,7 +37,6 @@ public extension String {
         return trimmed
     }
 
-
     func trim(by length: Int) -> String {
         if self.count > length {
             let index = self.index(self.startIndex, offsetBy: length)
