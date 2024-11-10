@@ -20,7 +20,8 @@ struct EmptyListView: View {
         VStack {
             Image(systemSymbol: configuration.icon)
                 .resizable()
-                .frame(width: 75, height: 75)
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 75)
                 .padding()
 
             Text(configuration.title)
@@ -32,6 +33,30 @@ struct EmptyListView: View {
                 .font(.subheadline)
                 .padding(.horizontal)
                 .multilineTextAlignment(.center)
+                .lineLimit(10)
+
+            if let action = configuration.action {
+                if let secondaryTitle = action.secondaryTitle {
+                    Button(
+                        action: action.onSelect,
+                        label: {
+                            HStack {
+                                Text(action.title)
+                                Text(secondaryTitle)
+                                    .foregroundStyle(.white.opacity(0.75))
+                            }
+                        }
+                    )
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .padding(.top)
+                } else {
+                    Button(action.title, action: action.onSelect)
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .padding(.top)
+                }
+            }
         }
         .padding()
     }
@@ -42,4 +67,5 @@ struct EmptyListView: View {
 
 #Preview {
     EmptyListView(configuration: .mock)
+        .frame(width: 200, height: 400)
 }

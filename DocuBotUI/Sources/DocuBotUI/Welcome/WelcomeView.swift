@@ -136,7 +136,16 @@ private extension WelcomeView {
             }
         }
 
-        .sheet(item: $viewModel.createProjectViewModel) { viewModel in
+        // Listen to our Alert
+        .alert(item: $viewModel.alertConfiguration) { configuration in
+            Alert(
+                title: Text(configuration.title),
+                message: Text(configuration.message)
+            )
+        }
+
+        // Listen to our CreateProject ViewModel
+        .sheet(item: $viewModel.configureProjectViewModel) { viewModel in
             ConfigureProjectView(viewModel: viewModel)
         }
 
@@ -144,33 +153,27 @@ private extension WelcomeView {
 
     var projectListView: some View {
         VStack {
-            if let projects = viewModel.projects {
-                if projects.isEmpty {
-                    EmptyListView(configuration: viewModel.emptyProjectConfiguration)
-                } else {
-                    List(projects) { project in
-                        WelcomeProjectCellView(viewModel: project)
-                            .contextMenu {
-                                ForEach(viewModel.contextMenuConfigurations(for: project)) { configuration in
-                                    Button(configuration.text, action: configuration.onSelect)
-                                }
-                            }
-                    }
-                    // Yucky dirty hack to compensate for the lack of toolbar
-                    .padding(.top, -24)
-                }
-            } else {
+            switch viewModel.listState {
+            case .none:
                 EmptyView()
+            case .listProjects(let projects):
+                List(projects) { project in
+                    WelcomeProjectCellView(viewModel: project)
+                        .contextMenu {
+                            ForEach(viewModel.contextMenuConfigurations(for: project)) { configuration in
+                                Button(configuration.text, action: configuration.onSelect)
+                            }
+                        }
+                }
+                // Yucky dirty hack to compensate for the lack of toolbar
+                .padding(.top, -24)
+            case .noProject(let configuration):
+                EmptyListView(configuration: configuration)
+            case .noModel(let configuration):
+                EmptyListView(configuration: configuration)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-        .alert(item: $viewModel.alertConfiguration) { configuration in
-            Alert(
-                title: Text(configuration.title),
-                message: Text(configuration.message)
-            )
-        }
     }
 
     func moveWindow(by offset: CGSize) {

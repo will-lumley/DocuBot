@@ -22,14 +22,16 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
         case project(ProjectViewModel.OpenWindowPackage)
     }
 
+    public enum ListViewState {
+        case none
+        case listProjects([WelcomeProjectCellModel])
+        case noProject(EmptyListConfiguration)
+        case noModel(EmptyListConfiguration)
+    }
+
     public typealias OnDelete = () -> Void
 
     // MARK: - Properties
-
-    @Published public var modelCount: Int?
-
-    /// The ViewModels that represent our project cells/rows
-    @Published public var projects: [WelcomeProjectCellViewModel]?
 
     /// This will be called when we want to open a new window, along with the info that dictates which window
     @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
@@ -43,23 +45,43 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
     /// Indicative of if we want to display/hide our Delete Project confirmation dialog
     @Published public var deleteProjectConfirmationDialogPresented = false
 
+    /// The alert we'll use to communicate to the user
     @Published public var alertConfiguration: AlertConfiguration?
 
-    @Published public var createProjectViewModel: ConfigureProjectViewModel?
+    /// The ViewModel for our ConfigureProject ViewModel
+    @Published public var configureProjectViewModel: ConfigureProjectViewModel?
+
+    /// The state of our ListView
+    @Published public var listState: ListViewState = .none
 
     // MARK: - Lifecycle
 
     override public func configureBindings() {
         super.configureBindings()
 
-        // Connect our ProjectCellViewModels to our DB layer
-        persistenceService.getProjects()
-            .map { $0.map { WelcomeProjectCellViewModel(project: $0, delegate: self) } }
+        let projectsPublisher = persistenceService.getProjects()
             .replaceError(with: [])
-            .assign(to: &$projects)
+        let modelCountPublisher = persistenceService.getModelCount()
+            .replaceNil(with: 0)
 
-        persistenceService.getModelCount()
-            .assign(to: &$modelCount)
+        Publishers.CombineLatest(projectsPublisher, modelCountPublisher)
+            .map { projects, modelCount -> ([WelcomeProjectCellModel], Int?) in
+                let projectCellModels = projects.map {
+                    WelcomeProjectCellModel(project: $0, delegate: self)
+                }
+
+                return (projectCellModels, modelCount)
+            }
+            .map { projects, modelCount -> ListViewState in
+                if modelCount == 0 {
+                    return .noModel(self.emptyModelConfiguration)
+                } else if projects.count == 0 {
+                    return .noProject(self.emptyProjectConfiguration)
+                }
+
+                return .listProjects(projects)
+            }
+            .assign(to: &$listState)
     }
 
 }
@@ -88,8 +110,9 @@ public extension WelcomeViewModel {
 
     var newProjectButton: MenuButtonViewModel {
         .init(text: L10n.Welcome.loadNewProject) {
-            // Open the CreateProject
-            self.createProjectViewModel = .init(serviceContainer: self.serviceContainer)
+            self.configureProjectViewModel = .init(
+                serviceContainer: self.serviceContainer
+            )
         }
     }
 
@@ -104,7 +127,9 @@ public extension WelcomeViewModel {
 
     var emailDeveloper: MenuButtonViewModel {
         .init(text: L10n.Welcome.emailDeveloper) {
-            let service = NSSharingService(named: NSSharingService.Name.composeEmail)
+            let service = NSSharingService(
+                named: NSSharingService.Name.composeEmail
+            )
             service?.recipients = [Secrets.AppInfo.developerEmail]
             service?.perform(withItems: [""])
         }
@@ -114,14 +139,6 @@ public extension WelcomeViewModel {
         .init(text: L10n.Welcome.modelManager) {
             self.onOpen.send(.modelManager)
         }
-    }
-
-    var emptyProjectConfiguration: EmptyListConfiguration {
-        .init(
-            title: L10n.Welcome.emptyProjectTitle,
-            subtitle: L10n.Welcome.emptyProjectSubtitle,
-            icon: .booksVerticalFill
-        )
     }
 
     var deleteProjectConfirmationDialog: ConfirmationDialogConfiguration {
@@ -145,7 +162,7 @@ public extension WelcomeViewModel {
     }
 
     func contextMenuConfigurations(
-        for cell: WelcomeProjectCellViewModel
+        for cell: WelcomeProjectCellModel
     ) -> [ContextMenuConfiguration] {
         return [
             .init(text: L10n.Welcome.ProjectContextMenu.open) {
@@ -184,6 +201,30 @@ public extension WelcomeViewModel {
 // MARK: - Private
 
 private extension WelcomeViewModel {
+
+    var emptyProjectConfiguration: EmptyListConfiguration {
+        .init(
+            title: L10n.Welcome.EmptyProject.title,
+            subtitle: L10n.Welcome.EmptyProject.subtitle,
+            icon: .booksVerticalFill,
+            action: .init(
+                title: L10n.Welcome.loadNewProject,
+                onSelect: self.newProjectButton.selected
+            )
+        )
+    }
+
+    var emptyModelConfiguration: EmptyListConfiguration {
+        .init(
+            title: L10n.Welcome.EmptyModel.title,
+            subtitle: L10n.Welcome.EmptyModel.subtitle,
+            icon: .arrowDownDoc,
+            action: .init(
+                title: L10n.Welcome.modelManager,
+                onSelect: self.openModelManager.selected
+            )
+        )
+    }
 
     func open(project: Project) {
         // Close our window

@@ -13,7 +13,6 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
 
     public enum Language: Hashable, CaseIterable, Codable, Sendable {
         case english
-        case espanol
     }
 
     public enum EmbeddingModel: String, CaseIterable, Hashable, Codable, Sendable {
@@ -54,6 +53,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
 
     public let id: Int64?
     public let projectID: Int64
+    public let modelID: Int64
 
     public let supportedFormats: [DocumentationFormat]
     public let language: Language
@@ -79,6 +79,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     public init(
         id: Int64? = nil,
         projectID: Int64,
+        modelID: Int64,
         supportedFormats: [DocumentationFormat],
         language: Language,
         embeddingModel: EmbeddingModel,
@@ -98,6 +99,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     ) {
         self.id = id
         self.projectID = projectID
+        self.modelID = modelID
 
         self.supportedFormats = supportedFormats
         self.language = language

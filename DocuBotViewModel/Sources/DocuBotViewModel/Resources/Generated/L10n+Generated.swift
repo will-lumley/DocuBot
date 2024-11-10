@@ -43,12 +43,6 @@ internal enum L10n {
         internal static let `default` = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.SystemPrompt.default", fallback: "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.")
       }
     }
-    internal enum Configuration {
-      internal enum Directory {
-        /// Select a Directory
-        internal static let select = L10n.tr("Localizable", "ConfigureProject.Configuration.Directory.select", fallback: "Select a Directory")
-      }
-    }
     internal enum Creating {
       /// Create Project
       internal static let createButton = L10n.tr("Localizable", "ConfigureProject.Creating.createButton", fallback: "Create Project")
@@ -87,16 +81,22 @@ internal enum L10n {
       /// General
       internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.title", fallback: "General")
       internal enum Directory {
+        /// Select a Directory
+        internal static let select = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Directory.select", fallback: "Select a Directory")
         /// Project Directory
         internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Directory.title", fallback: "Project Directory")
       }
       internal enum Language {
         /// English
         internal static let english = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Language.english", fallback: "English")
-        /// Español
-        internal static let espanol = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Language.espanol", fallback: "Español")
         /// Language
         internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Language.title", fallback: "Language")
+      }
+      internal enum Model {
+        /// Select a Model
+        internal static let select = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Model.select", fallback: "Select a Model")
+        /// LLM Model
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Model.title", fallback: "LLM Model")
       }
       internal enum Name {
         /// Project Name
@@ -286,6 +286,8 @@ internal enum L10n {
         internal static let missingFormat = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingFormat", fallback: "Please ensure that at least one format has been enabled.")
         /// Please ensure that a valid maximum token count is provided.
         internal static let missingMaxTokenCount = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingMaxTokenCount", fallback: "Please ensure that a valid maximum token count is provided.")
+        /// Please ensure that a model has been selected.
+        internal static let missingModel = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingModel", fallback: "Please ensure that a model has been selected.")
         /// Please ensure that a project name has been provided.
         internal static let missingName = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingName", fallback: "Please ensure that a project name has been provided.")
         /// Please ensure that a valid seed is provided.
@@ -294,6 +296,38 @@ internal enum L10n {
         internal static let missingSystemPrompt = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingSystemPrompt", fallback: "Please ensure that a valid system prompt is provided.")
         /// Please ensure that a valid Top-K is provided.
         internal static let missingTopK = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingTopK", fallback: "Please ensure that a valid Top-K is provided.")
+      }
+    }
+    internal enum ModelManager {
+      internal enum DeleteModel {
+        /// Failed to delete model
+        internal static let title = L10n.tr("Localizable", "Error.ModelManager.DeleteModel.title", fallback: "Failed to delete model")
+      }
+      internal enum ModelDownloadError {
+        /// Failed to create the directory that DocuBot uses to store models wihtin.
+        internal static let failedToCreateSubdirectory = L10n.tr("Localizable", "Error.ModelManager.ModelDownloadError.failedToCreateSubdirectory", fallback: "Failed to create the directory that DocuBot uses to store models wihtin.")
+        /// Failed to get the relevant metadata from the model.
+        internal static let failedToGetFileSize = L10n.tr("Localizable", "Error.ModelManager.ModelDownloadError.failedToGetFileSize", fallback: "Failed to get the relevant metadata from the model.")
+        /// Failed to copy the model to DocuBot's local directory.
+        internal static let failedToMoveToAppSupport = L10n.tr("Localizable", "Error.ModelManager.ModelDownloadError.failedToMoveToAppSupport", fallback: "Failed to copy the model to DocuBot's local directory.")
+        /// DocuBot cannot find the data of the downloaded file.
+        internal static let missingDownloadFile = L10n.tr("Localizable", "Error.ModelManager.ModelDownloadError.missingDownloadFile", fallback: "DocuBot cannot find the data of the downloaded file.")
+        /// Failed to find the Application Support directory.
+        internal static let noAppSupportDirectory = L10n.tr("Localizable", "Error.ModelManager.ModelDownloadError.noAppSupportDirectory", fallback: "Failed to find the Application Support directory.")
+        /// Failed to download and install model
+        internal static let title = L10n.tr("Localizable", "Error.ModelManager.ModelDownloadError.title", fallback: "Failed to download and install model")
+      }
+      internal enum ModelError {
+        /// Failed to delete model.
+        internal static let failedToDelete = L10n.tr("Localizable", "Error.ModelManager.ModelError.failedToDelete", fallback: "Failed to delete model.")
+        /// No directory selected.
+        internal static let noDirectory = L10n.tr("Localizable", "Error.ModelManager.ModelError.noDirectory", fallback: "No directory selected.")
+        /// Failed to get file access
+        internal static let title = L10n.tr("Localizable", "Error.ModelManager.ModelError.title", fallback: "Failed to get file access")
+      }
+      internal enum ModelImportError {
+        /// Failed to import model
+        internal static let title = L10n.tr("Localizable", "Error.ModelManager.ModelImportError.title", fallback: "Failed to import model")
       }
     }
     internal enum Project {
@@ -322,8 +356,8 @@ internal enum L10n {
         internal static let title = L10n.tr("Localizable", "Error.Project.StaleBookmark.title", fallback: "Folder Access Issue")
       }
       internal enum UpdateBookmark {
-        /// Failed to restore folder access
-        internal static let title = L10n.tr("Localizable", "Error.Project.UpdateBookmark.title", fallback: "Failed to restore folder access")
+        /// Failed to get folder access
+        internal static let title = L10n.tr("Localizable", "Error.Project.UpdateBookmark.title", fallback: "Failed to get folder access")
       }
     }
     internal enum Welcome {
@@ -344,6 +378,50 @@ internal enum L10n {
   internal enum ModelManager {
     /// Model Manager
     internal static let windowTitle = L10n.tr("Localizable", "ModelManager.windowTitle", fallback: "Model Manager")
+    internal enum Cell {
+      /// %@ GB
+      internal static func subtitle(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "ModelManager.Cell.subtitle", String(describing: p1), fallback: "%@ GB")
+      }
+    }
+    internal enum Delete {
+      internal enum Confirmation {
+        /// Cancel
+        internal static let cancelButton = L10n.tr("Localizable", "ModelManager.Delete.Confirmation.cancelButton", fallback: "Cancel")
+        /// Delete this Model
+        internal static let deleteButton = L10n.tr("Localizable", "ModelManager.Delete.Confirmation.deleteButton", fallback: "Delete this Model")
+        /// Are you sure you want to delete this model?
+        internal static let title = L10n.tr("Localizable", "ModelManager.Delete.Confirmation.title", fallback: "Are you sure you want to delete this model?")
+      }
+    }
+    internal enum DownloadMoreButton {
+      /// Find New Models
+      internal static let title = L10n.tr("Localizable", "ModelManager.DownloadMoreButton.title", fallback: "Find New Models")
+    }
+    internal enum DownloadProgress {
+      /// %@GB of %@GB downloaded
+      internal static func subtitle(_ p1: Any, _ p2: Any) -> String {
+        return L10n.tr("Localizable", "ModelManager.DownloadProgress.subtitle", String(describing: p1), String(describing: p2), fallback: "%@GB of %@GB downloaded")
+      }
+      /// Model download is %@%% complete
+      internal static func title(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "ModelManager.DownloadProgress.title", String(describing: p1), fallback: "Model download is %@%% complete")
+      }
+    }
+    internal enum EmptyList {
+      /// DocuBot runs AI models locally on your Mac, ensuring maximum privacy and security. Chat with a variety of AI models, each offering unique expertise based on its training data and knowledge base.
+      /// 
+      /// Import a model from your device using the + button, or download a recommended one using the button below.
+      internal static let subtitle = L10n.tr("Localizable", "ModelManager.EmptyList.subtitle", fallback: "DocuBot runs AI models locally on your Mac, ensuring maximum privacy and security. Chat with a variety of AI models, each offering unique expertise based on its training data and knowledge base.\n\nImport a model from your device using the + button, or download a recommended one using the button below.")
+      /// No models imported yet
+      internal static let title = L10n.tr("Localizable", "ModelManager.EmptyList.title", fallback: "No models imported yet")
+      internal enum Action {
+        /// ~3.74 GB
+        internal static let secondaryTitle = L10n.tr("Localizable", "ModelManager.EmptyList.Action.secondaryTitle", fallback: "~3.74 GB")
+        /// Download Default Model
+        internal static let title = L10n.tr("Localizable", "ModelManager.EmptyList.Action.title", fallback: "Download Default Model")
+      }
+    }
   }
   internal enum Project {
     /// Write your question here...
@@ -452,10 +530,6 @@ internal enum L10n {
   internal enum Welcome {
     /// Email the Developer
     internal static let emailDeveloper = L10n.tr("Localizable", "Welcome.emailDeveloper", fallback: "Email the Developer")
-    /// Your insights await – load a new project to get started
-    internal static let emptyProjectSubtitle = L10n.tr("Localizable", "Welcome.emptyProjectSubtitle", fallback: "Your insights await – load a new project to get started")
-    /// Your project list is empty
-    internal static let emptyProjectTitle = L10n.tr("Localizable", "Welcome.emptyProjectTitle", fallback: "Your project list is empty")
     /// Load New Project
     internal static let loadNewProject = L10n.tr("Localizable", "Welcome.loadNewProject", fallback: "Load New Project")
     /// Open Model Manager
@@ -479,6 +553,18 @@ internal enum L10n {
         /// Are you sure you want to delete this project?
         internal static let title = L10n.tr("Localizable", "Welcome.Delete.Confirmation.title", fallback: "Are you sure you want to delete this project?")
       }
+    }
+    internal enum EmptyModel {
+      /// Choose a model to enable DocuBot's AI features and start exploring your documentation.
+      internal static let subtitle = L10n.tr("Localizable", "Welcome.EmptyModel.subtitle", fallback: "Choose a model to enable DocuBot's AI features and start exploring your documentation.")
+      /// Download a Model to get started
+      internal static let title = L10n.tr("Localizable", "Welcome.EmptyModel.title", fallback: "Download a Model to get started")
+    }
+    internal enum EmptyProject {
+      /// Your insights await – load a new project to get started
+      internal static let subtitle = L10n.tr("Localizable", "Welcome.EmptyProject.subtitle", fallback: "Your insights await – load a new project to get started")
+      /// Your project list is empty
+      internal static let title = L10n.tr("Localizable", "Welcome.EmptyProject.title", fallback: "Your project list is empty")
     }
     internal enum ProjectContextMenu {
       /// Delete

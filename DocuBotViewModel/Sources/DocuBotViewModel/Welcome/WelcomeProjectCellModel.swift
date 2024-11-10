@@ -12,7 +12,7 @@ public protocol WelcomeProjectCellViewModelDelegate: AnyObject {
     func openProject(_ project: Project)
 }
 
-public class WelcomeProjectCellViewModel: ObservableObject {
+public class WelcomeProjectCellModel: ObservableObject {
 
     // MARK: - Properties
 
@@ -30,7 +30,7 @@ public class WelcomeProjectCellViewModel: ObservableObject {
 
 // MARK: - Identifiable
 
-extension WelcomeProjectCellViewModel: Identifiable {
+extension WelcomeProjectCellModel: Identifiable {
 
     public var id: Int64 {
         self.project.id ?? Int64(-1)
@@ -40,9 +40,9 @@ extension WelcomeProjectCellViewModel: Identifiable {
 
 // MARK: - Hashable
 
-extension WelcomeProjectCellViewModel: Hashable {
+extension WelcomeProjectCellModel: Hashable {
 
-    public static func == (lhs: WelcomeProjectCellViewModel, rhs: WelcomeProjectCellViewModel) -> Bool {
+    public static func == (lhs: WelcomeProjectCellModel, rhs: WelcomeProjectCellModel) -> Bool {
         return lhs.project == rhs.project
     }
 
@@ -54,7 +54,7 @@ extension WelcomeProjectCellViewModel: Hashable {
 
 // MARK: - Public
 
-public extension WelcomeProjectCellViewModel {
+public extension WelcomeProjectCellModel {
 
     var title: String {
         self.project.name
@@ -74,9 +74,9 @@ public extension WelcomeProjectCellViewModel {
 
 // MARK: - Preview
 
-public extension WelcomeProjectCellViewModel {
+public extension WelcomeProjectCellModel {
 
-    static var mock: WelcomeProjectCellViewModel {
+    static var mock: WelcomeProjectCellModel {
         .init(
             project: .mock
         )

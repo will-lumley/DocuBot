@@ -7,6 +7,7 @@
 "Error.ConfigureProject.Editing.FailedToCreate.title" = "Failed to Update Project";
 "Error.ConfigureProject.ConfigurationError.noDirectory" = "No directory selected.";
 "Error.ConfigureProject.ConfigurationError.noDirectoryBookmarkData" = "No secure directory data is avaiable to DocuBot.";
+"Error.ConfigureProject.FormValidation.missingModel" = "Please ensure that a model has been selected.";
 "Error.ConfigureProject.FormValidation.missingDirectory" = "Please ensure that a project directory has been selected.";
 "Error.ConfigureProject.FormValidation.missingName" = "Please ensure that a project name has been provided.";
 "Error.ConfigureProject.FormValidation.missingFormat" = "Please ensure that at least one format has been enabled.";
@@ -16,12 +17,23 @@
 "Error.ConfigureProject.FormValidation.missingBatchSize" = "Please ensure that a valid batch size is provided.";
 "Error.ConfigureProject.FormValidation.missingMaxTokenCount" = "Please ensure that a valid maximum token count is provided.";
 "Error.ConfigureProject.FormValidation.missingSystemPrompt" = "Please ensure that a valid system prompt is provided.";
+"Error.ModelManager.ModelError.title" = "Failed to get file access";
+"Error.ModelManager.DeleteModel.title" = "Failed to delete model";
+"Error.ModelManager.ModelError.noDirectory" = "No directory selected.";
+"Error.ModelManager.ModelError.failedToDelete" = "Failed to delete model.";
+"Error.ModelManager.ModelImportError.title" = "Failed to import model";
+"Error.ModelManager.ModelDownloadError.title" = "Failed to download and install model";
+"Error.ModelManager.ModelDownloadError.missingDownloadFile" = "DocuBot cannot find the data of the downloaded file.";
+"Error.ModelManager.ModelDownloadError.noAppSupportDirectory" = "Failed to find the Application Support directory.";
+"Error.ModelManager.ModelDownloadError.failedToCreateSubdirectory" = "Failed to create the directory that DocuBot uses to store models wihtin.";
+"Error.ModelManager.ModelDownloadError.failedToMoveToAppSupport" = "Failed to copy the model to DocuBot's local directory.";
+"Error.ModelManager.ModelDownloadError.failedToGetFileSize" = "Failed to get the relevant metadata from the model.";
 
 "Error.Project.FailedToSync.title" = "Failed to Sync";
 "Error.Project.FailedToCheckProject.title" = "Failed to Check Project's Documents";
 "Error.Project.FailedToExtractSettings.title" = "Failed to get Project Settings";
 "Error.Project.GptTalk.title" = "Failed to get communicate with the LLM";
-"Error.Project.UpdateBookmark.title" = "Failed to restore folder access";
+"Error.Project.UpdateBookmark.title" = "Failed to get folder access";
 "Error.Project.StaleBookmark.title" = "Folder Access Issue";
 "Error.Project.StaleBookmark.message" = "It looks like the file's location has changed or is no longer accessible. Please select the file again to continue.";
 "Error.Project.StaleBookmark.action" = "Select Folder";
@@ -33,13 +45,15 @@
 "Welcome.viewSourceCode" = "View Source Code";
 "Welcome.emailDeveloper" = "Email the Developer";
 "Welcome.modelManager" = "Open Model Manager";
-"Welcome.emptyProjectTitle" = "Your project list is empty";
-"Welcome.emptyProjectSubtitle" = "Your insights await – load a new project to get started";
+"Welcome.EmptyProject.title" = "Your project list is empty";
+"Welcome.EmptyProject.subtitle" = "Your insights await – load a new project to get started";
 "Welcome.Delete.Confirmation.title" = "Are you sure you want to delete this project?";
 "Welcome.Delete.Confirmation.deleteButton" = "Delete this Project";
 "Welcome.Delete.Confirmation.cancelButton" = "Cancel";
 "Welcome.ProjectContextMenu.open" = "Open";
 "Welcome.ProjectContextMenu.delete" = "Delete";
+"Welcome.EmptyModel.title" = "Download a Model to get started";
+"Welcome.EmptyModel.subtitle" = "Choose a model to enable DocuBot's AI features and start exploring your documentation.";
 
 "EmbeddingModel.Distilbert.title" = "Distilbert";
 "EmbeddingModel.MiniLme.title" = "Mini LME";
@@ -63,10 +77,11 @@
 "ConfigureProject.GeneralSection.subtitle" = "Tell us a bit about your project.";
 "ConfigureProject.GeneralSection.Name.title" = "Project Name";
 "ConfigureProject.GeneralSection.Directory.title" = "Project Directory";
-"ConfigureProject.Configuration.Directory.select" = "Select a Directory";
+"ConfigureProject.GeneralSection.Directory.select" = "Select a Directory";
+"ConfigureProject.GeneralSection.Model.title" = "LLM Model";
+"ConfigureProject.GeneralSection.Model.select" = "Select a Model";
 "ConfigureProject.GeneralSection.Language.title" = "Language";
 "ConfigureProject.GeneralSection.Language.english" = "English";
-"ConfigureProject.GeneralSection.Language.espanol" = "Español";
 
 "ConfigureProject.FormatSection.title" = "What format is your documentation in?";
 "ConfigureProject.FormatSection.subtitle" = "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.";
@@ -166,3 +181,14 @@
 "ProjectSettings.saveButton" = "Save Settings";
 
 "ModelManager.windowTitle" = "Model Manager";
+"ModelManager.EmptyList.title" = "No models imported yet";
+"ModelManager.EmptyList.subtitle" = "DocuBot runs AI models locally on your Mac, ensuring maximum privacy and security. Chat with a variety of AI models, each offering unique expertise based on its training data and knowledge base.\n\nImport a model from your device using the + button, or download a recommended one using the button below.";
+"ModelManager.EmptyList.Action.title" = "Download Default Model";
+"ModelManager.EmptyList.Action.secondaryTitle" = "~3.74 GB";
+"ModelManager.DownloadMoreButton.title" = "Find New Models";
+"ModelManager.DownloadProgress.title" = "Model download is %@%% complete";
+"ModelManager.DownloadProgress.subtitle" = "%@GB of %@GB downloaded";
+"ModelManager.Delete.Confirmation.title" = "Are you sure you want to delete this model?";
+"ModelManager.Delete.Confirmation.deleteButton" = "Delete this Model";
+"ModelManager.Delete.Confirmation.cancelButton" = "Cancel";
+"ModelManager.Cell.subtitle" = "%@ GB";

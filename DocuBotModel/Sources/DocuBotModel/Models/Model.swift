@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Model: Hashable, Codable, Sendable {
+public struct Model: Hashable, Codable, Sendable, Identifiable {
 
     // MARK: - Types
 
@@ -56,6 +56,16 @@ public struct Model: Hashable, Codable, Sendable {
         self.size = size
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+    }
+
+}
+
+// MARK: - Public
+
+public extension Model {
+
+    static var subdirectory: String {
+        "Models"
     }
 
 }

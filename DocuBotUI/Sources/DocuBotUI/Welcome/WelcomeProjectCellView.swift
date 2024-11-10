@@ -13,7 +13,7 @@ public struct WelcomeProjectCellView: View {
 
     // MARK: - Properties
 
-    @StateObject var viewModel: WelcomeProjectCellViewModel
+    @StateObject var viewModel: WelcomeProjectCellModel
 
     // MARK: - View
 

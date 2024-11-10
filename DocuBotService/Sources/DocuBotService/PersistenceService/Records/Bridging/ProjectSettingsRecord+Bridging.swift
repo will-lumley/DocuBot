@@ -27,6 +27,7 @@ public extension ProjectSettingsRecord {
         self.init(
             id: model.id,
             project: model.projectID,
+            model: model.modelID,
             supportedFormats: formats,
             language: language,
             embeddingModel: embeddingModel,
@@ -72,7 +73,6 @@ public extension ProjectSettingsRecord.Language {
     init(model: ProjectSettings.Language) {
         switch model {
         case .english: self = .english
-        case .espanol: self = .espanol
         }
     }
 
@@ -120,6 +120,7 @@ public extension ProjectSettings {
         self.init(
             id: record.id,
             projectID: record.project,
+            modelID: record.model,
             supportedFormats: formats,
             language: language,
             embeddingModel: embeddingModel,
@@ -165,7 +166,6 @@ public extension ProjectSettings.Language {
     init(record: ProjectSettingsRecord.Language) {
         switch record {
         case .english: self = .english
-        case .espanol: self = .espanol
         }
     }
 
