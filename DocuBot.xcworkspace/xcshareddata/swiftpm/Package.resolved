@@ -1,5 +1,5 @@
 {
-  "originHash" : "0c63c4c19b9b4409f41174240a1f6d75f9be1f92ebcac20a33c93470f6a10a69",
+  "originHash" : "575b5d6b28a00617cd6dc66316deaf67bc5e474615b4d6c092857112fb23f7b9",
   "pins" : [
     {
       "identity" : "grdb.swift",
@@ -89,14 +89,6 @@
       "state" : {
         "revision" : "879b85a470cacd70c19e22eb7e11a3aed66f4068",
         "version" : "6.6.2"
-      }
-    },
-    {
-      "identity" : "swiftllama",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ShenghaiWang/SwiftLlama.git",
-      "state" : {
-        "revision" : "abc2dd58ae445c15ea17aa0684259dbd1c772225"
       }
     },
     {

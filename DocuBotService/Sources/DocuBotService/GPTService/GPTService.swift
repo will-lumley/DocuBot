@@ -31,7 +31,7 @@ public protocol GPTService: Service {
     typealias OutputUpdated = @MainActor (_ delta: String) -> Void
 
     func prime(
-        with model: Model,
+        with model: LLMModel,
         with settings: ProjectSettings
     ) throws(GPTError)
 

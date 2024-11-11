@@ -85,7 +85,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var projectDirectoryText = ""
     @Published public var projectName = ""
     @Published public var selectedLanguage: ProjectSettings.Language
-    @Published public var model: Model!
+    @Published public var model: LLMModel!
 
     @Published public var formatConfigurations: [FormatConfiguration]
 
@@ -110,7 +110,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     public var projectDirectoryBookmarkData: Data?
 
     /// All the embedding models the user can choose from
-    public var availableModels = [Model]()
+    public var availableModels = [LLMModel]()
 
     /// All the languages available for the user to choose from
     public let availableLanguages = ProjectSettings.Language.allCases

@@ -1,5 +1,5 @@
 //
-//  ModelRecord+Bridging.swift
+//  LLMModelRecord+Bridging.swift
 //  DocuBotService
 //
 //  Created by William Lumley on 29/10/2024.
@@ -9,9 +9,9 @@ import DocuBotModel
 
 // MARK: - Record
 
-public extension ModelRecord {
+public extension LLMModelRecord {
 
-    init(model: Model) {
+    init(model: LLMModel) {
         self.init(
             id: model.id,
             name: model.name,
@@ -26,9 +26,9 @@ public extension ModelRecord {
 
 // MARK: - Model
 
-public extension Model {
+public extension LLMModel {
 
-    init(record: ModelRecord) {
+    init(record: LLMModelRecord) {
         self.init(
             id: record.id,
             name: record.name,

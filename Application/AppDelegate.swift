@@ -7,6 +7,8 @@
 
 import AppKit
 import DocuBotService
+import DocuBotUI
+import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
 
@@ -26,6 +28,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         self.serviceContainer.flagService
     }()
 
+    private var aboutBoxWindowController: NSWindowController?
+
     // MARK: - AppDelegate
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -33,6 +37,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         serviceContainer.logService.log(with: .info, "Starting application.")
 
         NSWindow.allowsAutomaticWindowTabbing = false
+    }
+
+    // MARK: - Window Management
+
+    @MainActor
+    func showAboutPanel() {
+        if aboutBoxWindowController == nil {
+            let styleMask: NSWindow.StyleMask = [
+                .closable,
+                .miniaturizable,
+                .titled
+            ]
+
+            let aboutView = AboutView(
+                viewModel: .init(serviceContainer: serviceContainer)
+            )
+
+            let window = NSWindow()
+            window.styleMask = styleMask
+            window.title = "About DocuBot"
+            window.contentView = NSHostingView(rootView: aboutView)
+            window.center()
+            aboutBoxWindowController = NSWindowController(window: window)
+        }
+
+        aboutBoxWindowController?.showWindow(aboutBoxWindowController?.window)
     }
 
 }

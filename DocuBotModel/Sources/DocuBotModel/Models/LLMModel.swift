@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Model: Hashable, Codable, Sendable, Identifiable {
+public struct LLMModel: Hashable, Codable, Sendable, Identifiable {
 
     // MARK: - Types
 
@@ -62,7 +62,7 @@ public struct Model: Hashable, Codable, Sendable, Identifiable {
 
 // MARK: - Public
 
-public extension Model {
+public extension LLMModel {
 
     static var subdirectory: String {
         "Models"

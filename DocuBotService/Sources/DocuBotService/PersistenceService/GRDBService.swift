@@ -182,61 +182,61 @@ class GRDBService: PersistenceService {
 
     func getModelCount() -> AnyPublisher<Int?, Never> {
         return ValueObservation.tracking { db in
-            return try ModelRecord.fetchCount(db)
+            return try LLMModelRecord.fetchCount(db)
         }
         .publisher(in: self.dbQueue)
         .replaceError(with: nil)
         .eraseToAnyPublisher()
     }
 
-    func getModels() -> AnyPublisher<[Model], any Error> {
+    func getModels() -> AnyPublisher<[LLMModel], any Error> {
         return ValueObservation.tracking { db in
-            return try ModelRecord.fetchAll(db)
+            return try LLMModelRecord.fetchAll(db)
         }
         .publisher(in: self.dbQueue)
-        .map { $0.map(Model.init) }
+        .map { $0.map(LLMModel.init) }
         .eraseToAnyPublisher()
     }
 
-    func getModels() async throws -> [Model] {
+    func getModels() async throws -> [LLMModel] {
         return try await dbQueue.read { db in
-            let records = try ModelRecord.fetchAll(db)
-            return records.map(Model.init)
+            let records = try LLMModelRecord.fetchAll(db)
+            return records.map(LLMModel.init)
         }
     }
 
-    func getModel(id: Int64) async throws -> Model {
+    func getModel(id: Int64) async throws -> LLMModel {
         return try await dbQueue.read { db in
-            let request = ModelRecord.filter(Column("id") == id)
-            guard let record = try ModelRecord.fetchOne(db, request) else {
+            let request = LLMModelRecord.filter(Column("id") == id)
+            guard let record = try LLMModelRecord.fetchOne(db, request) else {
                 throw PersistenceError.valueNotFound
             }
 
-            return Model(record: record)
+            return LLMModel(record: record)
         }
     }
 
-    func insert(model: Model) async throws -> Model {
+    func insert(model: LLMModel) async throws -> LLMModel {
         return try await self.dbQueue.write { db in
-            var record = ModelRecord(model: model)
+            var record = LLMModelRecord(model: model)
             try record.insert(db)
 
-            return Model(record: record)
+            return LLMModel(record: record)
         }
     }
 
-    func update(model: Model) async throws -> Model {
+    func update(model: LLMModel) async throws -> LLMModel {
         return try await self.dbQueue.write { db in
-            let record = ModelRecord(model: model)
+            let record = LLMModelRecord(model: model)
             try record.update(db)
 
-            return Model(record: record)
+            return LLMModel(record: record)
         }
     }
 
-    func delete(model: Model) async throws -> Bool {
+    func delete(model: LLMModel) async throws -> Bool {
         return try await self.dbQueue.write { db in
-            let success = try ModelRecord.deleteOne(db, id: model.id)
+            let success = try LLMModelRecord.deleteOne(db, id: model.id)
             // If we successfully deleted this row, delete the
             // corressponding path
             if success {
@@ -306,7 +306,7 @@ private extension GRDBService {
         do {
             // Import all the models
             try self.dbQueue.write {db in
-                for var record in ModelRecord.mocks() {
+                for var record in LLMModelRecord.mocks() {
                     try record.insert(db)
                 }
             }

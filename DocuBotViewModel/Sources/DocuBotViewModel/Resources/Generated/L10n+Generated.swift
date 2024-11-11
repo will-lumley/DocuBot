@@ -10,6 +10,24 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
+  internal enum About {
+    /// View Licence
+    internal static let licence = L10n.tr("Localizable", "About.licence", fallback: "View Licence")
+    /// Privacy Policy
+    internal static let privacyPolicy = L10n.tr("Localizable", "About.privacyPolicy", fallback: "Privacy Policy")
+    /// v%@(%@)
+    internal static func subtitle(_ p1: Any, _ p2: Any) -> String {
+      return L10n.tr("Localizable", "About.subtitle", String(describing: p1), String(describing: p2), fallback: "v%@(%@)")
+    }
+    /// DocuBot
+    internal static let title = L10n.tr("Localizable", "About.title", fallback: "DocuBot")
+    internal enum ThirdPartyLibraries {
+      /// DocuBot would not have been possible without these libraries:
+      internal static let subtitles = L10n.tr("Localizable", "About.ThirdPartyLibraries.subtitles", fallback: "DocuBot would not have been possible without these libraries:")
+      /// Acknowledgements
+      internal static let title = L10n.tr("Localizable", "About.ThirdPartyLibraries.title", fallback: "Acknowledgements")
+    }
+  }
   internal enum ConfigureProject {
     internal enum AdvancedSection {
       /// Batch Size
@@ -453,6 +471,20 @@ internal enum L10n {
       internal static func template(_ p1: Any, _ p2: Any) -> String {
         return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Here is some information.\n%@\n%@")
       }
+    }
+    internal enum QueryButton {
+      internal enum Ask {
+        /// Ask Question
+        internal static let title = L10n.tr("Localizable", "Project.QueryButton.Ask.title", fallback: "Ask Question")
+      }
+      internal enum Cancel {
+        /// Cancel
+        internal static let title = L10n.tr("Localizable", "Project.QueryButton.Cancel.title", fallback: "Cancel")
+      }
+    }
+    internal enum ShareButton {
+      /// Share
+      internal static let title = L10n.tr("Localizable", "Project.ShareButton.title", fallback: "Share")
     }
     internal enum StrictMode {
       /// Here's some excerpts from your documentation based on your query.

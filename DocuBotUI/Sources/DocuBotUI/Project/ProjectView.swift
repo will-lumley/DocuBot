@@ -145,6 +145,33 @@ public struct ProjectView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+            // Buttons underneath the TextView
+            HStack {
+                // Ask Button
+                Button(
+                    action: viewModel.askButtonSelected,
+                    label: {
+                        Text("\(Image(systemSymbol: viewModel.askButtonIcon)) \(viewModel.askButtonTitle)")
+                            .frame(width: 100)
+                    }
+                )
+                .keyboardShortcut(".", modifiers: [.command])
+                .padding(.horizontal)
+                .controlSize(.large)
+                .buttonStyle(.borderless)
+
+                // Share Button
+                ShareLink(item: viewModel.shareContent ?? "") {
+                    Text("\(Image(systemSymbol: .squareAndArrowUp)) \(viewModel.shareButtonTitle)")
+                        .frame(width: 100)
+                }
+                .disabled(viewModel.shareButtonDisabled)
+                .padding(.horizontal)
+                .controlSize(.large)
+                .buttonStyle(.borderless)
+            }
+            .padding(.vertical, 4)
+
             switch viewModel.response {
             case .none:
                 VStack {

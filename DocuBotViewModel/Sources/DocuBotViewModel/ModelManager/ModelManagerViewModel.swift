@@ -227,8 +227,8 @@ private extension ModelManagerViewModel {
                 // Get the metadata for this URL
                 let fileSize = Int64(try location.fileSize)
 
-                // Persist the ModelRecord to our database
-                let model = Model(
+                // Persist the LLMModelRecord to our database
+                let model = LLMModel(
                     name: fileName,
                     path: location.path(percentEncoded: false),
                     size: fileSize,
@@ -287,7 +287,7 @@ private extension ModelManagerViewModel {
                 let fileSize = Int64(try destinationURL.fileSize)
 
                 // Persist the model in the database
-                let model = Model(
+                let model = LLMModel(
                     name: fileName,
                     path: destinationURL.path(percentEncoded: false),
                     size: fileSize,
@@ -308,14 +308,14 @@ private extension ModelManagerViewModel {
         }
     }
 
-    func promptDeletion(of model: Model) {
+    func promptDeletion(of model: LLMModel) {
         self.deleteModelConfirmationDialogPresented = true
         self.deleteModelAction = {
             self.delete(model: model)
         }
     }
 
-    func delete(model: Model) {
+    func delete(model: LLMModel) {
         Task {
             do {
                 let success = try await persistenceService.delete(
