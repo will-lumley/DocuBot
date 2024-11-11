@@ -1,6 +1,15 @@
 {
-  "originHash" : "575b5d6b28a00617cd6dc66316deaf67bc5e474615b4d6c092857112fb23f7b9",
+  "originHash" : "660b3f23fac9fdb1b405d91e8dc5244bbef9e16e781016fa05252fb57f25ff37",
   "pins" : [
+    {
+      "identity" : "colibricomponents-macos",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/david-swift/ColibriComponents-macOS",
+      "state" : {
+        "revision" : "ce8b4accee3361a904831a3c659de0c99369e8bf",
+        "version" : "0.1.11"
+      }
+    },
     {
       "identity" : "grdb.swift",
       "kind" : "remoteSourceControl",
@@ -35,6 +44,15 @@
       "state" : {
         "revision" : "2849f5323265386e200484b0d0f896e73c3411b9",
         "version" : "6.0.1"
+      }
+    },
+    {
+      "identity" : "settingskit-macos",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/david-swift/SettingsKit-macOS",
+      "state" : {
+        "revision" : "a4f3b11fb6db32478e040d4e8249fc1bf2d7d5d9",
+        "version" : "0.2.4"
       }
     },
     {
@@ -89,6 +107,15 @@
       "state" : {
         "revision" : "879b85a470cacd70c19e22eb7e11a3aed66f4068",
         "version" : "6.6.2"
+      }
+    },
+    {
+      "identity" : "swiftlintplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lukepistrol/SwiftLintPlugin",
+      "state" : {
+        "revision" : "bea71d23db993c58934ee704f798a66d7b8cb626",
+        "version" : "0.57.0"
       }
     },
     {

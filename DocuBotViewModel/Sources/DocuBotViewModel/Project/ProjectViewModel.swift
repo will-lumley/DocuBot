@@ -105,9 +105,18 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     public init(project: Project, serviceContainer: ServiceContainer) {
         self.project = project
 
-        self.sourcesButton = .init(symbol: .docTextMagnifyingglass)
-        self.syncProjectButton = .init(symbol: .arrowTriangle2Circlepath)
-        self.projectSettingsButton = .init(symbol: .gear)
+        self.sourcesButton = .init(
+            name: L10n.Project.Toolbar.sources,
+            symbol: .docTextMagnifyingglass
+        )
+        self.syncProjectButton = .init(
+            name: L10n.Project.Toolbar.sync,
+            symbol: .arrowTriangle2Circlepath
+        )
+        self.projectSettingsButton = .init(
+            name: L10n.Project.Toolbar.settings,
+            symbol: .gear
+        )
 
         super.init(serviceContainer: serviceContainer)
 
@@ -536,7 +545,9 @@ private extension ProjectViewModel {
                 let existingDocuments = try await persistenceService.getDocuments(
                     for: project
                 )
-                await MainActor.run { self.project.load(documents: existingDocuments) }
+                await MainActor.run {
+                    self.project.load(documents: existingDocuments)
+                }
 
                 // Setup our DocumentBuilder
                 let documentBuilder = DocumentParser(
@@ -559,60 +570,11 @@ private extension ProjectViewModel {
                 let result = try await documentBuilder.createAndParse()
                 let documents = result.documents
 
-                // Create the example questions.
-                // Ideally this would be done on the Model layer, however due to the
-                // fact that we're using GPTService to create the questions, we're unable to do so.
-                let totalQuestions     = 10
-                var completedQuestions = 0
-
-                // We'll pull 10 random documents from the project
-                // Pull out their content
-                // Trim the content to a maximum length of 150 characters
-                // Put the trimmed content into a prompt template for our LLM
-                // Query the LLM with our prompt
-                // Filter out any nils
-                // Tidy up any decorations the LLM can put on
-                let exampleQuestions = await documents
-                    .shuffled()
-                    .prefix(10)
-                    .map(\.content)
-                    .map { $0.trim(by: 150) }
-                    .map { L10n.Project.LlmExampleQuestionPrompt.prompt($0) }
-                    .asyncMap { prompt in
-                        let progress = Progress(
-                            value: Double(completedQuestions),
-                            total: Double(totalQuestions)
-                        )
-
-                        // Update the progress each time a question is created
-                        DispatchQueue.main.sync {
-                            self.syncStage = .buildingExampleQuestions(
-                                project: self.project,
-                                progress: progress
-                            )
-                        }
-
-                        completedQuestions += 1
-
-                        let question = try? await self.gptService.respond(
-                            to: prompt,
-                            with: settings.systemPrompt,
-                            onUpdate: nil
-                        )
-                        logService.log(with: .info, "Built question: \(String(describing: question))")
-
-                        return question
-                    }
-                    .compactMap(\.self)
-                    .map { $0.removing(value: "Question:") }
-                    .map { $0.removing(value: ", according to the provided excerpt") }
-                    .map { $0.removing(value: "according to the provided excerpt") }
-                    .map { $0.removing(value: ", according to the provided documentation") }
-                    .map { $0.removing(value: "according to the provided documentation") }
-                    .map { $0.removing(value: ", in the given context") }
-                    .map { $0.removing(value: "in the given context") }
-                    .map { $0.removingPrefix(upTo: ":\n") }
-                    .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                // Build our example questions
+                let exampleQuestions = try await buildExampleQuestions(
+                    from: documents,
+                    with: settings
+                )
 
                 // Update the project properties
                 DispatchQueue.main.sync {
@@ -718,6 +680,71 @@ private extension ProjectViewModel {
     func createQuery(with documents: [String], for query: String) -> String {
         let sources = documents.joined(separator: "\n\n")
         return L10n.Project.LlmQueryPrompt.template(sources, query)
+    }
+
+    func buildExampleQuestions(
+        from documents: [Document],
+        with settings: ProjectSettings
+    ) async throws -> [String] {
+        // Create the example questions.
+        // Ideally this would be done on the Model layer,
+        // however due to the fact that we're using GPTService
+        // to create the questions, we're unable to do so.
+        let totalQuestions     = 10
+        var completedQuestions = 0
+
+        // We'll pull 10 random documents from the project
+        // Pull out their content
+        // Trim the content to a maximum length of 150 characters
+        // Put the trimmed content into a prompt template for our LLM
+        // Query the LLM with our prompt
+        // Filter out any nils
+        // Tidy up any decorations the LLM can put on
+        return await documents
+            .shuffled()
+            .prefix(10)
+            .map(\.content)
+            .map { $0.trim(by: 150) }
+            .map { L10n.Project.LlmExampleQuestionPrompt.prompt($0) }
+            .asyncMap { prompt in
+                let progress = Progress(
+                    value: Double(completedQuestions),
+                    total: Double(totalQuestions)
+                )
+
+                // Update the progress each time a question is created
+                DispatchQueue.main.sync {
+                    self.syncStage = .buildingExampleQuestions(
+                        project: self.project,
+                        progress: progress
+                    )
+                }
+
+                completedQuestions += 1
+
+                let question = try? await self.gptService.respond(
+                    to: prompt,
+                    with: settings.systemPrompt,
+                    onUpdate: nil
+                )
+                logService.log(
+                    with: .info,
+                    "Built question: \(String(describing: question))"
+                )
+
+                return question
+            }
+            .compactMap(\.self)
+            .map { $0.removing(value: "Question:") }
+            .map { $0.removing(value: ", according to the provided excerpt") }
+            .map { $0.removing(value: "according to the provided excerpt") }
+            .map { $0.removing(value: ", according to the provided documentation") }
+            .map { $0.removing(value: "according to the provided documentation") }
+            .map { $0.removing(value: ", in the given context") }
+            .map { $0.removing(value: "in the given context") }
+            .map { $0.removing(value: "<|eot_id|>") }
+            .map { $0.removingPrefix(upTo: ":\n") }
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
     }
 
 }

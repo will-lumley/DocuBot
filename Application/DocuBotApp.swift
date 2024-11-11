@@ -23,6 +23,15 @@ struct DocuBotApp: App {
     // MARK: - View
 
     var body: some Scene {
+        // Our Settings view
+        Settings {
+            SettingsView(
+                viewModel: .init(
+                    serviceContainer: delegate.serviceContainer
+                )
+            )
+        }
+
         // This is our Welcome Window
         WindowGroup(id: WelcomeView.id) {
             WelcomeView(
