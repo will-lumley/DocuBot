@@ -206,3 +206,24 @@
 "ModelManager.Delete.Confirmation.deleteButton" = "Delete this Model";
 "ModelManager.Delete.Confirmation.cancelButton" = "Cancel";
 "ModelManager.Cell.subtitle" = "%@ GB";
+
+"Settings.Section.General.title" = "General";
+"Settings.Section.Embedding.title" = "Embedding";
+
+"Settings.NumberOfQuestions.title" = "Number of Example Questions";
+"Settings.DisplaySimilarityScore.title" = "Display Similarity Score";
+"Settings.DocumentPrefixCount.title" = "Document Prefix Count";
+"Settings.SimilarityFloorScore.title" = "Similarity Floor Score";
+
+"Settings.Help.NumberOfQuestions.title" = "Number of Example Questions";
+"Settings.Help.DisplaySimilarityScore.title" = "Display Similarity Score";
+"Settings.Help.DocumentPrefixCount.title" = "Document Prefix Count";
+"Settings.Help.SimilarityFloorScore.title" = "Similarity Floor Score";
+
+"Settings.Help.NumberOfQuestions.content" = "This value determines how many examples questions will be created during a sync of a project.\n\nYou can set this value to 0 to disable example questions entirely.";
+
+"Settings.Help.DisplaySimilarityScore.content" = "Within the sources list that is available after a query is performed, you can opt in to have the similarity score for that document represented in a pie chart.\n\nThe similarity score represents how closely related DocuBot predicts your query is to each document. A higher score indicates a stronger match, helping you quickly identify the most relevant sources for your search.";
+
+"Settings.Help.DocumentPrefixCount.content" = "This value represents how many document excerpts we'll attach to your query when interfacing with the LLM.\n\nA higher count will give DocuBot more insight into your project, but it can also overload the LLM with information and limit it's ability to provide a response.";
+
+"Settings.Help.SimilarityFloorScore.content" = "This value represents the minimum similarity score a document has to achieve to your query to be included in the context given to the LLM.";

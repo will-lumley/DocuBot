@@ -442,6 +442,10 @@ public extension ConfigureProjectViewModel {
             self.projectDirectoryBookmarkData = bookmarkData
             self.projectName = directory.lastPathComponent
         } catch {
+            logService.log(
+                with: .error,
+                "Failed to get directory: \(error)"
+            )
             self.alertConfiguration = .init(
                 title: L10n.Error.Project.UpdateBookmark.title,
                 message: error.description

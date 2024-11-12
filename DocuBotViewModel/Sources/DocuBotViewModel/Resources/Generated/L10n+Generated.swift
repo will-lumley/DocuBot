@@ -553,6 +553,66 @@ internal enum L10n {
     /// Project Settings
     internal static let windowTitle = L10n.tr("Localizable", "ProjectSettings.windowTitle", fallback: "Project Settings")
   }
+  internal enum Settings {
+    internal enum DisplaySimilarityScore {
+      /// Display Similarity Score
+      internal static let title = L10n.tr("Localizable", "Settings.DisplaySimilarityScore.title", fallback: "Display Similarity Score")
+    }
+    internal enum DocumentPrefixCount {
+      /// Document Prefix Count
+      internal static let title = L10n.tr("Localizable", "Settings.DocumentPrefixCount.title", fallback: "Document Prefix Count")
+    }
+    internal enum Help {
+      internal enum DisplaySimilarityScore {
+        /// Within the sources list that is available after a query is performed, you can opt in to have the similarity score for that document represented in a pie chart.
+        /// 
+        /// The similarity score represents how closely related DocuBot predicts your query is to each document. A higher score indicates a stronger match, helping you quickly identify the most relevant sources for your search.
+        internal static let content = L10n.tr("Localizable", "Settings.Help.DisplaySimilarityScore.content", fallback: "Within the sources list that is available after a query is performed, you can opt in to have the similarity score for that document represented in a pie chart.\n\nThe similarity score represents how closely related DocuBot predicts your query is to each document. A higher score indicates a stronger match, helping you quickly identify the most relevant sources for your search.")
+        /// Display Similarity Score
+        internal static let title = L10n.tr("Localizable", "Settings.Help.DisplaySimilarityScore.title", fallback: "Display Similarity Score")
+      }
+      internal enum DocumentPrefixCount {
+        /// This value represents how many document excerpts we'll attach to your query when interfacing with the LLM.
+        /// 
+        /// A higher count will give DocuBot more insight into your project, but it can also overload the LLM with information and limit it's ability to provide a response.
+        internal static let content = L10n.tr("Localizable", "Settings.Help.DocumentPrefixCount.content", fallback: "This value represents how many document excerpts we'll attach to your query when interfacing with the LLM.\n\nA higher count will give DocuBot more insight into your project, but it can also overload the LLM with information and limit it's ability to provide a response.")
+        /// Document Prefix Count
+        internal static let title = L10n.tr("Localizable", "Settings.Help.DocumentPrefixCount.title", fallback: "Document Prefix Count")
+      }
+      internal enum NumberOfQuestions {
+        /// This value determines how many examples questions will be created during a sync of a project.
+        /// 
+        /// You can set this value to 0 to disable example questions entirely.
+        internal static let content = L10n.tr("Localizable", "Settings.Help.NumberOfQuestions.content", fallback: "This value determines how many examples questions will be created during a sync of a project.\n\nYou can set this value to 0 to disable example questions entirely.")
+        /// Number of Example Questions
+        internal static let title = L10n.tr("Localizable", "Settings.Help.NumberOfQuestions.title", fallback: "Number of Example Questions")
+      }
+      internal enum SimilarityFloorScore {
+        /// This value represents the minimum similarity score a document has to achieve to your query to be included in the context given to the LLM.
+        internal static let content = L10n.tr("Localizable", "Settings.Help.SimilarityFloorScore.content", fallback: "This value represents the minimum similarity score a document has to achieve to your query to be included in the context given to the LLM.")
+        /// Similarity Floor Score
+        internal static let title = L10n.tr("Localizable", "Settings.Help.SimilarityFloorScore.title", fallback: "Similarity Floor Score")
+      }
+    }
+    internal enum NumberOfQuestions {
+      /// Number of Example Questions
+      internal static let title = L10n.tr("Localizable", "Settings.NumberOfQuestions.title", fallback: "Number of Example Questions")
+    }
+    internal enum Section {
+      internal enum Embedding {
+        /// Embedding
+        internal static let title = L10n.tr("Localizable", "Settings.Section.Embedding.title", fallback: "Embedding")
+      }
+      internal enum General {
+        /// General
+        internal static let title = L10n.tr("Localizable", "Settings.Section.General.title", fallback: "General")
+      }
+    }
+    internal enum SimilarityFloorScore {
+      /// Similarity Floor Score
+      internal static let title = L10n.tr("Localizable", "Settings.SimilarityFloorScore.title", fallback: "Similarity Floor Score")
+    }
+  }
   internal enum SimilarityMetric {
     internal enum Cosine {
       /// Cosine
