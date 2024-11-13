@@ -307,7 +307,7 @@ public extension ProjectViewModel {
                 let query = self.chatText
                 let settings = try await self.getProjectSettings()
 
-                let limitCount = 3
+                let limitCount = preferenceStoreService.documentPrefixCount
 
                 // Do a search for our most relevant documents
                 let results = try await self.fetchRelevantDocumentation(with: query)
@@ -335,16 +335,21 @@ public extension ProjectViewModel {
                 )
 
                 // Merge the documents and scores
-                let documentsWithScores = zip(documents, similarityScores)
+                let documentScores = zip(documents, similarityScores)
 
                 // Configure our sources
-                await MainActor.run {
+                await MainActor.run { [unowned self] in
                     self.sources = SourcesViewModel(
-                        sources: documentsWithScores.map { documentWithScore in
+                        sources: documentScores.map { documentWithScore in
                             let document = documentWithScore.0
                             let score = documentWithScore.1
-                            return SourceViewModel(document: document, score: score)
-                        }
+                            return SourceCellModel(
+                                document: document,
+                                score: score,
+                                delegate: self
+                            )
+                        },
+                        serviceContainer: serviceContainer
                     )
                 }
 
@@ -669,10 +674,12 @@ private extension ProjectViewModel {
     ) async throws -> [SimilarityIndex.SearchResult] {
         let project = try await self.getProject(fetchDocuments: true)
         let settings = try await self.getProjectSettings()
+        let floor = preferenceStoreService.similarityFloorScore
 
         let results = try await project.fetchRelevantDocumentation(
             for: message,
-            with: settings
+            with: settings,
+            with: floor
         )
         return results
     }
@@ -807,6 +814,16 @@ public extension ProjectViewModel.SyncStage {
         case .buildingExampleQuestions(_, let progress):
             return progress
         }
+    }
+
+}
+
+// MARK: - SourceCellModelDelegate
+
+extension ProjectViewModel: SourceCellModelDelegate {
+
+    public func shouldShowScore() -> Bool {
+        return preferenceStoreService.displaySimilarityScoring
     }
 
 }

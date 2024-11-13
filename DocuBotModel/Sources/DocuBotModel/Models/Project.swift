@@ -102,7 +102,8 @@ public extension Project {
 
     func fetchRelevantDocumentation(
         for query: String,
-        with settings: ProjectSettings
+        with settings: ProjectSettings,
+        with floor: Double
     ) async throws -> [SimilarityIndex.SearchResult] {
         guard let documents = self.documents else {
             throw Project.DocumentFetchError.noDocumentsFound
@@ -133,7 +134,13 @@ public extension Project {
             }
         }
 
-        let results = await similarityIndex.search(query)
+        var results = await similarityIndex.search(query)
+
+        // Filter out any results that are lower than our floor
+        results = results.filter {
+            $0.score >= Float(Float(floor) / 100)
+        }
+
         return results
     }
 

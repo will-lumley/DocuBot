@@ -19,7 +19,7 @@ public struct SourcesView: View {
     public var body: some View {
         VStack {
             List(viewModel.sources) { source in
-                SourceView(viewModel: source)
+                SourceCell(viewModel: source)
             }
         }
     }

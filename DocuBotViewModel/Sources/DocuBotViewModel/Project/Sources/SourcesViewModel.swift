@@ -9,16 +9,21 @@ import DocuBotModel
 import DocuBotService
 import Foundation
 
-public class SourcesViewModel: ObservableObject {
+public protocol SourceCellModelDelegate: AnyObject {
+    func shouldShowScore() -> Bool
+}
+
+public class SourcesViewModel: DocuBotViewModel {
 
     // MARK: - Properties
 
-    public let sources: [SourceViewModel]
+    public let sources: [SourceCellModel]
 
     // MARK: - Lifecycle
 
-    init(sources: [SourceViewModel]) {
+    init(sources: [SourceCellModel], serviceContainer: ServiceContainer) {
         self.sources = sources
+        super.init(serviceContainer: serviceContainer)
     }
 
 }
@@ -68,7 +73,8 @@ public extension SourcesViewModel {
                     ),
                     score: 0.65
                 )
-            ]
+            ],
+            serviceContainer: .mock
         )
     }
 

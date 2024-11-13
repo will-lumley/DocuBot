@@ -127,7 +127,7 @@ public struct SettingsView: View {
                     Slider(
                         value: $viewModel.similarityFloorScore,
                         in: 10...90,
-                        step: 10
+                        step: 2
                     )
                 } label: {
                     HStack {
