@@ -17,7 +17,9 @@ DocuBot is a native macOS app powered by an open-source LLM, designed to intelli
 DocuBot indexes your project’s documentation files, “studies” them, and provides you with accurate answers to any questions you have about your project.
 
 •	Privacy-First Design: All processing happens locally, with no network calls or data collection.
+
 •	Customizable AI Models: Choose or import AI models to match your Mac’s capabilities and project needs.
+
 •	Open Source: Fully transparent codebase that you can inspect, modify, and trust.
 
 ### How it Works
