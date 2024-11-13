@@ -16,7 +16,9 @@ public extension String {
     func removingPrefix(upTo pattern: String) -> String {
         // Escaping any special characters in the pattern to be used in regex
         let escapedPattern = NSRegularExpression.escapedPattern(for: pattern)
-        // Building the regex to match everything up to and including the pattern
+
+        // Building the regex to match everything up to and
+        // including the pattern
         let regexPattern = ".*?\(escapedPattern)"
 
         if let range = self.range(of: regexPattern, options: .regularExpression) {

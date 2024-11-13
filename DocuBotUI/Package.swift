@@ -19,7 +19,6 @@ let package = Package(
         .package(path: "../DocuBotViewModel"),
         .package(path: "../DocuBotToolbox"),
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
-        .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.4.3"),
         .package(url: "https://github.com/gonzalezreal/swift-markdown-ui", from: "2.4.1"),
         .package(
             url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git",
@@ -36,8 +35,7 @@ let package = Package(
                 "DocuBotToolbox",
                 "SwiftfulLoadingIndicators",
 
-                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
-                .product(name: "Lottie", package: "lottie-ios")
+                .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],
             plugins: [
                .plugin(name: "SwiftGenPlugin", package: "SwiftGenPlugin")

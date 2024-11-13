@@ -47,6 +47,5 @@ This project is structured with a modular design, with different responsibilitie
 - https://github.com/groue/GRDB.swift
 - https://github.com/unsignedapps/Vexil
 - https://github.com/gonzalezreal/swift-markdown-ui
-- https://github.com/airbnb/lottie-ios
 - https://github.com/realm/SwiftLint
 - https://github.com/SwiftGen/SwiftGenPlugin

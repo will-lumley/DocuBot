@@ -46,7 +46,6 @@ class GRDBService: PersistenceService {
         }
 
         self.runMigrations()
-        self.injectDemoData()
     }
 
     // MARK: Projects
@@ -292,28 +291,6 @@ private extension GRDBService {
             try migrator.migrate(self.dbQueue)
         } catch {
             fatalError("MigrationExecution Failed. ID: \(error)")
-        }
-    }
-
-    func injectDemoData() {
-        let injectDemoData = flagService.appFlags.database.injectDemoData
-        logService.log(with: .info, "InjectDemoData: \(injectDemoData)")
-
-        guard injectDemoData else {
-            return
-        }
-
-        do {
-            // Import all the models
-            try self.dbQueue.write {db in
-                for var record in LLMModelRecord.mocks() {
-                    try record.insert(db)
-                }
-            }
-
-        } catch {
-            // swiftlint:disable:next direct_print
-            print("Failed to inject demo data. \(error)")
         }
     }
 

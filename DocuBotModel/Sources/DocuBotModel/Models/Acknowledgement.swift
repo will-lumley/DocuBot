@@ -119,15 +119,6 @@ public extension Acknowledgement {
                 license: "MIT"
             ),
             .init(
-                author: "Air BnB",
-                libraryName: "Lottie",
-                description: """
-                Lottie loads and renders animations and vectors exported in the bodymovin JSON format.
-                """,
-                linkStr: "https://github.com/airbnb/lottie-ios.git",
-                license: "Apache 2.0"
-            ),
-            .init(
                 author: "SwiftGen",
                 libraryName: "SwiftGen",
                 description: """

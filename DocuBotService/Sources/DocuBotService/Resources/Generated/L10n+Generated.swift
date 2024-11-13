@@ -16,6 +16,8 @@ internal enum L10n {
       internal static func failedToCreateLLM(_ p1: Any) -> String {
         return L10n.tr("Localizable", "Error.GPT.failedToCreateLLM", String(describing: p1), fallback: "Failed to create LLM. %@.")
       }
+      /// Failed to create LLM due to a decoding error.
+      internal static let failedToCreateLLMDecodingError = L10n.tr("Localizable", "Error.GPT.failedToCreateLLMDecodingError", fallback: "Failed to create LLM due to a decoding error.")
       /// LLM Instance is not initialised.
       internal static let llmNotInitialised = L10n.tr("Localizable", "Error.GPT.llmNotInitialised", fallback: "LLM Instance is not initialised.")
       /// Failed to find the selected model, %@.

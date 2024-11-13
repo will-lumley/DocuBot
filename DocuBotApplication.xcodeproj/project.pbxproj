@@ -23,6 +23,9 @@
 		BEB095FD2C366D3200429AFD /* Vexil in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095FC2C366D3200429AFD /* Vexil */; };
 		BEB095FF2C366D3200429AFD /* Vexillographer in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095FE2C366D3200429AFD /* Vexillographer */; };
 		BEB096012C36726300429AFD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB096002C36726300429AFD /* AppDelegate.swift */; };
+		BEC6F0F42CE42E72001634A1 /* CODE_OF_CONDUCT.md in Resources */ = {isa = PBXBuildFile; fileRef = BEC6F0F12CE42E72001634A1 /* CODE_OF_CONDUCT.md */; };
+		BEC6F0F52CE42E72001634A1 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = BEC6F0F32CE42E72001634A1 /* LICENSE.txt */; };
+		BEC6F0F62CE42E72001634A1 /* CONTRIBUTING.md in Resources */ = {isa = PBXBuildFile; fileRef = BEC6F0F22CE42E72001634A1 /* CONTRIBUTING.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +42,9 @@
 		BEB095F52C36604C00429AFD /* Settings.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Settings.entitlements; sourceTree = "<group>"; };
 		BEB096002C36726300429AFD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BEC6F0F02CE42D26001634A1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		BEC6F0F12CE42E72001634A1 /* CODE_OF_CONDUCT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CODE_OF_CONDUCT.md; sourceTree = "<group>"; };
+		BEC6F0F22CE42E72001634A1 /* CONTRIBUTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONTRIBUTING.md; sourceTree = "<group>"; };
+		BEC6F0F32CE42E72001634A1 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +77,9 @@
 			isa = PBXGroup;
 			children = (
 				BEC6F0F02CE42D26001634A1 /* README.md */,
+				BEC6F0F12CE42E72001634A1 /* CODE_OF_CONDUCT.md */,
+				BEC6F0F22CE42E72001634A1 /* CONTRIBUTING.md */,
+				BEC6F0F32CE42E72001634A1 /* LICENSE.txt */,
 				BE45187C2C35244600F9E9E5 /* Application */,
 				BEB095EB2C36604B00429AFD /* Settings */,
 				BE45187B2C35244600F9E9E5 /* Products */,
@@ -231,6 +240,9 @@
 			files = (
 				BE4518852C35244700F9E9E5 /* Preview Assets.xcassets in Resources */,
 				BE4518822C35244700F9E9E5 /* Assets.xcassets in Resources */,
+				BEC6F0F42CE42E72001634A1 /* CODE_OF_CONDUCT.md in Resources */,
+				BEC6F0F52CE42E72001634A1 /* LICENSE.txt in Resources */,
+				BEC6F0F62CE42E72001634A1 /* CONTRIBUTING.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
