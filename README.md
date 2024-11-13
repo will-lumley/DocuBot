@@ -47,7 +47,7 @@ This project is structured with a modular design, with different responsibilitie
 
 - Clone the repo: `git clone git@github.com:will-lumley/DocuBot.git`
 - Open `DocuBot.xcworkspace` in Xcode
-- Build and run the project on the desired device or simulator
+- Build and run the project on your device.
 
 ## Testing
 - Ensure that each module of the application has >80% unit test coverage
@@ -60,8 +60,9 @@ This project is structured with a modular design, with different responsibilitie
 - Do not reference images directly, but rather through the swift-gen
 
 ## Some More Nerdy Details
-- SwiftUI is used for the UI layer
-- SwiftTesting is used for the unit tests
+- DocuBot is 100% native with 100% of the source code in Swift 6.
+- SwiftUI is used for the UI layer.
+- SwiftTesting is used for the unit tests.
 - Swift 6's strict concurrency is used, but admittedly I don't have a 100% grasp on it yet, so I feel like my current implementation of adapting to strict concurrency could be improved.
 
 ## Acknowledgments
