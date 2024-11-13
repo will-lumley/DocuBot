@@ -2,14 +2,24 @@
 
 ![Cover](https://github.com/user-attachments/assets/bea63f82-3041-4453-b706-2021de41f30d)
 
-![Unit Tests](https://github.com/will-lumley/DocuBot/actions/workflows/UnitTests.yml/badge.svg?branch=main)
-![UI Tests](https://github.com/will-lumley/DocuBot/actions/workflows/UITests.yml/badge.svg?branch=main)
+<p align="center">
+  <img src="https://github.com/will-lumley/DocuBot/actions/workflows/UnitTests.yml/badge.svg?branch=main" alt="Unit Tests">
+  <img src="https://github.com/will-lumley/DocuBot/actions/workflows/UITests.yml/badge.svg?branch=main" alt="UI Tests">
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/Swift-6.0-orange.svg" alt="Swift 6.0">
+  <a href="https://twitter.com/wlumley95">
+    <img src="https://img.shields.io/badge/twitter-@wlumley95-blue.svg?style=flat" alt="Twitter">
+  </a>
+</p>
 
 DocuBot is a native macOS app powered by an open-source LLM, designed to intelligently answer your code documentation queries by parsing and understanding various documentation files.
 DocuBot indexes your project’s documentation files, “studies” them, and provides you with accurate answers to any questions you have about your project.
 
 •	Privacy-First Design: All processing happens locally, with no network calls or data collection.
+
 •	Customizable AI Models: Choose or import AI models to match your Mac’s capabilities and project needs.
+
 •	Open Source: Fully transparent codebase that you can inspect, modify, and trust.
 
 ### How it Works
