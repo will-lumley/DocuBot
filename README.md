@@ -11,7 +11,7 @@ DocuBot indexes your project’s documentation files, “studies” them, and pr
 •	Privacy-First Design: All processing happens locally, with no network calls or data collection.
 •	Customizable AI Models: Choose or import AI models to match your Mac’s capabilities and project needs.
 •	Open Source: Fully transparent codebase that you can inspect, modify, and trust.
- 
+
 ### How it Works
 
 DocuBot is designed to help developers quickly navigate and understand project documentation through efficient, on-device AI processing. Here’s a look under the hood at how DocuBot works to provide answers to your documentation questions while ensuring privacy and data security.
@@ -58,6 +58,11 @@ This project is structured with a modular design, with different responsibilitie
 ## Keep in Mind
 - Do not reference strings directly, but rather through the swift-gen (sourced from Localizable.strings file)
 - Do not reference images directly, but rather through the swift-gen
+
+## Some More Nerdy Details
+- SwiftUI is used for the UI layer
+- SwiftTesting is used for the unit tests
+- Swift 6's strict concurrency is used, but admittedly I don't have a 100% grasp on it yet, so I feel like my current implementation of adapting to strict concurrency could be improved.
 
 ## Acknowledgments
 - https://github.com/ZachNagengast/similarity-search-kit.git
