@@ -22,6 +22,8 @@ DocuBot indexes your project’s documentation files, “studies” them, and pr
 
 •	Open Source: Fully transparent codebase that you can inspect, modify, and trust.
 
+![Screenshot](https://github.com/user-attachments/assets/189b0a92-0c0e-429c-8943-2bdfd0747800)
+
 ### How it Works
 
 DocuBot is designed to help developers quickly navigate and understand project documentation through efficient, on-device AI processing. Here’s a look under the hood at how DocuBot works to provide answers to your documentation questions while ensuring privacy and data security.
