@@ -30,4 +30,3 @@ jobs:
 
     - name: Run Tests
       run: swift test
-
