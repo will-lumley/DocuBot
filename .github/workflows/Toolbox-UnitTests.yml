@@ -17,6 +17,12 @@ jobs:
       with:
           submodules: 'recursive'
 
+    - uses: swift-actions/setup-swift@v2
+      with:
+        swift-version: "6.0"
+    - name: Get swift version
+      run: swift --version
+
     - name: Install xcpretty
       run: gem install xcpretty
 
