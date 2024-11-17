@@ -44,6 +44,6 @@ public protocol PersistenceService: Service {
     func getModel(id: Int64) async throws -> LLMModel
     func insert(model: LLMModel) async throws -> LLMModel
     func update(model: LLMModel) async throws -> LLMModel
-    func delete(model: LLMModel) async throws -> Bool
+    func delete(model: LLMModel, deleteModelOnDisk: Bool) async throws -> Bool
 
 }

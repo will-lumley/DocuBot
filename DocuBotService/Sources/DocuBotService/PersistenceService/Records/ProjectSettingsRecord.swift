@@ -12,17 +12,17 @@ public struct ProjectSettingsRecord: Record {
 
     // MARK: - Types
 
-    public enum Language: String, Hashable, Codable, Sendable {
+    public enum Language: String, Hashable, Codable, Sendable, CaseIterable {
         case english
     }
 
-    public enum EmbeddingModel: String, Hashable, Codable, Sendable {
+    public enum EmbeddingModel: String, Hashable, Codable, Sendable, CaseIterable {
         case distilbert
         case miniLmAll
         case multiQaMiniLm
     }
 
-    public enum SimilarityMetric: String, Hashable, Codable, Sendable {
+    public enum SimilarityMetric: String, Hashable, Codable, Sendable, CaseIterable {
         case cosine
         case dotProduct
         case euclideanDistance

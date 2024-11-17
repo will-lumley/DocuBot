@@ -60,6 +60,23 @@ struct Initial: DatabaseMigration {
                 .notNull()
         }
 
+        // Create Model table
+        try db.create(table: "models") { table in
+            table.column("id", .integer)
+                .unique()
+                .primaryKey(autoincrement: true)
+            table.column("name", .text)
+                .notNull()
+            table.column("path", .text)
+                .notNull()
+            table.column("size", .integer)
+                .notNull()
+            table.column("createdAt", .datetime)
+                .notNull()
+            table.column("updatedAt", .datetime)
+                .notNull()
+        }
+
         // Create projects settings table
         try db.create(table: "project-settings") { table in
             table.column("id", .integer)
@@ -102,23 +119,6 @@ struct Initial: DatabaseMigration {
                 .notNull()
             table.column("updatedAt", .datetime)
                 .notNull()
-
-            // Create Model table
-            try db.create(table: "models") { table in
-                table.column("id", .integer)
-                    .unique()
-                    .primaryKey(autoincrement: true)
-                table.column("name", .text)
-                    .notNull()
-                table.column("path", .text)
-                    .notNull()
-                table.column("size", .integer)
-                    .notNull()
-                table.column("createdAt", .datetime)
-                    .notNull()
-                table.column("updatedAt", .datetime)
-                    .notNull()
-            }
         }
     }
 

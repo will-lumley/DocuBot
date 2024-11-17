@@ -33,8 +33,8 @@ public struct DocumentRecord: Record {
         "documents"
     }
 
-    mutating func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
+    public mutating func didInsert(_ inserted: InsertionSuccess) {
+        self.id = inserted.rowID
     }
 
 }

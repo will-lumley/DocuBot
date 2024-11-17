@@ -9,7 +9,7 @@ import DocuBotToolbox
 import Foundation
 import SimilaritySearchKit
 
-public struct Document: Hashable, Codable, Sendable {
+public struct Document: Hashable, Codable, Sendable, Equatable {
 
     // MARK: - Types
 

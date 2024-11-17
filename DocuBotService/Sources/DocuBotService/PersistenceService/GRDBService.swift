@@ -12,8 +12,6 @@ import GRDB
 
 class GRDBService: PersistenceService {
 
-    // MARK: - Types
-
     // MARK: - Service
 
     static var key: ServiceKey {
@@ -35,12 +33,16 @@ class GRDBService: PersistenceService {
 
     // MARK: - PersistenceService
 
-    init(serviceContainer: ServiceContainer) {
+    init(inMemory: Bool, serviceContainer: ServiceContainer) {
         self.serviceContainer = serviceContainer
 
         do {
             // Create our handle on the DB
-            self.dbQueue = try DatabaseQueue(path: GRDBService.databasePath)
+            self.dbQueue = if inMemory {
+                try DatabaseQueue()
+            } else {
+                try DatabaseQueue(path: GRDBService.databasePath)
+            }
         } catch let error {
             fatalError("Failed to initialise DB Queue. Error: \(error)")
         }
@@ -233,12 +235,12 @@ class GRDBService: PersistenceService {
         }
     }
 
-    func delete(model: LLMModel) async throws -> Bool {
+    func delete(model: LLMModel, deleteModelOnDisk: Bool) async throws -> Bool {
         return try await self.dbQueue.write { db in
             let success = try LLMModelRecord.deleteOne(db, id: model.id)
             // If we successfully deleted this row, delete the
             // corressponding path
-            if success {
+            if success && deleteModelOnDisk {
                 try FileManager.default.removeItem(
                     atPath: model.path
                 )

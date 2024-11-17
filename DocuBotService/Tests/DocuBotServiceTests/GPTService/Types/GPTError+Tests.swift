@@ -14,7 +14,11 @@ struct GPTErrorTests {
     func errorDescription() {
         #expect(GPTError.llmNotInitialised.description == "LLM Instance is not initialised.")
         #expect(GPTError.failedToCreateLLMDecodingError.description == "Failed to create LLM due to a decoding error.")
+
+        // swiftlint:disable:next line_length
         #expect(GPTError.noModel(modelName: "model-name").description == "Failed to find the selected model, model-name.")
+
+        // swiftlint:disable:next line_length
         #expect(GPTError.failedToCreateLLM(reason: "Just can't be bothered").description == "Failed to create LLM. Just can't be bothered.")
     }
 

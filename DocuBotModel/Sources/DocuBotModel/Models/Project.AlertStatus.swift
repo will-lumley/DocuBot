@@ -7,9 +7,9 @@
 
 public extension Project {
 
-    enum AlertStatus: Hashable, Codable, Sendable {
+    enum AlertStatus: Hashable, Codable, Sendable, Equatable {
 
-        public enum WarningState: Int, Hashable, Codable, Sendable {
+        public enum WarningState: Int, Hashable, Codable, Sendable, CaseIterable, Equatable {
             case isDirty              = 1
             case metricChanged        = 2
             case modelChanged         = 5
@@ -17,7 +17,7 @@ public extension Project {
             case directoryChanged     = 7
         }
 
-        public enum ErrorState: Int, Hashable, Codable, Sendable {
+        public enum ErrorState: Int, Hashable, Codable, Sendable, CaseIterable, Equatable {
             case firstSync            = 101
         }
 

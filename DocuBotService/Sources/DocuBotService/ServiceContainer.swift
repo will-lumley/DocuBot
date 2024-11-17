@@ -65,7 +65,7 @@ private extension ServiceContainer {
         self.register(service: LlamaService())
         self.register(service: LocalUserDefaultsService())
         self.configureLogService()
-        self.register(service: GRDBService(serviceContainer: self))
+        self.register(service: GRDBService(inMemory: false, serviceContainer: self))
     }
 
     func configureTestServices() {
@@ -73,7 +73,7 @@ private extension ServiceContainer {
         self.register(service: MockGPTService())
         self.register(service: MockPreferenceStoreService())
         self.register(service: PrintLogService())
-        self.register(service: GRDBService(serviceContainer: self))
+        self.register(service: GRDBService(inMemory: true, serviceContainer: self))
     }
 
 }
