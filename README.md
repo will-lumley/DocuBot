@@ -22,6 +22,8 @@ DocuBot indexes your project’s documentation files, “studies” them, and pr
 
 •	Open Source: Fully transparent codebase that you can inspect, modify, and trust.
 
+![Screenshot](https://github.com/user-attachments/assets/189b0a92-0c0e-429c-8943-2bdfd0747800)
+
 ### How it Works
 
 DocuBot is designed to help developers quickly navigate and understand project documentation through efficient, on-device AI processing. Here’s a look under the hood at how DocuBot works to provide answers to your documentation questions while ensuring privacy and data security.
@@ -73,6 +75,8 @@ This project is structured with a modular design, with different responsibilitie
 - DocuBot is 100% native with 100% of the source code in Swift 6.
 - SwiftUI is used for the UI layer.
 - SwiftTesting is used for the unit tests.
+- A combination of `Combine` and `async/await` is used.
+- `GRDB` is used as the SQLite wrapper as it's an amazing library and fits into Swift's type safety perfectly.
 - Swift 6's strict concurrency is used, but admittedly I don't have a 100% grasp on it yet, so I feel like my current implementation of adapting to strict concurrency could be improved.
 
 ## Acknowledgments
