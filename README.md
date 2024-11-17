@@ -3,7 +3,7 @@
 ![Cover](https://github.com/user-attachments/assets/bea63f82-3041-4453-b706-2021de41f30d)
 
 <p align="center">
-  <img src="https://github.com/will-lumley/DocuBot/actions/workflows/UnitTests.yml/badge.svg?branch=main" alt="Unit Tests">
+  <img src="https://github.com/will-lumley/DocuBot/actions/workflows/Toolbox-UnitTests.yml/badge.svg?branch=main" alt="Toolbox Tests">
   <img src="https://github.com/will-lumley/DocuBot/actions/workflows/UITests.yml/badge.svg?branch=main" alt="UI Tests">
 </p>
 <p align="center">
