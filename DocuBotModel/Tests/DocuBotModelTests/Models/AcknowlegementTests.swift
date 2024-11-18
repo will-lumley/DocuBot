@@ -45,6 +45,7 @@ struct AcknowledgementTests {
     }
 
     @Test("All Acknowledgements")
+    // swiftlint:disable:next function_body_length
     func allAcknowledgements() throws {
         let acknowledgements = Acknowledgement.all
 
@@ -52,6 +53,7 @@ struct AcknowledgementTests {
         #expect(acknowledgements.count == 10)
 
         // Define expected values for all acknowledgements
+        // swiftlint:disable line_length large_tuple
         let expectedAcknowledgements: [(author: String, libraryName: String, description: String, link: String, license: String)] = [
             (
                 author: "unsignedapps",
@@ -143,6 +145,7 @@ struct AcknowledgementTests {
                 license: "MIT"
             )
         ]
+        // swiftlint:enable line_length
 
         // Iterate and test each acknowledgement
         for (index, expected) in expectedAcknowledgements.enumerated() {

@@ -26,7 +26,8 @@ let package = Package(
             url: "https://github.com/groue/GRDB.swift.git",
             from: "6.29.0"
         ),
-        .package(url: "https://github.com/ggerganov/llama.cpp.git", branch: "master")
+        // .package(url: "https://github.com/ggerganov/llama.cpp.git", branch: "master")
+        .package(path: "/Users/will/Desktop/llama.cpp")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
