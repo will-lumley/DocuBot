@@ -7,9 +7,8 @@
 
 public extension Project {
 
-    static var mock: Self {
+    static func mock() -> Project {
         .init(
-            id: 1,
             path: "/Users/will/Desktop/Project_1",
             name: "Project 1",
             urlBookmarkData: .init(),
@@ -18,7 +17,7 @@ public extension Project {
                 "Example example example",
                 "Example example example"
             ],
-            alertStatus: .none,
+            alertStatus: .error(error: .firstSync),
             needsFullResync: true,
             createdAt: .now,
             updatedAt: .now

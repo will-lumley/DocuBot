@@ -1,42 +1,16 @@
 //
-//  ProjectSettingsRecord+MockData.swift
+//  ProjectSettings+Mock.swift
+//  DocuBotModel
 //
-//
-//  Created by William Lumley on 22/7/2024.
+//  Created by William Lumley on 19/11/2024.
 //
 
 import Foundation
 
-extension ProjectSettingsRecord {
-
-    static func mocks() -> [ProjectSettingsRecord] {
-        return [
-            .mock(
-                id: 1,
-                projectID: 1,
-                supportedFormats: ProjectSettingsRecord.DocumentationFormat.allCases,
-                createdAt: .now,
-                updatedAt: .now
-            ),
-            .mock(
-                id: 2,
-                projectID: 2,
-                supportedFormats: [.md],
-                createdAt: .now,
-                updatedAt: .now
-            ),
-            .mock(
-                id: 3,
-                projectID: 3,
-                supportedFormats: [.txt, .rtf, .md],
-                createdAt: .now,
-                updatedAt: .now
-            )
-        ]
-    }
+public extension ProjectSettings {
 
     static func mock(
-        id: Int64 = 0,
+        id: Int64? = nil,
         projectID: Int64 = 0,
         modelID: Int64 = 0,
         supportedFormats: [DocumentationFormat] = DocumentationFormat.allCases,
@@ -55,11 +29,11 @@ extension ProjectSettingsRecord {
         strictMode: Bool = false,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
-    ) -> ProjectSettingsRecord {
+    ) -> ProjectSettings {
         .init(
             id: id,
-            project: projectID,
-            model: modelID,
+            projectID: projectID,
+            modelID: modelID,
             supportedFormats: supportedFormats,
             language: language,
             embeddingModel: embeddingModel,

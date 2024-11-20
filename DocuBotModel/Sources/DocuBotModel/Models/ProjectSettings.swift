@@ -11,23 +11,23 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
-    public enum Language: Hashable, CaseIterable, Codable, Sendable {
+    public enum Language: Hashable, CaseIterable, Codable, Sendable, Equatable {
         case english
     }
 
-    public enum EmbeddingModel: String, CaseIterable, Hashable, Codable, Sendable {
+    public enum EmbeddingModel: String, CaseIterable, Hashable, Codable, Sendable, Equatable {
         case distilbert
         case miniLmAll
         case multiQaMiniLm
     }
 
-    public enum SimilarityMetric: String, CaseIterable, Hashable, Codable, Sendable {
+    public enum SimilarityMetric: String, CaseIterable, Hashable, Codable, Sendable, Equatable {
         case cosine
         case dotProduct
         case euclideanDistance
     }
 
-    public enum DocumentationFormat: Hashable, CaseIterable, Codable, Sendable {
+    public enum DocumentationFormat: Hashable, CaseIterable, Codable, Sendable, Equatable {
         public static var allCases: [ProjectSettings.DocumentationFormat] {
             [.rtf, .txt, .html, .md]
         }
@@ -135,6 +135,59 @@ public extension ProjectSettings {
 
     func isEnabled(_ format: DocumentationFormat) -> Bool {
         return self.supportedFormats.contains(format)
+    }
+
+}
+
+// MARK: - Equatable
+
+extension ProjectSettings: Equatable {
+
+    public static func == (lhs: ProjectSettings, rhs: ProjectSettings) -> Bool {
+        return
+            lhs.id == rhs.id &&
+            lhs.projectID == rhs.projectID &&
+            lhs.modelID == rhs.modelID &&
+
+            lhs.supportedFormats == rhs.supportedFormats &&
+            lhs.similarityMetric == rhs.similarityMetric &&
+            lhs.seed == rhs.seed &&
+            lhs.topK == rhs.topK &&
+            lhs.topP == rhs.topP &&
+            lhs.contextLength == rhs.contextLength &&
+            lhs.temperature == rhs.temperature &&
+            lhs.batchSize == rhs.batchSize &&
+            lhs.stopSequence == rhs.stopSequence &&
+            lhs.maxTokenCount == rhs.maxTokenCount &&
+            lhs.systemPrompt == rhs.systemPrompt &&
+            lhs.strictMode == rhs.strictMode &&
+
+            lhs.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            lhs.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
+    }
+
+    public func isEqualToIgnoringID(
+        _ rhs: ProjectSettings
+    ) -> Bool {
+        return
+            self.projectID == rhs.projectID &&
+            self.modelID == rhs.modelID &&
+
+            self.supportedFormats == rhs.supportedFormats &&
+            self.similarityMetric == rhs.similarityMetric &&
+            self.seed == rhs.seed &&
+            self.topK == rhs.topK &&
+            self.topP == rhs.topP &&
+            self.contextLength == rhs.contextLength &&
+            self.temperature == rhs.temperature &&
+            self.batchSize == rhs.batchSize &&
+            self.stopSequence == rhs.stopSequence &&
+            self.maxTokenCount == rhs.maxTokenCount &&
+            self.systemPrompt == rhs.systemPrompt &&
+            self.strictMode == rhs.strictMode &&
+
+            self.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            self.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
     }
 
 }

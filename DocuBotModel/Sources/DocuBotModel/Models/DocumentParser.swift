@@ -89,7 +89,8 @@ public extension DocumentParser {
         // Close our access, we're done here
         directory.stopAccessingSecurityScopedResource()
 
-        // Generate our checksum so we can tell for later if we need to re-sync
+        // Generate our checksum so we can tell for
+        // later if we need to re-sync
         let checksum = try documents.generateChecksum()
         return .init(checksum: checksum, documents: documents)
     }
@@ -101,7 +102,8 @@ public extension DocumentParser {
             throw DocumentError.noBookmarkData
         }
 
-        // Create a temporary secure URL with read access to the users document data
+        // Create a temporary secure URL with read access to
+        // the users document data.
         var isStale = false
         let directory = try URL(
             resolvingBookmarkData: urlBookmarkData,
@@ -121,7 +123,8 @@ public extension DocumentParser {
         // Create documents out of them
         let documents = try await self.createDocuments(from: files)
 
-        // Compare the collection of documents' checksum against the current checksum
+        // Compare the collection of documents' checksum against
+        // the current checksum.
         let newChecksum = try documents.generateChecksum()
         guard let oldChecksum = self.project.documentationChecksum else {
             return false
@@ -134,7 +137,7 @@ public extension DocumentParser {
 
 // MARK: - Private
 
-private extension DocumentParser {
+internal extension DocumentParser {
 
     func extractFilesFromDisk(from directory: URL) async throws -> [URL] {
         var files = [URL]()
@@ -289,7 +292,8 @@ private extension DocumentParser {
     /// Retrieves the documentation file format from the provided URL based on its file extension.
     ///
     /// - Parameter url: The URL of the file to extract the extension from.
-    /// - Returns: The documentation format based on the file extension, or `nil` if the extension is invalid.
+    /// - Returns: The documentation format based on the file extension, or `nil` if
+    /// the extension is invalid.
     ///
     func fileExtension(from url: URL) -> ProjectSettings.DocumentationFormat {
         let rawFileExtension = url.pathExtension

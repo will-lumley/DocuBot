@@ -12,9 +12,7 @@ import Foundation
 import GRDB
 import Testing
 
-// swiftlint:disable line_length
-
-struct GRDBServiceTests { // swiftlint:disable:this type_body_length
+struct GRDBServiceTests {
 
     // MARK: - Properties
 
@@ -32,99 +30,86 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
 
     // MARK: Projects
 
+    @Test("Key Value")
+    func keyValue() {
+        #expect(GRDBService.key == .persistenceStore)
+    }
+
     @Test("Insert Project")
     func insertProject() async throws {
+        // GIVEN we have a project we'd like to commit
         let project = Project.mock()
 
-        // Insert the project
+        // WHEN we insert the project into the database
         let insertedProject = try await testSubject.insert(project: project)
+
+        // THEN we get a valid ID back
         let newID = try #require(insertedProject.id)
 
-        // Fetch the project
+        // WHEN we try and fetch the same project back from the DB
         let fetchedProject = try await testSubject.getProject(id: newID)
 
-        // Ensure our initial project and inserted project are identical
-        #expect(insertedProject.path == project.path)
-        #expect(insertedProject.name == project.name)
-        #expect(insertedProject.urlBookmarkData == project.urlBookmarkData)
-        #expect(insertedProject.documentationChecksum == project.documentationChecksum)
-        #expect(insertedProject.exampleQuestions == project.exampleQuestions)
-        #expect(insertedProject.alertStatus == project.alertStatus)
-        #expect(insertedProject.needsFullResync == project.needsFullResync)
-        #expect(Int(insertedProject.createdAt.timeIntervalSince1970) == Int(project.createdAt.timeIntervalSince1970))
-        #expect(Int(insertedProject.updatedAt.timeIntervalSince1970) == Int(project.updatedAt.timeIntervalSince1970))
+        // THEN the project we inserted into the DB should match
+        // the one we just fetched from the DB
+        #expect(insertedProject == fetchedProject)
 
-        // Ensure our fetched project and inserted project are identical
-        #expect(insertedProject.id == fetchedProject.id)
-        #expect(insertedProject.path == fetchedProject.path)
-        #expect(insertedProject.name == fetchedProject.name)
-        #expect(insertedProject.urlBookmarkData == fetchedProject.urlBookmarkData)
-        #expect(insertedProject.documentationChecksum == fetchedProject.documentationChecksum)
-        #expect(insertedProject.exampleQuestions == fetchedProject.exampleQuestions)
-        #expect(insertedProject.alertStatus == fetchedProject.alertStatus)
-        #expect(insertedProject.needsFullResync == fetchedProject.needsFullResync)
-        #expect(
-            Int(insertedProject.createdAt.timeIntervalSince1970) == Int(fetchedProject.createdAt.timeIntervalSince1970)
-        )
-        #expect(
-            Int(insertedProject.updatedAt.timeIntervalSince1970) == Int(fetchedProject.updatedAt.timeIntervalSince1970)
-        )
+        // THEN the project we inserted into the DB should match
+        // the one we created initially
+        #expect(insertedProject.isEqualToIgnoringID(project))
     }
 
     @Test("Fetch Single Project")
     func fetchSingleProject() async throws {
+        // GIVEN we have a project we'd like to commit
         let project = Project.mock()
 
-        // Insert the project
+        // WHEN we insert the project into the database
         let insertedProject = try await testSubject.insert(project: project)
+
+        // THEN we get a valid ID back
         let newID = try #require(insertedProject.id)
 
-        // Fetch the project
+        // WHEN we try and fetch the same project back from the DB
         let fetchedProject = try await testSubject.getProject(id: newID)
 
-        // Ensure our fetched project and inserted project are identical
+        // THEN the project we just fetched from the DB should match
+        // the one we just created
+        #expect(fetchedProject.isEqualToIgnoringID(project))
+
+        // THEN the project we just fetched from the DB should have
+        // a new ID attached to it, and that ID should be `1`
+        #expect(fetchedProject.id == newID)
         #expect(fetchedProject.id == 1)
-        #expect(project.path == fetchedProject.path)
-        #expect(project.name == fetchedProject.name)
-        #expect(project.urlBookmarkData == fetchedProject.urlBookmarkData)
-        #expect(project.documentationChecksum == fetchedProject.documentationChecksum)
-        #expect(project.exampleQuestions == fetchedProject.exampleQuestions)
-        #expect(project.alertStatus == fetchedProject.alertStatus)
-        #expect(project.needsFullResync == fetchedProject.needsFullResync)
-        #expect(Int(project.createdAt.timeIntervalSince1970) == Int(fetchedProject.createdAt.timeIntervalSince1970))
-        #expect(Int(project.updatedAt.timeIntervalSince1970) == Int(fetchedProject.updatedAt.timeIntervalSince1970))
     }
 
     @Test("Fetch Single Project Publisher")
     func fetchSingleProjectPublisher() async throws {
         var cancellables: Set<AnyCancellable> = []
 
+        // GIVEN we have a project we'd like to commit
         let project = Project.mock()
 
-        // Insert the project
+        // WHEN we insert the project into the database
         let insertedProject = try await testSubject.insert(project: project)
+
+        // THEN we get a valid ID back
         let newID = try #require(insertedProject.id)
 
+        // THEN the publisher fires as expected
         await withCheckedContinuation { continuation in
-            // Fetch the project
+            // WHEN we request a project from the publisher
             testSubject.getProject(id: newID)
                 .sink { fetchedProject in
-                    // Ensure our fetched project and inserted project are identical
-                    #expect(fetchedProject.id == 1)
-                    #expect(project.path == fetchedProject.path)
-                    #expect(project.name == fetchedProject.name)
-                    #expect(project.urlBookmarkData == fetchedProject.urlBookmarkData)
-                    #expect(project.documentationChecksum == fetchedProject.documentationChecksum)
-                    #expect(project.exampleQuestions == fetchedProject.exampleQuestions)
-                    #expect(project.alertStatus == fetchedProject.alertStatus)
-                    #expect(project.needsFullResync == fetchedProject.needsFullResync)
-                    #expect(
-                        Int(project.createdAt.timeIntervalSince1970) == Int(fetchedProject.createdAt.timeIntervalSince1970)
-                    )
-                    #expect(
-                        Int(project.updatedAt.timeIntervalSince1970) == Int(fetchedProject.updatedAt.timeIntervalSince1970)
-                    )
+                    // THEN our fetched project and inserted project
+                    // are identical
+                    #expect(fetchedProject.isEqualToIgnoringID(project))
 
+                    // THEN the project we just fetched from the DB should
+                    // have a new ID attached to it, and that ID should be `1`
+                    #expect(fetchedProject.id == newID)
+                    #expect(fetchedProject.id == 1)
+
+                    // Tell our continuation block that we're done here
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -135,46 +120,44 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
     func fetchAllProjectPublisher() async throws {
         var cancellables: Set<AnyCancellable> = []
 
-        let project1 = Project.mock(name: "Project1")
-        let project2 = Project.mock(name: "Project2")
+        // GIVEN we have two projects we'd like to commit
+        let project1 = Project.mock()
+        let project2 = Project.mock()
 
-        // Insert the projects
-        _ = try await testSubject.insert(project: project1)
-        _ = try await testSubject.insert(project: project2)
+        // WHEN we insert the projects into the database
+        let insertedProject1 = try await testSubject.insert(project: project1)
+        let insertedProject2 = try await testSubject.insert(project: project2)
 
+        // THEN the publisher fires as expected
         await withCheckedContinuation { continuation in
-            // Fetch the project
+            // WHEN we request all projects from the publisher
             testSubject.getProjects()
-                .replaceError(with: []) // The test will crash if there's an error
+                .replaceError(with: []) // We will crash if there's an error
                 .sink { fetchedProjects in
                     let fetchedProject1 = fetchedProjects[0]
                     let fetchedProject2 = fetchedProjects[1]
 
-                    // Ensure our fetched project and inserted project are identical
+                    // THEN our fetched projects and the projects
+                    // we created initially are identical
+                    #expect(fetchedProject1.isEqualToIgnoringID(project1))
+                    #expect(fetchedProject2.isEqualToIgnoringID(project2))
+
+                    // THEN our fetched projects and inserted projects
+                    // are identical
+                    #expect(fetchedProject1 == insertedProject1)
+                    #expect(fetchedProject2 == insertedProject2)
+
+                    // THEN the project we just fetched from the DB should
+                    // have a new ID attached to it, and that ID should be `1`
                     #expect(fetchedProject1.id == 1)
-                    #expect(project1.path == fetchedProject1.path)
-                    #expect(fetchedProject1.name == "Project1")
-                    #expect(project1.name == fetchedProject1.name)
-                    #expect(project1.urlBookmarkData == fetchedProject1.urlBookmarkData)
-                    #expect(project1.documentationChecksum == fetchedProject1.documentationChecksum)
-                    #expect(project1.exampleQuestions == fetchedProject1.exampleQuestions)
-                    #expect(project1.alertStatus == fetchedProject1.alertStatus)
-                    #expect(project1.needsFullResync == fetchedProject1.needsFullResync)
-                    #expect(Int(project1.createdAt.timeIntervalSince1970) == Int(fetchedProject1.createdAt.timeIntervalSince1970))
-                    #expect(Int(project1.updatedAt.timeIntervalSince1970) == Int(fetchedProject1.updatedAt.timeIntervalSince1970))
+                    #expect(fetchedProject1.id == insertedProject1.id)
 
+                    // THEN the project we just fetched from the DB should
+                    // have a new ID attached to it, and that ID should be `2`
                     #expect(fetchedProject2.id == 2)
-                    #expect(project2.path == fetchedProject2.path)
-                    #expect(fetchedProject2.name == "Project2")
-                    #expect(project2.name == fetchedProject2.name)
-                    #expect(project2.urlBookmarkData == fetchedProject2.urlBookmarkData)
-                    #expect(project2.documentationChecksum == fetchedProject2.documentationChecksum)
-                    #expect(project2.exampleQuestions == fetchedProject2.exampleQuestions)
-                    #expect(project2.alertStatus == fetchedProject2.alertStatus)
-                    #expect(project2.needsFullResync == fetchedProject2.needsFullResync)
-                    #expect(Int(project2.createdAt.timeIntervalSince1970) == Int(fetchedProject2.createdAt.timeIntervalSince1970))
-                    #expect(Int(project2.updatedAt.timeIntervalSince1970) == Int(fetchedProject2.updatedAt.timeIntervalSince1970))
+                    #expect(fetchedProject2.id == insertedProject2.id)
 
+                    // Tell our continuation block that we're done here
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -183,40 +166,34 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
 
     @Test("Delete Project")
     func deleteProject() async throws {
-        let project = Project(
-            id: nil,
-            path: "/path/to/project",
-            name: "Sample Project",
-            urlBookmarkData: Data(),
-            documentationCheckSum: "abc123",
-            exampleQuestions: ["What is this?", "How does it work?"],
-            alertStatus: .none,
-            needsFullResync: false,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
+        // GIVEN we have a project we'd like to commit
+        let project = Project.mock()
 
-        // Insert the project
+        // WHEN we insert the projects into the database
         let insertedProject = try await testSubject.insert(project: project)
+
+        // THEN we get a valid ID back
         let newID = try #require(insertedProject.id)
 
-        // Delete the project
-        let deleteSuccess = try await testSubject.delete(project: insertedProject)
+        // WHEN we delete the project
+        let deleteSuccess = try await testSubject.delete(
+            project: insertedProject
+        )
+
+        // THEN the deletion is marked as being successful
         #expect(deleteSuccess == true)
 
-        // Verify deletion
-        do {
-            _ = try await testSubject.getProject(id: newID)
-            Issue.record("Expected valueNotFound error")
-        } catch let error as DocuBotService.PersistenceError {
-            #expect(error == .valueNotFound)
+        // WHEN we try and pull out the same project that we just deleted
+        // THEN we get a `valueNotFound` error thrown.
+        await #expect(throws: DocuBotService.PersistenceError.valueNotFound) {
+            try await testSubject.getProject(id: newID)
         }
     }
 
     @Test("Update Project")
     func updateProject() async throws {
-        var project = Project(
-            id: nil,
+        // GIVEN we have a project we'd like to commit
+        let project = Project(
             path: "/path/to/project",
             name: "Old Project",
             urlBookmarkData: Data(),
@@ -228,12 +205,18 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
             updatedAt: Date()
         )
 
-        // Insert the project
-        project = try await testSubject.insert(project: project)
+        // WHEN we insert the project into the database
+        let insertedProject = try await testSubject.insert(
+            project: project
+        )
 
-        // Update the project
-        let updatedProject = Project(
-            id: project.id,
+        // THEN our created project and inserted project are equal
+        #expect(project.isEqualToIgnoringID(insertedProject))
+
+        // GIVEN we have a new project that we'd like to overrwrite
+        // our most recent entry in the DB
+        let newProject = Project(
+            id: insertedProject.id,
             path: "/path/to/project",
             name: "Updated Project",
             urlBookmarkData: Data(),
@@ -244,102 +227,94 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
             createdAt: project.createdAt,
             updatedAt: Date()
         )
-        _ = try await testSubject.update(project: updatedProject)
 
-        // Verify update
-        let fetchedProject = try await testSubject.getProject(id: try #require(project.id))
-        #expect(fetchedProject.id == 1)
-        #expect(fetchedProject.path == "/path/to/project")
-        #expect(fetchedProject.name == "Updated Project")
-        #expect(fetchedProject.urlBookmarkData == Data())
-        #expect(fetchedProject.documentationChecksum == "xyz789")
-        #expect(fetchedProject.exampleQuestions == ["Why is this?", "Who does it work?"])
-        #expect(fetchedProject.alertStatus == .warning(warning: .isDirty))
-        #expect(fetchedProject.needsFullResync == true)
+        // WHEN we update the project in the DB
+        let updatedProject = try await testSubject.update(
+            project: newProject
+        )
+
+        // THEN our inserted & updated project have an ID, and it is `1`
+        let newID = try #require(updatedProject.id)
+        #expect(insertedProject.id == updatedProject.id)
+        #expect(newID == 1)
+
+        // WHEN we fetch a project from the DB
+        let fetchedProject = try await testSubject.getProject(id: newID)
+
+        // THEN it is NOT equal to our old project, and is equal to
+        // our new project
+        #expect(fetchedProject != project)
+        #expect(fetchedProject == newProject)
     }
 
     // MARK: ProjectSettings
 
     @Test("Insert Project Settings")
     func insertProjectSettings() async throws {
-        // Create a mock project and insert it
-        let project = try await testSubject.insert(project: Project.mock())
+        // GIVEN we have a project and model we'd like to commit
+        let project = Project.mock()
+        let model = LLMModel.mock()
 
-        // Create a mock model and insert it
-        let model = try await testSubject.insert(model: LLMModel.mock())
+        // WHEN we insert it into the DB
+        let insertedProject = try await testSubject.insert(project: project)
+        let insertedModel = try await testSubject.insert(model: model)
 
-        // Create a mock project settings object
+        // WHEN we create a ProjectSettings with our project and model
         let settings = ProjectSettings.mock(
-            projectID: try #require(project.id),
-            modelID: try #require(model.id)
+            projectID: try #require(insertedProject.id),
+            modelID: try #require(insertedModel.id)
         )
 
-        // Insert the settings
-        let insertedSettings = try await testSubject.insert(settings: settings)
-        _ = try #require(insertedSettings.id)
+        // WHEN we insert the ProjectSettings into the DB
+        let insertedSettings = try await testSubject.insert(
+            settings: settings
+        )
 
-        // Ensure the inserted settings and initial settings match
-        #expect(insertedSettings.projectID == settings.projectID)
-        #expect(insertedSettings.modelID == settings.modelID)
-        #expect(insertedSettings.supportedFormats == settings.supportedFormats)
-        #expect(insertedSettings.language == settings.language)
-        #expect(insertedSettings.embeddingModel == settings.embeddingModel)
-        #expect(insertedSettings.similarityMetric == settings.similarityMetric)
-        #expect(insertedSettings.seed == settings.seed)
-        #expect(insertedSettings.topK == settings.topK)
-        #expect(insertedSettings.topP == settings.topP)
-        #expect(insertedSettings.contextLength == settings.contextLength)
-        #expect(insertedSettings.temperature == settings.temperature)
-        #expect(insertedSettings.batchSize == settings.batchSize)
-        #expect(insertedSettings.stopSequence == settings.stopSequence)
-        #expect(insertedSettings.maxTokenCount == settings.maxTokenCount)
-        #expect(insertedSettings.systemPrompt == settings.systemPrompt)
-        #expect(insertedSettings.strictMode == settings.strictMode)
-        #expect(Int(insertedSettings.createdAt.timeIntervalSince1970) == Int(settings.createdAt.timeIntervalSince1970))
-        #expect(Int(insertedSettings.updatedAt.timeIntervalSince1970) == Int(settings.updatedAt.timeIntervalSince1970))
+        // THEN we have an ID from the DB, and the ID is `1`
+        let newID = try #require(insertedSettings.id)
+        #expect(newID == 1)
+
+        // THEN the InsertedSettings and the Settings we initially
+        // created, are equal
+        #expect(insertedSettings.isEqualToIgnoringID(settings))
     }
 
     @Test("Fetch Project Settings")
     func fetchProjectSettings() async throws {
-        // Create a mock project and insert it
-        let project = try await testSubject.insert(project: Project.mock())
+        // GIVEN we have a project and model we'd like to commit
+        let project = Project.mock()
+        let model = LLMModel.mock()
 
-        // Create a mock model and insert it
-        let model = try await testSubject.insert(model: LLMModel.mock())
+        // WHEN we insert it into the DB
+        let insertedProject = try await testSubject.insert(project: project)
+        let insertedModel = try await testSubject.insert(model: model)
 
-        // Create a mock project settings object
+        // WHEN we create a ProjectSettings with our project and model
         let settings = ProjectSettings.mock(
-            projectID: try #require(project.id),
-            modelID: try #require(model.id)
+            projectID: try #require(insertedProject.id),
+            modelID: try #require(insertedModel.id)
         )
 
-        // Insert the settings
-        let insertedSettings = try await testSubject.insert(settings: settings)
-        _ = try #require(insertedSettings.id)
+        // WHEN we insert the ProjectSettings into the DB
+        let insertedSettings = try await testSubject.insert(
+            settings: settings
+        )
+
+        // THEN we have an ID from the DB, and the ID is `1`
+        let newID = try #require(insertedSettings.id)
+        #expect(newID == 1)
 
         // Fetch the settings for the project
-        let fetchedSettings = try await testSubject.getProjectSettings(for: project)
+        let fetchedSettings = try await testSubject.getProjectSettings(
+            for: project
+        )
 
-        // Ensure the fetched settings match the inserted settings
-        #expect(fetchedSettings.id == insertedSettings.id)
-        #expect(fetchedSettings.projectID == settings.projectID)
-        #expect(fetchedSettings.modelID == settings.modelID)
-        #expect(fetchedSettings.supportedFormats == settings.supportedFormats)
-        #expect(fetchedSettings.language == settings.language)
-        #expect(fetchedSettings.embeddingModel == settings.embeddingModel)
-        #expect(fetchedSettings.similarityMetric == settings.similarityMetric)
-        #expect(fetchedSettings.seed == settings.seed)
-        #expect(fetchedSettings.topK == settings.topK)
-        #expect(fetchedSettings.topP == settings.topP)
-        #expect(fetchedSettings.contextLength == settings.contextLength)
-        #expect(fetchedSettings.temperature == settings.temperature)
-        #expect(fetchedSettings.batchSize == settings.batchSize)
-        #expect(fetchedSettings.stopSequence == settings.stopSequence)
-        #expect(fetchedSettings.maxTokenCount == settings.maxTokenCount)
-        #expect(fetchedSettings.systemPrompt == settings.systemPrompt)
-        #expect(fetchedSettings.strictMode == settings.strictMode)
-        #expect(Int(fetchedSettings.createdAt.timeIntervalSince1970) == Int(settings.createdAt.timeIntervalSince1970))
-        #expect(Int(fetchedSettings.updatedAt.timeIntervalSince1970) == Int(settings.updatedAt.timeIntervalSince1970))
+        // Ensure the FetchedSettings and InsertedSettings are equal
+        #expect(fetchedSettings == insertedSettings)
+
+        // Ensure the initially created Settings matches
+        // the FetchedSettings
+        #expect(settings == fetchedSettings)
     }
 
     @Test("Update Project Settings")
@@ -706,107 +681,6 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
         } catch let error as DocuBotService.PersistenceError {
             #expect(error == .valueNotFound)
         }
-    }
-
-}
-
-// MARK: - Project
-
-private extension Project {
-
-    static func mock(
-        id: Int64? = nil,
-        name: String = "Sample Project"
-    ) -> Project {
-        .init(
-            id: id,
-            path: "/path/to/project",
-            name: name,
-            urlBookmarkData: Data(),
-            documentationCheckSum: "abc123",
-            exampleQuestions: ["What is this?", "How does it work?"],
-            alertStatus: .warning(warning: .directoryChanged),
-            needsFullResync: false,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
-    }
-
-}
-
-// MARK: - ProjectSettings
-
-private extension ProjectSettings {
-
-    static func mock(
-        id: Int64? = nil,
-        projectID: Int64 = 1,
-        modelID: Int64 = 1
-    ) -> ProjectSettings {
-        .init(
-            id: id,
-            projectID: projectID,
-            modelID: 1,
-            supportedFormats: [.txt, .rtf],
-            language: .english,
-            embeddingModel: .distilbert,
-            similarityMetric: .cosine,
-            seed: 12345,
-            topK: 10,
-            topP: 0.8,
-            contextLength: 512,
-            temperature: 0.7,
-            batchSize: 16,
-            stopSequence: nil,
-            maxTokenCount: 1024,
-            systemPrompt: "Summarize the document.",
-            strictMode: true,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
-    }
-
-}
-
-// MARK: - LLMModel
-
-private extension LLMModel {
-
-    static func mock(
-        id: Int64? = nil,
-        name: String = "Cool Model Name"
-    ) -> LLMModel {
-        .init(
-            id: id,
-            name: name,
-            path: "/path/to/model",
-            size: 4000,
-            createdAt: .now,
-            updatedAt: .now
-        )
-    }
-
-}
-
-// MARK: - Document
-
-private extension Document {
-
-    static func mock(
-        id: Int64? = nil,
-        projectID: Int64 = 1
-    ) -> Document {
-        .init(
-            id: id,
-            url: URL(string: "https://example.com/document\(id ?? 0)")!,
-            fileFormat: .rtf,
-            content: "Sample content \(id ?? 0)",
-            checksum: "checksum\(id ?? 0)",
-            projectID: projectID,
-            embeddings: nil,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
     }
 
 } // swiftlint:disable:this file_length
