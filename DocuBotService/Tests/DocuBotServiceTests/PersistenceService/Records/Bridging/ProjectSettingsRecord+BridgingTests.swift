@@ -27,7 +27,7 @@ struct ProjectSettingsBridgingTests {
 
     @Test("Model to Record Bridging")
     func modelToRecordBridging() throws {
-        // Prepare sample ProjectSettings data
+        // GIVEN we have sample data
         let id: Int64? = 42
         let projectID: Int64 = 1
         let modelID: Int64 = 2
@@ -48,7 +48,8 @@ struct ProjectSettingsBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
-        let settings = ProjectSettings(
+        // WHEN we have a Settings in the Model layer
+        let model = ProjectSettings(
             id: id,
             projectID: projectID,
             modelID: modelID,
@@ -70,34 +71,34 @@ struct ProjectSettingsBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to ProjectSettingsRecord
-        let record = ProjectSettingsRecord(model: settings)
+        // WHEN we bridge the Settings to the Storage layer
+        let record = ProjectSettingsRecord(model: model)
 
-        // Validate record properties
-        #expect(record.id == settings.id)
-        #expect(record.project == settings.projectID)
-        #expect(record.model == settings.modelID)
+        // THEN there is no data loss
+        #expect(record.id == model.id)
+        #expect(record.project == model.projectID)
+        #expect(record.model == model.modelID)
         #expect(record.supportedFormats.map(ProjectSettings.DocumentationFormat.init) == supportedFormats)
         #expect(record.language == ProjectSettingsRecord.Language(model: language))
         #expect(record.embeddingModel == ProjectSettingsRecord.EmbeddingModel(model: embeddingModel))
         #expect(record.similarityMetric == ProjectSettingsRecord.SimilarityMetric(model: similarityMetric))
-        #expect(record.seed == settings.seed)
-        #expect(record.topK == settings.topK)
-        #expect(record.topP == settings.topP)
-        #expect(record.contextLength == settings.contextLength)
-        #expect(record.temperature == settings.temperature)
-        #expect(record.batchSize == settings.batchSize)
-        #expect(record.stopSequence == settings.stopSequence)
-        #expect(record.maxTokenCount == settings.maxTokenCount)
-        #expect(record.systemPrompt == settings.systemPrompt)
-        #expect(record.strictMode == settings.strictMode)
-        #expect(record.createdAt == settings.createdAt)
-        #expect(record.updatedAt == settings.updatedAt)
+        #expect(record.seed == model.seed)
+        #expect(record.topK == model.topK)
+        #expect(record.topP == model.topP)
+        #expect(record.contextLength == model.contextLength)
+        #expect(record.temperature == model.temperature)
+        #expect(record.batchSize == model.batchSize)
+        #expect(record.stopSequence == model.stopSequence)
+        #expect(record.maxTokenCount == model.maxTokenCount)
+        #expect(record.systemPrompt == model.systemPrompt)
+        #expect(record.strictMode == model.strictMode)
+        #expect(record.createdAt == model.createdAt)
+        #expect(record.updatedAt == model.updatedAt)
     }
 
     @Test("Record to Model Bridging")
     func recordToModelBridging() throws {
-        // Prepare sample ProjectSettingsRecord data
+        // GIVEN we have sample data
         let id: Int64? = 42
         let projectID: Int64 = 1
         let modelID: Int64 = 2
@@ -118,6 +119,7 @@ struct ProjectSettingsBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we have a Settings in the Storage layer
         let record = ProjectSettingsRecord(
             id: id,
             project: projectID,
@@ -140,10 +142,10 @@ struct ProjectSettingsBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to ProjectSettings
+        // WHEN we bridge the Settings to the Model layer
         let settings = ProjectSettings(record: record)
 
-        // Validate model properties
+        // THEN there is not data loss
         #expect(settings.id == record.id)
         #expect(settings.projectID == record.project)
         #expect(settings.modelID == record.model)
@@ -172,10 +174,10 @@ struct ProjectSettingsBridgingTests {
     func modelToRecordDocumentationFormatBridging(
         format: ProjectSettings.DocumentationFormat
     ) throws {
-        // Convert from model to record
+        // WHEN we convert our DocFormat from the Model layer to the Storage layer
         let recordFormat = ProjectSettingsRecord.DocumentationFormat(model: format)
 
-        // Assert the conversion matches
+        // THEN there is no data loss
         switch format {
         case .html:
             #expect(recordFormat == .html)
@@ -197,18 +199,19 @@ struct ProjectSettingsBridgingTests {
     func recordToModelDocumentationFormatBridging(
         format: ProjectSettingsRecord.DocumentationFormat
     ) throws {
-        // Convert from record to model
+        // WHEN we convert our DocFormat from the Storage layer to the Model layer
         let modelFormat = ProjectSettings.DocumentationFormat(record: format)
         let recordFormat = ProjectSettingsRecord.DocumentationFormat(model: modelFormat)
 
-        // Assert the conversion matches
+        // THEN there is no data loss
         switch (format, recordFormat) {
+        // Pass for predefined cases
         case (.html, .html),
              (.md, .md),
              (.rtf, .rtf),
              (.txt, .txt):
-            // Pass for predefined cases
             break
+        // Compare the associated value for `other`
         case let (.other(value), .other(recordValue)):
             #expect(value == recordValue)
         default:
@@ -226,10 +229,10 @@ struct ProjectSettingsBridgingTests {
     func modelToRecordLanguageBridging(
         language: ProjectSettings.Language
     ) throws {
-        // Convert from model to record
+        // WHEN we convert our Language from the Model layer to the Storage layer
         let recordLanguage = ProjectSettingsRecord.Language(model: language)
 
-        // Assert the conversion matches
+        // THEN there is no data loss
         switch language {
         case .english:
             #expect(recordLanguage == .english)
@@ -241,10 +244,10 @@ struct ProjectSettingsBridgingTests {
         arguments: ProjectSettingsRecord.Language.allCases
     )
     func recordToModelLanguageBridging(language: ProjectSettingsRecord.Language) throws {
-        // Convert from record to model
+        // WHEN we convert our Language from the Storage layer to the Model layer
         let modelLanguage = ProjectSettings.Language(record: language)
 
-        // Assert the conversion matches
+        // THEN there is no data loss
         switch language {
         case .english:
             #expect(modelLanguage == .english)
@@ -256,10 +259,10 @@ struct ProjectSettingsBridgingTests {
         arguments: ProjectSettings.EmbeddingModel.allCases
     )
     func modelToRecordEmbeddingModelBridging(model: ProjectSettings.EmbeddingModel) throws {
-        // Convert from model to record
+        // WHEN we convert our Embedding from the Model layer to the Storage layer
         let recordModel = ProjectSettingsRecord.EmbeddingModel(model: model)
 
-        // Assert the conversion matches
+        // THEN there is no data loss
         #expect(recordModel.rawValue == model.rawValue)
     }
 
@@ -268,10 +271,10 @@ struct ProjectSettingsBridgingTests {
         arguments: ProjectSettingsRecord.EmbeddingModel.allCases
     )
     func recordToModelEmbeddingModelBridging(record: ProjectSettingsRecord.EmbeddingModel) throws {
-        // Convert from record to model
+        // WHEN we convert our Embedding from the Storage layer to the Model layer
         let model = ProjectSettings.EmbeddingModel(record: record)
 
-        // Assert the conversion matches
+        // THEN there is no data loss
         #expect(model.rawValue == record.rawValue)
     }
 
@@ -280,10 +283,10 @@ struct ProjectSettingsBridgingTests {
         arguments: ProjectSettings.SimilarityMetric.allCases
     )
     func modelToRecordSimilarityMetricBridging(metric: ProjectSettings.SimilarityMetric) throws {
-        // Convert from model to record
+        // WHEN we convert our metric from the Model layer to the Storage layer
         let recordMetric = ProjectSettingsRecord.SimilarityMetric(model: metric)
 
-        // Assert the conversion matches
+        // THEN there is no data loss
         #expect(recordMetric.rawValue == metric.rawValue)
     }
 
@@ -292,7 +295,7 @@ struct ProjectSettingsBridgingTests {
         arguments: ProjectSettingsRecord.SimilarityMetric.allCases
     )
     func recordToModelSimilarityMetricBridging(record: ProjectSettingsRecord.SimilarityMetric) throws {
-        // Convert from record to model
+        // WHEN we convert our metric from the Storage layer to the Model layer
         let model = ProjectSettings.SimilarityMetric(record: record)
 
         // Assert the conversion matches
