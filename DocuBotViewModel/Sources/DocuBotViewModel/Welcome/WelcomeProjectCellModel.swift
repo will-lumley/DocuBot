@@ -78,7 +78,7 @@ public extension WelcomeProjectCellModel {
 
     static var mock: WelcomeProjectCellModel {
         .init(
-            project: .mock
+            project: .mock()
         )
     }
 

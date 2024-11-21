@@ -12,7 +12,7 @@ import Foundation
 import GRDB
 import Testing
 
-struct GRDBServiceTests {
+struct GRDBServiceTests { // swiftlint:disable:this type_body_length
 
     // MARK: - Properties
 
@@ -304,42 +304,55 @@ struct GRDBServiceTests {
         let newID = try #require(insertedSettings.id)
         #expect(newID == 1)
 
-        // Fetch the settings for the project
+        // WHEN we try and fetch the same settings back from the DB
         let fetchedSettings = try await testSubject.getProjectSettings(
-            for: project
+            for: insertedProject
         )
 
-        // Ensure the FetchedSettings and InsertedSettings are equal
+        // THEN the FetchedSettings and InsertedSettings are equal
         #expect(fetchedSettings == insertedSettings)
 
-        // Ensure the initially created Settings matches
+        // THEN the initially created Settings matches
         // the FetchedSettings
-        #expect(settings == fetchedSettings)
+        #expect(settings.isEqualToIgnoringID(fetchedSettings))
     }
 
     @Test("Update Project Settings")
     func updateProjectSettings() async throws {
-        // Create a mock project and insert it
-        let project = try await testSubject.insert(project: Project.mock())
+        // GIVEN we have a project and model we'd like to commit
+        let project = Project.mock()
+        let model1 = LLMModel.mock()
+        let model2 = LLMModel.mock()
 
-        // Create 2 mock models and insert them
-        let model1 = try await testSubject.insert(model: LLMModel.mock())
-        _ = try await testSubject.insert(model: LLMModel.mock())
+        // WHEN we insert it into the DB
+        let insertedProject = try await testSubject.insert(project: project)
+        let insertedModel1 = try await testSubject.insert(model: model1)
+        let insertedModel2 = try await testSubject.insert(model: model2)
 
-        // Create a mock project settings object
-        let initialSettings = ProjectSettings.mock(
-            projectID: try #require(project.id),
-            modelID: try #require(model1.id)
+        // WHEN we create a ProjectSettings with our project and model
+        let settings = ProjectSettings.mock(
+            projectID: try #require(insertedProject.id),
+            modelID: try #require(insertedModel1.id)
         )
 
-        // Insert the settings
-        let insertedSettings = try await testSubject.insert(settings: initialSettings)
+        // WHEN we insert the ProjectSettings into the DB
+        let insertedSettings = try await testSubject.insert(
+            settings: settings
+        )
 
-        // Update the settings
+        // THEN we have an ID from the DB, and the ID is `1`
+        let newID = try #require(insertedSettings.id)
+        #expect(newID == 1)
+
+        // THEN our created project and inserted project are equal
+        #expect(settings.isEqualToIgnoringID(insertedSettings))
+
+        // GIVEN we have a new settings that we'd like to overrwrite
+        // our most recent entry in the DB
         let updatedSettings = ProjectSettings(
             id: try #require(insertedSettings.id),
-            projectID: try #require(project.id),
-            modelID: 2,
+            projectID: try #require(insertedProject.id),
+            modelID: try #require(insertedModel2.id),
             supportedFormats: [.md, .html],
             language: .english,
             embeddingModel: .multiQaMiniLm,
@@ -354,148 +367,187 @@ struct GRDBServiceTests {
             maxTokenCount: 2048,
             systemPrompt: "Explain the topic.",
             strictMode: false,
-            createdAt: initialSettings.createdAt,
+            createdAt: insertedSettings.createdAt,
             updatedAt: Date()
         )
 
+        // WHEN we overrwrite our settings with the updated settings
         let result = try await testSubject.update(settings: updatedSettings)
 
         // Ensure the updated settings are correct
-        #expect(result.id == updatedSettings.id)
-        #expect(result.projectID == updatedSettings.projectID)
-        #expect(result.modelID == updatedSettings.modelID)
-        #expect(result.supportedFormats == updatedSettings.supportedFormats)
-        #expect(result.language == updatedSettings.language)
-        #expect(result.embeddingModel == updatedSettings.embeddingModel)
-        #expect(result.similarityMetric == updatedSettings.similarityMetric)
-        #expect(result.seed == updatedSettings.seed)
-        #expect(result.topK == updatedSettings.topK)
-        #expect(result.topP == updatedSettings.topP)
-        #expect(result.contextLength == updatedSettings.contextLength)
-        #expect(result.temperature == updatedSettings.temperature)
-        #expect(result.batchSize == updatedSettings.batchSize)
-        #expect(result.stopSequence == updatedSettings.stopSequence)
-        #expect(result.maxTokenCount == updatedSettings.maxTokenCount)
-        #expect(result.systemPrompt == updatedSettings.systemPrompt)
-        #expect(result.strictMode == updatedSettings.strictMode)
-        #expect(Int(result.createdAt.timeIntervalSince1970) == Int(initialSettings.createdAt.timeIntervalSince1970))
-        #expect(Int(result.updatedAt.timeIntervalSince1970) == Int(updatedSettings.updatedAt.timeIntervalSince1970))
+        #expect(result == updatedSettings)
     }
 
     // MARK: Documents
 
     @Test("Insert Documents")
     func insertDocuments() async throws {
-        // Create a mock project and insert it
-        let project = try await testSubject.insert(project: Project.mock())
+        // GIVEN we have a project we'd like to commit
+        let project = Project.mock()
 
-        // Create mock documents
+        // GIVEN we insert the project into the database
+        let insertedProject = try await testSubject.insert(project: project)
+        let projectID = try #require(insertedProject.id)
+
+        // GIVEN we have mock documents to commit
         let documents = [
-            Document.mock(projectID: try #require(project.id)),
-            Document.mock(projectID: try #require(project.id))
+            Document.mock(projectID: projectID),
+            Document.mock(projectID: projectID)
         ]
 
-        // Insert the documents
+        // WHEN we insert the documents into the database
         let insertedDocuments = try await testSubject.insert(documents: documents)
         #expect(insertedDocuments.count == 2)
 
-        // Verify the properties of the inserted documents
-        for (index, document) in insertedDocuments.enumerated() {
-            let projectID = try #require(project.id)
-            #expect(document.projectID == projectID)
-            #expect(document.url == documents[index].url)
-            #expect(document.fileFormat == documents[index].fileFormat)
-            #expect(document.content == documents[index].content)
-            #expect(document.checksum == documents[index].checksum)
-            #expect(document.embeddings == documents[index].embeddings)
-            #expect(
-                Int(document.createdAt.timeIntervalSince1970) == Int(documents[index].createdAt.timeIntervalSince1970)
-            )
-            #expect(
-                Int(document.updatedAt.timeIntervalSince1970) == Int(documents[index].updatedAt.timeIntervalSince1970)
-            )
-        }
+        // WHEN we try and fetch the same documents back from the DB
+        let fetchedDocuments = try await testSubject.getDocuments(for: insertedProject)
+
+        // THEN the documents we inserted into the DB should match
+        // the one we just fetched from the DB
+        #expect(fetchedDocuments.count == 2)
+        #expect(fetchedDocuments[0] == insertedDocuments[0])
+        #expect(fetchedDocuments[1] == insertedDocuments[1])
+
+        // THEN the documents we inserted into the DB should match
+        // the one we created initially
+        #expect(insertedDocuments[0].isEqualToIgnoringID(documents[0]))
+        #expect(insertedDocuments[1].isEqualToIgnoringID(documents[1]))
     }
 
     @Test("Fetch Documents by IDs")
     func fetchDocumentsByIDs() async throws {
-        // Create a mock project and insert it
-        let project = try await testSubject.insert(project: Project.mock())
+        // GIVEN we have a project to commit
+        let project = Project.mock()
 
-        // Insert mock documents
-        let documents = try await testSubject.insert(documents: [
-            Document.mock(projectID: try #require(project.id)),
-            Document.mock(projectID: try #require(project.id))
-        ])
+        // GIVEN we insert the project into the database
+        let insertedProject = try await testSubject.insert(project: project)
+        let projectID = try #require(insertedProject.id)
 
-        let documentIDs = documents.compactMap(\.id)
-        #expect(documentIDs.count == 2)
+        // GIVEN we have mock documents to commit
+        let documents = [
+            Document.mock(projectID: projectID),
+            Document.mock(projectID: projectID)
+        ]
 
-        // Fetch documents by IDs
-        let fetchedDocuments = try await testSubject.getDocuments(ids: documentIDs)
-        #expect(fetchedDocuments.count == documents.count)
+        // WHEN we insert the documents into the database
+        let insertedDocuments = try await testSubject.insert(documents: documents)
+        #expect(insertedDocuments.count == 2)
 
-        // Verify the fetched documents match the inserted ones
-        for (inserted, fetched) in zip(documents, fetchedDocuments) {
-            #expect(fetched.id == inserted.id)
-            #expect(fetched.projectID == inserted.projectID)
-            #expect(fetched.url == inserted.url)
-            #expect(fetched.fileFormat == inserted.fileFormat)
-            #expect(fetched.content == inserted.content)
-            #expect(fetched.checksum == inserted.checksum)
-            #expect(fetched.embeddings == inserted.embeddings)
-            #expect(Int(fetched.createdAt.timeIntervalSince1970) == Int(inserted.createdAt.timeIntervalSince1970))
-            #expect(Int(fetched.updatedAt.timeIntervalSince1970) == Int(inserted.updatedAt.timeIntervalSince1970))
-        }
+        // GIVEN we have the IDs of the documents we just inserted
+        let documentID1 = try #require(insertedDocuments[0].id)
+        let documentID2 = try #require(insertedDocuments[1].id)
+
+        // WHEN we fetch the documents from the database via ID
+        let fetchedDocument1 = try await testSubject.getDocuments(ids: [documentID1]).first
+        let fetchedDocument2 = try await testSubject.getDocuments(ids: [documentID2]).first
+        let fetchedDocuments = try await testSubject.getDocuments(ids: [documentID1, documentID2])
+
+        // THEN the FetchedDocuments and InsertedDocuments are equal
+        #expect(fetchedDocument1 == insertedDocuments[0])
+        #expect(fetchedDocument2 == insertedDocuments[1])
+        #expect(fetchedDocuments == insertedDocuments)
+
+        // THEN the initially created Settings matches
+        // the FetchedSettings
+        #expect(documents[0].isEqualToIgnoringID(insertedDocuments[0]))
+        #expect(documents[1].isEqualToIgnoringID(insertedDocuments[1]))
+        #expect(documents.count == insertedDocuments.count)
     }
 
     @Test("Fetch Documents by Project")
     func fetchDocumentsByProject() async throws {
-        // Create a mock project and insert it
-        let project = try await testSubject.insert(project: Project.mock())
+        // GIVEN we have projects to commit
+        let project1 = Project.mock()
+        let project2 = Project.mock()
 
-        // Insert mock documents
-        let documents = try await testSubject.insert(documents: [
-            Document.mock(projectID: try #require(project.id)),
-            Document.mock(projectID: try #require(project.id))
-        ])
+        // GIVEN we insert the projects into the database
+        let insertedProject1 = try await testSubject.insert(project: project1)
+        let projectID1 = try #require(insertedProject1.id)
 
-        // Fetch documents for the project
-        let fetchedDocuments = try await testSubject.getDocuments(for: project)
-        #expect(fetchedDocuments.count == documents.count)
+        let insertedProject2 = try await testSubject.insert(project: project2)
+        let projectID2 = try #require(insertedProject2.id)
 
-        // Verify the fetched documents match the inserted ones
-        for (inserted, fetched) in zip(documents, fetchedDocuments) {
-            #expect(fetched.id == inserted.id)
-            #expect(fetched.projectID == inserted.projectID)
-            #expect(fetched.url == inserted.url)
-            #expect(fetched.fileFormat == inserted.fileFormat)
-            #expect(fetched.content == inserted.content)
-            #expect(fetched.checksum == inserted.checksum)
-            #expect(fetched.embeddings == inserted.embeddings)
-            #expect(Int(fetched.createdAt.timeIntervalSince1970) == Int(inserted.createdAt.timeIntervalSince1970))
-            #expect(Int(fetched.updatedAt.timeIntervalSince1970) == Int(inserted.updatedAt.timeIntervalSince1970))
-        }
+        // GIVEN we have mock documents to commit
+        let documents1 = [
+            Document.mock(projectID: projectID1),
+            Document.mock(projectID: projectID1)
+        ]
+        let documents2 = [
+            Document.mock(projectID: projectID2),
+            Document.mock(projectID: projectID2)
+        ]
+
+        // WHEN we insert the documents into the database
+        let insertedDocuments1 = try await testSubject.insert(documents: documents1)
+        #expect(insertedDocuments1.count == 2)
+
+        let insertedDocuments2 = try await testSubject.insert(documents: documents2)
+        #expect(insertedDocuments2.count == 2)
+
+        // WHEN we fetch the documents from the database via Project
+        let fetchedDocuments1 = try await testSubject.getDocuments(for: insertedProject1)
+        let fetchedDocuments2 = try await testSubject.getDocuments(for: insertedProject2)
+
+        // THEN the FetchedDocuments and InsertedDocuments are equal
+        #expect(fetchedDocuments1 == insertedDocuments1)
+        #expect(fetchedDocuments1 != insertedDocuments2)
+
+        // THEN the initially created Documents matches
+        // the Documents
+        #expect(documents1[0].isEqualToIgnoringID(insertedDocuments1[0]))
+        #expect(documents1[1].isEqualToIgnoringID(insertedDocuments1[1]))
+        #expect(documents1.count == insertedDocuments1.count)
+        #expect(documents1.count == 2)
+
+        // THEN our Documents for our Project2 was not included
+        #expect(fetchedDocuments2[0] != insertedDocuments1[0])
+        #expect(fetchedDocuments2[1] != insertedDocuments1[1])
     }
 
     @Test("Delete Documents")
     func deleteDocuments() async throws {
-        // Create a mock project and insert it
-        let project = try await testSubject.insert(project: Project.mock())
+        // GIVEN we have a project to commit
+        let project = Project.mock()
 
-        // Insert mock documents
-        let documents = try await testSubject.insert(documents: [
-            Document.mock(projectID: try #require(project.id)),
-            Document.mock(projectID: try #require(project.id))
-        ])
+        // GIVEN we insert the project into the database
+        let insertedProject = try await testSubject.insert(project: project)
+        let projectID = try #require(insertedProject.id)
 
-        // Delete the documents
-        let deleteCount = try await testSubject.delete(documents: documents)
-        #expect(deleteCount == documents.count)
+        // GIVEN we have mock documents to commit
+        let documents = [
+            Document.mock(projectID: projectID),
+            Document.mock(projectID: projectID)
+        ]
 
-        // Verify the documents are deleted
-        let remainingDocuments = try await testSubject.getDocuments(for: project)
-        #expect(remainingDocuments.isEmpty)
+        // WHEN we insert the documents into the database
+        let insertedDocuments = try await testSubject.insert(documents: documents)
+        #expect(insertedDocuments.count == 2)
+
+        // GIVEN we have the IDs of the documents we just inserted
+        let documentID1 = try #require(insertedDocuments[0].id)
+        let documentID2 = try #require(insertedDocuments[1].id)
+
+        // WHEN we fetch the documents from the database via ID
+        let fetchedDocument1 = try await testSubject.getDocuments(ids: [documentID1]).first
+        let fetchedDocument2 = try await testSubject.getDocuments(ids: [documentID2]).first
+        let fetchedDocuments = try await testSubject.getDocuments(ids: [documentID1, documentID2])
+
+        // THEN the FetchedDocuments and InsertedDocuments are equal
+        #expect(fetchedDocument1 == insertedDocuments[0])
+        #expect(fetchedDocument2 == insertedDocuments[1])
+        #expect(fetchedDocuments == insertedDocuments)
+
+        // WHEN we delete the Documents
+        let count = try await testSubject.delete(documents: fetchedDocuments)
+
+        // THEN we have deleted the right amount of documents
+        #expect(count == 2)
+
+        // WHEN we try and fetch our previously inserted and deleted
+        // documents, we run into an error
+        #expect(try await testSubject.getDocuments(ids: [documentID1]) == [])
+        #expect(try await testSubject.getDocuments(ids: [documentID2]) == [])
+        #expect(try await testSubject.getDocuments(ids: [documentID1, documentID2]) == [])
     }
 
     // MARK: LLM Model
@@ -504,15 +556,23 @@ struct GRDBServiceTests {
     func fetchModelCountPublisher() async throws {
         var cancellables: Set<AnyCancellable> = []
 
-        // Insert mock models
-        _ = try await testSubject.insert(model: LLMModel.mock())
-        _ = try await testSubject.insert(model: LLMModel.mock())
+        // GIVEN we have two Models to commit
+        let model1 = LLMModel.mock()
+        let model2 = LLMModel.mock()
 
+        // WHEN we insert the models into our DB
+        _ = try await testSubject.insert(model: model1)
+        _ = try await testSubject.insert(model: model2)
+
+        // THEN the publisher fires as expected
         await withCheckedContinuation { continuation in
-            // Fetch the model count
+            // WHEN we request the model count
             testSubject.getModelCount()
                 .sink { modelCount in
+                    // THEN the model count is 2
                     #expect(modelCount == 2)
+
+                    // Tell our continuation block that we're done here
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -523,48 +583,47 @@ struct GRDBServiceTests {
     func fetchAllModelsPublisher() async throws {
         var cancellables: Set<AnyCancellable> = []
 
-        // Insert mock models
-        let model1 = try await testSubject.insert(
-            model: LLMModel.mock(name: "Model 1")
-        )
-        let model2 = try await testSubject.insert(
-            model: LLMModel.mock(name: "Model 2")
-        )
+        // GIVEN we have two Models to commit
+        let model1 = LLMModel.mock(name: "Model 1")
+        let model2 = LLMModel.mock(name: "Model 2")
 
-        // Fetch all models using the publisher
+        // WHEN we insert the models into our DB
+        let insertedModel1 = try await testSubject.insert(model: model1)
+        let insertedModel2 = try await testSubject.insert(model: model2)
+
+        // THEN the publisher fires as expected
         await withCheckedContinuation { continuation in
-            // Fetch the model count
+            // WHEN we request the models
             testSubject.getModels()
                 .replaceError(with: [])
                 .sink { fetchedModels in
-                    // Verify fetched models
+                    // THEN the model count is 2
                     #expect(fetchedModels.count == 2)
 
                     let fetchedModel1 = fetchedModels[0]
                     let fetchedModel2 = fetchedModels[1]
 
+                    // THEN our fetched models and the projects
+                    // we created initially are identical
+                    #expect(fetchedModel1.isEqualToIgnoringID(model1))
+                    #expect(fetchedModel2.isEqualToIgnoringID(model2))
+
+                    // THEN our fetched projects and inserted projects
+                    // are identical
+                    #expect(fetchedModel1 == insertedModel1)
+                    #expect(fetchedModel2 == insertedModel2)
+
+                    // THEN the project we just fetched from the DB should
+                    // have a new ID attached to it, and that ID should be `1`
                     #expect(fetchedModel1.id == 1)
-                    #expect(fetchedModel1.name == "Model 1")
-                    #expect(fetchedModel1.path == model1.path)
-                    #expect(fetchedModel1.size == model1.size)
-                    #expect(
-                        Int(fetchedModel1.createdAt.timeIntervalSince1970) == Int(model1.createdAt.timeIntervalSince1970)
-                    )
-                    #expect(
-                        Int(fetchedModel1.updatedAt.timeIntervalSince1970) == Int(model1.updatedAt.timeIntervalSince1970)
-                    )
+                    #expect(fetchedModel1.id == insertedModel1.id)
 
+                    // THEN the project we just fetched from the DB should
+                    // have a new ID attached to it, and that ID should be `2`
                     #expect(fetchedModel2.id == 2)
-                    #expect(fetchedModel2.name == "Model 2")
-                    #expect(fetchedModel2.path == model2.path)
-                    #expect(fetchedModel2.size == model2.size)
-                    #expect(
-                        Int(fetchedModel2.createdAt.timeIntervalSince1970) == Int(model2.createdAt.timeIntervalSince1970)
-                    )
-                    #expect(
-                        Int(fetchedModel2.updatedAt.timeIntervalSince1970) == Int(model2.updatedAt.timeIntervalSince1970)
-                    )
+                    #expect(fetchedModel2.id == insertedModel2.id)
 
+                    // Tell our continuation block that we're done here
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -573,113 +632,173 @@ struct GRDBServiceTests {
 
     @Test("Fetch All Models")
     func fetchAllModels() async throws {
-        // Insert mock models
-        let model1 = try await testSubject.insert(model: LLMModel.mock(name: "Model 1"))
-        let model2 = try await testSubject.insert(model: LLMModel.mock(name: "Model 2"))
+        // GIVEN we have two Models to commit
+        let model1 = LLMModel.mock(name: "Model 1")
+        let model2 = LLMModel.mock(name: "Model 2")
 
-        // Fetch all models asynchronously
+        // WHEN we insert the models into our DB
+        let insertedModel1 = try await testSubject.insert(model: model1)
+        let insertedModel2 = try await testSubject.insert(model: model2)
+
+        // WHEN we request the models
         let fetchedModels = try await testSubject.getModels()
 
-        // Verify the fetched models
+        // THEN the model count is 2
         #expect(fetchedModels.count == 2)
 
         let fetchedModel1 = fetchedModels[0]
         let fetchedModel2 = fetchedModels[1]
 
-        #expect(fetchedModel1.id == 1)
-        #expect(fetchedModel1.name == "Model 1")
-        #expect(fetchedModel1.path == model1.path)
-        #expect(fetchedModel1.size == model1.size)
-        #expect(Int(fetchedModel1.createdAt.timeIntervalSince1970) == Int(model1.createdAt.timeIntervalSince1970))
-        #expect(Int(fetchedModel1.updatedAt.timeIntervalSince1970) == Int(model1.updatedAt.timeIntervalSince1970))
+        // THEN our fetched models and the projects
+        // we created initially are identical
+        #expect(fetchedModel1.isEqualToIgnoringID(model1))
+        #expect(fetchedModel2.isEqualToIgnoringID(model2))
 
+        // THEN our fetched projects and inserted projects
+        // are identical
+        #expect(fetchedModel1 == insertedModel1)
+        #expect(fetchedModel2 == insertedModel2)
+
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `1`
+        #expect(fetchedModel1.id == 1)
+        #expect(fetchedModel1.id == insertedModel1.id)
+
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `2`
         #expect(fetchedModel2.id == 2)
-        #expect(fetchedModel2.name == "Model 2")
-        #expect(fetchedModel2.path == model2.path)
-        #expect(fetchedModel2.size == model2.size)
-        #expect(Int(fetchedModel2.createdAt.timeIntervalSince1970) == Int(model2.createdAt.timeIntervalSince1970))
-        #expect(Int(fetchedModel2.updatedAt.timeIntervalSince1970) == Int(model2.updatedAt.timeIntervalSince1970))
+        #expect(fetchedModel2.id == insertedModel2.id)
     }
 
     @Test("Insert Model")
     func insertModel() async throws {
-        let model = LLMModel.mock()
+        // GIVEN we have two Models to commit
+        let model1 = LLMModel.mock(name: "Model 1")
+        let model2 = LLMModel.mock(name: "Model 2")
 
-        // Insert the model
-        let insertedModel = try await testSubject.insert(model: model)
-        let newID = try #require(insertedModel.id)
-        #expect(newID == 1)
+        // WHEN we insert the models into our DB
+        let insertedModel1 = try await testSubject.insert(model: model1)
+        let insertedModel2 = try await testSubject.insert(model: model2)
 
-        // Verify inserted model properties
-        #expect(insertedModel.name == model.name)
-        #expect(insertedModel.path == model.path)
-        #expect(insertedModel.size == model.size)
-        #expect(Int(insertedModel.createdAt.timeIntervalSince1970) == Int(model.createdAt.timeIntervalSince1970))
-        #expect(Int(insertedModel.updatedAt.timeIntervalSince1970) == Int(model.updatedAt.timeIntervalSince1970))
+        let newID1 = try #require(insertedModel1.id)
+        let newID2 = try #require(insertedModel2.id)
+
+        // WHEN we request the model
+        let fetchedModel1 = try await testSubject.getModel(id: newID1)
+        let fetchedModel2 = try await testSubject.getModel(id: newID2)
+
+        // THEN our fetched models and the projects
+        // we created initially are identical
+        #expect(fetchedModel1.isEqualToIgnoringID(model1))
+        #expect(fetchedModel2.isEqualToIgnoringID(model2))
+
+        // THEN our fetched projects and inserted projects
+        // are identical
+        #expect(fetchedModel1 == insertedModel1)
+        #expect(fetchedModel2 == insertedModel2)
+
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `1`
+        #expect(fetchedModel1.id == 1)
+        #expect(fetchedModel1.id == insertedModel1.id)
+
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `2`
+        #expect(fetchedModel2.id == 2)
+        #expect(fetchedModel2.id == insertedModel2.id)
     }
 
     @Test("Fetch Model by ID")
     func fetchModelByID() async throws {
+        // GIVEN we have a project to commit
         let model = LLMModel.mock()
 
-        // Insert the model
+        // GIVEN we insert the project into the database
         let insertedModel = try await testSubject.insert(model: model)
-        let newID = try #require(insertedModel.id)
+        let modelID = try #require(insertedModel.id)
 
-        // Fetch the model by ID
-        let fetchedModel = try await testSubject.getModel(id: newID)
+        // WHEN we fetch the model from the database via ID
+        let fetchedModel = try await testSubject.getModel(id: modelID)
 
-        // Verify fetched model properties
-        #expect(fetchedModel.id == insertedModel.id)
-        #expect(fetchedModel.name == insertedModel.name)
-        #expect(fetchedModel.path == insertedModel.path)
-        #expect(fetchedModel.size == insertedModel.size)
-        #expect(Int(fetchedModel.createdAt.timeIntervalSince1970) == Int(insertedModel.createdAt.timeIntervalSince1970))
-        #expect(Int(fetchedModel.updatedAt.timeIntervalSince1970) == Int(insertedModel.updatedAt.timeIntervalSince1970))
+        // THEN the FetchedModel and InsertedModel are equal
+        #expect(fetchedModel == insertedModel)
+
+        // THEN the initially created model matches
+        // the FetchedModel
+        #expect(fetchedModel.isEqualToIgnoringID(model))
     }
 
     @Test("Update Model")
     func updateModel() async throws {
-        let model = try await testSubject.insert(model: LLMModel.mock())
-
-        // Update the model
-        let updatedModel = LLMModel(
-            id: try #require(model.id),
-            name: "Updated Model",
-            path: "/new/path/to/model",
-            size: 2048,
-            createdAt: model.createdAt,
-            updatedAt: Date()
+        // GIVEN we have a model we'd like to commit
+        let model = LLMModel(
+            name: "Model 1",
+            path: "/path/to/model",
+            size: 5000,
+            createdAt: .now,
+            updatedAt: .now
         )
 
-        let result = try await testSubject.update(model: updatedModel)
+        // WHEN we insert the model into the database
+        let insertedModel = try await testSubject.insert(
+            model: model
+        )
 
-        // Verify updated model properties
-        #expect(result.id == updatedModel.id)
-        #expect(result.name == updatedModel.name)
-        #expect(result.path == updatedModel.path)
-        #expect(result.size == updatedModel.size)
-        #expect(Int(result.createdAt.timeIntervalSince1970) == Int(model.createdAt.timeIntervalSince1970))
-        #expect(Int(result.updatedAt.timeIntervalSince1970) == Int(updatedModel.updatedAt.timeIntervalSince1970))
+        // THEN our created model and inserted model are equal
+        #expect(model.isEqualToIgnoringID(insertedModel))
+
+        // GIVEN we have a new model that we'd like to overrwrite
+        // our most recent entry in the DB
+        let newModel = LLMModel(
+            id: insertedModel.id,
+            name: "Model 2",
+            path: "/new/path/to/model",
+            size: 6000,
+            createdAt: .now,
+            updatedAt: .now
+        )
+
+        // WHEN we update the model in the DB
+        let updatedModel = try await testSubject.update(
+            model: newModel
+        )
+
+        // THEN our inserted & updated model have an ID, and it is `1`
+        let newID = try #require(updatedModel.id)
+        #expect(insertedModel.id == updatedModel.id)
+        #expect(newID == 1)
+
+        // WHEN we fetch a project from the DB
+        let fetchedModel = try await testSubject.getModel(id: newID)
+
+        // THEN it is NOT equal to our old project, and is equal to
+        // our new project
+        #expect(fetchedModel != model)
+        #expect(fetchedModel == newModel)
     }
 
     @Test("Delete Model")
     func deleteModel() async throws {
-        let model = try await testSubject.insert(model: LLMModel.mock())
+        // GIVEN we have a project to commit
+        let model = LLMModel.mock()
 
-        // Delete the model
+        // GIVEN we insert the project into the database
+        let insertedModel = try await testSubject.insert(model: model)
+        let modelID = try #require(insertedModel.id)
+
+        // WHEN we delete the model
         let deleteSuccess = try await testSubject.delete(
-            model: model,
+            model: insertedModel,
             deleteModelOnDisk: false
         )
+
+        // THEN the deletion is marked as being successful
         #expect(deleteSuccess == true)
 
-        // Verify deletion
-        do {
-            _ = try await testSubject.getModel(id: try #require(model.id))
-            Issue.record("Expected valueNotFound error")
-        } catch let error as DocuBotService.PersistenceError {
-            #expect(error == .valueNotFound)
+        // WHEN we try and pull out the same model that we just deleted
+        // THEN we get a `valueNotFound` error thrown.
+        await #expect(throws: DocuBotService.PersistenceError.valueNotFound) {
+            try await testSubject.getModel(id: modelID)
         }
     }
 

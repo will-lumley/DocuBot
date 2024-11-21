@@ -5,6 +5,7 @@
 //  Created by William Lumley on 13/11/2024.
 //
 
+import DocuBotModel
 @testable import DocuBotService
 import Foundation
 @testable import GRDB
@@ -31,15 +32,17 @@ struct ProjectRecordTests {
 
     @Test("Insert and Fetch")
     func insertAndFetch() throws {
-        // Run the migrations
+        // GIVEN we have our DB migrations
         let migrations = Index.migrations
+
+        // GIVEN we perform our migrations
         try dbQueue.write { db in
             for migration in migrations {
                 try migration.perform(db: db)
             }
         }
 
-        // Prepare sample data
+        // GIVEN we have sample data
         let path = "/path/to/project"
         let name = "Sample Project"
         let urlBookmarkData = Data("SampleBookmark".utf8)
@@ -50,7 +53,7 @@ struct ProjectRecordTests {
         let createdAt = Date()
         let updatedAt = Date()
 
-        // Insert a ProjectRecord
+        // GIVEN we have our Project to commit, with our sample data
         var project = ProjectRecord(
             id: nil,
             path: path,
@@ -64,50 +67,41 @@ struct ProjectRecordTests {
             updatedAt: updatedAt
         )
 
+        // WHEN we commit the records to the DB
         try dbQueue.write { db in
             try project.insert(db)
         }
 
-        // Verify that the record was inserted and fetched correctly
         try dbQueue.read { db in
+            // THEN we fetch our Project
             let fetchedProject = try #require(
                 try ProjectRecord.fetchOne(db)
             )
 
-            // A new ID has been assigned
+            // THEN our Project has been given an ID
             let newID = try #require(fetchedProject.id)
             #expect(newID == 1)
-            #expect(fetchedProject.path == path)
-            #expect(fetchedProject.name == name)
-            #expect(fetchedProject.urlBookmarkData == urlBookmarkData)
-            #expect(fetchedProject.documentationChecksum == documentationChecksum)
-            #expect(fetchedProject.exampleQuestions == exampleQuestions)
-            #expect(fetchedProject.alertStatus == alertStatus)
-            #expect(fetchedProject.needsFullResync == needsFullResync)
-            #expect(Int(fetchedProject.createdAt.timeIntervalSince1970) == Int(createdAt.timeIntervalSince1970))
-            #expect(Int(fetchedProject.updatedAt.timeIntervalSince1970) == Int(updatedAt.timeIntervalSince1970))
+
+            // THEN our FetchedProjectSettings has the correct data filled out
+            let fetchedProjectModel = Project(record: fetchedProject)
+            let projectModel = Project(record: project)
+            #expect(fetchedProjectModel.isEqualToIgnoringID(projectModel))
         }
     }
 
     @Test("ID Setting")
     func idSetting() throws {
-        var project = ProjectRecord(
-            id: nil,
-            path: "/path/to/project",
-            name: "Sample Project",
-            urlBookmarkData: Data("SampleBookmark".utf8),
-            documentationChecksum: nil,
-            exampleQuestions: [],
-            alertStatus: .warning(warning: .directoryChanged),
-            needsFullResync: false,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
+        // GIVEN we have a ProjectRecord with no existing ID
+        var testSubject = ProjectRecord(model: .mock())
 
-        // Simulate the didInsert behaviour
-        project.didInsert(
+        // WHEN we insert this Project into the DB
+        // and SQLite gives it an ID of 42
+        testSubject.didInsert(
             InsertionSuccess(rowID: 42, persistenceContainer: .init())
         )
-        #expect(project.id == 42)
+
+        // THEN we have been given the ID of 42
+        #expect(testSubject.id == 42)
     }
+
 }

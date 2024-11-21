@@ -88,16 +88,30 @@ public extension Document {
 extension Document: Equatable {
 
     public static func == (lhs: Document, rhs: Document) -> Bool {
-        return lhs.id == rhs.id &&
+        return
+            lhs.id == rhs.id &&
             lhs.url == rhs.url &&
             lhs.fileFormat == rhs.fileFormat &&
             lhs.content == rhs.content &&
             lhs.checksum == rhs.checksum &&
             lhs.projectID == rhs.projectID &&
             lhs.embeddings == rhs.embeddings &&
-            lhs.createdAt == rhs.createdAt &&
             lhs.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
             lhs.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
+    }
+
+    public func isEqualToIgnoringID(
+        _ rhs: Document
+    ) -> Bool {
+        return
+            self.url == rhs.url &&
+            self.fileFormat == rhs.fileFormat &&
+            self.content == rhs.content &&
+            self.checksum == rhs.checksum &&
+            self.projectID == rhs.projectID &&
+            self.embeddings == rhs.embeddings &&
+            self.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            self.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
     }
 
 }
