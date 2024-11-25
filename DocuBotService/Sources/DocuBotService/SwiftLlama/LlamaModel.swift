@@ -14,7 +14,7 @@ class LlamaModel {
     private let n_len: Int32 = 1024
 
     var shouldContinue: Bool {
-        generatedTokenAccount < configuration.maxTokenCount && !ended
+        generatedTokenAccount < configuration.maxTokenCount && ended == false
     }
 
     init(path: String, configuration: Configuration = .init()) throws {
@@ -65,6 +65,10 @@ class LlamaModel {
             throw SwiftLlamaError.decodeError
         }
         generatedTokenAccount = batch.n_tokens
+    }
+
+    func stop() {
+        ended = true
     }
 
     func `continue`() throws -> String {
