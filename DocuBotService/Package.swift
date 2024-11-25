@@ -13,7 +13,8 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotService",
-            targets: ["DocuBotService"])
+            targets: ["DocuBotService"]
+        )
     ],
     dependencies: [
         .package(path: "../DocuBotModel"),
@@ -26,7 +27,10 @@ let package = Package(
             url: "https://github.com/groue/GRDB.swift.git",
             from: "6.29.0"
         ),
-        .package(url: "https://github.com/ggerganov/llama.cpp.git", branch: "master")
+        .package(
+            url: "https://github.com/ggerganov/llama.cpp.git",
+            branch: "master"
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

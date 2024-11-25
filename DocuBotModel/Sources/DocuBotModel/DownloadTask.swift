@@ -74,12 +74,6 @@ public extension DownloadTask {
 
 }
 
-// MARK: - Private
-
-private extension DownloadTask {
-
-}
-
 // MARK: - URLSessionDelegate
 
 extension DownloadTask: URLSessionDownloadDelegate {
@@ -135,11 +129,5 @@ extension DownloadTask: URLSessionDownloadDelegate {
             self.continuation = nil
         }
     }
-
-}
-
-// MARK: - URLSessionDelegate
-
-extension DownloadTask: URLSessionDelegate {
 
 }

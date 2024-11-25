@@ -92,7 +92,7 @@ public struct Project: Hashable, Codable, Sendable {
 
 public extension Project {
 
-    var loadedDocments: Bool {
+    var loadedDocuments: Bool {
         self.documents != nil
     }
 
@@ -148,6 +148,7 @@ public extension Project {
         // If we're clearing out any alert status, let it pass
         if alertStatus == .none {
             self.alertStatus = alertStatus
+            return
         }
 
         // If our new alert has a higher priority, let it pass

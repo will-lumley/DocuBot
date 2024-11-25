@@ -11,7 +11,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
-    public enum Language: Hashable, CaseIterable, Codable, Sendable, Equatable {
+    public enum Language: Hashable, CaseIterable, Codable, Sendable {
         case english
     }
 

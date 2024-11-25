@@ -13,10 +13,12 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotModel",
-            targets: ["DocuBotModel"])
+            targets: ["DocuBotModel"]
+        )
     ],
     dependencies: [
         .package(path: "../DocuBotToolbox"),
+
         .package(url: "https://github.com/ZachNagengast/similarity-search-kit.git", from: "0.0.15"),
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2")
     ],

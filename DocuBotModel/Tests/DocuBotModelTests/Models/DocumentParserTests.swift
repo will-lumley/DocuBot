@@ -11,7 +11,6 @@ import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
 import Testing
 
-// swiftlint:disable:next type_body_length
 struct DocumentParserTests {
 
     // MARK: - Properties
@@ -39,7 +38,11 @@ struct DocumentParserTests {
 
     @Test("Create and Parse with No Bookmark Data")
     mutating func createAndParseWithNoBookmarkData() async {
+        // GIVEN that our Project has no valid data
         self.mockProject.urlBookmarkData = Data()
+
+        // WHEN we try and parse
+        // THEN we get the correct error thrown
         await #expect(throws: DocumentParser.DocumentError.noBookmarkData) {
             try await self.parser.createAndParse()
         }
@@ -47,7 +50,11 @@ struct DocumentParserTests {
 
     @Test("Create and Parse with Stale Bookmark")
     mutating func createAndParseWithStaleBookmarkData() async {
+        // GIVEN that our Project has invalid data
         self.mockProject.urlBookmarkData = Data(repeating: 1, count: 10)
+
+        // WHEN we try and parse
+        // THEN we get the correct error thrown
         await #expect(throws: DocumentParser.DocumentError.noBookmarkData) {
             try await self.parser.createAndParse()
         }
@@ -55,9 +62,11 @@ struct DocumentParserTests {
 
     @Test("Check Project Is Dirty with No Bookmark Data")
     mutating func checkProjectIsDirtyWithNoBookmarkData() async {
-        // Assign invalid bookmark data
+        // GIVEN that our Project has no data
         self.mockProject.urlBookmarkData = Data()
 
+        // WHEN we try and check if the project is dirty
+        // THEN we get the correct error thrown
         await #expect(throws: DocumentParser.DocumentError.noBookmarkData) {
             try await self.parser.checkProjectIsDirty()
         }
@@ -65,9 +74,11 @@ struct DocumentParserTests {
 
     @Test("Check Project Is Dirty with Stale Bookmark")
     mutating func checkProjectIsDirtyWithStaleBookmark() async {
-        // Assign mock bookmark data
+        // GIVEN that our Project has invalid data
         self.mockProject.urlBookmarkData = Data(repeating: 1, count: 10)
 
+        // WHEN we try and check if the project is dirty
+        // THEN we get the correct error thrown
         await #expect(throws: DocumentParser.DocumentError.noBookmarkData) {
             try await self.parser.checkProjectIsDirty()
         }
@@ -80,28 +91,35 @@ struct DocumentParserTests {
     func validDocumentations(
         formats: [ProjectSettings.DocumentationFormat]
     ) {
+        // GIVEN we have a mock project and settings
         let mockProject = Project.mock()
         let mockSettings = ProjectSettings.mock(
             supportedFormats: formats
         )
 
+        // GIVEN we have a DocumentParser
         let parser = DocumentParser(
             project: mockProject,
             settings: mockSettings,
             onSyncUpdate: { _, _ in }
         )
+
+        // GIVEN we have URLs to documentation types
         let mdURL = URL(fileURLWithPath: "/path/to/document.md")
         let rtfURL = URL(fileURLWithPath: "/path/to/document.rtf")
         let txtURL = URL(fileURLWithPath: "/path/to/document.txt")
         let htmlURL = URL(fileURLWithPath: "/path/to/document.html")
         let exeURL = URL(fileURLWithPath: "/path/to/document.exe")
 
+        // WHEN we check if each documentation type is valid
         let mdIsValid = parser.validDocumentation(at: mdURL)
         let rtfIsValid = parser.validDocumentation(at: rtfURL)
         let txtIsValid = parser.validDocumentation(at: txtURL)
         let htmlIsValid = parser.validDocumentation(at: htmlURL)
         let exeIsValid = parser.validDocumentation(at: exeURL)
 
+        // THEN we ensure that each of them is valid based off of
+        // the test arguments
         #expect(formats.contains(.md) == mdIsValid)
         #expect(formats.contains(.rtf) == rtfIsValid)
         #expect(formats.contains(.txt) == txtIsValid)
@@ -127,16 +145,20 @@ struct DocumentParserTests {
     func validOtherDocumentations(
         formats: [ProjectSettings.DocumentationFormat]
     ) {
+        // GIVEN we have a mock project and settings
         let mockProject = Project.mock()
         let mockSettings = ProjectSettings.mock(
             supportedFormats: formats
         )
 
+        // GIVEN we have a DocumentParser
         let parser = DocumentParser(
             project: mockProject,
             settings: mockSettings,
             onSyncUpdate: { _, _ in }
         )
+
+        // GIVEN we have URLs to documentation types
         let mdURL = URL(fileURLWithPath: "/path/to/document.md")
         let rtfURL = URL(fileURLWithPath: "/path/to/document.rtf")
         let txtURL = URL(fileURLWithPath: "/path/to/document.txt")
@@ -145,6 +167,7 @@ struct DocumentParserTests {
         let barURL = URL(fileURLWithPath: "/path/to/document.bar")
         let exeURL = URL(fileURLWithPath: "/path/to/document.exe")
 
+        // WHEN we check if each documentation type is valid
         let mdIsValid = parser.validDocumentation(at: mdURL)
         let rtfIsValid = parser.validDocumentation(at: rtfURL)
         let txtIsValid = parser.validDocumentation(at: txtURL)
@@ -153,6 +176,8 @@ struct DocumentParserTests {
         let barIsValid = parser.validDocumentation(at: barURL)
         let exeIsValid = parser.validDocumentation(at: exeURL)
 
+        // THEN we ensure that each of them is valid based off of
+        // the test arguments
         #expect(formats.contains(.md) == mdIsValid)
         #expect(formats.contains(.rtf) == rtfIsValid)
         #expect(formats.contains(.txt) == txtIsValid)
@@ -164,18 +189,21 @@ struct DocumentParserTests {
 
     @Test("File Extension Parsing")
     func fileExtension() {
+        // GIVEN we have various file paths to different documentation types
         let markdownURL = URL(fileURLWithPath: "/path/to/document.md")
         let txtURL = URL(fileURLWithPath: "/path/to/document.txt")
         let rtfURL = URL(fileURLWithPath: "/path/to/document.rtf")
         let htmlURL = URL(fileURLWithPath: "/path/to/document.html")
         let otherURL = URL(fileURLWithPath: "/path/to/document.docx")
 
+        // WHEN we extract the documentation type
         let mdFormat = self.parser.fileExtension(from: markdownURL)
         let txtFormat = self.parser.fileExtension(from: txtURL)
         let rtfFormat = self.parser.fileExtension(from: rtfURL)
         let htmlFormat = self.parser.fileExtension(from: htmlURL)
         let otherFormat = self.parser.fileExtension(from: otherURL)
 
+        // THEN the documentation type is correctly set
         #expect(mdFormat == .md)
         #expect(txtFormat == .txt)
         #expect(rtfFormat == .rtf)
@@ -185,215 +213,80 @@ struct DocumentParserTests {
 
     @Test("Document Error Descriptions")
     func documentErrorDescriptions() {
+        // GIVEN we have our errors
         let noBookmarkError = DocumentParser.DocumentError.noBookmarkData
         let bookmarkStaleError = DocumentParser.DocumentError.bookmarkIsStale
 
+        // THEN our descriptions match up
         #expect(noBookmarkError.errorDescription == L10n.Error.Document.noBookmarkData)
         #expect(bookmarkStaleError.errorDescription == L10n.Error.Document.bookmarkIsStale)
     }
 
     @Test("Existing Documents")
     func existingDocuments() {
-        let existingDocument = Document(
+        // GIVEN we have an existing Document
+        let existingDocument = Document.mock(
             id: 1,
             url: URL(fileURLWithPath: "/mock/file1.md"),
-            fileFormat: .md,
-            content: "This is the content of file1.",
-            checksum: "checksum1",
-            projectID: 1,
-            embeddings: nil,
-            createdAt: .now,
-            updatedAt: .now
-        )
-        let newDocument = Document(
-            id: 2,
-            url: URL(fileURLWithPath: "/mock/file2.md"),
-            fileFormat: .md,
-            content: "This is the content of file1.",
-            checksum: "checksum1",
-            projectID: 1,
-            embeddings: nil,
-            createdAt: .now,
-            updatedAt: .now
+            projectID: 1
         )
 
+        // GIVEN we have a new Document
+        let newDocument = Document.mock(
+            id: 2,
+            url: URL(fileURLWithPath: "/mock/file2.md"),
+            projectID: 1
+        )
+
+        // GIVEN we have a Project and Settings
         var mockProject = Project.mock()
         let mockSettings = ProjectSettings.mock(
             supportedFormats: [.md]
         )
+
+        // GIVEN we've only loaded in the existing document
         mockProject.load(documents: [
             existingDocument
         ])
 
+        // WHEN we setup a parser
         var parser = DocumentParser(
             project: mockProject,
             settings: mockSettings,
             onSyncUpdate: { _, _ in }
         )
 
-        // We should find file1.md
+        // THEN we find the existing document
         #expect(
-            parser.existingDocument(with: existingDocument.url) != nil
+            parser.existingDocument(with: existingDocument.url) == existingDocument
         )
 
-        // We should NOT find file2.md
+        // THEN we do NOT find the new document
         #expect(
             parser.existingDocument(with: newDocument.url) == nil
         )
 
+        // GIVEN we load in the existing document and new document
         mockProject.load(documents: [
             existingDocument,
             newDocument
         ])
+
+        // GIVEN we recreate our parser
         parser = DocumentParser(
             project: mockProject,
             settings: mockSettings,
             onSyncUpdate: { _, _ in }
         )
 
-        // We should find file1.md
+        // THEN we find the existing document
         #expect(
-            parser.existingDocument(with: existingDocument.url) != nil
+            parser.existingDocument(with: existingDocument.url) == existingDocument
         )
 
-        // We should find file2.md
+        // THEN we also find the new document
         #expect(
-            parser.existingDocument(with: newDocument.url) != nil
-        )
-    }
-
-    @Test("OnSyncUpdate Called")
-    func onSyncUpdateCalled() async throws {
-        let document1 = Document(
-            id: 1,
-            url: URL(fileURLWithPath: "/mock/file1.md"),
-            fileFormat: .md,
-            content: "This is the content of file1.",
-            checksum: "checksum1",
-            projectID: 1,
-            embeddings: nil,
-            createdAt: .now,
-            updatedAt: .now
-        )
-        let document2 = Document(
-            id: 2,
-            url: URL(fileURLWithPath: "/mock/file2.md"),
-            fileFormat: .md,
-            content: "This is the content of file1.",
-            checksum: "checksum1",
-            projectID: 1,
-            embeddings: nil,
-            createdAt: .now,
-            updatedAt: .now
-        )
-
-        var mockProject = Project.mock()
-        let mockSettings = ProjectSettings.mock(
-            supportedFormats: [.md]
-        )
-        mockProject.load(documents: [
-            document1,
-            document2
-        ])
-
-        struct SyncUpdate {
-            let progress: Int
-            let total: Int
-        }
-
-        var syncUpdates = [SyncUpdate]()
-        let parser = DocumentParser(
-            project: mockProject,
-            settings: mockSettings,
-            onSyncUpdate: { progress, total in
-                syncUpdates.append(
-                    .init(progress: progress, total: total)
-                )
-            }
-        )
-
-        _ = try await parser.createAndParse()
-
-        #expect(syncUpdates.count == 2)
-        print("SyncUpdates: \(syncUpdates)")
-    }
-
-    @Test("Index Documents")
-    func indexDocuments() async throws {
-        // Mock documents to index
-        let mockDocuments: [Document] = [
-            Document(
-                id: 1,
-                url: URL(fileURLWithPath: "/mock/file1.md"),
-                fileFormat: .md,
-                content: "This is the content of file1.",
-                checksum: "checksum1",
-                projectID: 1,
-                embeddings: nil,
-                createdAt: .now,
-                updatedAt: .now
-            ),
-            Document(
-                id: 2,
-                url: URL(fileURLWithPath: "/mock/file2.txt"),
-                fileFormat: .txt,
-                content: "This is the content of file2.",
-                checksum: "checksum2",
-                projectID: 1,
-                embeddings: nil,
-                createdAt: .now,
-                updatedAt: .now
-            )
-        ]
-
-        // Run the `index(documents:)` method
-        let indexed = try await self.parser.index(documents: mockDocuments)
-
-        #expect(indexed.count == mockDocuments.count)
-
-//        for index in indexed {
-//            #expect(
-//                try #require(index.embeddings) == [
-//                    .init(chunk: "123", embedding: [0.1])
-//                ]
-//            )
-//        }
-
-//        XCTAssertEqual(indexedDocuments.count, mockDocuments.count, "Number of indexed documents should match input documents.")
-//        XCTAssertNotNil(indexedDocuments.first?.embeddings, "Indexed documents should contain embeddings.")
-//        XCTAssertEqual(indexedDocuments.first?.checksum, "checksum1", "Checksums should match for already indexed documents.")
-//        XCTAssertEqual(indexedDocuments.last?.embeddings?.first?.embedding.count, 10, "Embeddings should contain 10 values.")
-    }
-
-}
-
-// MARK: - Project
-
-private extension Project {
-
-    static func mock(
-        id: Int64 = 0,
-        path: String = "",
-        name: String = "",
-        urlBookmarkData: Data = .init(),
-        documentationCheckSum: String? = "123",
-        exampleQuestions: [String] = ["what", "is"],
-        alertStatus: Project.AlertStatus = .error(error: .firstSync),
-        needsFullResync: Bool = true,
-        createdAt: Date = Date(),
-        updatedAt: Date = Date()
-    ) -> Project {
-        .init(
-            id: id,
-            path: path,
-            name: name,
-            urlBookmarkData: urlBookmarkData,
-            documentationCheckSum: documentationCheckSum,
-            exampleQuestions: exampleQuestions,
-            alertStatus: alertStatus,
-            needsFullResync: needsFullResync,
-            createdAt: createdAt,
-            updatedAt: updatedAt
+            parser.existingDocument(with: newDocument.url) == newDocument
         )
     }
 

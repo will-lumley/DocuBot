@@ -14,6 +14,11 @@ struct LlamaServiceTests {
 
     // MARK: - Properties
 
+    /// This will fetch a very intentionally small model that is garbage, but does the
+    /// job for testing purposes.
+    ///
+    /// - returns: The file path for a test model
+    ///
     static var testModelPath: String {
         get throws {
             try #require(
@@ -29,9 +34,11 @@ struct LlamaServiceTests {
 
     @Test("Prime")
     func prime() throws {
+        // GIVEN we have the LlamaService
+        // WHEN we instantiate it
         let testSubject = LlamaService()
 
-        // Our LLM primes correctly without crashing
+        // THEN we can prime it throwing an error
         try testSubject.prime(
             with: .mock(
                 path: try Self.testModelPath
@@ -42,137 +49,155 @@ struct LlamaServiceTests {
 
     @Test("Prime with Missing Model")
     func primeWithMissingModel() {
+        // GIVEN we have the LlamaService
         let testSubject = LlamaService()
 
-        // Our LLM primes correctly without crashing
-        do {
+        #expect {
+            // WHEN we prime the LLM with an invalid model path
             try testSubject.prime(
                 with: .mock(path: "/invalid/path"),
                 with: .mock()
             )
-            Issue.record("No error was thrown with invalid model path")
-        } catch {
+        } throws: { error in
+            // THEN the error thrown is a `GPTError`
             guard let gptError = error as? GPTError else {
                 Issue.record("Incorrect error was thrown: \(error)")
-                return
+                return false
             }
 
+            // THEN the type of `GPTError` is `failedToCreateLLM`
             guard case .failedToCreateLLM(let reason) = gptError else {
                 Issue.record("Incorrect error was thrown: \(error)")
-                return
+                return false
             }
 
-            #expect(reason == "Cannot load model at path /invalid/path")
+            // THEN the reason given is correctly stated
+            return reason == "Cannot load model at path /invalid/path"
         }
     }
 
     @Test("Prime with Invalid Settings")
     func primeWithInvalidSettings() {
+        // GIVEN we have the LlamaService
         let testSubject = LlamaService()
 
-        // Our LLM primes correctly without crashing
-        do {
+        #expect {
+            // WHEN we prime the LLM with an context length
             try testSubject.prime(
                 with: .mock(path: try Self.testModelPath),
                 with: .init(
                     record: .init(model: .mock(contextLength: 2048))
                 )
             )
-            Issue.record("No error was thrown with invalid model path")
-        } catch {
+        } throws: { error in
+            // THEN the error thrown is a `GPTError`
             guard let gptError = error as? GPTError else {
                 Issue.record("Incorrect error was thrown: \(error)")
-                return
+                return false
             }
 
+            // THEN the type of `GPTError` is `failedToCreateLLM`
             guard case .failedToCreateLLM(let reason) = gptError else {
                 Issue.record("Incorrect error was thrown: \(error)")
-                return
+                return false
             }
 
-            #expect(reason == "Model was trained on 1024 context but tokens 2048 specified")
+            // THEN the reason given is correctly stated
+            return reason == "Model was trained on 1024 context but tokens 2048 specified"
         }
     }
 
     @Test("Response Handles Newline Overload")
     func responseHandlesNewlineOverload() async throws {
+        // We will create a pretend LLM here that is pre-set
+        // to return a determined series of responses.
         let mockLlama = try MockLlama(
             modelPath: try Self.testModelPath,
             responses: ["Hello", "\n", "\n", "\n", "World"]
         )
 
+        // GIVEN we have the LlamaService
         let testSubject = LlamaService()
         testSubject.llama = mockLlama
 
+        // WHEN we query for a response
         let result = try await testSubject.respond(
             to: "test",
             with: "systemMessage",
             onUpdate: nil
         )
 
+        // THEN we only get the "Hello" as three newlines kills the response chain
         #expect(result == "Hello")
     }
 
     @Test("OnUpdate is Called")
     func onUpdateIsCalled() async throws {
+        // We will create a pretend LLM here that is pre-set
+        // to return a determined series of responses.
         let mockLlama = try MockLlama(
             modelPath: try Self.testModelPath,
             responses: ["Hello", " ", "world", "!"]
         )
 
+        // GIVEN we have the LlamaService
         let testSubject = LlamaService()
         testSubject.llama = mockLlama
 
+        // Here we're just going to setup and listen to our updates
         var updates = [String]()
         let onUpdate: @MainActor (String) -> Void = { formattedValue in
             updates.append(formattedValue)
         }
 
+        // WHEN we query for a response
         _ = try await testSubject.respond(
             to: "test",
             with: "systemMessage",
             onUpdate: onUpdate
         )
 
+        // THEN our onUpdate correctly received the updates
         #expect(updates == ["Hello", " ", "world", "!"])
     }
 
     @Test("Response Returns Correctly")
     func responseReturnsCorrectly() async throws {
+        // We will create a pretend LLM here that is pre-set
+        // to return a determined series of responses.
         let mockLlama = try MockLlama(
             modelPath: try Self.testModelPath,
             responses: ["Hello", " ", "world", "!"]
         )
 
+        // GIVEN we have the LlamaService
         let testSubject = LlamaService()
         testSubject.llama = mockLlama
 
+        // WHEN we query for a response
         let response = try await testSubject.respond(
             to: "test",
             with: "systemMessage",
             onUpdate: nil
         )
 
+        // THEN our response is the finalised chain of the pre-set response chains
         #expect(response == "Hello world!")
     }
 
     @Test("Error is thrown when LLM is not primed")
     func errorIsThrownWhenLlmIsNotPrimed() async throws {
+        // GIVEN we have the LlamaService
         let testSubject = LlamaService()
 
-        do {
-            _ = try await testSubject.respond(
+        await #expect(throws: GPTError.llmNotInitialised) {
+            // WHEN we query for a response without priming
+            // THEN we have the correct error thrown
+            try await testSubject.respond(
                 to: "test",
                 with: "systemMessage",
                 onUpdate: nil
             )
-            Issue.record("GPTError should have been thrown.")
-        } catch {
-            guard let gptError = error as? GPTError else {
-                Issue.record("Incorrect error was thrown: \(error)")
-                return
-            }
-            #expect(gptError == .llmNotInitialised)
         }
     }
 

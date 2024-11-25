@@ -15,6 +15,7 @@ struct AcknowledgementTests {
 
     @Test("Initializer Success")
     func initializerSuccess() throws {
+        // GIVEN we have an acknowledgement
         let acknowledgement = Acknowledgement(
             author: "Test Author",
             libraryName: "Test Library",
@@ -23,6 +24,7 @@ struct AcknowledgementTests {
             license: "Test License"
         )
 
+        // THEN all the properties are correctly set
         #expect(acknowledgement != nil)
         #expect(acknowledgement?.author == "Test Author")
         #expect(acknowledgement?.libraryName == "Test Library")
@@ -33,6 +35,7 @@ struct AcknowledgementTests {
 
     @Test("Initializer Failure - Invalid URL")
     func initializerFailureInvalidURL() throws {
+        // GIVEN we have an acknowledgement with an invalid URL
         let acknowledgement = Acknowledgement(
             author: "Test Author",
             libraryName: "Test Library",
@@ -41,14 +44,17 @@ struct AcknowledgementTests {
             license: "Test License"
         )
 
+        // THEN no acknowledgement is returned at all
         #expect(acknowledgement == nil)
     }
 
     @Test("All Acknowledgements")
     // swiftlint:disable:next function_body_length
     func allAcknowledgements() throws {
+        // GIVEN we have gathered ALL of our acknowledgements
         let acknowledgements = Acknowledgement.all
 
+        // THEN we have the expected acknowledgements
         #expect(acknowledgements.isEmpty == false)
         #expect(acknowledgements.count == 10)
 
@@ -147,7 +153,7 @@ struct AcknowledgementTests {
         ]
         // swiftlint:enable line_length
 
-        // Iterate and test each acknowledgement
+        // THEN all of our acknowledgements have the correct values
         for (index, expected) in expectedAcknowledgements.enumerated() {
             let acknowledgement = acknowledgements[index]
             let expectedAcknowledgement = Acknowledgement(
@@ -162,8 +168,10 @@ struct AcknowledgementTests {
     }
     @Test("Acknowledgement Links Validity")
     func acknowledgementLinksValidity() throws {
+        // GIVEN we have gathered ALL of our acknowledgements
         let acknowledgements = Acknowledgement.all
 
+        // THEN all of our acknowledgements have valid URLs
         for acknowledgement in acknowledgements {
             #expect(URL(string: acknowledgement.link.absoluteString) != nil)
         }
