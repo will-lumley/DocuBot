@@ -67,4 +67,8 @@ class MockGPTService: GPTService {
         return ""
     }
 
+    func stop() {
+        // Intentionally left blank.
+    }
+
 }
