@@ -102,14 +102,18 @@ extension DownloadTask: URLSessionDownloadDelegate {
         do {
             let fileManager = FileManager.default
 
+            let destination = destinationURL
+                .appendingPathComponent(self.sourceURL.lastPathComponent)
+
             // Copy the file from the temp location to the destination URL
-            if fileManager.fileExists(atPath: destinationURL.path) {
-                try fileManager.removeItem(at: destinationURL)
+            // and ensure it's not already there.
+            if fileManager.fileExists(atPath: destination.path) {
+                try fileManager.removeItem(at: destination)
             }
-            try fileManager.copyItem(at: location, to: destinationURL)
+            try fileManager.copyItem(at: location, to: destination)
 
             // Return the continuation with the destination URL
-            self.continuation?.resume(returning: destinationURL)
+            self.continuation?.resume(returning: destination)
         } catch {
             // Throw the error if we find one
             self.continuation?.resume(throwing: error)

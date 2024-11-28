@@ -13,7 +13,7 @@ struct SimilarityMetricProtocolTests {
 
     @Test(
         "MetricProtocol Creation",
-        arguments: ProjectSettings.EmbeddingModel.allCases
+        arguments: ProjectSettings.SimilarityMetric.allCases
     )
     func metricProtocolCreation(similarityMetric: ProjectSettings.SimilarityMetric) {
         switch similarityMetric {
