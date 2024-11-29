@@ -358,7 +358,7 @@ public extension ConfigureProjectViewModel {
         L10n.ConfigureProject.SimilaritySection.title
     }
 
-    var similaritySectionSubitle: String {
+    var similaritySectionSubtitle: String {
         L10n.ConfigureProject.SimilaritySection.subtitle
     }
 

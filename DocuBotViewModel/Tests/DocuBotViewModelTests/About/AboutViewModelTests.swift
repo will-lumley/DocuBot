@@ -5,12 +5,16 @@
 //  Created by William Lumley on 28/11/2024.
 //
 
+import AppKit
 import DocuBotModel
-@testable import DocuBotViewModel
 import DocuBotToolbox
+@testable import DocuBotViewModel
 import Testing
 
-struct AboutViewModelTests {
+@Suite("AboutViewModelTests", .serialized)
+class AboutViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
+
+    // MARK: - Tests
 
     @Test("Label Values")
     func labelValues() {
@@ -25,7 +29,7 @@ struct AboutViewModelTests {
         #expect(testSubject.acknowledgementsMarkdown == Self.acknowledgementsMarkdown)
     }
 
-    @Test("Acknowledgement ")
+    @Test("Acknowledgements")
     func acknowledgements() {
         // GIVEN we have an AboutViewModel
         let testSubject = AboutViewModel(serviceContainer: .mock)
@@ -34,12 +38,39 @@ struct AboutViewModelTests {
         #expect(testSubject.acknowledgements == Acknowledgement.all)
     }
 
+    @Test("Open Licence")
+    func openLicence() async throws {
+        // GIVEN we have an AboutViewModel
+        let testSubject = AboutViewModel(serviceContainer: .mock)
+
+        // WHEN we attempt to open up our licence
+        testSubject.licenceButton.selected()
+        // try await Task.sleep(for: .seconds(1))
+
+        // THEN our LicenceURL was opened
+        #expect(openedURL == .init(string: Secrets.AppInfo.licenceURL))
+    }
+
+    @Test("Open Privacy Policy")
+    func openPrivacyPolicy() async throws {
+        // GIVEN we have an AboutViewModel
+        let testSubject = AboutViewModel(serviceContainer: .mock)
+
+        // WHEN we attempt to open up our licence
+        testSubject.privacyPolicyButton.selected()
+        // try await Task.sleep(for: .seconds(1))
+
+        // THEN our PrivacyPolicyURL was opened
+        #expect(openedURL == .init(string: Secrets.AppInfo.privacyPolicyURL))
+    }
+
 }
 
 // MARK: - Private
 
 private extension AboutViewModelTests {
 
+    // swiftlint:disable line_length
     static var acknowledgementsMarkdown: String {
         """
         ### Vexil

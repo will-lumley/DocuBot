@@ -49,6 +49,10 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotViewModelTests",
-            dependencies: ["DocuBotViewModel"])
+            dependencies: ["DocuBotViewModel"],
+            resources: [
+                .copy("Resources/distilgpt2Q4_0.gguf")
+            ]
+        )
     ]
 )

@@ -5,3 +5,70 @@
 //  Created by William Lumley on 28/11/2024.
 //
 
+@testable import DocuBotViewModel
+import Testing
+
+struct AlertConfigurationTests {
+
+    @Test("Initialisation")
+    func initialisation() throws {
+        // GIVEN we have an AlertConfiguration
+        let testSubject = AlertConfiguration(title: "title", message: "message")
+
+        // THEN the values are set correctly
+        #expect(testSubject.title == "title")
+        #expect(testSubject.message == "message")
+    }
+
+    @Test("Primary Action")
+    func primaryAction() {
+        var primaryActionSelected = false
+
+        // GIVEN we have an AlertConfiguration
+        let testSubject = AlertConfiguration(
+            title: "",
+            message: "",
+            primaryAction: .init(
+                title: "press me"
+            ) {
+                primaryActionSelected = true
+            }
+        )
+
+        // WHEN we select the primary action
+        testSubject.primaryAction?.onSelect()
+
+        // THEN the primary action was called
+        #expect(primaryActionSelected == true)
+    }
+
+    @Test("ID Creation")
+    func idCreation() {
+        // GIVEN we have an AlertConfiguration
+        let testSubject = AlertConfiguration(title: "title", message: "message")
+
+        // THEN the ID is set correctly
+        #expect(testSubject.id == "titlemessage")
+    }
+
+    @Test("Equality")
+    func equality() {
+        // GIVEN we have an AlertConfiguration
+        let testSubject1 = AlertConfiguration(title: "title", message: "message")
+        let testSubject2 = AlertConfiguration(title: "title", message: "message")
+
+        // THEN the equality is correctly set
+        #expect(testSubject1 == testSubject2)
+    }
+
+    @Test("Inequality")
+    func inequality() {
+        // GIVEN we have an AlertConfiguration
+        let testSubject1 = AlertConfiguration(title: "title1", message: "message")
+        let testSubject2 = AlertConfiguration(title: "title", message: "message2")
+
+        // THEN the equality is correctly set
+        #expect(testSubject1 != testSubject2)
+    }
+
+}
