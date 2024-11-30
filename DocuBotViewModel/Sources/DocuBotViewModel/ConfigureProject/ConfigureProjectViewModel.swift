@@ -32,11 +32,13 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     public enum FormValidationError: LocalizedError {
         case missingDirectory
+        case missingDirectoryData
         case missingName
         case missingModel
         case missingFormat
         case missingSeed
         case missingTopK
+        case invalidTopP
         case missingContextLength
         case missingBatchSize
         case missingMaxTokenCount
@@ -50,11 +52,6 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     public enum ConfigureType {
         case creating
         case editing
-    }
-
-    public enum ConfigurationError: LocalizedError {
-        case noDirectory
-        case noDirectoryBookmarkData
     }
 
     public struct FormatConfiguration: Identifiable {
@@ -429,7 +426,7 @@ public extension ConfigureProjectViewModel {
     func directorySelected(_ directory: URL?) {
         do {
             guard let directory else {
-                throw ConfigurationError.noDirectory
+                throw FormValidationError.missingDirectory
             }
 
             let bookmarkData = try directory.bookmarkData(
@@ -616,10 +613,10 @@ private extension ConfigureProjectViewModel {
 
     func finalisedProject() throws -> Project {
         guard let directory = self.projectDirectory else {
-            throw ConfigurationError.noDirectory
+            throw FormValidationError.missingDirectory
         }
         guard let bookmarkData = self.projectDirectoryBookmarkData else {
-            throw ConfigurationError.noDirectoryBookmarkData
+            throw FormValidationError.missingDirectoryData
         }
 
         // We're modifying an existing project
@@ -736,6 +733,11 @@ private extension ConfigureProjectViewModel {
             throw .missingDirectory
         }
 
+        // Check our secure URL data
+        if self.projectDirectoryBookmarkData == nil {
+            throw .missingDirectoryData
+        }
+
         // Check our project name
         if self.projectName.isEmpty {
             throw .missingName
@@ -757,6 +759,11 @@ private extension ConfigureProjectViewModel {
         // Check our TopK
         if self.topK <= 0 {
             throw .missingTopK
+        }
+
+        // Check our TopP
+        if self.topP < 0 || self.topP > 1 {
+            throw .invalidTopP
         }
 
         // Check our ContextLength
@@ -832,21 +839,6 @@ private extension ConfigureProjectViewModel {
 
 }
 
-// MARK: - ConfigurationError
-
-public extension ConfigureProjectViewModel.ConfigurationError {
-
-    var errorDescription: String? {
-        switch self {
-        case .noDirectory:
-            return L10n.Error.ConfigureProject.ConfigurationError.noDirectory
-        case .noDirectoryBookmarkData:
-            return L10n.Error.ConfigureProject.ConfigurationError.noDirectoryBookmarkData
-        }
-    }
-
-}
-
 // MARK: - FormValidationError
 
 public extension ConfigureProjectViewModel.FormValidationError {
@@ -865,6 +857,8 @@ public extension ConfigureProjectViewModel.FormValidationError {
             return Strings.missingSeed
         case .missingTopK:
             return Strings.missingTopK
+        case .invalidTopP:
+            return Strings.invalidTopP
         case .missingContextLength:
             return Strings.missingContextLength
         case .missingBatchSize:
@@ -875,6 +869,8 @@ public extension ConfigureProjectViewModel.FormValidationError {
             return Strings.missingSystemPrompt
         case .missingDirectory:
             return Strings.missingDirectory
+        case .missingDirectoryData:
+            return Strings.missingDirectoryData
         }
     }
 
