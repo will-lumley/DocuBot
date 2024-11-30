@@ -28,15 +28,6 @@ open class DocuBotViewModelTestCase: @unchecked Sendable {
     // MARK: - Lifecycle
 
     init () {
-        // Let's swizzle our NSWorkspace methods.
-        // This is highly recommended against generally, and for good reason,
-        // however I'm using it here exclusively for the purposes of testing.
-        NSWorkspace.swizzleOpen()
-
-        // Listen in on the open method being called
-        NSWorkspace.onOpenHandler = { url in
-            self.openedURL = url
-        }
     }
 
 }
@@ -86,8 +77,10 @@ extension NSWorkspace {
     nonisolated(unsafe) private static var isSwizzled = false {
         didSet {
             if isSwizzled {
+                // swiftlint:disable:next direct_print
                 print("[DOCUBOT] [INFO] Swizzling `NSWorkspace.open(_:)`")
             } else {
+                // swiftlint:disable:next direct_print
                 print("[DOCUBOT] [INFO] Unswizzling `NSWorkspace.open(_:)`")
             }
         }

@@ -93,6 +93,13 @@ class GRDBService: PersistenceService {
             .eraseToAnyPublisher()
     }
 
+    func getProjects() async throws -> [Project] {
+        return try await dbQueue.read { db in
+            let records = try ProjectRecord.fetchAll(db)
+            return records.map(Project.init)
+        }
+    }
+
     func delete(project: Project) async throws -> Bool {
         return try await self.dbQueue.write { db in
             try ProjectRecord.deleteOne(db, id: project.id)

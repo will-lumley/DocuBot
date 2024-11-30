@@ -6,8 +6,8 @@
 //
 
 @testable import DocuBotViewModel
-import Testing
 import SFSafeSymbols
+import Testing
 
 struct IconButtonViewModelTests {
 

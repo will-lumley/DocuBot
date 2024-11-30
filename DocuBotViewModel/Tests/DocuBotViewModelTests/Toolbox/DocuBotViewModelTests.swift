@@ -54,11 +54,9 @@ struct DocuBotViewModelTests {
         // GIVEN a mock service container
         let mockServiceContainer = ServiceContainer.mock
 
-        // AND a subclass of DocuBotViewModel that overrides configureBindings
+        // AND a subclass of DocuBotViewModel
         class TestableDocuBotViewModel: DocuBotViewModel {
-            override func configureBindings() {
-                super.configureBindings()
-            }
+
         }
 
         let testSubject = TestableDocuBotViewModel(serviceContainer: mockServiceContainer)

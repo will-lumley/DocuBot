@@ -45,7 +45,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case missingSystemPrompt
     }
 
-    public enum OpenWindow {
+    public enum OpenWindow: Hashable {
         case project(ProjectViewModel.OpenWindowPackage)
     }
 
@@ -119,7 +119,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     public let availableSimilarityMetrics = ProjectSettings.SimilarityMetric.allCases
 
     /// This will be called to open a new window, along with the info that dictates which window
-    @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
+    @Published public var onOpen = CurrentValueSubject<OpenWindow?, Never>(nil)
 
     /// This will be called when this ViewModel wants the UI layer to close the current window
     @Published public var onDismiss = PassthroughSubject<Void, Never>()
@@ -477,24 +477,24 @@ public extension ConfigureProjectViewModel {
         return nil
     }
 
-    func saveButtonSelected() {
+    func saveButtonSelected() async {
         // Do we need to warn the user of a full-resync?
         if self.resyncNeeded {
             if let message = self.resyncMessage {
-                self.alertConfiguration = .init(
-                    title: L10n.ConfigureProject.Resync.title,
-                    message: message,
-                    primaryAction: .init(title: L10n.ConfigureProject.Resync.saveButton) {
-                        Task { await self.save() }
-                    }
-                )
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.ConfigureProject.Resync.title,
+                        message: message,
+                        primaryAction: .init(title: L10n.ConfigureProject.Resync.saveButton) {
+                            Task { await self.save() }
+                        }
+                    )
+                }
                 return
             }
         }
 
-        Task {
-            await self.save()
-        }
+        await self.save()
     }
 
     func helpButtonSelected(with type: HelpType) {
@@ -727,6 +727,7 @@ private extension ConfigureProjectViewModel {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func checkFormValidation() throws(FormValidationError) {
         // Check our project directory
         if self.projectDirectory == nil {

@@ -117,7 +117,7 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
     }
 
     @Test("Fetch All Projects Publisher")
-    func fetchAllProjectPublisher() async throws {
+    func fetchAllProjectsPublisher() async throws {
         var cancellables: Set<AnyCancellable> = []
 
         // GIVEN we have two projects we'd like to commit
@@ -162,6 +162,43 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
                 }
                 .store(in: &cancellables)
         }
+    }
+
+    @Test("Fetch All Projects")
+    func fetchAllProjects() async throws {
+        // GIVEN we have two projects we'd like to commit
+        let project1 = Project.mock(id: 1)
+        let project2 = Project.mock(id: 2)
+
+        // WHEN we insert the projects into the database
+        let insertedProject1 = try await testSubject.insert(project: project1)
+        let insertedProject2 = try await testSubject.insert(project: project2)
+
+        // WHEN we request all projects from the publisher
+        let fetchedProjects = try await testSubject.getProjects()
+
+        let fetchedProject1 = fetchedProjects[0]
+        let fetchedProject2 = fetchedProjects[1]
+
+        // THEN our fetched projects and the projects
+        // we created initially are identical
+        #expect(fetchedProject1.isEqualToIgnoringID(project1))
+        #expect(fetchedProject2.isEqualToIgnoringID(project2))
+
+        // THEN our fetched projects and inserted projects
+        // are identical
+        #expect(fetchedProject1 == insertedProject1)
+        #expect(fetchedProject2 == insertedProject2)
+
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `1`
+        #expect(fetchedProject1.id == 1)
+        #expect(fetchedProject1.id == insertedProject1.id)
+
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `2`
+        #expect(fetchedProject2.id == 2)
+        #expect(fetchedProject2.id == insertedProject2.id)
     }
 
     @Test("Delete Project")
