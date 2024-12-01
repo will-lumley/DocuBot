@@ -52,13 +52,15 @@ public extension DocuBotViewModelTestCase {
         }
     }
 
-    func persistTestModel() async {
+    @discardableResult
+    func persistTestModel() async -> LLMModel {
         do {
             let llmModel = LLMModel.mock(
                 path: try Self.testModelPath
             )
             let inserted = try await persistenceService.insert(model: llmModel)
             print("[DOCUBOT] [INFO] Inserted Model: \(inserted)")
+            return inserted
         } catch {
             fatalError(error.localizedDescription)
         }

@@ -1461,7 +1461,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         // Load a testing model into our DB
         await self.persistTestModel()
 
-        // GIVEN a ConfigureProjectViewModel with custom LLM options
+        // GIVEN a ConfigureProjectViewModel
         let testSubject = ConfigureProjectViewModel(
             serviceContainer: self.serviceContainer
         )
@@ -1510,8 +1510,364 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.strictMode == false)
     }
 
-    @Test("ReSync Message")
-    func resyncMessage() {
+    @Test("ReSync Message - None - Creating")
+    func noResyncMessageCreating() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with an empty slate
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we have our details filled out
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
+        testSubject.seed = 10
+        testSubject.topK = 5
+        testSubject.contextLength = 10
+        testSubject.batchSize = 15
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "Test"
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(testSubject.alertConfiguration == nil)
+    }
+
+    @Test("ReSync Message - Metric Changed - Creating")
+    func resyncMessageMetricChangedCreating() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with an empty slate
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we change the metric
+        testSubject.similarityMetric = .dotProduct
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
+        testSubject.seed = 10
+        testSubject.topK = 5
+        testSubject.contextLength = 10
+        testSubject.batchSize = 15
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "Test"
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(testSubject.alertConfiguration == nil)
+    }
+
+    @Test("ReSync Message - EmbeddedModel Changed - Creating")
+    func resyncMessageEmbeddedModelChangedCreating() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with an empty slate
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we change the embedding model
+        testSubject.embeddingModel = .miniLmAll
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
+        testSubject.seed = 10
+        testSubject.topK = 5
+        testSubject.contextLength = 10
+        testSubject.batchSize = 15
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "Test"
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(testSubject.alertConfiguration == nil)
+    }
+
+    @Test("ReSync Message - Directory Changed - Creating")
+    func resyncMessageDirectoryChangedCreating() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with an empty slate
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we change the directory
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
+        testSubject.seed = 10
+        testSubject.topK = 5
+        testSubject.contextLength = 10
+        testSubject.batchSize = 15
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "Test"
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(testSubject.alertConfiguration == nil)
+    }
+
+    @Test("ReSync Message - Formats Changed - Creating")
+    func resyncMessageFormatsChangedCreating() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with an empty slate
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we change the formats
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true)
+        ]
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
+        testSubject.seed = 10
+        testSubject.topK = 5
+        testSubject.contextLength = 10
+        testSubject.batchSize = 15
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "Test"
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(testSubject.alertConfiguration == nil)
+    }
+
+    @Test("ReSync Message - None - Editing")
+    func noResyncMessageEditing() async throws {
+        var cancellables = [AnyCancellable]()
+
+        // GIVEN that we have an existing Project & Settings in the DB
+        let model = await self.persistTestModel()
+        let modelID = try model.id.orThrow(LLMModel.ModelError.missingID)
+        let project = Project.mock(id: 1)
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: modelID
+        )
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
+            serviceContainer: self.serviceContainer
+        )
+
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { bar in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(testSubject.alertConfiguration == nil)
+    }
+
+    @Test("ReSync Message - Metric Changed - Editing")
+    func resyncMessageMetricChangedEditing() async throws {
+        var cancellables = [AnyCancellable]()
+
+        let model = await self.persistTestModel()
+        let modelID = try model.id.orThrow(LLMModel.ModelError.missingID)
+        let project = Project.mock(id: 1)
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: modelID
+        )
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
+            serviceContainer: self.serviceContainer
+        )
+
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { bar in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
+        // WHEN we change the metric
+        testSubject.similarityMetric = .dotProduct
+
+        // THEN ReSync Alert is correctly set
+        await withCheckedContinuation { continuation in
+            testSubject.$alertConfiguration.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { newAlert in
+                    #expect(
+                        newAlert == .init(
+                            title: "",
+                            message: ""
+                        )
+                    )
+
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+
+            // WHEN we try and save the Project & Settings
+            Task { await testSubject.saveButtonSelected() }
+        }
+    }
+
+    @Test("ReSync Message - EmbeddedModel Changed - Editing")
+    func resyncMessageEmbeddedModelChangedEditing() async throws {
+        // GIVEN that we have an existing Project & Settings in the DB
+        let model = await self.persistTestModel()
+        let project = Project.mock(id: 1)
+        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: model.id ?? -1)
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(project: .mock(), settings: .mock()),
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we change the embedding model
+        testSubject.embeddingModel = .miniLmAll
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(
+            testSubject.alertConfiguration == .init(
+                title: "",
+                message: ""
+            )
+        )
+    }
+
+    @Test("ReSync Message - Directory Changed - Editing")
+    func resyncMessageDirectoryChangedEditing() async throws {
+        // GIVEN that we have an existing Project & Settings in the DB
+        let model = await self.persistTestModel()
+        let project = Project.mock(id: 1)
+        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: model.id ?? -1)
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(project: .mock(), settings: .mock()),
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we change the directory
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(
+            testSubject.alertConfiguration == .init(
+                title: "",
+                message: ""
+            )
+        )
+    }
+
+    @Test("ReSync Message - Formats Changed - Editing")
+    func resyncMessageFormatsChangedEditing() async throws {
+        // GIVEN that we have an existing Project & Settings in the DB
+        let model = await self.persistTestModel()
+        let project = Project.mock(id: 1)
+        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: model.id ?? -1)
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(project: .mock(), settings: .mock()),
+            serviceContainer: self.serviceContainer
+        )
+
+        // WHEN we change the formats
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true)
+        ]
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN there is no ReSync Alert
+        #expect(
+            testSubject.alertConfiguration == .init(
+                title: "",
+                message: ""
+            )
+        )
+    }
+
+    @Test("New Alert Status")
+    func newAlertStatus() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with an empty slate
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
         
     }
 
@@ -1537,26 +1893,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("Add and Remove Formats")
     func addAndRemoveFormats() {
-//        // GIVEN a ConfigureProjectViewModel
-//        let testSubject = ConfigureProjectViewModel(
-//            serviceContainer: .mock
-//        )
-//
-//        // WHEN a new format is added
-//        testSubject.createNewFormat()
-//        let addedFormatCount = testSubject.formatConfigurations.count
-//
-//        // AND the format is removed
-//        let newFormat = testSubject.formatConfigurations.last!
-//        testSubject.remove(formatConfiguration: newFormat)
-//        let removedFormatCount = testSubject.formatConfigurations.count
-//
-//        // THEN the format is added and removed correctly
-//        #expect(addedFormatCount == removedFormatCount + 1)
-    }
-
-    @Test("On Save Called")
-    func onSaveCalled() {
 //        // GIVEN a ConfigureProjectViewModel
 //        let testSubject = ConfigureProjectViewModel(
 //            serviceContainer: .mock
