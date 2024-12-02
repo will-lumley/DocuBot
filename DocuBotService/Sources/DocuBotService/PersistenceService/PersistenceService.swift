@@ -32,6 +32,7 @@ public protocol PersistenceService: Service {
 
     func insert(settings: ProjectSettings) async throws -> ProjectSettings
     func getProjectSettings(for project: Project) async throws -> ProjectSettings
+    func getProjectSettings(for project: Project) -> AnyPublisher<ProjectSettings, Never>
     func update(settings: ProjectSettings) async throws -> ProjectSettings
 
     func getDocuments(ids: [Int64]) async throws -> [Document]
