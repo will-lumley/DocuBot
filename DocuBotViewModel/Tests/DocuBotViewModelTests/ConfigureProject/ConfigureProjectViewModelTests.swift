@@ -2035,14 +2035,207 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
     }
 
-    @Test("New Alert Status")
-    func newAlertStatus() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
+    @Test("New Alert Status - None - Editing")
+    func newAlertStatusNoneEditing() async throws {
+        var cancellables = [AnyCancellable]()
 
-        // GIVEN a ConfigureProjectViewModel with an empty slate
+        // GIVEN that we have an existing Project & Settings in the DB
+        let model = await self.persistTestModel()
+        let project = Project.mock(
+            id: 1,
+            alertStatus: .none
+        )
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
+        )
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        // GIVEN a ConfigureProjectViewModel with a Project & Settings
         let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(project: project, settings: settings),
             serviceContainer: self.serviceContainer
+        )
+
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { _ in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
+        // WHEN we change nothing
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN the Project & Settings is saved
+        let savedProject = await withCheckedContinuation { cont in
+            persistenceService.getProject(id: 1)
+                .sink { newProject in
+                    cont.resume(returning: newProject)
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN there is no alert status on the model
+        #expect(savedProject.alertStatus == .none)
+    }
+
+    @Test("New Alert Status - Metric Changed - Editing")
+    func newAlertStatusMetricEditing() async throws {
+        var cancellables = [AnyCancellable]()
+
+        let model = await self.persistTestModel()
+        let project = Project.mock(
+            id: 1,
+            alertStatus: .none
+        )
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
+        )
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        #expect(settings.similarityMetric != .dotProduct)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
+            serviceContainer: self.serviceContainer
+        )
+
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { _ in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
+        // WHEN we change the metric
+        testSubject.similarityMetric = .dotProduct
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN ReSync Alert is correctly set
+        let alert = await withCheckedContinuation { continuation in
+            testSubject.$alertConfiguration.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { newAlert in
+                    continuation.resume(returning: newAlert)
+                }
+                .store(in: &cancellables)
+        }
+        #expect(alert != nil)
+
+        // WHEN the alert's action is called
+        await MainActor.run {
+            alert.primaryAction?.onSelect()
+        }
+
+        // THEN the Project & Settings is saved
+        let savedProject = await withCheckedContinuation { cont in
+            persistenceService.getProject(id: 1)
+                .sink { newProject in
+                    cont.resume(returning: newProject)
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN the Metric warning has been given to the Project
+        #expect(
+            savedProject.alertStatus == .warning(warning: .metricChanged)
+        )
+    }
+
+    @Test("New Alert Status - Embedded Model Changed - Editing")
+    func newAlertStatusModelEditing() async throws {
+        var cancellables = [AnyCancellable]()
+
+        let model = await self.persistTestModel()
+        let project = Project.mock(
+            id: 1,
+            alertStatus: .none
+        )
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
+        )
+
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        #expect(settings.embeddingModel != .miniLmAll)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
+            serviceContainer: self.serviceContainer
+        )
+
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { _ in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
+        // WHEN we change the model
+        testSubject.embeddingModel = .miniLmAll
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN ReSync Alert is correctly set
+        let alert = await withCheckedContinuation { continuation in
+            testSubject.$alertConfiguration.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { newAlert in
+                    continuation.resume(returning: newAlert)
+                }
+                .store(in: &cancellables)
+        }
+        #expect(alert != nil)
+
+        // WHEN the alert's action is called
+        await MainActor.run {
+            alert.primaryAction?.onSelect()
+        }
+
+        // THEN the Project & Settings is saved
+        let savedProject = await withCheckedContinuation { cont in
+            persistenceService.getProject(id: 1)
+                .sink { newProject in
+                    cont.resume(returning: newProject)
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN the Metric warning has been given to the Project
+        #expect(
+            savedProject.alertStatus == .warning(warning: .modelChanged)
         )
     }
 
