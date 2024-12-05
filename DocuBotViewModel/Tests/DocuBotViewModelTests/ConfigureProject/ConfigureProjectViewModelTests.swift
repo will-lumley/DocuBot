@@ -1655,34 +1655,296 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.helpConfiguration == nil)
     }
 
-    @Test("Directory Selected")
-    func directorySelected() {
-        
+    @Test("Add and Remove Formats")
+    func addAndRemoveFormats() async {
+        typealias Format = ConfigureProjectViewModel.FormatConfiguration
+
+        // GIVEN a ConfigureProjectViewModel
+        let testSubject = await self.mockForCreating()
+
+        let rtf = Format(order: 0, format: .rtf, isEnabled: true)
+        let txt = Format(order: 1, format: .txt, isEnabled: true)
+        let html = Format(order: 2, format: .html, isEnabled: true)
+        let md = Format(order: 3, format: .md, isEnabled: true)
+
+        // THEN we have all our FormatConfigurations
+        #expect(
+            testSubject.formatConfigurations == [
+                rtf, txt, html, md
+            ]
+        )
+
+        // WHEN we set the .txt to false
+        testSubject.set(
+            formatConfiguration: txt,
+            isEnabled: false
+        )
+
+        // WHEN we set the rtf to false
+        testSubject.set(
+            formatConfiguration: rtf,
+            isEnabled: false
+        )
+
+        // THEN the ViewModel has it's format configurations correctly set
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 0, format: .rtf, isEnabled: false),
+                .init(order: 1, format: .txt, isEnabled: false),
+                .init(order: 2, format: .html, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true),
+            ]
+        )
+
+        // WHEN we set rtf back to true
+        testSubject.set(
+            formatConfiguration: rtf,
+            isEnabled: true
+        )
+
+        // THEN that is seen in the ViewModel
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 0, format: .rtf, isEnabled: true),
+                .init(order: 1, format: .txt, isEnabled: false),
+                .init(order: 2, format: .html, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true),
+            ]
+        )
     }
 
-    @Test("Add and Remove Formats")
-    func addAndRemoveFormats() {
-//        // GIVEN a ConfigureProjectViewModel
-//        let testSubject = ConfigureProjectViewModel(
-//            serviceContainer: .mock
-//        )
-//
-//        // WHEN a new format is added
-//        testSubject.createNewFormat()
-//        let addedFormatCount = testSubject.formatConfigurations.count
-//
-//        // AND the format is removed
-//        let newFormat = testSubject.formatConfigurations.last!
-//        testSubject.remove(formatConfiguration: newFormat)
-//        let removedFormatCount = testSubject.formatConfigurations.count
-//
-//        // THEN the format is added and removed correctly
-//        #expect(addedFormatCount == removedFormatCount + 1)
+    @Test("Add and Remove Other Formats")
+    func addAndRemoveOtherFormats() async {
+        typealias Format = ConfigureProjectViewModel.FormatConfiguration
+
+        // GIVEN a ConfigureProjectViewModel
+        let testSubject = await self.mockForCreating()
+
+        let rtf = Format(order: 0, format: .rtf, isEnabled: true)
+        let txt = Format(order: 1, format: .txt, isEnabled: true)
+        let html = Format(order: 2, format: .html, isEnabled: true)
+        let md = Format(order: 3, format: .md, isEnabled: true)
+
+        // THEN we have all our FormatConfigurations
+        #expect(
+            testSubject.formatConfigurations == [
+                rtf, txt, html, md
+            ]
+        )
+
+        // WHEN we add an "other" format
+        let other = testSubject.createNewFormat()
+
+        // WHEN we give it a name
+        testSubject.update(formatConfiguration: other, otherStr: "foo")
+
+        // THEN the ViewModel has it's format configurations correctly set
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 0, format: .rtf, isEnabled: true),
+                .init(order: 1, format: .txt, isEnabled: true),
+                .init(order: 2, format: .html, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 4, format: .other(".foo"), isEnabled: true)
+            ]
+        )
+
+        // WHEN we add in another "other" format
+        let another = testSubject.createNewFormat()
+
+        // WHEN we give it a name
+        testSubject.update(formatConfiguration: another, otherStr: "bar")
+
+        // THEN the ViewModel has it's format configurations correctly set
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 0, format: .rtf, isEnabled: true),
+                .init(order: 1, format: .txt, isEnabled: true),
+                .init(order: 2, format: .html, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 4, format: .other(".foo"), isEnabled: true),
+                .init(order: 5, format: .other(".bar"), isEnabled: true)
+            ]
+        )
+
+        // WHEN we delete the first other format
+        testSubject.remove(formatConfiguration: other)
+
+        // THEN the ViewModel has it's format configurations correctly set
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 0, format: .rtf, isEnabled: true),
+                .init(order: 1, format: .txt, isEnabled: true),
+                .init(order: 2, format: .html, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 5, format: .other(".bar"), isEnabled: true)
+            ]
+        )
+    }
+
+    @Test("No Directory Selected")
+    func noDirectorySelected() async throws {
+        // GIVEN a ConfigureProjectViewModel
+        let testSubject = await self.mockForCreating()
+
+        // WHEN we select a `nil` directory
+        testSubject.directorySelected(nil)
+
+        // THEN we get an alert
+        let alert = try await testSubject.$alertConfiguration.firstValue()
+
+        // THEN the alert has the correct values
+        #expect(
+            alert == .init(
+                title: "Failed to get folder access",
+                message: "Please ensure that a project directory has been selected."
+            )
+        )
+    }
+
+    @Test("Invalid Directory Selected")
+    func invalidDirectorySelected() async throws {
+        // GIVEN a ConfigureProjectViewModel
+        let testSubject = await self.mockForCreating()
+
+        // WHEN an invalid URL is selected
+        let testURL = URL(fileURLWithPath: "/foo/bar/foobar")
+        testSubject.directorySelected(testURL)
+
+        // THEN we get an alert
+        let alert = try await testSubject.$alertConfiguration.firstValue()
+
+        // THEN the alert has the correct values
+        #expect(
+            alert == .init(
+                title: "Failed to get folder access",
+                message: "The file “foobar” couldn’t be opened because there is no such file."
+            )
+        )
+    }
+
+    @Test("Directory Selected")
+    func directorySelected() async throws {
+        // GIVEN a ConfigureProjectViewModel
+        let testSubject = await self.mockForCreating()
+
+        // Let's create a directory to call our own
+        let testURL = FileManager.default
+            .temporaryDirectory
+            .appendingPathComponent("test")
+        try FileManager.default.createDirectory(
+            at: testURL,
+            withIntermediateDirectories: true
+        )
+
+        // WHEN a URL is selected
+        testSubject.directorySelected(testURL)
+
+        // THEN we do not get an alert
+        #expect(testSubject.alertConfiguration == nil)
+
+        // THEN our ProjectDirectory is updated
+        #expect(testSubject.projectDirectory == testURL)
+
+        // THEN our ProjectDirectoryText is updated
+        #expect(testSubject.projectDirectoryText == testURL.path())
+
+        // THEN our ProjectName is correctly set
+        #expect(testSubject.projectName == "test")
+
+        // THEN our ProjectDirectoryData is not empty or nil
+        #expect(testSubject.projectDirectoryBookmarkData?.isEmpty == false)
     }
 
     @Test("Default Values")
-    func defaultValues() {
-        
+    func defaultValues() async {
+        // GIVEN we have a brand new ConfigureProjectViewModel
+        let testSubject = await self.mockForCreating()
+
+        // THEN all of the default values are correctly set
+        #expect(testSubject.projectInfo == nil)
+        #expect(testSubject.projectDirectory == nil)
+        #expect(testSubject.projectDirectoryText == "Select a Directory")
+        #expect(testSubject.projectName == "")
+        #expect(testSubject.selectedLanguage == .english)
+        #expect(testSubject.selectedModel != nil)
+
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 0, format: .rtf, isEnabled: true),
+                .init(order: 1, format: .txt, isEnabled: true),
+                .init(order: 2, format: .html, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true)
+            ]
+        )
+
+        #expect(testSubject.embeddingModel == .distilbert)
+        #expect(testSubject.similarityMetric == .cosine)
+
+        #expect(testSubject.systemPrompt == self.defaultSystemPrompt)
+        #expect(testSubject.seed == 1234)
+        #expect(testSubject.topK == 40)
+        #expect(testSubject.topP == 0.9)
+        #expect(testSubject.contextLength == 2048)
+
+        #expect(testSubject.temperature == 0.2)
+        #expect(testSubject.batchSize == 2048)
+        #expect(testSubject.stopSequence == "")
+        #expect(testSubject.maxTokenCount == 1048576)
+        #expect(testSubject.strictMode == false)
+        #expect(testSubject.availableModels.count == 1)
+        #expect(testSubject.availableLanguages == ProjectSettings.Language.allCases)
+        #expect(testSubject.availableEmbeddingModels == ProjectSettings.EmbeddingModel.allCases)
+        #expect(testSubject.availableSimilarityMetrics == ProjectSettings.SimilarityMetric.allCases)
+        #expect(testSubject.onOpen.value == nil)
+        #expect(testSubject.alertConfiguration == nil)
+        #expect(testSubject.helpConfiguration == nil)
+    }
+
+    @Test("Load Values from Project and Settings")
+    func loadValues() async throws {
+        // GIVEN we have an existing ConfigureProjectViewModel
+        let testSubject = try await self.mockForEditing()
+
+        // THEN all of the default values are correctly set
+        #expect(testSubject.projectInfo != nil)
+        #expect(testSubject.projectDirectory == URL(fileURLWithPath: "/Users/will/Desktop/Project_1"))
+        #expect(testSubject.projectDirectoryText == "/Users/will/Desktop/Project_1")
+        #expect(testSubject.projectName == "Project 1")
+        #expect(testSubject.selectedLanguage == .english)
+        #expect(testSubject.selectedModel != nil)
+
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 0, format: .rtf, isEnabled: true),
+                .init(order: 1, format: .txt, isEnabled: true),
+                .init(order: 2, format: .html, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true)
+            ]
+        )
+
+        #expect(testSubject.embeddingModel == .distilbert)
+        #expect(testSubject.similarityMetric == .cosine)
+
+        #expect(testSubject.systemPrompt == "You are a good bot")
+        #expect(testSubject.seed == 1024)
+        #expect(testSubject.topK == 40)
+        #expect(testSubject.topP == 0.2)
+        #expect(testSubject.contextLength == 100)
+
+        #expect(testSubject.temperature == 0.2)
+        #expect(testSubject.batchSize == 1024)
+        #expect(testSubject.stopSequence == nil)
+        #expect(testSubject.maxTokenCount == 1024)
+        #expect(testSubject.strictMode == false)
+        #expect(testSubject.availableModels.count == 1)
+        #expect(testSubject.availableLanguages == ProjectSettings.Language.allCases)
+        #expect(testSubject.availableEmbeddingModels == ProjectSettings.EmbeddingModel.allCases)
+        #expect(testSubject.availableSimilarityMetrics == ProjectSettings.SimilarityMetric.allCases)
+        #expect(testSubject.onOpen.value == nil)
+        #expect(testSubject.alertConfiguration == nil)
+        #expect(testSubject.helpConfiguration == nil)
+
     }
 
     @Test("FormValidationError Descriptions")
@@ -1705,12 +1967,17 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
     }
 
-} // swiftlint:disable:this file_length
+}
 
 // MARK: - Private
 
 private extension ConfigureProjectViewModelTests {
 
+    var defaultSystemPrompt: String {
+        """
+        You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.
+        """
+    }
     func helpConfigurationTitle(
         for type: ConfigureProjectViewModel.HelpType
     ) -> String {
@@ -1774,4 +2041,4 @@ private extension ConfigureProjectViewModelTests {
     }
 
     // swiftlint:enable line_length
-}
+}  // swiftlint:disable:this file_length
