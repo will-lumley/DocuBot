@@ -25,11 +25,6 @@ open class DocuBotViewModelTestCase: @unchecked Sendable {
         serviceContainer.persistenceStorage
     }
 
-    // MARK: - Lifecycle
-
-    init () {
-    }
-
 }
 
 // MARK: - Public
@@ -59,7 +54,6 @@ public extension DocuBotViewModelTestCase {
                 path: try Self.testModelPath
             )
             let inserted = try await persistenceService.insert(model: llmModel)
-            print("[DOCUBOT] [INFO] Inserted Model: \(inserted)")
             return inserted
         } catch {
             fatalError(error.localizedDescription)

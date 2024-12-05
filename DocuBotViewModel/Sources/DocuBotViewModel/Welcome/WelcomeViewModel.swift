@@ -110,9 +110,17 @@ public extension WelcomeViewModel {
 
     var newProjectButton: MenuButtonViewModel {
         .init(text: L10n.Welcome.loadNewProject) {
-            self.configureProjectViewModel = .init(
-                serviceContainer: self.serviceContainer
-            )
+            Task { [unowned self] in
+                guard let allModels = try? await persistenceService.getModels() else {
+                    return
+                }
+                await MainActor.run {
+                    self.configureProjectViewModel = .init(
+                        availableModels: allModels,
+                        serviceContainer: self.serviceContainer
+                    )
+                }
+            }
         }
     }
 

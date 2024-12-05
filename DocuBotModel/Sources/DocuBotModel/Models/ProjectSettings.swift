@@ -15,19 +15,19 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         case english
     }
 
-    public enum EmbeddingModel: String, CaseIterable, Hashable, Codable, Sendable, Equatable {
+    public enum EmbeddingModel: String, CaseIterable, Hashable, Codable, Sendable {
         case distilbert
         case miniLmAll
         case multiQaMiniLm
     }
 
-    public enum SimilarityMetric: String, CaseIterable, Hashable, Codable, Sendable, Equatable {
+    public enum SimilarityMetric: String, CaseIterable, Hashable, Codable, Sendable {
         case cosine
         case dotProduct
         case euclideanDistance
     }
 
-    public enum DocumentationFormat: Hashable, CaseIterable, Codable, Sendable, Equatable {
+    public enum DocumentationFormat: Hashable, CaseIterable, Codable, Sendable {
         public static var allCases: [ProjectSettings.DocumentationFormat] {
             [.rtf, .txt, .html, .md]
         }

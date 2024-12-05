@@ -1,15 +1,15 @@
 //
-//  AlertConfiguration.swift
+//  AsyncAlertConfiguration.swift
 //  DocuBotViewModel
 //
 //  Created by William Lumley on 12/10/2024.
 //
 
-public struct AlertConfiguration: Sendable {
+public struct AsyncAlertConfiguration: Sendable {
 
     // MARK: - Types
 
-    public typealias OnSelect = () -> Void
+    public typealias OnSelect = () async -> Void
 
     public struct ActionConfiguration: @unchecked Sendable {
         public let title: String
@@ -36,7 +36,7 @@ public struct AlertConfiguration: Sendable {
 
 // MARK: - Identifiable
 
-extension AlertConfiguration: Identifiable {
+extension AsyncAlertConfiguration: Identifiable {
 
     public var id: String {
         if let primaryAction {
@@ -50,11 +50,11 @@ extension AlertConfiguration: Identifiable {
 
 // MARK: - Equatable
 
-extension AlertConfiguration: Hashable {
+extension AsyncAlertConfiguration: Hashable {
 
     public static func == (
-        lhs: AlertConfiguration,
-        rhs: AlertConfiguration
+        lhs: AsyncAlertConfiguration,
+        rhs: AsyncAlertConfiguration
     ) -> Bool {
         return lhs.id == rhs.id
     }
@@ -69,15 +69,15 @@ extension AlertConfiguration: Hashable {
 
 // MARK: - ActionConfiguration.Hashable
 
-extension AlertConfiguration.ActionConfiguration: Hashable {
+extension AsyncAlertConfiguration.ActionConfiguration: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
     }
 
     public static func == (
-        lhs: AlertConfiguration.ActionConfiguration,
-        rhs: AlertConfiguration.ActionConfiguration
+        lhs: AsyncAlertConfiguration.ActionConfiguration,
+        rhs: AsyncAlertConfiguration.ActionConfiguration
     ) -> Bool {
         return lhs.title == rhs.title
     }
