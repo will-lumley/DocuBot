@@ -56,7 +56,7 @@ public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
     private var downloadProgress: CurrentValueSubject<Progress?, Never> = .init(nil)
 
     /// This closure will be called if a user confirms they want to delete a project
-    private var deleteModelAction: OnDelete?
+    var deleteModelAction: OnDelete?
 
     /// Indicative of if we want to display/hide our Delete Project confirmation dialog
     @Published public var deleteModelConfirmationDialogPresented = false
@@ -119,6 +119,7 @@ public extension ModelManagerViewModel {
             ]
         )
     }
+
     var downloadMoreButtonTitle: String {
         L10n.ModelManager.DownloadMoreButton.title
     }
@@ -348,8 +349,9 @@ private extension ModelManagerViewModel {
             throw ModelDownloadError.noAppSupportDirectory
         }
 
-        // Define the "Models" subdirectory within AppSupport
+        // Define the "Models" and "DocuBot" subdirectory within AppSupport
         let modelsDirectory = appSupportDirectory
+            .appendingPathComponent("DocuBot", isDirectory: true)
             .appendingPathComponent("Models", isDirectory: true)
 
         // Create the "Models" subdirectory if it doesn’t already exist
