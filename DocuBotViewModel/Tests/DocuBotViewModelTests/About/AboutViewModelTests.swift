@@ -53,10 +53,10 @@ class AboutViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // WHEN we attempt to open up our licence
         testSubject.licenceButton.selected()
-        // try await Task.sleep(for: .seconds(1))
 
         // THEN our LicenceURL was opened
-        #expect(openedURL == .init(string: Secrets.AppInfo.licenceURL))
+        let str = "https://github.com/will-lumley/DocuBot?tab=GPL-3.0-1-ov-file"
+        #expect(openedURL == .init(string: str))
     }
 
     @Test("Open Privacy Policy")
@@ -76,10 +76,10 @@ class AboutViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // WHEN we attempt to open up our licence
         testSubject.privacyPolicyButton.selected()
-        // try await Task.sleep(for: .seconds(1))
 
         // THEN our PrivacyPolicyURL was opened
-        #expect(openedURL == .init(string: Secrets.AppInfo.privacyPolicyURL))
+        let str = "https://github.com/will-lumley/DocuBot/blob/main/PrivacyPolicy.pdf"
+        #expect(openedURL == .init(string: str))
     }
 
 }

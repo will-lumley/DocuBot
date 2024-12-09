@@ -12,7 +12,7 @@ public struct ConfirmationDialogConfiguration {
 
     // MARK: - Types
 
-    public typealias OnSelect = () -> Void
+    public typealias OnSelect = () async -> Void
 
     public struct ButtonConfiguration {
 

@@ -18,6 +18,11 @@ open class DocuBotViewModelTestCase: @unchecked Sendable {
     /// will be stored here.
     var openedURL: URL?
 
+    /// If a file was attempted to be opened in Finder via
+    /// `NSWorkspace.activateFileViewing(_:)`, the URL in question
+    /// will be stored here.
+    var viewedFiles: [URL]?
+
     /// Our ServiceContainer created with testing equivalents
     public let serviceContainer = ServiceContainer(isTesting: true)
 
@@ -53,7 +58,8 @@ public extension DocuBotViewModelTestCase {
             let llmModel = LLMModel.mock(
                 path: try Self.testModelPath
             )
-            let inserted = try await persistenceService.insert(model: llmModel)
+            let inserted = try await persistenceService
+                .insert(model: llmModel)
             return inserted
         } catch {
             fatalError(error.localizedDescription)
@@ -67,26 +73,19 @@ public extension DocuBotViewModelTestCase {
 extension NSWorkspace {
 
     typealias OnOpen = (URL) -> Void
+    typealias OnFileViewing = ([URL]) -> Void
 
     nonisolated(unsafe) static var onOpenHandler: OnOpen?
+    nonisolated(unsafe) static var onFileViewingHandler: OnFileViewing?
 
-    nonisolated(unsafe) private static var isSwizzled = false {
-        didSet {
-            if isSwizzled {
-                // swiftlint:disable:next direct_print
-                print("[DOCUBOT] [INFO] Swizzling `NSWorkspace.open(_:)`")
-            } else {
-                // swiftlint:disable:next direct_print
-                print("[DOCUBOT] [INFO] Unswizzling `NSWorkspace.open(_:)`")
-            }
-        }
-    }
+    nonisolated(unsafe) private static var openIsSwizzled = false
+    nonisolated(unsafe) private static var fileViewingIsSwizzled = false
 
     static func swizzleOpen() {
-        guard isSwizzled == false else {
+        guard openIsSwizzled == false else {
             return
         }
-        isSwizzled = true
+        openIsSwizzled = true
 
         let originalSelector = #selector(NSWorkspace.open(_:))
         let swizzledSelector = #selector(NSWorkspace.mockOpen(_:))
@@ -106,10 +105,10 @@ extension NSWorkspace {
     }
 
     static func unswizzleOpen() {
-        guard isSwizzled else {
+        guard openIsSwizzled else {
             return
         }
-        isSwizzled = false
+        openIsSwizzled = false
 
         let originalSelector = #selector(NSWorkspace.open(_:))
         let swizzledSelector = #selector(NSWorkspace.mockOpen(_:))
@@ -133,6 +132,58 @@ extension NSWorkspace {
         // Call the handler if it's set
         NSWorkspace.onOpenHandler?(url)
         return true
+    }
+
+    static func swizzleFileViewing() {
+        guard fileViewingIsSwizzled == false else {
+            return
+        }
+        fileViewingIsSwizzled = true
+
+        let originalSelector = #selector(NSWorkspace.activateFileViewerSelecting(_:))
+        let swizzledSelector = #selector(NSWorkspace.mockFileViewing(_:))
+
+        guard
+            let originalMethod = class_getInstanceMethod(
+                NSWorkspace.self, originalSelector
+            ),
+            let swizzledMethod = class_getInstanceMethod(
+                NSWorkspace.self, swizzledSelector
+            )
+        else {
+            return
+        }
+
+        method_exchangeImplementations(originalMethod, swizzledMethod)
+    }
+
+    static func unswizzleFileViewing() {
+        guard openIsSwizzled else {
+            return
+        }
+        openIsSwizzled = false
+
+        let originalSelector = #selector(NSWorkspace.activateFileViewerSelecting(_:))
+        let swizzledSelector = #selector(NSWorkspace.mockFileViewing(_:))
+
+        guard
+            let originalMethod = class_getInstanceMethod(
+                NSWorkspace.self, originalSelector
+            ),
+            let swizzledMethod = class_getInstanceMethod(
+                NSWorkspace.self, swizzledSelector
+            )
+        else {
+            return
+        }
+
+        method_exchangeImplementations(swizzledMethod, originalMethod)
+    }
+
+    @objc
+    private func mockFileViewing(_ urls: [URL]) {
+        // Call the handler if it's set
+        NSWorkspace.onFileViewingHandler?(urls)
     }
 
 }

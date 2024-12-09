@@ -6,15 +6,15 @@
 //
 
 import Foundation
-import SFSafeSymbols
+@preconcurrency import SFSafeSymbols
 
-public struct EmptyListConfiguration {
+public struct EmptyListConfiguration: Equatable, Sendable {
 
     // MARK: - Types
 
     public typealias OnSelect = () -> Void
 
-    public struct Action {
+    public struct Action: @unchecked Sendable, Equatable {
         public let title: String
         public let secondaryTitle: String?
         public let onSelect: OnSelect
@@ -28,6 +28,16 @@ public struct EmptyListConfiguration {
             self.secondaryTitle = secondaryTitle
             self.onSelect = onSelect
         }
+
+        public static func == (
+            lhs: EmptyListConfiguration.Action,
+            rhs: EmptyListConfiguration.Action
+        ) -> Bool {
+            return
+                lhs.title == rhs.title &&
+                lhs.secondaryTitle == rhs.secondaryTitle
+        }
+
     }
 
     // MARK: - Properties

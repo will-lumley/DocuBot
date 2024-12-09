@@ -53,7 +53,13 @@ public struct WelcomeView: View {
             isPresented: $viewModel.deleteProjectConfirmationDialogPresented,
             actions: {
                 ForEach(viewModel.deleteProjectConfirmationDialog.buttons) { button in
-                    Button(button.title, role: button.role.buttonRole, action: button.action)
+                    Button(
+                        button.title,
+                        role: button.role.buttonRole,
+                        action: {
+                            Task { await button.action() }
+                        }
+                    )
                 }
             }
         )

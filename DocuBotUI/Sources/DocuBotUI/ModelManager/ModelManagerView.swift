@@ -73,10 +73,16 @@ public struct ModelManagerView: View {
         }
         .confirmationDialog(
             viewModel.deleteModelConfirmationDialog.title,
-            isPresented: $viewModel.deleteModelConfirmationDialogPresented,
+            isPresented: $viewModel.deleteModelConfirmationPresented,
             actions: {
                 ForEach(viewModel.deleteModelConfirmationDialog.buttons) { button in
-                    Button(button.title, role: button.role.buttonRole, action: button.action)
+                    Button(
+                        button.title,
+                        role: button.role.buttonRole,
+                        action: {
+                            Task { await button.action() }
+                        }
+                    )
                 }
             }
         )
@@ -127,7 +133,10 @@ public struct ModelManagerView: View {
                     panel.allowedContentTypes     = [.gguf]
                     panel.begin { response in
                         if response == .OK {
-                            viewModel.directorySelected(panel.urls.first)
+                            let firstURL = panel.urls.first
+                            Task {
+                                await viewModel.fileSelected(firstURL)
+                            }
                         }
                     }
                 }, label: {

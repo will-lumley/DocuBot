@@ -9,7 +9,7 @@ import DocuBotModel
 import Foundation
 
 @Observable
-public class ModelCellModel {
+public final class ModelCellModel: Sendable, Equatable {
 
     // MARK: - Properties
 
