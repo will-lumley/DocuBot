@@ -21,7 +21,7 @@ public class ProjectQuestionViewModel: ObservableObject {
 
     // MARK: - Lifecycle
 
-    init(content: String, onSelect: @escaping OnSelect) {
+    public init(content: String, onSelect: @escaping OnSelect) {
         self.content = content
         self.onSelect = onSelect
     }
@@ -38,19 +38,6 @@ extension ProjectQuestionViewModel: Identifiable {
 
     public var id: String {
         self.content
-    }
-
-}
-
-// MARK: - Mock
-
-public extension ProjectQuestionViewModel {
-
-    static var mock: ProjectQuestionViewModel {
-        .init(
-            // swiftlint:disable:next line_length
-            content: "What are the @MainActor attributes in the context of MVVM, and why are they important for View Model classes?"
-        ) { _ in }
     }
 
 }

@@ -451,3 +451,15 @@ public struct ConfigureProjectView: View {
 #Preview {
     ConfigureProjectView(viewModel: .mock)
 }
+
+public extension ConfigureProjectViewModel {
+
+    static var mock: ConfigureProjectViewModel {
+        .init(
+            projectInfo: nil,
+            availableModels: [.mock()],
+            serviceContainer: .mock
+        )
+    }
+
+}

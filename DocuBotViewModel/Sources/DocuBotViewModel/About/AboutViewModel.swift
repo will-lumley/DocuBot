@@ -74,13 +74,3 @@ public extension AboutViewModel {
     }
 
 }
-
-// MARK: - Mock
-
-public extension AboutViewModel {
-
-    static var mock: AboutViewModel {
-        AboutViewModel(serviceContainer: .mock)
-    }
-
-}

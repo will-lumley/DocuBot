@@ -17,7 +17,7 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
-    public enum OpenWindow {
+    public enum OpenWindow: Hashable {
         case modelManager
         case project(ProjectViewModel.OpenWindowPackage)
     }
@@ -29,7 +29,7 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
         case noModel(EmptyListConfiguration)
     }
 
-    public typealias OnDelete = () -> Void
+    public typealias OnDelete = () async -> Void
 
     // MARK: - Properties
 
@@ -40,7 +40,7 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
     @Published public var onDismiss = PassthroughSubject<Void, Never>()
 
     /// This closure will be called if a user confirms they want to delete a project
-    private var deleteProjectAction: OnDelete?
+    var deleteProjectAction: OnDelete?
 
     /// Indicative of if we want to display/hide our Delete Project confirmation dialog
     @Published public var deleteProjectConfirmationDialogPresented = false
@@ -133,7 +133,7 @@ public extension WelcomeViewModel {
         }
     }
 
-    var emailDeveloper: MenuButtonViewModel {
+    var emailDeveloperButton: MenuButtonViewModel {
         .init(text: L10n.Welcome.emailDeveloper) {
             let service = NSSharingService(
                 named: NSSharingService.Name.composeEmail
@@ -143,7 +143,7 @@ public extension WelcomeViewModel {
         }
     }
 
-    var openModelManager: MenuButtonViewModel {
+    var openModelManagerButton: MenuButtonViewModel {
         .init(text: L10n.Welcome.modelManager) {
             self.onOpen.send(.modelManager)
         }
@@ -157,7 +157,7 @@ public extension WelcomeViewModel {
                     title: L10n.Welcome.Delete.Confirmation.deleteButton,
                     role: .destructive,
                     action: {
-                        self.deleteProjectAction?()
+                        await self.deleteProjectAction?()
                     }
                 ),
                 .init(
@@ -185,25 +185,6 @@ public extension WelcomeViewModel {
         ]
     }
 
-    func delete(project: Project) {
-        Task {
-            do {
-                let success = try await persistenceService.delete(project: project)
-                if success == false {
-                    self.alertConfiguration = .init(
-                        title: L10n.Error.Welcome.FailedToDelete.title,
-                        message: L10n.Error.Welcome.FailedToDelete.message
-                    )
-                }
-            } catch {
-                self.alertConfiguration = .init(
-                    title: L10n.Error.Welcome.FailedToDelete.title,
-                    message: error.description
-                )
-            }
-        }
-    }
-
 }
 
 // MARK: - Private
@@ -229,7 +210,7 @@ private extension WelcomeViewModel {
             icon: .arrowDownDoc,
             action: .init(
                 title: L10n.Welcome.modelManager,
-                onSelect: self.openModelManager.selected
+                onSelect: self.openModelManagerButton.selected
             )
         )
     }
@@ -247,7 +228,24 @@ private extension WelcomeViewModel {
     func promptDeletion(project: Project) {
         self.deleteProjectConfirmationDialogPresented = true
         self.deleteProjectAction = {
-            self.delete(project: project)
+            await self.delete(project: project)
+        }
+    }
+
+    func delete(project: Project) async {
+        do {
+            let success = try await persistenceService.delete(project: project)
+            if success == false {
+                self.alertConfiguration = .init(
+                    title: L10n.Error.Welcome.FailedToDelete.title,
+                    message: L10n.Error.Welcome.FailedToDelete.message
+                )
+            }
+        } catch {
+            self.alertConfiguration = .init(
+                title: L10n.Error.Welcome.FailedToDelete.title,
+                message: error.description
+            )
         }
     }
 

@@ -832,17 +832,4 @@ extension ProjectViewModel: SourceCellModelDelegate {
         return preferenceStoreService.displaySimilarityScoring
     }
 
-}
-
-// MARK: - Preview
-
-public extension ProjectViewModel {
-
-    static var mock: ProjectViewModel {
-        .init(
-            project: .mock(),
-            serviceContainer: .mock
-        )
-    }
-
 } // swiftlint:disable:this file_length

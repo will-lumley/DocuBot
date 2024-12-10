@@ -637,17 +637,3 @@ private extension ConfigureProjectViewModel {
     }
 
 }
-
-// MARK: - Preview
-
-public extension ConfigureProjectViewModel {
-
-    static var mock: ConfigureProjectViewModel {
-        .init(
-            projectInfo: nil,
-            availableModels: [.mock()],
-            serviceContainer: .mock
-        )
-    }
-
-}

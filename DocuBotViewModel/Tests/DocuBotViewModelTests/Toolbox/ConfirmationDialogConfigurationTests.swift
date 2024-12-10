@@ -8,6 +8,7 @@
 @testable import DocuBotViewModel
 import Testing
 
+@Suite("ConfirmationDialogConfigurationTests", .tags(.toolbox))
 struct ConfirmationDialogConfigurationTests {
 
     @Test("Initialisation")

@@ -13,7 +13,7 @@ public class SettingsViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
-    public enum HelpType {
+    public enum HelpType: CaseIterable, Sendable {
         case numberOfExampleQuestions
         case displaySimilarityScoring
         case documentPrefixCount

@@ -64,7 +64,7 @@
 
 "EmbeddingModel.Distilbert.title" = "Distilbert";
 "EmbeddingModel.MiniLme.title" = "Mini LME";
-"EmbeddingModel.MultiQaMiniLme.title" = "Multi QA Mini LME";
+"EmbeddingModel.MultiQaMiniLme.title" = "Multi QA Mini LM";
 
 "SimilarityMetric.Cosine.title" = "Cosine";
 "SimilarityMetric.DotProduct.title" = "Dot Product";

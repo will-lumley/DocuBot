@@ -89,3 +89,11 @@ public struct AboutView: View {
 #Preview {
     AboutView(viewModel: .mock)
 }
+
+public extension AboutViewModel {
+
+    static var mock: AboutViewModel {
+        AboutViewModel(serviceContainer: .mock)
+    }
+
+}

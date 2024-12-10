@@ -269,8 +269,8 @@ internal enum L10n {
       internal static let title = L10n.tr("Localizable", "EmbeddingModel.MiniLme.title", fallback: "Mini LME")
     }
     internal enum MultiQaMiniLme {
-      /// Multi QA Mini LME
-      internal static let title = L10n.tr("Localizable", "EmbeddingModel.MultiQaMiniLme.title", fallback: "Multi QA Mini LME")
+      /// Multi QA Mini LM
+      internal static let title = L10n.tr("Localizable", "EmbeddingModel.MultiQaMiniLme.title", fallback: "Multi QA Mini LM")
     }
   }
   internal enum Error {

@@ -10,6 +10,7 @@ import DocuBotService
 @testable import DocuBotViewModel
 import Testing
 
+@Suite("DocuBotViewModelTests", .tags(.toolbox))
 struct DocuBotViewModelTests {
 
     @Test("Initialisation")
