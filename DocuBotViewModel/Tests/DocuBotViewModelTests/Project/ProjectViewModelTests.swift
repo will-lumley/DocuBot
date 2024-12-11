@@ -31,11 +31,45 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Button Initial States")
     func buttonInitialStates() {
-        
+        // GIVEN we have a ProjectViewModel
+        let testSubject = ProjectViewModel(
+            project: .mock(
+                alertStatus: .none
+            ),
+            serviceContainer: serviceContainer
+        )
+
+        // THEN our buttons are all configured correctly
+        #expect(
+            testSubject.sourcesButton == .init(
+                name: "Sources",
+                symbol: .docTextMagnifyingglass,
+                isEnabled: false
+            )
+        )
+        #expect(
+            testSubject.syncProjectButton == .init(
+                name: "Sync",
+                symbol: .arrowTriangle2Circlepath
+            )
+        )
+        #expect(
+            testSubject.projectSettingsButton == .init(
+                name: "Settings",
+                symbol: .gear
+            )
+        )
+
     }
 
     @Test("LLM is Primed")
     func llmIsPrimed() {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = ProjectViewModel(
+            project: .mock(),
+            serviceContainer: serviceContainer
+        )
+
         
     }
 

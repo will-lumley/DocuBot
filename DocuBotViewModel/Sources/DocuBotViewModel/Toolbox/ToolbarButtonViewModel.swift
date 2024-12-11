@@ -10,7 +10,7 @@ import Foundation
 import SFSafeSymbols
 
 public final class ToolbarButtonViewModel: ObservableObject {
-
+ 
     // MARK: - Types
 
     public enum WarningState {
@@ -33,13 +33,15 @@ public final class ToolbarButtonViewModel: ObservableObject {
 
     // MARK: - Lifecycle
 
-    init(
+    public init(
         name: String,
         symbol: SFSymbol,
+        isEnabled: Bool = true,
         onSelect: @escaping OnSelect = { }
     ) {
         self.name = name
         self.symbol = symbol
+        self.isEnabled = isEnabled
         self.onSelect = onSelect
     }
 
@@ -55,12 +57,20 @@ public extension ToolbarButtonViewModel {
 
 }
 
-// MARK: - Preview Mock
+// MARK: - Equatable
 
-public extension ToolbarButtonViewModel {
+extension ToolbarButtonViewModel: Equatable {
 
-    static var mock: ToolbarButtonViewModel {
-        .init(name: "Settings", symbol: .gear) { }
+    public static func == (
+        lhs: ToolbarButtonViewModel,
+        rhs: ToolbarButtonViewModel
+    ) -> Bool {
+        return
+            lhs.name == rhs.name &&
+            lhs.symbol == rhs.symbol &&
+            lhs.hoverSymbol == rhs.hoverSymbol &&
+            lhs.isEnabled == rhs.isEnabled &&
+            lhs.warningState == rhs.warningState
     }
 
 }

@@ -46,7 +46,17 @@ struct ToolbarButton: View {
 
 }
 
+// MARK: - Preview
+
 #Preview {
     ToolbarButton(viewModel: .mock)
         .frame(width: 100, height: 100)
+}
+
+private extension ToolbarButtonViewModel {
+
+    static var mock: ToolbarButtonViewModel {
+        .init(name: "Settings", symbol: .gear) { }
+    }
+
 }
