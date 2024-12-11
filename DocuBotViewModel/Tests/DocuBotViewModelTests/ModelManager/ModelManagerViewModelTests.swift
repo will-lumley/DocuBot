@@ -301,25 +301,22 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
 
     @Test("List State - Empty and Progress")
     func emptyProgressListState() async throws {
+        typealias ListViewState = ModelManagerViewModel.ListViewState
+
         // GIVEN we have a ModelManagerViewModel, and no Models in the DB
         let testSubject = ModelManagerViewModel(
             serviceContainer: serviceContainer
         )
 
-        // THEN the first ListState is .none
-        var listState = try await testSubject.$listState.firstValue()
-        #expect(listState == .none)
+        // Create an iterator to get our values over time
+        var iterator = testSubject.$listState.values.makeAsyncIterator()
 
-        // Because I'm a silly goose and don't know how to get the next fired item
-        // in the publisher chain
-        try await Task.sleep(for: .seconds(1))
+        // THEN the ListState is .none
+        #expect(await iterator.next() == ListViewState.none)
 
         // THEN the second ListState is .empty
-        listState = try await testSubject.$listState.firstValue()
-        guard case .noModels(let configuration) = listState else {
-            Issue.record(
-                "ListState is of type: \(testSubject.listState)"
-            )
+        guard case .noModels(let configuration) = await iterator.next() else {
+            Issue.record("ListState is of type: \(testSubject.listState)")
             return
         }
 
@@ -327,29 +324,24 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
         #expect(configuration.title == "No models imported yet")
         #expect(configuration.subtitle == "DocuBot runs AI models locally on your Mac, ensuring maximum privacy and security. Chat with a variety of AI models, each offering unique expertise based on its training data and knowledge base.\n\nImport a model from your device using the + button, or download a recommended one using the button below.")
         #expect(configuration.icon == .arrowDownDoc)
+        #expect(configuration.action?.title == "Download Default Model")
+        #expect(configuration.action?.secondaryTitle == "~3.74 GB")
 
         // WHEN we select the EmptyConfiguration action
         configuration.action?.onSelect()
 
-        // Because I'm a silly goose and don't know how to get the next
-        // fired item in the publisher chain
-        try await Task.sleep(for: .seconds(2))
-
         // THEN the default model is attempted to be downloaded
-        listState = try await testSubject.$listState.firstValue()
-        guard case .downloading(let progress) = listState else {
-            Issue.record(
-                "ListState is of type: \(testSubject.listState)"
-            )
+        guard case .downloading(let progress) = await iterator.next() else {
+            Issue.record("ListState is of type: \(testSubject.listState)")
             return
         }
-
-        print("Progress: \(progress)")
         #expect(progress.total > 0)
     }
 
     @Test("List State - Models")
     func modelsListState() async throws {
+        typealias ListViewState = ModelManagerViewModel.ListViewState
+
         // Ensure we have a model in the DB
         let model = await self.persistTestModel()
 
@@ -358,14 +350,14 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
             serviceContainer: serviceContainer
         )
 
-        // Because I'm a silly goose and don't know how to get the next
-        // fired item in the publisher chain
-        try await Task.sleep(for: .seconds(1))
+        // Create an iterator to get our values over time
+        var iterator = testSubject.$listState.values.makeAsyncIterator()
 
-        // THEN our ListState reflects that
-        #expect(
-            testSubject.listState == .models([.init(model: model)])
-        )
+        // THEN the ListState is initially .none
+        #expect(await iterator.next() == ListViewState.none)
+
+        // THEN our ListState shows the models
+        #expect(await iterator.next() == .models([.init(model: model)]))
     }
 
 }
