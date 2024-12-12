@@ -27,7 +27,7 @@ class SettingsViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     @Test("Embedding Section")
     func embeddingSection() {
         let testSubject = SettingsViewModel(serviceContainer: serviceContainer)
-        
+
         #expect(testSubject.embeddingSectionTitle == "Embedding")
         #expect(testSubject.embeddingSectionIcon == .docViewfinder)
         #expect(testSubject.documentEmbeddingSectionTitle == "Embedding")

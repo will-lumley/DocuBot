@@ -173,9 +173,9 @@ private extension WelcomeView {
                 }
                 // Yucky dirty hack to compensate for the lack of toolbar
                 .padding(.top, -24)
-            case .noProject(let configuration):
+            case .noProjects(let configuration):
                 EmptyListView(configuration: configuration)
-            case .noModel(let configuration):
+            case .noModels(let configuration):
                 EmptyListView(configuration: configuration)
             }
         }

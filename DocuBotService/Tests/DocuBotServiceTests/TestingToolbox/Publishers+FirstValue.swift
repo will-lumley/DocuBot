@@ -1,13 +1,5 @@
 //
 //  Publishers+FirstValue.swift
-//  DocuBotService
-//
-//  Created by William Lumley on 7/12/2024.
-//
-
-
-//
-//  Publishers+FirstValue.swift
 //  DocuBotViewModel
 //
 //  Created by William Lumley on 5/12/2024.
@@ -17,7 +9,7 @@ import Combine
 
 @MainActor
 extension Publisher {
-    
+
     /// Converts a Publisher to an async sequence and returns the first value emitted.
     func firstValue() async throws -> Output {
         try await withCheckedThrowingContinuation { continuation in
@@ -39,7 +31,7 @@ extension Publisher {
                 )
         }
     }
-    
+
     func firstCompactValue() async throws -> Output {
         try await withCheckedThrowingContinuation { continuation in
             var cancellable: AnyCancellable?

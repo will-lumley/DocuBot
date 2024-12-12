@@ -7,8 +7,8 @@
 
 import AppKit
 import DocuBotModel
-@testable import DocuBotViewModel
 import DocuBotService
+@testable import DocuBotViewModel
 import Foundation
 import Testing
 
@@ -157,7 +157,7 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
         let data = try Data(contentsOf: dataURL)
 
         // THEN we can decode the data and make sure it was carried across
-        let decoded = String(decoding: data, as: UTF8.self)
+        let decoded = String(bytes: data, encoding: .utf8)
         #expect(decoded == "HelloWorld")
     }
 
@@ -284,8 +284,11 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
         )
 
         // THEN our progress title is correct
+        let subtitle = testSubject.progressSubtitle(
+            for: .init(value: 109951162, total: 1099511627776)
+        )
         #expect(
-            testSubject.progressSubtitle(for: .init(value: 109951162, total: 1099511627776)) == "0.10GB of 1024.00GB downloaded"
+            subtitle == "0.10GB of 1024.00GB downloaded"
         )
     }
 
@@ -321,11 +324,13 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
         }
 
         // THEN the empty configuration matches up
+        // swiftlint:disable line_length
         #expect(configuration.title == "No models imported yet")
         #expect(configuration.subtitle == "DocuBot runs AI models locally on your Mac, ensuring maximum privacy and security. Chat with a variety of AI models, each offering unique expertise based on its training data and knowledge base.\n\nImport a model from your device using the + button, or download a recommended one using the button below.")
         #expect(configuration.icon == .arrowDownDoc)
         #expect(configuration.action?.title == "Download Default Model")
         #expect(configuration.action?.secondaryTitle == "~3.74 GB")
+        // swiftlint:enable line_length
 
         // WHEN we select the EmptyConfiguration action
         configuration.action?.onSelect()

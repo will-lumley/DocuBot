@@ -7,10 +7,12 @@
 
 import Combine
 import DocuBotModel
-@testable import DocuBotViewModel
 import DocuBotService
+@testable import DocuBotViewModel
 import Foundation
 import Testing
+
+// swiftlint:disable line_length
 
 class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
@@ -203,7 +205,7 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
             contextMenuConfigurations == [
                 .init(text: "Open") { },
                 .init(text: "Delete") { },
-                .init(text: "Show in Finder") { },
+                .init(text: "Show in Finder") { }
             ]
         )
 
@@ -380,3 +382,5 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     }
 
 }
+
+// swiftlint:enable line_length

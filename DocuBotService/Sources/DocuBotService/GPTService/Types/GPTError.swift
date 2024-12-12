@@ -14,6 +14,21 @@ public enum GPTError: LocalizedError {
     case llmNotInitialised
 }
 
+// MARK: - CaseIterable
+
+extension GPTError: CaseIterable {
+
+    public static var allCases: [GPTError] {
+        [
+            .noModel(modelName: "Test Model"),
+            .failedToCreateLLMDecodingError,
+            .failedToCreateLLM(reason: "Test Reason"),
+            .llmNotInitialised
+        ]
+    }
+
+}
+
 // MARK: - Public
 
 public extension GPTError {

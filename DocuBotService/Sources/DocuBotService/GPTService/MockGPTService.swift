@@ -10,11 +10,11 @@ import DocuBotModel
 import DocuBotToolbox
 import Foundation
 
-class MockGPTService: GPTService {
+public class MockGPTService: GPTService {
 
     // MARK: - Service
 
-    static var key: ServiceKey {
+    public static var key: ServiceKey {
         .gpt
     }
 
@@ -43,7 +43,7 @@ class MockGPTService: GPTService {
 
     // MARK: - GPTService
 
-    func prime(
+    public func prime(
         with model: LLMModel,
         with settings: ProjectSettings
     ) throws(GPTError) {
@@ -59,7 +59,7 @@ class MockGPTService: GPTService {
         }
     }
 
-    func respond(
+    public func respond(
         to query: String,
         with systemMessage: String,
         onUpdate: OutputUpdated?
@@ -67,7 +67,7 @@ class MockGPTService: GPTService {
         return ""
     }
 
-    func stop() {
+    public func stop() {
         // Intentionally left blank.
     }
 
