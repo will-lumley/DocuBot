@@ -26,8 +26,8 @@ internal enum L10n {
       }
     }
     internal enum Persistence {
-      /// Failed to find value.
-      internal static let valueNotFound = L10n.tr("Localizable", "Error.Persistence.valueNotFound", fallback: "Failed to find value.")
+      /// Failed to find the necessary data in the database for this operation.
+      internal static let valueNotFound = L10n.tr("Localizable", "Error.Persistence.valueNotFound", fallback: "Failed to find the necessary data in the database for this operation.")
     }
   }
   internal enum Log {
