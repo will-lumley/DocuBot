@@ -5,7 +5,7 @@
 //  Created by William Lumley on 17/12/2024.
 //
 
-// swiftlint:disable line_length comma
+// swiftlint:disable line_length
 
 public extension Document.Embedding {
 
@@ -3107,4 +3107,5 @@ public extension Document.Embedding {
     }
 }
 
-// swiftlint:enable line_length comma
+// swiftlint:disable:next file_length
+// swiftlint:enable line_length
