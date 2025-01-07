@@ -50,7 +50,7 @@ struct InitialMigrationTests { // swiftlint:disable:this type_body_length
 
             // THEN there is the correct amount of columns
             let columns = try db.columns(in: "projects")
-            #expect(columns.count == 10)
+            #expect(columns.count == 9)
 
             // THEN there is an ID column with the correct attributes
             #expect(columns[0].type == "INTEGER")
@@ -101,26 +101,19 @@ struct InitialMigrationTests { // swiftlint:disable:this type_body_length
             #expect(columns[6].defaultValueSQL == nil)
             #expect(columns[6].isNotNull == true)
 
-            // THEN there is a NeedsFullResync column with the correct attributes
-            #expect(columns[7].type == "BOOLEAN")
+            // THEN there is a CreatedAt column with the correct attributes
+            #expect(columns[7].type == "DATETIME")
             #expect(columns[7].primaryKeyIndex == 0)
-            #expect(columns[7].name == "needsFullResync")
+            #expect(columns[7].name == "createdAt")
             #expect(columns[7].defaultValueSQL == nil)
             #expect(columns[7].isNotNull == true)
 
-            // THEN there is a CreatedAt column with the correct attributes
+            // THEN there is a UpdatedAt column with the correct attributes
             #expect(columns[8].type == "DATETIME")
             #expect(columns[8].primaryKeyIndex == 0)
-            #expect(columns[8].name == "createdAt")
+            #expect(columns[8].name == "updatedAt")
             #expect(columns[8].defaultValueSQL == nil)
             #expect(columns[8].isNotNull == true)
-
-            // THEN there is a UpdatedAt column with the correct attributes
-            #expect(columns[9].type == "DATETIME")
-            #expect(columns[9].primaryKeyIndex == 0)
-            #expect(columns[9].name == "updatedAt")
-            #expect(columns[9].defaultValueSQL == nil)
-            #expect(columns[9].isNotNull == true)
         }
     }
 

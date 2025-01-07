@@ -35,7 +35,6 @@ struct ProjectBridgingTests {
         let documentationChecksum = "abc123"
         let exampleQuestions = ["What is this?", "How does it work?"]
         let alertStatus = Project.AlertStatus.warning(warning: .isDirty)
-        let needsFullResync = true
         let createdAt = Date()
         let updatedAt = Date()
 
@@ -48,7 +47,6 @@ struct ProjectBridgingTests {
             documentationCheckSum: documentationChecksum,
             exampleQuestions: exampleQuestions,
             alertStatus: alertStatus,
-            needsFullResync: needsFullResync,
             createdAt: createdAt,
             updatedAt: updatedAt
         )
@@ -64,7 +62,6 @@ struct ProjectBridgingTests {
         #expect(record.documentationChecksum == project.documentationChecksum)
         #expect(record.exampleQuestions == project.exampleQuestions)
         #expect(record.alertStatus == .init(model: project.alertStatus))
-        #expect(record.needsFullResync == project.needsFullResync)
         #expect(record.createdAt == project.createdAt)
         #expect(record.updatedAt == project.updatedAt)
     }
@@ -79,7 +76,6 @@ struct ProjectBridgingTests {
         let documentationChecksum = "abc123"
         let exampleQuestions = ["What is this?", "How does it work?"]
         let alertStatus = ProjectRecord.AlertStatus.error(error: .firstSync)
-        let needsFullResync = true
         let createdAt = Date()
         let updatedAt = Date()
 
@@ -92,7 +88,6 @@ struct ProjectBridgingTests {
             documentationChecksum: documentationChecksum,
             exampleQuestions: exampleQuestions,
             alertStatus: alertStatus,
-            needsFullResync: needsFullResync,
             createdAt: createdAt,
             updatedAt: updatedAt
         )
@@ -108,7 +103,6 @@ struct ProjectBridgingTests {
         #expect(project.documentationChecksum == record.documentationChecksum)
         #expect(project.exampleQuestions == record.exampleQuestions)
         #expect(project.alertStatus == .init(record: record.alertStatus))
-        #expect(project.needsFullResync == record.needsFullResync)
         #expect(project.createdAt == record.createdAt)
         #expect(project.updatedAt == record.updatedAt)
     }

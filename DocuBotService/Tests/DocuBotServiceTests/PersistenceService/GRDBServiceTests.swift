@@ -219,7 +219,6 @@ struct GRDBServiceTests: @unchecked Sendable { // swiftlint:disable:this type_bo
             documentationCheckSum: "abc123",
             exampleQuestions: ["What is this?", "How does it work?"],
             alertStatus: .none,
-            needsFullResync: false,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -242,7 +241,6 @@ struct GRDBServiceTests: @unchecked Sendable { // swiftlint:disable:this type_bo
             documentationCheckSum: "xyz789",
             exampleQuestions: ["Why is this?", "Who does it work?"],
             alertStatus: .warning(warning: .isDirty),
-            needsFullResync: true,
             createdAt: project.createdAt,
             updatedAt: Date()
         )
