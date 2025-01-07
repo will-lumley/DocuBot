@@ -219,8 +219,8 @@ internal extension DocumentParser {
                 self.onSyncUpdate(current, total)
             }
 
-            // If we're not supposed to do a full resync
-            if project.needsFullResync == false {
+            // If we have an alert, we will definitely do a re-sync
+            if project.alertStatus == .none {
                 // If we have an existing document from this project
                 if let existingDocument = self.existingDocument(with: document.url) {
                     // If this existing document has existing indexing data

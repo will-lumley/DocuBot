@@ -37,7 +37,6 @@ class LlamaModel {
         self.batch = llama_batch_init(Int32(configuration.batchSize * Configuration.historySize * 2), 0, 1)
         self.sampler = llama_sampler_chain_init(llama_sampler_chain_default_params())
         llama_sampler_chain_add(sampler, llama_sampler_init_temp(configuration.temperature))
-        llama_sampler_chain_add(sampler, llama_sampler_init_softmax())
         llama_sampler_chain_add(sampler, llama_sampler_init_dist(1234))
         try checkContextLength(context: context, model: model)
     }
@@ -74,7 +73,7 @@ class LlamaModel {
     func `continue`() throws -> String {
         let newToken =  llama_sampler_sample(sampler, context, batch.n_tokens - 1)
 
-        if llama_token_is_eog(model, newToken) /*|| generatedTokenAccount == n_len*/ {
+        if llama_token_is_eog(model, newToken) || generatedTokenAccount == n_len {
             temporaryInvalidCChars.removeAll()
             ended = true
             return ""
@@ -84,12 +83,10 @@ class LlamaModel {
         temporaryInvalidCChars.append(contentsOf: newTokenCChars)
 
         let newTokenStr: String
-        // swiftlint:disable:next optional_data_string_conversion
         if let validString = String(validating: temporaryInvalidCChars + [0], as: UTF8.self) {
             newTokenStr = validString
             temporaryInvalidCChars.removeAll()
         } else if let suffixIndex = temporaryInvalidCChars.firstIndex(where: { $0 != 0 }),
-                  // swiftlint:disable:next optional_data_string_conversion
                   let validSuffix = String(
                     validating: Array(
                         temporaryInvalidCChars.suffix(from: suffixIndex)
@@ -103,7 +100,12 @@ class LlamaModel {
         }
 
         batch.clear()
-        batch.add(token: newToken, position: generatedTokenAccount, seqIDs: [0], logit: true)
+        batch.add(
+            token: newToken,
+            position: generatedTokenAccount,
+            seqIDs: [0],
+            logit: true
+        )
         generatedTokenAccount += 1
 
         if llama_decode(context, batch) != 0 {
@@ -142,6 +144,7 @@ class LlamaModel {
         tokens.removeAll()
         temporaryInvalidCChars.removeAll()
         llama_kv_cache_clear(context)
+        batch.clear()
     }
 
     deinit {

@@ -19,7 +19,6 @@ public struct ProjectRecord: Record {
     public var documentationChecksum: String?
     public var exampleQuestions: [String]
     public var alertStatus: AlertStatus
-    public var needsFullResync: Bool
     public let createdAt: Date
     public let updatedAt: Date
 

@@ -58,7 +58,9 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
 
         // Insert our Project & Settings into the DB
-        let insertedProject = try await persistenceService.insert(project: project)
+        let insertedProject = try await persistenceService.insert(
+            project: project
+        )
         let insertedSettings = try await persistenceService.insert(settings: settings)
 
         let testSubject = ConfigureProjectViewModel(
@@ -909,7 +911,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(savedProject.documentationChecksum == nil)
         #expect(savedProject.exampleQuestions == [])
         #expect(savedProject.alertStatus == .error(error: .firstSync))
-        #expect(savedProject.needsFullResync == true)
         #expect(
             savedProject.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
         )
