@@ -13,7 +13,12 @@ import Foundation
 import SFSafeSymbols
 import Testing
 
-@Suite("ProjectViewModelTests", .tags(.view), .serialized, .timeLimit(.minutes(1)))
+@Suite(
+    "ProjectViewModelTests",
+    .tags(.view),
+    .serialized,
+    .timeLimit(.minutes(1))
+)
 // swiftlint:disable:next type_body_length
 class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
@@ -645,7 +650,9 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         testSubject.askButtonSelected()
 
         // Setup an iterator that listens to our SourcesButton isEnabled state
-        var isEnabledIterator = testSubject.sourcesButton.$isEnabled.values.makeAsyncIterator()
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled
+            .values
+            .makeAsyncIterator()
 
         // THEN the ViewSources button is at first NOT enabled
         var nextSourcesButtonEnabled = await isEnabledIterator.next()
@@ -676,7 +683,9 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         testSubject.askButtonSelected()
 
         // Setup an iterator that listens to our SourcesButton isEnabled state
-        var isEnabledIterator = testSubject.sourcesButton.$isEnabled.values.makeAsyncIterator()
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled
+            .values
+            .makeAsyncIterator()
 
         // THEN the ViewSources button is at first NOT enabled
         var nextSourcesButtonEnabled = await isEnabledIterator.next()
