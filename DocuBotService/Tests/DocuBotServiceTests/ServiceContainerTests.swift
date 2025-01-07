@@ -8,6 +8,7 @@
 @testable import DocuBotService
 import Testing
 
+@Suite("ServiceContainerTests", .serialized)
 struct ServiceContainerTests {
 
     @Test("Registry Setup")
