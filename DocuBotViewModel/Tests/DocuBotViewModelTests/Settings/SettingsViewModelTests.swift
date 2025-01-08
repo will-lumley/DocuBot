@@ -37,6 +37,7 @@ class SettingsViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func settingNumberOfExampleQuestions() {
         // GIVEN we have our SettingsViewModel
         let testSubject = SettingsViewModel(serviceContainer: serviceContainer)
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we set a NumberOfExampleQuestions
         testSubject.numberOfExampleQuestions = 42
@@ -50,6 +51,7 @@ class SettingsViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func settingDisplaySimilarityScoring() {
         // GIVEN we have our SettingsViewModel
         let testSubject = SettingsViewModel(serviceContainer: serviceContainer)
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we set a DisplaySimilarityScoring
         testSubject.displaySimilarityScoring = true
@@ -63,6 +65,7 @@ class SettingsViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func settingDocumentPrefixCount() {
         // GIVEN we have our SettingsViewModel
         let testSubject = SettingsViewModel(serviceContainer: serviceContainer)
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we set a DocumentPrefixCount
         testSubject.documentPrefixCount = 68
@@ -76,6 +79,7 @@ class SettingsViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func settingSimilarityFloorScore() {
         // GIVEN we have our SettingsViewModel
         let testSubject = SettingsViewModel(serviceContainer: serviceContainer)
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we set a NumberOfExampleQuestions
         testSubject.similarityFloorScore = 65

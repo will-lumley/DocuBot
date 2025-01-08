@@ -264,13 +264,16 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         )
 
         // Create an iterator to get our values over time
-        var iteratorListView = testSubject.$listState.values.makeAsyncIterator()
+        var listStateIterator = testSubject.$listState
+            .values
+            .makeAsyncIterator()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the ListState is .none
-        #expect(await iteratorListView.next() == ListViewState.none)
+        #expect(await listStateIterator.next() == ListViewState.none)
 
         // THEN the second ListState is .noModels
-        guard case .noModels(let configuration) = await iteratorListView.next() else {
+        guard case .noModels(let configuration) = await listStateIterator.next() else {
             Issue.record("ListState is of type: \(testSubject.listState)")
             return
         }
@@ -311,13 +314,16 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         )
 
         // Create an iterator to get our values over time
-        var iteratorListView = testSubject.$listState.values.makeAsyncIterator()
+        var listStateIterator = testSubject.$listState
+            .values
+            .makeAsyncIterator()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the ListState is .none
-        #expect(await iteratorListView.next() == ListViewState.none)
+        #expect(await listStateIterator.next() == ListViewState.none)
 
         // THEN the second ListState is .noProjects
-        guard case .noProjects(let configuration) = await iteratorListView.next() else {
+        guard case .noProjects(let configuration) = await listStateIterator.next() else {
             Issue.record("ListState is of type: \(testSubject.listState)")
             return
         }
@@ -360,13 +366,16 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         )
 
         // Create an iterator to get our values over time
-        var iteratorListView = testSubject.$listState.values.makeAsyncIterator()
+        var listStateIterator = testSubject.$listState
+            .values
+            .makeAsyncIterator()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the ListState is .none
-        #expect(await iteratorListView.next() == ListViewState.none)
+        #expect(await listStateIterator.next() == ListViewState.none)
 
         // THEN the ListState is .projects
-        guard case .listProjects(let cells) = await iteratorListView.next() else {
+        guard case .listProjects(let cells) = await listStateIterator.next() else {
             Issue.record("ListState is of type: \(testSubject.listState)")
             return
         }
