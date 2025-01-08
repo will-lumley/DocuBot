@@ -439,7 +439,12 @@ private extension ConfigureProjectViewModel {
 
     /// Determines whether any changes require a full resync of the project.
     var resyncNeeded: Bool {
-        self.metricChanged || self.embeddingModelChanged || self.directoryChanged || self.formatsChanged
+        // We only consider this if we're modifying an existing project
+        if self.configureType == .creating {
+            return false
+        }
+
+        return self.metricChanged || self.embeddingModelChanged || self.directoryChanged || self.formatsChanged
     }
 
     /// Retrieves the list of enabled documentation formats.
@@ -596,8 +601,9 @@ private extension ConfigureProjectViewModel {
     /// Validates the current form configuration for required fields and constraints.
     ///
     /// - Throws: `FormValidationError` if validation fails.
-    // swiftlint:disable:next cyclomatic_complexity
     func checkFormValidation() throws(FormValidationError) {
+        // swiftlint:disable:previous cyclomatic_complexity
+
         // Check our project directory
         if self.projectDirectory == nil {
             throw .missingDirectory
@@ -657,7 +663,6 @@ private extension ConfigureProjectViewModel {
         }
     }
 
-    
     /// Saves the current configuration and persists changes to the database.
     ///
     /// - Parameter showResyncWarnings: A flag to determine whether resync warnings

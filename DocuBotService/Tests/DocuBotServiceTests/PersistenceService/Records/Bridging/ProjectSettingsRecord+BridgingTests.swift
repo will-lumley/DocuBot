@@ -303,3 +303,17 @@ struct ProjectSettingsBridgingTests {
     }
 
 }
+
+// MARK: - ProjectSettingsRecord.DocumentationFormat.CaseIterable
+
+extension ProjectSettingsRecord.DocumentationFormat: CaseIterable {
+
+    /// Provides a list of all possible `ProjectSettingsRecord.DocumentationFormat` cases.
+    ///
+    /// This is primarily useful for testing and enumerating all error types.
+    public static var allCases: [ProjectSettingsRecord.DocumentationFormat] {
+        [
+            .html, .md, .txt, .rtf
+        ]
+    }
+}
