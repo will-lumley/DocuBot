@@ -12,6 +12,13 @@ import Foundation
 
 public extension ProjectSettingsRecord {
 
+    /// Initializes a `ProjectSettingsRecord` from a `ProjectSettings` model.
+    ///
+    /// This initializer converts a `ProjectSettings` instance into its corresponding `ProjectSettingsRecord`
+    /// representation for database storage. It maps all relevant properties, including supported formats, language,
+    /// embedding model, similarity metric, and other metadata.
+    ///
+    /// - Parameter model: The `ProjectSettings` model to convert.
     init(model: ProjectSettings) {
         let language = ProjectSettingsRecord.Language(model: model.language)
         let formats = model.supportedFormats.map {
@@ -51,6 +58,12 @@ public extension ProjectSettingsRecord {
 
 public extension ProjectSettingsRecord.DocumentationFormat {
 
+    /// Initializes a `ProjectSettingsRecord.DocumentationFormat` from
+    /// a `ProjectSettings.DocumentationFormat`.
+    ///
+    /// This initializer converts the documentation format from the model into a database-compatible representation.
+    ///
+    /// - Parameter model: The `ProjectSettings.DocumentationFormat` to convert.
     init(model: ProjectSettings.DocumentationFormat) {
         switch model {
         case .html:
@@ -70,6 +83,9 @@ public extension ProjectSettingsRecord.DocumentationFormat {
 
 public extension ProjectSettingsRecord.Language {
 
+    /// Initializes a `ProjectSettingsRecord.Language` from a `ProjectSettings.Language`.
+    ///
+    /// - Parameter model: The `ProjectSettings.Language` to convert.
     init(model: ProjectSettings.Language) {
         switch model {
         case .english: self = .english
@@ -80,6 +96,10 @@ public extension ProjectSettingsRecord.Language {
 
 public extension ProjectSettingsRecord.EmbeddingModel {
 
+    /// Initializes a `ProjectSettingsRecord.EmbeddingModel`
+    /// from a `ProjectSettings.EmbeddingModel`.
+    ///
+    /// - Parameter model: The `ProjectSettings.EmbeddingModel` to convert.
     init(model: ProjectSettings.EmbeddingModel) {
         switch model {
         case .distilbert: self = .distilbert
@@ -92,6 +112,10 @@ public extension ProjectSettingsRecord.EmbeddingModel {
 
 public extension ProjectSettingsRecord.SimilarityMetric {
 
+    /// Initializes a `ProjectSettingsRecord.SimilarityMetric`
+    /// from a `ProjectSettings.SimilarityMetric`.
+    ///
+    /// - Parameter model: The `ProjectSettings.SimilarityMetric` to convert.
     init(model: ProjectSettings.SimilarityMetric) {
         switch model {
         case .cosine: self = .cosine
@@ -106,6 +130,14 @@ public extension ProjectSettingsRecord.SimilarityMetric {
 
 public extension ProjectSettings {
 
+    /// Initializes a `ProjectSettings` model from a `ProjectSettingsRecord`.
+    ///
+    /// This initializer converts a `ProjectSettingsRecord` from the database into its
+    /// corresponding `ProjectSettings` model,
+    /// including all properties such as supported formats, language, embedding model,
+    /// similarity metric, and other metadata.
+    ///
+    /// - Parameter record: The `ProjectSettingsRecord` to convert.
     init(record: ProjectSettingsRecord) {
         let formats = record.supportedFormats.map(ProjectSettings.DocumentationFormat.init)
         let language = ProjectSettings.Language(record: record.language)
@@ -144,6 +176,10 @@ public extension ProjectSettings {
 
 public extension ProjectSettings.DocumentationFormat {
 
+    /// Initializes a `ProjectSettings.DocumentationFormat`
+    /// from a `ProjectSettingsRecord.DocumentationFormat`.
+    ///
+    /// - Parameter record: The `ProjectSettingsRecord.DocumentationFormat` to convert.
     init(record: ProjectSettingsRecord.DocumentationFormat) {
         switch record {
         case .html:
@@ -163,6 +199,9 @@ public extension ProjectSettings.DocumentationFormat {
 
 public extension ProjectSettings.Language {
 
+    /// Initializes a `ProjectSettings.Language` from a `ProjectSettingsRecord.Language`.
+    ///
+    /// - Parameter record: The `ProjectSettingsRecord.Language` to convert.
     init(record: ProjectSettingsRecord.Language) {
         switch record {
         case .english: self = .english
@@ -173,6 +212,10 @@ public extension ProjectSettings.Language {
 
 public extension ProjectSettings.EmbeddingModel {
 
+    /// Initializes a `ProjectSettings.EmbeddingModel`
+    /// from a `ProjectSettingsRecord.EmbeddingModel`.
+    ///
+    /// - Parameter record: The `ProjectSettingsRecord.EmbeddingModel` to convert.
     init(record: ProjectSettingsRecord.EmbeddingModel) {
         switch record {
         case .distilbert: self = .distilbert
@@ -185,6 +228,10 @@ public extension ProjectSettings.EmbeddingModel {
 
 public extension ProjectSettings.SimilarityMetric {
 
+    /// Initializes a `ProjectSettings.SimilarityMetric`
+    /// from a `ProjectSettingsRecord.SimilarityMetric`.
+    ///
+    /// - Parameter record: The `ProjectSettingsRecord.SimilarityMetric` to convert.
     init(record: ProjectSettingsRecord.SimilarityMetric) {
         switch record {
         case .cosine: self = .cosine

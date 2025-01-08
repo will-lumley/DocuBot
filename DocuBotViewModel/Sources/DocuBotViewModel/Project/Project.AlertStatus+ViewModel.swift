@@ -12,6 +12,9 @@ import SFSafeSymbols
 
 public extension Project.AlertStatus {
 
+    /// A human-readable title describing the alert status of a project.
+    ///
+    /// - Returns: A localized string representing the alert status title, or `nil` if no status is present.
     var title: String? {
         switch self {
         case .warning(let warning):

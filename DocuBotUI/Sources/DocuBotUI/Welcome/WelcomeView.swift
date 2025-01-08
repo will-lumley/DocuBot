@@ -199,3 +199,11 @@ private extension WelcomeView {
 #Preview {
     WelcomeView(viewModel: .mock)
 }
+
+private extension WelcomeViewModel {
+
+    static var mock: WelcomeViewModel {
+        .init(serviceContainer: .mock)
+    }
+
+}

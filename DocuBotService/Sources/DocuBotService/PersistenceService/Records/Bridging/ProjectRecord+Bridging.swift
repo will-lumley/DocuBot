@@ -12,6 +12,12 @@ import Foundation
 
 public extension ProjectRecord {
 
+    /// Initializes a `ProjectRecord` from a `Project` model.
+    ///
+    /// This initializer converts a `Project` instance into its corresponding `ProjectRecord` representation
+    /// for database storage. It maps all relevant properties, including path, name, alert status, and metadata.
+    ///
+    /// - Parameter model: The `Project` model to convert.
     init(model: Project) {
         self.init(
             id: model.id,
@@ -30,6 +36,11 @@ public extension ProjectRecord {
 
 extension ProjectRecord.AlertStatus {
 
+    /// Initializes a `ProjectRecord.AlertStatus` from a `Project.AlertStatus`.
+    ///
+    /// This initializer converts a `Project.AlertStatus` into its corresponding database-compatible representation.
+    ///
+    /// - Parameter model: The `Project.AlertStatus` to convert.
     init(model: Project.AlertStatus) {
         switch model {
         case .none:
@@ -45,6 +56,13 @@ extension ProjectRecord.AlertStatus {
 
 extension ProjectRecord.AlertStatus.WarningState {
 
+    /// Initializes a `ProjectRecord.AlertStatus.WarningState` from
+    /// a `Project.AlertStatus.WarningState`.
+    ///
+    /// This initializer maps warning states, such as directory changes or model
+    /// updates, into the database-compatible representation.
+    ///
+    /// - Parameter model: The `Project.AlertStatus.WarningState` to convert.
     init(model: Project.AlertStatus.WarningState) {
         switch model {
         case .directoryChanged:
@@ -64,6 +82,10 @@ extension ProjectRecord.AlertStatus.WarningState {
 
 extension ProjectRecord.AlertStatus.ErrorState {
 
+    /// Initializes a `ProjectRecord.AlertStatus.ErrorState` from
+    /// a `Project.AlertStatus.ErrorState`.
+    ///
+    /// - Parameter model: The `Project.AlertStatus.ErrorState` to convert.
     init(model: Project.AlertStatus.ErrorState) {
         switch model {
         case .firstSync:
@@ -77,6 +99,12 @@ extension ProjectRecord.AlertStatus.ErrorState {
 
 public extension Project {
 
+    /// Initializes a `Project` model from a `ProjectRecord`.
+    ///
+    /// This initializer converts a `ProjectRecord` instance into its corresponding `Project` model
+    /// for use in application logic. It maps all relevant properties, including path, name, alert status, and metadata.
+    ///
+    /// - Parameter record: The `ProjectRecord` to convert.
     init(record: ProjectRecord) {
         self.init(
             id: record.id,
@@ -95,6 +123,11 @@ public extension Project {
 
 extension Project.AlertStatus {
 
+    /// Initializes a `Project.AlertStatus` from a `ProjectRecord.AlertStatus`.
+    ///
+    /// This initializer converts a database representation of alert status into an application model.
+    ///
+    /// - Parameter record: The `ProjectRecord.AlertStatus` to convert.
     init(record: ProjectRecord.AlertStatus) {
         switch record {
         case .none:
@@ -110,6 +143,12 @@ extension Project.AlertStatus {
 
 extension Project.AlertStatus.WarningState {
 
+    /// Initializes a `Project.AlertStatus.WarningState` from
+    ///  a `ProjectRecord.AlertStatus.WarningState`.
+    ///
+    /// This initializer maps warning states from the database representation to the application model.
+    ///
+    /// - Parameter record: The `ProjectRecord.AlertStatus.WarningState` to convert.
     init(record: ProjectRecord.AlertStatus.WarningState) {
         switch record {
         case .directoryChanged:
@@ -129,6 +168,12 @@ extension Project.AlertStatus.WarningState {
 
 extension Project.AlertStatus.ErrorState {
 
+    /// Initializes a `Project.AlertStatus.ErrorState` from
+    /// a `ProjectRecord.AlertStatus.ErrorState`.
+    ///
+    /// This initializer maps error states from the database representation to the application model.
+    ///
+    /// - Parameter record: The `ProjectRecord.AlertStatus.ErrorState` to convert.
     init(record: ProjectRecord.AlertStatus.ErrorState) {
         switch record {
         case .firstSync:

@@ -161,4 +161,9 @@ struct ProjectSettingsTests {
         #expect(languageID == language)
     }
 
+    @Test("Documentation Format - All Cases")
+    func documentationFormatAllCases() {
+        // GIVEN we have
+    }
+
 }

@@ -9,7 +9,7 @@ import Foundation
 
 /// An extension on `Date` to provide a computed property for seconds elapsed since 1970.
 public extension Date {
-    
+
     /// The number of whole seconds elapsed since January 1, 1970.
     ///
     /// This property converts the time interval since 1970, in seconds, to an integer value.

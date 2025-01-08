@@ -9,6 +9,18 @@
 
 public extension Document.Embedding {
 
+    /// Provides a mock array of `Document.Embedding` objects for testing purposes.
+    ///
+    /// This property generates a predefined set of `Document.Embedding` instances,
+    /// useful for unit testing or prototyping scenarios that involve embedding data.
+    ///
+    /// - Returns: An array of `Document.Embedding` objects populated with sample data.
+    ///
+    /// # Example
+    /// ```swift
+    /// let mockEmbeddings = Document.Embedding.mock
+    /// print(mockEmbeddings.first?.chunk) // Outputs a sample text chunk
+    /// ```
     static var mock: [Document.Embedding] {
         [
             .init(

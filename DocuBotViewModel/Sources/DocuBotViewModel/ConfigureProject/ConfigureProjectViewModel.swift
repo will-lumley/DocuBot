@@ -11,10 +11,16 @@ import DocuBotService
 import DocuBotToolbox
 import Foundation
 
+/// A `ViewModel` responsible for managing the configuration of a DocuBot project.
+///
+/// This ViewModel handles project settings, including directory, name, language,
+/// format configurations, and advanced LLM options. It supports both creating new
+/// projects and editing existing ones.
 public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @unchecked Sendable {
 
     // MARK: - Types
 
+    /// Represents the various types of help information available in the configuration UI.
     public enum HelpType: CaseIterable, Sendable {
         case embeddingModel
         case similarityMetric
@@ -30,6 +36,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case strictMode
     }
 
+    /// Errors related to form validation during project configuration.
     public enum FormValidationError: LocalizedError {
         case missingDirectory
         case missingDirectoryData
@@ -45,25 +52,33 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case missingSystemPrompt
     }
 
+    /// Represents the type of window to be opened.
     public enum OpenWindow: Hashable {
         case project(ProjectViewModel.OpenWindowPackage)
     }
 
+    /// Specifies whether the project is being created or edited.
     public enum ConfigureType {
         case creating
         case editing
     }
 
+    /// Represents a configuration for document formats.
     public struct FormatConfiguration: Identifiable, Hashable {
+        /// The order in which this format appears.
         public let order: Int
+        /// The specific format being configured.
         public let format: Format
+        /// Indicates whether this format is enabled.
         public let isEnabled: Bool
 
+        /// The unique identifier for this format configuration.
         public var id: Int {
             self.order
         }
     }
 
+    /// Holds information about the project, settings, and selected model.
     public struct ProjectInfo {
         public let project: Project
         public let settings: ProjectSettings
@@ -75,22 +90,40 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     // MARK: - Properties
 
+    /// The unique identifier for this ViewModel.
     public var id = UUID()
 
+    /// Information about the project, if it is being edited.
     public let projectInfo: ProjectInfo?
 
+    /// The directory for the project.
     @Published public var projectDirectory: URL?
+
+    /// The text representation of the project directory.
     @Published public var projectDirectoryText = ""
+
+    /// The name of the project.
     @Published public var projectName = ""
+
+    /// The selected language for the project.
     @Published public var selectedLanguage: ProjectSettings.Language
+
+    /// The selected LLM model for the project.
     @Published public var selectedModel: LLMModel
 
+    /// The list of document format configurations.
     @Published public var formatConfigurations: [FormatConfiguration]
 
+    /// The system prompt for the LLM.
     @Published public var systemPrompt: String
+
+    /// The embedding model for the project.
     @Published public var embeddingModel: ProjectSettings.EmbeddingModel
+
+    /// The similarity metric for document matching.
     @Published public var similarityMetric: ProjectSettings.SimilarityMetric
 
+    /// Advanced configuration options for LLMs.
     @Published public var seed: Int
     @Published public var topK: Int
     @Published public var topP: Double
@@ -101,38 +134,45 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var maxTokenCount: Int
     @Published public var strictMode: Bool
 
-    /// This will be called when the user saves their settings
+    /// A closure to be called when the settings are saved.
     var onSave: OnSave?
 
-    /// The encrypted data that makes up the secure directory bookmark
+    /// The encrypted data representing the secure directory bookmark.
     public var projectDirectoryBookmarkData: Data?
 
-    /// All the embedding models the user can choose from
+    /// The list of all available LLM models.
     public var availableModels = [LLMModel]()
 
-    /// All the languages available for the user to choose from
+    /// The list of all available languages.
     public let availableLanguages = ProjectSettings.Language.allCases
 
-    /// All the embedding models the user can choose from
+    /// The list of all available embedding models.
     public let availableEmbeddingModels = ProjectSettings.EmbeddingModel.allCases
 
-    /// All the similarity metric types the user can choose from
+    /// The list of all available similarity metrics.
     public let availableSimilarityMetrics = ProjectSettings.SimilarityMetric.allCases
 
-    /// This will be called to open a new window, along with the info that dictates which window
+    /// Used to trigger the opening of a new window.
     @Published public var onOpen = CurrentValueSubject<OpenWindow?, Never>(nil)
 
-    /// This will be called when this ViewModel wants the UI layer to close the current window
+    /// Used to signal the dismissal of the current window.
     @Published public var onDismiss = PassthroughSubject<Void, Never>()
 
-    /// This is used to create or close an `Alert`
+    /// Used to manage and display alert configurations.
     @Published public var alertConfiguration: AsyncAlertConfiguration?
 
-    /// This is used to display help information to our user
+    /// Used to display help information to the user.
     @Published public var helpConfiguration: HelpConfiguration?
 
-    // MARK: - Lifecycle
+    // MARK: - Initializer
 
+    /// Initializes a new instance of `ConfigureProjectViewModel`.
+    ///
+    /// - Parameters:
+    ///   - projectInfo: Optional project information for editing an existing project.
+    ///   - availableModels: A list of available LLM models for selection.
+    ///   - serviceContainer: The container providing necessary services.
+    ///   - onSave: A closure to be called when the settings are saved.
     public init(
         projectInfo: ProjectInfo? = nil,
         availableModels: [LLMModel],
@@ -226,10 +266,11 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         super.init(serviceContainer: serviceContainer)
     }
 
+    /// Configures data bindings for the ViewModel.
     override public func configureBindings() {
         super.configureBindings()
 
-        // When the directory is updated, update the name
+        // Bind the project directory updates to the directory text.
         self.$projectDirectory
             .compactMap { $0?.path() }
             .assign(to: &$projectDirectoryText)
@@ -241,21 +282,34 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
 public extension ConfigureProjectViewModel {
 
-   var formTitle: String {
-       switch self.configureType {
-       case .creating:
-           return L10n.ConfigureProject.Creating.formTitle
-       case .editing:
-           return L10n.ConfigureProject.Editing.formTitle
-       }
+    /// The title of the configuration form.
+    ///
+    /// - Returns: A localized string based on whether the user is creating or editing a project.
+    var formTitle: String {
+        switch self.configureType {
+        case .creating:
+            return L10n.ConfigureProject.Creating.formTitle
+        case .editing:
+            return L10n.ConfigureProject.Editing.formTitle
+        }
     }
 
-    // MARK: Other
-
+    /// The title for the "Reset Defaults" button in the advanced settings.
+    ///
+    /// - Returns: A localized string indicating the button's purpose.
     var resetDefaultButtonTitle: String {
         L10n.ConfigureProject.AdvancedSection.resetDefaults
     }
 
+    /// Updates the ViewModel with the selected directory.
+    ///
+    /// - Parameter directory: The selected directory URL.
+    ///
+    /// - Discussion:
+    /// This method validates the provided directory, creates a security-scoped bookmark, and updates
+    /// the `projectDirectory`, `projectDirectoryBookmarkData`, and `projectName` properties.
+    ///
+    /// If an error occurs, an alert is configured with details about the failure.
     func directorySelected(_ directory: URL?) {
         do {
             guard let directory else {
@@ -283,6 +337,9 @@ public extension ConfigureProjectViewModel {
         }
     }
 
+    /// The title for the save button in the configuration form.
+    ///
+    /// - Returns: A localized string based on whether the user is creating or editing a project.
     var saveButtonTitle: String {
         switch self.configureType {
         case .creating:
@@ -292,10 +349,21 @@ public extension ConfigureProjectViewModel {
         }
     }
 
+    /// Handles the save button selection.
+    ///
+    /// - Discussion:
+    /// Triggers the `save()` method asynchronously to persist the project settings.
     func saveButtonSelected() async {
         await self.save()
     }
 
+    /// Displays help information for a specific type of configuration setting.
+    ///
+    /// - Parameter type: The `HelpType` representing the help topic.
+    ///
+    /// - Discussion:
+    /// Configures a `HelpConfiguration` to display help content. Once dismissed, the configuration
+    /// is cleared.
     func helpButtonSelected(with type: HelpType) {
         self.helpConfiguration = .init(type: type) {
             self.helpConfiguration = nil
@@ -308,6 +376,9 @@ public extension ConfigureProjectViewModel {
 
 private extension ConfigureProjectViewModel {
 
+    /// Provides a message explaining why a full resync is required, if applicable.
+    ///
+    /// - Returns: A localized string describing the reason for resync or `nil` if no resync is needed.
     var resyncMessage: String? {
         if self.metricChanged {
             return L10n.ConfigureProject.Resync.Metric.message
@@ -322,6 +393,9 @@ private extension ConfigureProjectViewModel {
         return nil
     }
 
+    /// Determines the appropriate alert status to be set after changes.
+    ///
+    /// - Returns: An updated `Project.AlertStatus` or `nil` if no changes require an alert.
     var newAlertStatus: Project.AlertStatus? {
         // If we've changed metrics
         if self.metricChanged {
@@ -343,48 +417,47 @@ private extension ConfigureProjectViewModel {
         return nil
     }
 
+    /// Checks whether the similarity metric has been modified.
     var metricChanged: Bool {
-        if let projectInfo {
-            return projectInfo.settings.similarityMetric != self.similarityMetric
-        }
-        return false
+        self.projectInfo?.settings.similarityMetric != self.similarityMetric
     }
 
+    /// Checks whether the embedding model has been modified.
     var embeddingModelChanged: Bool {
-        if let projectInfo {
-            return projectInfo.settings.embeddingModel != self.embeddingModel
-        }
-        return false
+        self.projectInfo?.settings.embeddingModel != self.embeddingModel
     }
 
+    /// Checks whether the supported documentation formats have been modified.
     var formatsChanged: Bool {
-        if let projectInfo {
-            return projectInfo.settings.supportedFormats != self.supportedFormats
-        }
-        return false
+        self.projectInfo?.settings.supportedFormats != self.supportedFormats
     }
 
+    /// Checks whether the project directory has been modified.
     var directoryChanged: Bool {
-        if let projectInfo {
-            return self.projectDirectory?.path() != projectInfo.project.path
-        }
-        return false
+        self.projectDirectory?.path() != self.projectInfo?.project.path
     }
 
+    /// Determines whether any changes require a full resync of the project.
     var resyncNeeded: Bool {
         self.metricChanged || self.embeddingModelChanged || self.directoryChanged || self.formatsChanged
     }
 
+    /// Retrieves the list of enabled documentation formats.
     var supportedFormats: [ProjectSettings.DocumentationFormat] {
         self.formatConfigurations
             .filter { $0.isEnabled }
             .map(\.format)
     }
 
+    /// Determines the type of configuration being performed (creation or editing).
     var configureType: ConfigureType {
         self.projectInfo != nil ? .editing : .creating
     }
 
+    /// Finalizes the `Project` object based on the current configuration settings.
+    ///
+    /// - Throws: `FormValidationError` if any required fields are missing.
+    /// - Returns: A fully constructed `Project` object.
     func finalisedProject() throws -> Project {
         guard let directory = self.projectDirectory else {
             throw FormValidationError.missingDirectory
@@ -427,6 +500,11 @@ private extension ConfigureProjectViewModel {
         }
     }
 
+    /// Finalizes the `ProjectSettings` object based on the current configuration settings.
+    ///
+    /// - Parameter projectID: The unique identifier of the associated project.
+    /// - Throws: `LLMModel.ModelError` if the selected model lacks an ID.
+    /// - Returns: A fully constructed `ProjectSettings` object.
     func finalisedSettings(for projectID: Int64) throws -> ProjectSettings {
         // We're modifying an existing project
         if let projectInfo = self.projectInfo {
@@ -481,6 +559,12 @@ private extension ConfigureProjectViewModel {
         }
     }
 
+    /// Persists a `Project` to the database by either creating a new entry or updating an existing one.
+    ///
+    /// - Parameter project: The `Project` object to be persisted.
+    /// - Returns: The persisted `Project` object, including any updated information such as
+    /// database identifiers.
+    /// - Throws: An error if the persistence operation fails.
     func persist(project: Project) async throws -> Project {
         switch self.configureType {
         case .creating:
@@ -492,6 +576,12 @@ private extension ConfigureProjectViewModel {
         }
     }
 
+    /// Persists `ProjectSettings` to the database by either creating a new entry or updating an existing one.
+    ///
+    /// - Parameter settings: The `ProjectSettings` object to be persisted.
+    /// - Returns: The persisted `ProjectSettings` object, including any updated information
+    /// such as database identifiers.
+    /// - Throws: An error if the persistence operation fails.
     func persist(settings: ProjectSettings) async throws -> ProjectSettings {
         switch self.configureType {
         case .creating:
@@ -503,6 +593,9 @@ private extension ConfigureProjectViewModel {
         }
     }
 
+    /// Validates the current form configuration for required fields and constraints.
+    ///
+    /// - Throws: `FormValidationError` if validation fails.
     // swiftlint:disable:next cyclomatic_complexity
     func checkFormValidation() throws(FormValidationError) {
         // Check our project directory
@@ -564,6 +657,11 @@ private extension ConfigureProjectViewModel {
         }
     }
 
+    
+    /// Saves the current configuration and persists changes to the database.
+    ///
+    /// - Parameter showResyncWarnings: A flag to determine whether resync warnings
+    /// should be displayed.
     func save(showResyncWarnings: Bool = true) async {
         do {
             // Ensure we have a valid form

@@ -8,20 +8,36 @@
 import DocuBotModel
 import Foundation
 
+/// A key enumeration representing various services used in the application.
+///
+/// The `ServiceKey` enum defines identifiers for different services, allowing for a consistent and type-safe
+/// way to reference and interact with them.
 public enum ServiceKey: String {
 
-    /// Provides an interface for storing and retrieving feature flags
+    /// A service key for feature flag management.
+    ///
+    /// This service provides an interface for storing and retrieving feature flags, enabling dynamic feature toggles.
     case flag
 
-    /// Persists and retrieves data
+    /// A service key for data persistence.
+    ///
+    /// This service handles the storage and retrieval of data, ensuring it is securely saved and accessible.
     case persistenceStore
 
-    /// Provides an interface for storing and retrieving preferences
+    /// A service key for managing user preferences.
+    ///
+    /// This service provides an interface for storing and retrieving user-specific settings and preferences.
     case preferenceStore
 
-    /// Logs debugging & diagnostic data
+    /// A service key for logging.
+    ///
+    /// This service logs debugging and diagnostic data to aid in application monitoring and troubleshooting.
     case log
 
-    /// Provides a text-based service for the user to talk to and receive input from
+    /// A service key for a conversational AI interface.
+    ///
+    /// This service provides a text-based interface for the user to interact with and receive input
+    ///  from GPT-based models.
     case gpt
+
 }

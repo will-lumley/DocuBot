@@ -9,7 +9,7 @@ import Foundation
 
 /// An extension on `String` to provide utility methods for string manipulation.
 public extension String {
-    
+
     /// Removes all occurrences of a specified substring from the string.
     ///
     /// - Parameter value: The substring to remove.
@@ -60,7 +60,8 @@ public extension String {
     /// If the string's length is less than or equal to the specified length, the original string is returned.
     ///
     /// - Parameter length: The maximum number of characters to retain.
-    /// - Returns: A new string trimmed to the specified length, or the original string if its length is shorter than or equal to the specified length.
+    /// - Returns: A new string trimmed to the specified length, or the original string if its length
+    /// is shorter than or equal to the specified length.
     func trim(by length: Int) -> String {
         if self.count > length {
             let index = self.index(self.startIndex, offsetBy: length)

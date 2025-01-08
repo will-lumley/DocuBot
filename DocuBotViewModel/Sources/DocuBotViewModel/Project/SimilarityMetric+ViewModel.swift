@@ -9,6 +9,9 @@ import DocuBotModel
 
 public extension ProjectSettings.SimilarityMetric {
 
+    /// A human-readable title for the similarity metric.
+    ///
+    /// - Returns: A localized string representing the title of the similarity metric.
     var title: String {
         switch self {
         case .cosine:

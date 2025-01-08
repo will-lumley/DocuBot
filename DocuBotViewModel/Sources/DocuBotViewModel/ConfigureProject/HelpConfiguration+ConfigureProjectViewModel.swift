@@ -9,6 +9,24 @@ extension HelpConfiguration {
 
     private typealias Strings = L10n.ConfigureProject.Help
 
+    /// Initializes a `HelpConfiguration` for a specific configuration help type.
+    ///
+    /// - Parameters:
+    ///   - type: The specific help type associated with the configuration item.
+    ///   - onDismiss: A closure that is invoked when the help dialog is dismissed.
+    ///
+    /// - Discussion:
+    /// This initializer maps the given `HelpType` to a corresponding help title and content, using localized strings.
+    /// It provides contextual help for various settings such as embedding models, similarity metrics, and
+    /// tuning parameters.
+    ///
+    /// - Example:
+    /// ```swift
+    /// let help = HelpConfiguration(
+    ///     type: .embeddingModel,
+    ///     onDismiss: { print("Help dismissed") }
+    /// )
+    /// ```
     // swiftlint:disable:next cyclomatic_complexity
     init(
         type: ConfigureProjectViewModel.HelpType,
