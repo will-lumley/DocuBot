@@ -74,6 +74,8 @@ public extension ProjectSettingsRecord.DocumentationFormat {
             self = .rtf
         case .txt:
             self = .txt
+        case .pdf:
+            self = .pdf
         case .other(let string):
             self = .other(string)
         }
@@ -190,6 +192,8 @@ public extension ProjectSettings.DocumentationFormat {
             self = .rtf
         case .txt:
             self = .txt
+        case .pdf:
+            self = .pdf
         case .other(let string):
             self = .other(string)
         }

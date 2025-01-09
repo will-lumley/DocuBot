@@ -62,6 +62,9 @@ public struct ProjectSettingsRecord: Record {
         /// Markdown (.md).
         case md
 
+        // Portable document file (.pdf).
+        case pdf
+
         /// Any other format specified by the user.
         case other(String)
     }
