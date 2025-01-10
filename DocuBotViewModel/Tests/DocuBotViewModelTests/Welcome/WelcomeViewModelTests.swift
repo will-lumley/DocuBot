@@ -14,6 +14,10 @@ import Testing
 
 // swiftlint:disable line_length
 
+@Suite(
+    "WelcomeViewModelTests",
+    .serialized
+)
 class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     // MARK: - Properties
@@ -61,6 +65,7 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a WelcomeViewModel
         let testSubject = WelcomeViewModel(serviceContainer: serviceContainer)
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the NewProject button is correctly set
         #expect(testSubject.newProjectButton.text == "Load New Project")
