@@ -87,6 +87,8 @@ internal enum L10n {
         internal static let md = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.md", fallback: ".md")
         /// Other
         internal static let other = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.other", fallback: "Other")
+        /// .pdf
+        internal static let pdf = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.pdf", fallback: ".pdf")
         /// .rtf
         internal static let rtf = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.rtf", fallback: ".rtf")
         /// .txt

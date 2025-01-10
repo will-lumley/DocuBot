@@ -10,4 +10,7 @@
 "Error.Model.missingID" = "Failed to perform the operation due to missing model ID.";
 "Error.Model.binaryMissing" = "The model binary is missing or corrupted. Please reload the model from the Model Manager.";
 
+"Error.ContentExtraction.failedToReadFile" = "Failed to find the file on your computer.";
+"Error.ContentExtraction.failedToReadContent" = "Failed to read the file's contents.";
+
 "Document.LlmReference.template" = "SOURCES: %@\n%@";
