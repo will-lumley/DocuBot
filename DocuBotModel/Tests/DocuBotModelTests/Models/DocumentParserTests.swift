@@ -60,6 +60,11 @@ struct DocumentParserTests {
     mutating func createAndParseWithNoBookmarkData() async {
         // GIVEN that our Project has no valid data
         self.mockProject.urlBookmarkData = Data()
+        self.parser = DocumentParser(
+            project: self.mockProject,
+            settings: self.mockSettings,
+            onSyncUpdate: { _, _ in }
+        )
 
         // WHEN we try and parse
         // THEN we get the correct error thrown
@@ -71,11 +76,17 @@ struct DocumentParserTests {
     @Test("Create and Parse with Stale Bookmark")
     mutating func createAndParseWithStaleBookmarkData() async {
         // GIVEN that our Project has invalid data
+        self.mockProject.path = "/path/to/invalid/bookmark"
         self.mockProject.urlBookmarkData = Data(repeating: 1, count: 10)
+        self.parser = DocumentParser(
+            project: self.mockProject,
+            settings: self.mockSettings,
+            onSyncUpdate: { _, _ in }
+        )
 
         // WHEN we try and parse
         // THEN we get the correct error thrown
-        await #expect(throws: DocumentParser.DocumentError.noBookmarkData) {
+        await #expect(throws: DocumentParser.DocumentError.bookmarkIsStale) {
             try await self.parser.createAndParse()
         }
     }
@@ -146,18 +157,17 @@ struct DocumentParserTests {
                 updatedAt: pdf.updatedAt
             )
         )
-
-        for document in syncResult.documents {
-            print("Document: \(document)")
-            print("\n\n")
-        }
-        print("")
     }
 
     @Test("Check Project Is Dirty with No Bookmark Data")
     mutating func checkProjectIsDirtyWithNoBookmarkData() async {
         // GIVEN that our Project has no data
         self.mockProject.urlBookmarkData = Data()
+        self.parser = DocumentParser(
+            project: self.mockProject,
+            settings: self.mockSettings,
+            onSyncUpdate: { _, _ in }
+        )
 
         // WHEN we try and check if the project is dirty
         // THEN we get the correct error thrown
@@ -170,10 +180,15 @@ struct DocumentParserTests {
     mutating func checkProjectIsDirtyWithStaleBookmark() async {
         // GIVEN that our Project has invalid data
         self.mockProject.urlBookmarkData = Data(repeating: 1, count: 10)
+        self.parser = DocumentParser(
+            project: self.mockProject,
+            settings: self.mockSettings,
+            onSyncUpdate: { _, _ in }
+        )
 
         // WHEN we try and check if the project is dirty
         // THEN we get the correct error thrown
-        await #expect(throws: DocumentParser.DocumentError.noBookmarkData) {
+        await #expect(throws: DocumentParser.DocumentError.bookmarkIsStale) {
             try await self.parser.checkProjectIsDirty()
         }
     }

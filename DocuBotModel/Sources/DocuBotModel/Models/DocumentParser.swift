@@ -113,12 +113,14 @@ public extension DocumentParser {
 
         // Create a temporary secure URL with read access to the users document data
         var isStale = false
-        let directory = try URL(
+        guard let directory = try? URL(
             resolvingBookmarkData: urlBookmarkData,
             options: .withSecurityScope,
             relativeTo: nil,
             bookmarkDataIsStale: &isStale
-        )
+        ) else {
+            throw DocumentError.bookmarkIsStale
+        }
 
         // Open up our access, and make sure our data isn't stale
         guard isStale == false, directory.startAccessingSecurityScopedResource() else {
@@ -160,12 +162,14 @@ public extension DocumentParser {
         // Create a temporary secure URL with read access to
         // the users document data.
         var isStale = false
-        let directory = try URL(
+        guard let directory = try? URL(
             resolvingBookmarkData: urlBookmarkData,
             options: .withSecurityScope,
             relativeTo: nil,
             bookmarkDataIsStale: &isStale
-        )
+        ) else {
+            throw DocumentError.bookmarkIsStale
+        }
 
         // Open up our access, and make sure our data isn't stale
         guard isStale == false, directory.startAccessingSecurityScopedResource() else {
