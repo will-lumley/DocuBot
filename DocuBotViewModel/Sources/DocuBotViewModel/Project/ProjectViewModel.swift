@@ -503,7 +503,7 @@ private extension ProjectViewModel {
                     )
 
                     logService.log(with: .info, "Query: \(query)")
-                    logService.log(with: .info, "Formatted Query:\n\n \(formattedQuery)\n")
+                    logService.log(with: .info, "Formatted Query:\n\(formattedQuery)\n")
 
                     // Shoot it over to the LLM
                     let response = try await self.gptService.respond(
@@ -513,15 +513,7 @@ private extension ProjectViewModel {
                         guard self.expectingResponse else {
                             return
                         }
-
-                        // If we're not expecting a response, we can ignore this
-                        switch self.response {
-                        case .response(let currentResponse):
-                            let newText = currentResponse + update
-                            self.response = .response(response: newText)
-                        default:
-                            self.response = .response(response: update)
-                        }
+                        self.response = .response(response: update)
                     }
                     self.logService.log(with: .info, "Response: \(response)")
                 }

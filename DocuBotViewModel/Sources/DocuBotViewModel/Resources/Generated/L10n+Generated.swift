@@ -471,11 +471,13 @@ internal enum L10n {
       internal static let systemMessage = L10n.tr("Localizable", "Project.LlmExampleQuestionPrompt.systemMessage", fallback: "You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.\nWhen asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.\nRemember: do not include phrases like \"I hope this helps\" or \"Let me know if you need anything else.\" Focus only on delivering the requested content without deviation.")
     }
     internal enum LlmQueryPrompt {
-      /// Here is some information.
+      /// Here is some information I want you to consider before answering the question.
       /// %@
+      /// Here is the question.
       /// %@
+      /// Use the information provided above to answer the question.
       internal static func template(_ p1: Any, _ p2: Any) -> String {
-        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Here is some information.\n%@\n%@")
+        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Here is some information I want you to consider before answering the question.\n%@\nHere is the question.\n%@\nUse the information provided above to answer the question.")
       }
     }
     internal enum QueryButton {

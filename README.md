@@ -83,7 +83,7 @@ This project is structured with a modular design, with different responsibilitie
 
 ## Acknowledgments
 - https://github.com/ZachNagengast/similarity-search-kit.git
-- https://github.com/ShenghaiWang/SwiftLlama
+- https://github.com/eastriverlee/LLM.swift
 - https://github.com/ggerganov/llama.cpp.git
 - https://github.com/SFSafeSymbols/SFSafeSymbols
 - https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators

@@ -117,9 +117,11 @@ public final class MockGPTService: GPTService {
     ) async throws -> String {
         switch self.responseResult {
         case .success(let string):
+            var finalOutput = ""
             for char in string {
+                finalOutput += String(char)
                 try await Task.sleep(for: .seconds(1))
-                await onUpdate?(String(char))
+                await onUpdate?(finalOutput)
             }
             return string
         case .failure(let failure):
