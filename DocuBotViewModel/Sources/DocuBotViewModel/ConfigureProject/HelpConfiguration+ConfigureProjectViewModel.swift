@@ -27,7 +27,7 @@ extension HelpConfiguration {
     ///     onDismiss: { /* Dismiss logic here*/ }
     /// )
     /// ```
-    init( // swiftlint:disable:this cyclomatic_complexity
+    init(
         type: ConfigureProjectViewModel.HelpType,
         onDismiss: @escaping HelpConfiguration.OnDismiss
     ) {
@@ -43,18 +43,6 @@ extension HelpConfiguration {
             self.init(
                 title: Strings.SimilarityMetric.title,
                 content: Strings.SimilarityMetric.content,
-                onDismiss: onDismiss
-            )
-        case .batchSize:
-            self.init(
-                title: Strings.BatchSize.title,
-                content: Strings.BatchSize.content,
-                onDismiss: onDismiss
-            )
-        case .contextLength:
-            self.init(
-                title: Strings.ContextLength.title,
-                content: Strings.ContextLength.content,
                 onDismiss: onDismiss
             )
         case .seed:

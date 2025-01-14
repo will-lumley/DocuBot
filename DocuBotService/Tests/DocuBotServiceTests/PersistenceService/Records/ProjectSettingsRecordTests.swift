@@ -59,9 +59,7 @@ struct ProjectSettingsRecordTests {
         let seed = 12345
         let topK = 10
         let topP = 0.9
-        let contextLength = 512
         let temperature = 0.7
-        let batchSize = 16
         let stopSequence = "###"
         let maxTokenCount = 1024
         let systemPrompt = "Please summarize the document."
@@ -87,9 +85,7 @@ struct ProjectSettingsRecordTests {
             seed: seed,
             topK: topK,
             topP: topP,
-            contextLength: contextLength,
             temperature: temperature,
-            batchSize: batchSize,
             stopSequence: stopSequence,
             maxTokenCount: maxTokenCount,
             systemPrompt: systemPrompt,

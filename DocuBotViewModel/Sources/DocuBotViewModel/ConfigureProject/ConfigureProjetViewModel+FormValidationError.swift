@@ -26,10 +26,6 @@ public extension ConfigureProjectViewModel.FormValidationError {
             return Strings.missingTopK
         case .invalidTopP:
             return Strings.invalidTopP
-        case .missingContextLength:
-            return Strings.missingContextLength
-        case .missingBatchSize:
-            return Strings.missingBatchSize
         case .missingMaxTokenCount:
             return Strings.missingMaxTokenCount
         case .missingSystemPrompt:

@@ -104,14 +104,8 @@ public struct ProjectSettingsRecord: Record {
     /// The probability threshold for nucleus sampling.
     public let topP: Double
 
-    /// The maximum context length for processing.
-    public let contextLength: Int
-
     /// The temperature parameter for randomness in sampling.
     public let temperature: Double
-
-    /// The batch size for processing.
-    public let batchSize: Int
 
     /// The stop sequence for generated content.
     public let stopSequence: String?

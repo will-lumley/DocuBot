@@ -63,7 +63,6 @@ final class LlamaService: GPTService {
             throw .noModel(modelName: model.name)
         }
 
-        // contextLength, batchSize
         self.llama = LLM(
             from: model.path,
             stopSequence: settings.stopSequence,
