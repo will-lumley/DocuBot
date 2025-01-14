@@ -95,7 +95,9 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("LLM is Primed")
     func llmIsPrimed() async throws {
-        var primedIterator = mockGptService.primePublisher.values.makeAsyncIterator()
+        var primedIterator = mockGptService.primePublisher
+            .values
+            .makeAsyncIterator()
 
         // GIVEN we have a ProjectViewModel
         let project = Project.mock(id: 1)
@@ -115,22 +117,26 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test(
         "LLM Prime Fails",
+        .serialized,
         arguments: GPTError.allCases
     )
     func llmPrimeFails(with gptError: GPTError) async throws {
         mockGptService.primeResponse = .error(gptError)
 
-        var primedIterator = mockGptService.primePublisher.values.makeAsyncIterator()
+        var primedIterator = mockGptService.primePublisher
+            .values
+            .makeAsyncIterator()
 
         // GIVEN we have a ProjectViewModel
         let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
 
-        testSubject.configureBindingsIfNeeded()
         var alertIterator = testSubject.$alertConfiguration
             .values
             .makeAsyncIterator()
+
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our prime state is `nil`
         let nextPrime = try #require(try await primedIterator.next())
@@ -156,13 +162,14 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
-        testSubject.configureBindingsIfNeeded()
 
         let project = try #require(self.project)
 
         var configureIterator = testSubject.$configureProjectViewModel
             .values
             .makeAsyncIterator()
+
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we select the Settings button
         testSubject.projectSettingsButton.onSelect()
@@ -232,15 +239,27 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Open Settings - Fail")
     func openSettingsFail() async throws {
+        mockGptService.primeResponse = .content
+
         // GIVEN we have a ProjectViewModel
-        let testSubject = ProjectViewModel(
-            project: .mock(),
-            serviceContainer: serviceContainer
-        )
+        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
+        let model = LLMModel.mock(id: 1)
+        let testSubject = try await self.mock(true, model, settings)
 
         var alertIterator = testSubject.$alertConfiguration
             .values
             .makeAsyncIterator()
+
+        testSubject.configureBindingsIfNeeded()
+
+        // THEN we wait for the LLM to prime
+        try await Task.sleep(for: .seconds(1))
+
+        // THEN we delete our Model
+        _ = try await persistenceService.delete(
+            model: model,
+            deleteModelOnDisk: false
+        )
 
         // WHEN we select the Settings button
         testSubject.projectSettingsButton.onSelect()
@@ -253,7 +272,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         nextAlert = try #require(await alertIterator.next())
         #expect(
             nextAlert == .init(
-                title: "Failed to Check Project's Documents",
+                title: "Failed to extract the necessary data out of the database",
                 message: "Failed to find the necessary data in the database for this operation."
             )
         )
@@ -340,10 +359,18 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         )
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
-        testSubject.configureBindingsIfNeeded()
 
-        var sourcesIterator = testSubject.$sources.values.makeAsyncIterator()
-        var responseIterator = testSubject.$response.values.makeAsyncIterator()
+        var sourcesIterator = testSubject.$sources
+            .values
+            .makeAsyncIterator()
+        var responseIterator = testSubject.$response
+            .values
+            .makeAsyncIterator()
+        var expectingResponseIterator = testSubject.$expectingResponse
+            .values
+            .makeAsyncIterator()
+
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN the enter question is entered
         testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
@@ -353,12 +380,12 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         var nextResponse = try #require(await responseIterator.next())
         #expect(nextResponse.isLoading == true)
 
-        // THEN we're set to expecting a response
-        #expect(testSubject.expectingResponse == true)
-
-        var nextSources = try #require(await sourcesIterator.next())
+        // THEN we're set to expect a response
+        var nextExpectingResponse = await expectingResponseIterator.next()
+        #expect(nextExpectingResponse == true)
 
         // THEN the first Sources is `nil`
+        var nextSources = try #require(await sourcesIterator.next())
         #expect(nextSources == nil)
 
         // THEN the next Sources is not `nil`
@@ -376,12 +403,8 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         nextResponse = try #require(await responseIterator.next())
         #expect(nextResponse.isResponse(with: self.expectedStrictResponse))
 
-        var expectingResponseIterator = testSubject.$expectingResponse
-            .values
-            .makeAsyncIterator()
-        let nextExpectingResponse = await expectingResponseIterator.next()
-
         // THEN `expectingResponse` is false
+        nextExpectingResponse = await expectingResponseIterator.next()
         #expect(nextExpectingResponse == false)
     }
 
@@ -617,10 +640,16 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         }
     }
 
-    @Test("View Sources Button - Disabled - Syncing", .disabled("CI Flakiness"))
+    @Test("View Sources Button - Disabled - Syncing")
     func viewSourcesButtonDisabledSyncing() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+
+        // Setup an iterator that listens to our SourcesButton isEnabled state
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled
+            .values
+            .makeAsyncIterator()
+
         testSubject.configureBindingsIfNeeded()
 
         // THEN our ViewSources button is disabled
@@ -629,9 +658,6 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         // WHEN a question is asked
         testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
         testSubject.askButtonSelected()
-
-        // Setup an iterator that listens to our SourcesButton isEnabled state
-        var isEnabledIterator = testSubject.sourcesButton.$isEnabled.values.makeAsyncIterator()
 
         // THEN the ViewSources button is at first NOT enabled
         var nextSourcesButtonEnabled = await isEnabledIterator.next()
@@ -653,11 +679,17 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         #expect(nextSourcesButtonEnabled == true)
     }
 
-    @Test("View Sources Button - Disabled - No Sources", .disabled("CI Flakiness"))
+    @Test("View Sources Button - Disabled - No Sources")
     func viewSourcesButtonDisabledNoSources() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+
         testSubject.configureBindingsIfNeeded()
+
+        // Setup an iterator that listens to our SourcesButton isEnabled state
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled
+            .values
+            .makeAsyncIterator()
 
         // THEN our ViewSources button is disabled
         #expect(testSubject.sourcesButton.isEnabled == false)
@@ -665,11 +697,6 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         // WHEN a question is asked
         testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
         testSubject.askButtonSelected()
-
-        // Setup an iterator that listens to our SourcesButton isEnabled state
-        var isEnabledIterator = testSubject.sourcesButton.$isEnabled
-            .values
-            .makeAsyncIterator()
 
         // THEN the ViewSources button is at first NOT enabled
         var nextSourcesButtonEnabled = await isEnabledIterator.next()
@@ -687,7 +714,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         #expect(nextSourcesButtonEnabled == false)
     }
 
-    @Test("View Sources Button - Enabled", .disabled("CI Flakiness"))
+    @Test("View Sources Button - Enabled")
     func viewSourcesButtonEnabled() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
@@ -696,6 +723,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         var isEnabledIterator = testSubject.sourcesButton.$isEnabled
             .values
             .makeAsyncIterator()
+
         testSubject.configureBindingsIfNeeded()
 
         // THEN our ViewSources button is disabled

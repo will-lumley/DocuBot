@@ -212,11 +212,20 @@ public struct ConfigureProjectView: View {
                 Text(viewModel.formatSectionSubtitle)
                     .font(.subheadline)
             }, footer: {
-                Button {
-                    viewModel.createNewFormat()
-                } label: {
-                    Image(systemSymbol: .plus)
-                        .padding(4)
+                VStack {
+                    HStack {
+                        Spacer()
+                        Button {
+                            viewModel.createNewFormat()
+                        } label: {
+                            Image(systemSymbol: .plus)
+                                .padding(4)
+                        }
+                    }
+
+                    DisclosureGroup("Advanced Shit") {
+                        Text("Hello")
+                    }
                 }
             }
         )

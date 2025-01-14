@@ -10,7 +10,7 @@ import Combine
 import Foundation
 import Testing
 
-@Suite("DownloadTaskTests")
+@Suite("DownloadTaskTests", .serialized)
 struct DownloadTaskTests {
 
     // MARK: - Properties

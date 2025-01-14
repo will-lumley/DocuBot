@@ -25,6 +25,8 @@ public extension ProjectSettings.DocumentationFormat {
             return L10n.ConfigureProject.FormatSection.Format.txt
         case .pdf:
             return L10n.ConfigureProject.FormatSection.Format.pdf
+        case .word:
+            return L10n.ConfigureProject.FormatSection.Format.word
         case .other:
             return L10n.ConfigureProject.FormatSection.Format.other
         }

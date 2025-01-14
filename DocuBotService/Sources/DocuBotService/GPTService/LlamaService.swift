@@ -12,8 +12,8 @@ import Foundation
 
 /// An implementation of the `GPTService` protocol that integrates with `llama.cpp`.
 ///
-/// The `LlamaService` uses `SwiftLlama` as an interface to manage language model interactions, including
-/// priming the model and generating responses.
+/// The `LlamaService` uses `SwiftLlama` as an interface to manage language model
+/// interactions, including priming the model and generating responses.
 final class LlamaService: GPTService {
 
     // MARK: - Service
@@ -53,6 +53,11 @@ final class LlamaService: GPTService {
         with model: LLMModel,
         with settings: ProjectSettings
     ) throws(GPTError) {
+        // Ensure we have a model file at our path
+        if FileManager.default.fileExists(atPath: model.path) == false {
+            throw .noModel(modelName: model.name)
+        }
+
         do {
             // Create the configuration from the settings
             let configuration = Configuration(settings: settings)
@@ -124,6 +129,7 @@ final class LlamaService: GPTService {
             output += formattedValue
             await onUpdate?(formattedValue)
         }
+        self.llama?.clear()
 
         return output.trimmingTrailingNewlines()
     }

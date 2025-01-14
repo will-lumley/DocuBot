@@ -2,7 +2,7 @@ import Combine
 import Foundation
 import llama
 
-public class SwiftLlama {
+public class SwiftLlama: @unchecked Sendable {
     private let model: LlamaModel
     private let configuration: Configuration
     private var contentStarted = false

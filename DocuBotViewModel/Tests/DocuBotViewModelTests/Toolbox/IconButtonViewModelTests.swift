@@ -28,14 +28,18 @@ struct IconButtonViewModelTests {
 
     @Test("Default OnSelect")
     func defaultOnSelect() {
+        var selected = false
+
         // GIVEN an IconButtonViewModel with a default onSelect closure
-        let testSubject = IconButtonViewModel(symbol: .gear)
+        let testSubject = IconButtonViewModel(symbol: .gear) {
+            selected = true
+        }
 
         // WHEN the selected method is called
         testSubject.selected()
 
-        // THEN no action occurs (no crash indicates success)
-        #expect(true) // Dummy expectation to ensure test runs
+        // THEN the OnSelect closure is called
+        #expect(selected == true)
     }
 
     @Test("OnSelect Action")

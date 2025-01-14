@@ -11,6 +11,7 @@ import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
 import Testing
 
+// swiftlint:disable:next type_body_length
 struct DocumentParserTests {
 
     // MARK: - Properties
@@ -91,13 +92,13 @@ struct DocumentParserTests {
         }
     }
 
-    @Test("Create and Parse", .disabled("CI Flakiness"))
+    @Test("Create and Parse")
     mutating func createAndParse() async throws {
         // WHEN we parse ALL our documents
         let syncResult = try await self.parser.createAndParse()
 
         // THEN our checksum is correctly set
-        let expectedChecksum = "d5cf7244f446b0eae0d42c90e6dd2340480bee3a22c539a56843f14bd7716b73"
+        let expectedChecksum = "ab7c498b7135c0df28f83f2d46e2e80f432f807fa676a3c1f7ce9cb1555a5c6a"
         #expect(syncResult.checksum == expectedChecksum)
 
         // THEN we have the correct amount of documents returned
@@ -303,13 +304,17 @@ struct DocumentParserTests {
         let txtURL = URL(fileURLWithPath: "/path/to/document.txt")
         let rtfURL = URL(fileURLWithPath: "/path/to/document.rtf")
         let htmlURL = URL(fileURLWithPath: "/path/to/document.html")
-        let otherURL = URL(fileURLWithPath: "/path/to/document.docx")
+        let pdfURL = URL(fileURLWithPath: "/path/to/document.pdf")
+        let wordURL = URL(fileURLWithPath: "/path/to/document.docx")
+        let otherURL = URL(fileURLWithPath: "/path/to/document.other")
 
         // WHEN we extract the documentation type
         let mdFormat = self.parser.fileExtension(from: markdownURL)
         let txtFormat = self.parser.fileExtension(from: txtURL)
         let rtfFormat = self.parser.fileExtension(from: rtfURL)
         let htmlFormat = self.parser.fileExtension(from: htmlURL)
+        let pdfFormat = self.parser.fileExtension(from: pdfURL)
+        let wordFormat = self.parser.fileExtension(from: wordURL)
         let otherFormat = self.parser.fileExtension(from: otherURL)
 
         // THEN the documentation type is correctly set
@@ -317,7 +322,9 @@ struct DocumentParserTests {
         #expect(txtFormat == .txt)
         #expect(rtfFormat == .rtf)
         #expect(htmlFormat == .html)
-        #expect(otherFormat == .other("docx"))
+        #expect(pdfFormat == .pdf)
+        #expect(wordFormat == .word)
+        #expect(otherFormat == .other("other"))
     }
 
     @Test("Document Error Descriptions")
