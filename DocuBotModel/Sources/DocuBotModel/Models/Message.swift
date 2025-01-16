@@ -18,15 +18,15 @@ public struct Message: Hashable, Codable {
 
     // MARK: - Properties
 
-    public let id: Int?
+    public let id: Int64?
     public let content: String
     public let author: Author
-    public let chatID: Int
+    public let chatID: Int64
     public let createdAt: Date
 
     // MARK: - Lifecycle
 
-    public init(id: Int?, content: String, author: Author, chatID: Int, createdAt: Date) {
+    public init(id: Int64?, content: String, author: Author, chatID: Int64, createdAt: Date) {
         self.id = id
         self.content = content
         self.author = author

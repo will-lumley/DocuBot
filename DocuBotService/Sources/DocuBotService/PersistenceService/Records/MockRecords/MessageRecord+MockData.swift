@@ -101,10 +101,10 @@ extension MessageRecord {
     }
 
     static func mock(
-        id: Int = 0,
+        id: Int64 = 0,
         content: String = "",
         author: Author = .user,
-        chat: Int = 0,
+        chat: Int64 = Int64(0),
         createdAt: Date = Date()
     ) -> MessageRecord {
         .init(

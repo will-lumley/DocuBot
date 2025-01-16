@@ -46,13 +46,6 @@ public struct ProjectView: View {
                         EmptyView()
                     }
                 }
-                .toolbar {
-                    ControlGroup {
-                        ToolbarButton(viewModel: viewModel.createChatButton)
-                        ToolbarButton(viewModel: viewModel.deleteChatButton)
-                            .disabled(viewModel.selectedChatViewModel == nil)
-                    }
-                }
             },
             detail: {
                 if let chatViewModel = viewModel.selectedChatViewModel {
@@ -65,6 +58,7 @@ public struct ProjectView: View {
                 }
             }
         )
+
         .confirmationDialog(
             viewModel.deleteChatConfirmationDialog.title,
             isPresented: $viewModel.deleteChatConfirmationDialogPresented,
@@ -75,6 +69,10 @@ public struct ProjectView: View {
             }
         )
         .dialogIcon(.init(systemSymbol: .trashCircleFill))
+
+        .toolbar {
+            ToolbarButton(viewModel: viewModel.createChatButton)
+        }
 
         .navigationTitle(viewModel.windowTitle)
         .frame(minWidth: 650, minHeight: 550)

@@ -8,6 +8,6 @@
 import GRDB
 import Foundation
 
-public protocol Record: Identifiable, Codable, Hashable, TableRecord, FetchableRecord, PersistableRecord {
+public protocol Record: Identifiable, Codable, Hashable, TableRecord, FetchableRecord, MutablePersistableRecord {
     
 }

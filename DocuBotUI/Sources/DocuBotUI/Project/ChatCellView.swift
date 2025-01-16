@@ -24,12 +24,8 @@ public struct ChatCellView: View {
     // MARK: - View
 
     public var body: some View {
-        switch viewModel.state {
-        case .display:
-            Text(viewModel.title)
-        case .rename:
-            TextField("", text: $viewModel.renameTitle)
-        }
+        TextField("", text: $viewModel.renameTitle)
+            .onSubmit(viewModel.renameTextFieldEntered)
     }
 
 }

@@ -15,8 +15,6 @@ public struct WelcomeView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.openWindow) var openWindow
 
-    // @State private var window: NSWindow?
-
     @StateObject var viewModel: WelcomeViewModel
     @State private var dragOffset = CGSize.zero
     @State private var initialLocation: CGPoint = .zero

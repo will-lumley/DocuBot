@@ -12,7 +12,7 @@ public struct ProjectRecord: Record {
 
     // MARK: - Properties
 
-    public let id: Int?
+    public var id: Int64?
     public let path: String
     public let name: String
     public let documentationChecksum: String
@@ -21,6 +21,10 @@ public struct ProjectRecord: Record {
 
     public static var databaseTableName: String {
         "projects"
+    }
+
+    public mutating func didInsert(_ inserted: InsertionSuccess) {
+        self.id = inserted.rowID
     }
 
 }

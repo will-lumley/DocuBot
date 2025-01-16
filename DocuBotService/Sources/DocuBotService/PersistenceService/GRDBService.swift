@@ -10,7 +10,7 @@ import Foundation
 import GRDB
 import DocuBotModel
 
-class GRDBService: PersistenceService {
+class GRDBService: PersistenceService {    
 
     // MARK: - Types
 
@@ -49,9 +49,12 @@ class GRDBService: PersistenceService {
         self.injectDemoData()
     }
 
-    func insert(project: Project) async throws {
-        try await self.dbQueue.write { db in
-            try ProjectRecord(model: project).insert(db)
+    func insert(project: Project) async throws -> Project {
+        return try await self.dbQueue.write { db in
+            var record = ProjectRecord(model: project)
+            try record.insert(db)
+
+            return Project(record: record)
         }
     }
 
@@ -70,6 +73,15 @@ class GRDBService: PersistenceService {
         }
     }
 
+    func insert(settings: ProjectSettings) async throws -> ProjectSettings {
+        return try await self.dbQueue.write { db in
+            var record = ProjectSettingsRecord(model: settings)
+            try record.insert(db)
+
+            return ProjectSettings(record: record)
+        }
+    }
+
     func getChats(for project: Project) -> AnyPublisher<[Chat], Error> {
         return ValueObservation.tracking { db in
              try ChatRecord.fetchAll(db)
@@ -80,15 +92,24 @@ class GRDBService: PersistenceService {
             .eraseToAnyPublisher()
     }
 
-    func insert(chat: Chat) async throws {
-        try await self.dbQueue.write { db in
-            try ChatRecord(model: chat).insert(db)
+    func insert(chat: Chat) async throws -> Chat {
+        return try await self.dbQueue.write { db in
+            var record = ChatRecord(model: chat)
+            try record.insert(db)
+
+            return Chat(record: record)
         }
     }
 
     func delete(chat: Chat) async throws -> Bool {
         try await self.dbQueue.write { db in
             try ChatRecord.deleteOne(db, id: chat.id)
+        }
+    }
+
+    func update(chat: Chat) async throws {
+        try await self.dbQueue.write { db in
+            try ChatRecord(model: chat).update(db)
         }
     }
 
@@ -160,15 +181,15 @@ private extension GRDBService {
         do {
             // Import all the projects
             try self.dbQueue.write { db in
-                try ProjectRecord.mocks().forEach {
-                    try $0.insert(db)
+                for var record in ProjectRecord.mocks() {
+                    try record.insert(db)
                 }
             }
 
             // Import all the chats
             try self.dbQueue.write { db in
-                try ChatRecord.mocks().forEach {
-                    try $0.insert(db)
+                for var record in ChatRecord.mocks() {
+                    try record.insert(db)
                 }
             }
 
@@ -176,8 +197,8 @@ private extension GRDBService {
             try self.dbQueue.write { db in
                 try db.execute(sql: "PRAGMA foreign_keys = OFF")
 
-                try MessageRecord.mocks().forEach {
-                    try $0.insert(db)
+                for var record in MessageRecord.mocks() {
+                    try record.insert(db)
                 }
             }
         } catch {

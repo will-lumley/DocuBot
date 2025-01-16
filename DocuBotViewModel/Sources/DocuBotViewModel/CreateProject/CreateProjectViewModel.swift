@@ -14,6 +14,10 @@ public class CreateProjectViewModel: DocuBotViewModel {
 
     // MARK: - Types
 
+    public enum OpenWindow {
+        case project(ProjectViewModel.OpenWindowPackage)
+    }
+
     public typealias Format = ProjectSettings.DocumentationFormat
 
     public struct OpenWindowPackage: Hashable, Codable {
@@ -47,6 +51,12 @@ public class CreateProjectViewModel: DocuBotViewModel {
     @Published public var projectName = ""
     @Published public var formatConfigurations: [DocumentationFormatConfiguration]
     @Published public var selectedLanguage: ProjectSettings.Language
+
+    /// This will be called when we want to open a new window, along with the info that dictates which window
+    @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
+
+    /// This will be called when this ViewModel wants the UI layer to close/dismiss the current window
+    @Published public var onDismiss = PassthroughSubject<Void, Never>()
 
     // MARK: - Lifecycle
 
@@ -222,7 +232,6 @@ public extension CreateProjectViewModel {
         print("Checksum: \(checksum)")
 
         let project = Project(
-            id: 0,
             path: directory.path(),
             name: self.projectName,
             documentationChecksum: checksum,
@@ -232,7 +241,32 @@ public extension CreateProjectViewModel {
 
         Task {
             do {
-                try await persistenceService.insert(project: project)
+                // Insert the Project into the DB
+                let inserted = try await persistenceService.insert(project: project)
+                guard let id = inserted.id else {
+                    return
+                }
+
+                // Insert the ProjectSettings into the DB
+                let settings = ProjectSettings(
+                    projectID: id,
+                    supportedFormats: self.formatConfigurations.map(\.format),
+                    respondWithDocumentsOnly: false,
+                    language: self.selectedLanguage,
+                    createdAt: .now,
+                    updatedAt: .now
+                )
+                _ = try await persistenceService.insert(settings: settings)
+
+                // Open the Window with the project that we just inserted
+                DispatchQueue.main.async {
+                    self.onOpen.send(
+                        .project(
+                            .init(project: inserted)
+                        )
+                    )
+                }
+
             } catch {
                 fatalError(error.localizedDescription)
             }

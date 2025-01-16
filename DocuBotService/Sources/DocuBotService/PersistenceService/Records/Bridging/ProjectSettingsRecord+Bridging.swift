@@ -18,7 +18,7 @@ public extension ProjectSettingsRecord {
 
         self.init(
             id: model.id,
-            projectID: model.projectID,
+            project: model.projectID,
             supportedFormats: formats,
             respondWithDocumentsOnly: model.respondWithDocumentsOnly,
             language: language,
@@ -69,7 +69,7 @@ public extension ProjectSettings {
 
         self.init(
             id: record.id,
-            projectID: record.projectID,
+            projectID: record.project,
             supportedFormats: formats,
             respondWithDocumentsOnly: record.respondWithDocumentsOnly, 
             language: language,

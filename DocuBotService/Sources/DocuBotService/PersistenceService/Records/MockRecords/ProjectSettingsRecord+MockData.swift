@@ -39,8 +39,8 @@ extension ProjectSettingsRecord {
     }
 
     static func mock(
-        id: Int = 0,
-        projectID: Int = 0,
+        id: Int64 = 0,
+        projectID: Int64 = 0,
         supportedFormats: [DocumentationFormat] = DocumentationFormat.allCases,
         respondWithDocumentsOnly: Bool = false,
         language: Language = .english,
@@ -49,7 +49,7 @@ extension ProjectSettingsRecord {
     ) -> ProjectSettingsRecord {
         .init(
             id: id,
-            projectID: projectID,
+            project: projectID,
             supportedFormats: supportedFormats,
             respondWithDocumentsOnly: respondWithDocumentsOnly, 
             language: language,

@@ -31,8 +31,8 @@ public struct ProjectSettingsRecord: Record {
 
     // MARK: - Properties
 
-    public let id: Int
-    public let projectID: Int
+    public var id: Int64?
+    public let project: Int64
 
     public let supportedFormats: [DocumentationFormat]
     public let respondWithDocumentsOnly: Bool
@@ -43,6 +43,10 @@ public struct ProjectSettingsRecord: Record {
 
     public static var databaseTableName: String {
         "project-settings"
+    }
+
+    public mutating func didInsert(_ inserted: InsertionSuccess) {
+        self.id = inserted.rowID
     }
 
 }
