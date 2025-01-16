@@ -90,6 +90,10 @@ public struct ProjectView: View {
             }
         }
 
+        .onAppear {
+            self.chatTextEditorFocused = true
+        }
+
         .navigationTitle(viewModel.windowTitle)
         .frame(minWidth: 650, minHeight: 550)
     }

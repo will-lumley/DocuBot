@@ -340,18 +340,14 @@ public extension ConfigureProjectViewModel {
         self.formatConfigurations.remove(at: index)
     }
 
-    // MARK: Advanced Section
+    // MARK: Similarity Section
 
-    var advancedSectionTitle: String {
-        L10n.ConfigureProject.AdvancedSection.title
+    var similaritySectionTitle: String {
+        L10n.ConfigureProject.SimilaritySection.title
     }
 
-    var advancedSectionSubitle: String {
-        L10n.ConfigureProject.AdvancedSection.subtitle
-    }
-
-    var systemPromptTitle: String {
-        L10n.ConfigureProject.AdvancedSection.systemPrompt
+    var similaritySectionSubitle: String {
+        L10n.ConfigureProject.SimilaritySection.subtitle
     }
 
     var embeddingModelTitle: String {
@@ -360,6 +356,20 @@ public extension ConfigureProjectViewModel {
 
     var similarityMetricTitle: String {
         L10n.ConfigureProject.AdvancedSection.similarityMetric
+    }
+
+    // MARK: LLM Section
+
+    var llmSectionTitle: String {
+        L10n.ConfigureProject.LlmSection.title
+    }
+
+    var llmSectionSubitle: String {
+        L10n.ConfigureProject.LlmSection.subtitle
+    }
+
+    var systemPromptTitle: String {
+        L10n.ConfigureProject.AdvancedSection.systemPrompt
     }
 
     var seedTitle: String {
@@ -398,11 +408,11 @@ public extension ConfigureProjectViewModel {
         L10n.ConfigureProject.AdvancedSection.strictMode
     }
 
+    // MARK: Other
+
     var resetDefaultButtonTitle: String {
         L10n.ConfigureProject.AdvancedSection.resetDefaults
     }
-
-    // MARK: Other
 
     func directorySelected(_ directory: URL?) {
         do {
@@ -493,10 +503,12 @@ public extension ConfigureProjectViewModel {
         }
     }
 
-    func resetDefaultValuesButtonSelected() {
-        self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
+    func resetSimilarityOptions() {
         self.embeddingModel = .distilbert
         self.similarityMetric = .cosine
+    }
+
+    func resetLlmOptions() {
         self.seed = 1234
         self.topK = 40
         self.topP = 0.9
@@ -505,6 +517,8 @@ public extension ConfigureProjectViewModel {
         self.batchSize = 2048
         self.stopSequence = ""
         self.maxTokenCount = 1024*1024
+        self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
+        self.strictMode = false
     }
 
 }

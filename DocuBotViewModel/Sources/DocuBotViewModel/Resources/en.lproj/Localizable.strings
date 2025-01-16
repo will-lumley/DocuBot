@@ -124,8 +124,11 @@
 "ConfigureProject.Creating.createButton" = "Create Project";
 "ConfigureProject.Editing.createButton" = "Update Project";
 
-"ConfigureProject.AdvancedSection.title" = "Advanced Configuration";
-"ConfigureProject.AdvancedSection.subtitle" = "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.";
+"ConfigureProject.SimilaritySection.title" = "Similarity Metric Configuration";
+"ConfigureProject.SimilaritySection.subtitle" = "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.";
+
+"ConfigureProject.LlmSection.title" = "LLM Configuration";
+"ConfigureProject.LlmSection.subtitle" = "Adjust advanced settings for the LLM, including model parameters and behavior to optimise performance and responsiveness. Adjust them only if you need something specific.";
 
 "Project.placeholder" = "Write your question here...";
 "Project.StrictMode.responseTemplate" = "Here's some excerpts from your documentation based on your query.\n\n";

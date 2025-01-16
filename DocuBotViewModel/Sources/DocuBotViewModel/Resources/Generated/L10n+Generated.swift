@@ -30,14 +30,10 @@ internal enum L10n {
       internal static let stopSequence = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.stopSequence", fallback: "Stop Sequence")
       /// Strict Mode
       internal static let strictMode = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.strictMode", fallback: "Strict Mode")
-      /// These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.
-      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.subtitle", fallback: "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.")
       /// System Prompt
       internal static let systemPrompt = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.systemPrompt", fallback: "System Prompt")
       /// Temperature
       internal static let temperature = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.temperature", fallback: "Temperature")
-      /// Advanced Configuration
-      internal static let title = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.title", fallback: "Advanced Configuration")
       /// Top K
       internal static let topK = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.topK", fallback: "Top K")
       /// Top P
@@ -208,6 +204,18 @@ internal enum L10n {
         /// What does top-p do?
         internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.TopP.title", fallback: "What does top-p do?")
       }
+    }
+    internal enum LlmSection {
+      /// Adjust advanced settings for the LLM, including model parameters and behavior to optimise performance and responsiveness. Adjust them only if you need something specific.
+      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.LlmSection.subtitle", fallback: "Adjust advanced settings for the LLM, including model parameters and behavior to optimise performance and responsiveness. Adjust them only if you need something specific.")
+      /// LLM Configuration
+      internal static let title = L10n.tr("Localizable", "ConfigureProject.LlmSection.title", fallback: "LLM Configuration")
+    }
+    internal enum SimilaritySection {
+      /// These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.
+      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.SimilaritySection.subtitle", fallback: "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.")
+      /// Similarity Metric Configuration
+      internal static let title = L10n.tr("Localizable", "ConfigureProject.SimilaritySection.title", fallback: "Similarity Metric Configuration")
     }
   }
   internal enum EmbeddingModel {
