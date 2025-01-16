@@ -47,7 +47,6 @@ extension HelpConfiguration: Hashable {
         hasher.combine(content)
     }
 
-    
 }
 
 // MARK: - Identifiable

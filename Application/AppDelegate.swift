@@ -7,6 +7,7 @@
 
 import AppKit
 import DocuBotService
+import DocuBotToolbox
 import DocuBotUI
 import SwiftUI
 
@@ -14,14 +15,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Properties
 
-    var isTesting: Bool {
-        let envInfo = ProcessInfo.processInfo.environment
-        let isUnitTesting = envInfo["XCTestConfigurationFilePath"] != nil
-        return isUnitTesting
-    }
-
     lazy var serviceContainer: ServiceContainer = {
-        ServiceContainer(isTesting: isTesting)
+        ServiceContainer(isTesting: Device.isUnitTesting)
     }()
 
     private lazy var flagService: FlagService = {

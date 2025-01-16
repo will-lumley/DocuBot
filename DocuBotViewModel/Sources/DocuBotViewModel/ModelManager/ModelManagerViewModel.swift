@@ -30,7 +30,7 @@ public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
         case failedToGetFileSize
     }
 
-    public enum ListViewState {
+    public enum ListViewState: Sendable, Equatable {
         case none
         case noModels(EmptyListConfiguration)
         case models([ModelCellModel])
@@ -39,7 +39,7 @@ public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
 
     public typealias Progress = DocuBotToolbox.Progress
 
-    public typealias OnDelete = () -> Void
+    public typealias OnDelete = () async -> Void
 
     // MARK: - Properties
 
@@ -59,7 +59,7 @@ public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
     var deleteModelAction: OnDelete?
 
     /// Indicative of if we want to display/hide our Delete Project confirmation dialog
-    @Published public var deleteModelConfirmationDialogPresented = false
+    @Published public var deleteModelConfirmationPresented = false
 
     // MARK: - Lifecycle
 
@@ -70,7 +70,7 @@ public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
             .map { $0.map(ModelCellModel.init) }
             .replaceError(with: [])
 
-        let progressPublisher = self.downloadProgress.eraseToAnyPublisher()
+        let progressPublisher = downloadProgress.eraseToAnyPublisher()
 
         Publishers.CombineLatest(modelsPublisher, progressPublisher)
             .map { [unowned self] models, progress in
@@ -108,7 +108,7 @@ public extension ModelManagerViewModel {
                     title: L10n.ModelManager.Delete.Confirmation.deleteButton,
                     role: .destructive,
                     action: {
-                        self.deleteModelAction?()
+                        await self.deleteModelAction?()
                     }
                 ),
                 .init(
@@ -128,12 +128,12 @@ public extension ModelManagerViewModel {
         L10n.ModelManager.windowTitle
     }
 
-    func directorySelected(_ directory: URL?) {
+    func fileSelected(_ file: URL?) async {
         do {
-            guard let directory else {
+            guard let file else {
                 throw ModelError.noDirectory
             }
-            self.importModel(from: directory)
+            await self.importModel(from: file)
         } catch {
             self.alertConfiguration = .init(
                 title: L10n.Error.ModelManager.ModelError.title,
@@ -264,76 +264,68 @@ private extension ModelManagerViewModel {
         }
     }
 
-    func importModel(from sourceURL: URL) {
-        Task {
-            do {
-                // Get the destination directory for models
-                let modelsDirectory = try self.getModelsDirectory()
-                let fileName = sourceURL.lastPathComponent
-                let destinationURL = modelsDirectory
-                    .appendingPathComponent(fileName)
+    func importModel(from sourceURL: URL) async {
+        do {
+            // Get the destination directory for models
+            let modelsDirectory = try self.getModelsDirectory()
+            let fileName = sourceURL.lastPathComponent
+            let destinationURL = modelsDirectory
+                .appendingPathComponent(fileName)
 
-                // Copy the model file to the destination directory
-                let fileManager = FileManager.default
-                if fileManager.fileExists(atPath: destinationURL.path) {
-                    try fileManager.removeItem(at: destinationURL)
-                }
-
-                try fileManager.copyItem(
-                    at: sourceURL,
-                    to: destinationURL
-                )
-
-                // Get the file size
-                let fileSize = Int64(try destinationURL.fileSize)
-
-                // Persist the model in the database
-                let model = LLMModel(
-                    name: fileName,
-                    path: destinationURL.path(percentEncoded: false),
-                    size: fileSize,
-                    createdAt: .now,
-                    updatedAt: .now
-                )
-                _ = try await persistenceService.insert(model: model)
-            } catch {
-                // Handle errors, possibly showing an alert to the user
-                logService.log(with: .error, "Failed to import model: \(error)")
-                await MainActor.run {
-                    self.alertConfiguration = .init(
-                        title: L10n.Error.ModelManager.ModelImportError.title,
-                        message: error.description
-                    )
-                }
+            // Copy the model file to the destination directory
+            let fileManager = FileManager.default
+            if fileManager.fileExists(atPath: destinationURL.path) {
+                try fileManager.removeItem(at: destinationURL)
             }
+
+            try fileManager.copyItem(
+                at: sourceURL,
+                to: destinationURL
+            )
+
+            // Get the file size
+            let fileSize = Int64(try destinationURL.fileSize)
+
+            // Persist the model in the database
+            let model = LLMModel(
+                name: fileName,
+                path: destinationURL.path(percentEncoded: false),
+                size: fileSize,
+                createdAt: .now,
+                updatedAt: .now
+            )
+            _ = try await persistenceService.insert(model: model)
+        } catch {
+            // Handle errors, possibly showing an alert to the user
+            logService.log(with: .error, "Failed to import model: \(error)")
+            self.alertConfiguration = .init(
+                title: L10n.Error.ModelManager.ModelImportError.title,
+                message: error.description
+            )
         }
     }
 
     func promptDeletion(of model: LLMModel) {
-        self.deleteModelConfirmationDialogPresented = true
+        self.deleteModelConfirmationPresented = true
         self.deleteModelAction = {
-            self.delete(model: model)
+            await self.delete(model: model)
         }
     }
 
-    func delete(model: LLMModel) {
-        Task {
-            do {
-                let success = try await persistenceService.delete(
-                    model: model,
-                    deleteModelOnDisk: true
-                )
-                if success == false {
-                    throw ModelError.failedToDelete
-                }
-            } catch {
-                await MainActor.run {
-                    self.alertConfiguration = .init(
-                        title: L10n.Error.ModelManager.DeleteModel.title,
-                        message: error.description
-                    )
-                }
+    func delete(model: LLMModel) async {
+        do {
+            let success = try await persistenceService.delete(
+                model: model,
+                deleteModelOnDisk: Device.isUnitTesting == false
+            )
+            if success == false {
+                throw ModelError.failedToDelete
             }
+        } catch {
+            self.alertConfiguration = .init(
+                title: L10n.Error.ModelManager.DeleteModel.title,
+                message: error.description
+            )
         }
     }
 

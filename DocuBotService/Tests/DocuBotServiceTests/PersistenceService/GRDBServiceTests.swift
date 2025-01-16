@@ -12,11 +12,14 @@ import Foundation
 import GRDB
 import Testing
 
-struct GRDBServiceTests { // swiftlint:disable:this type_body_length
+@Suite("GRDBServiceTests", .serialized)
+struct GRDBServiceTests: @unchecked Sendable { // swiftlint:disable:this type_body_length
 
     // MARK: - Properties
 
     private let testSubject: GRDBService
+
+    var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
 
@@ -58,8 +61,8 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
         #expect(insertedProject.isEqualToIgnoringID(project))
     }
 
-    @Test("Fetch Single Project")
-    func fetchSingleProject() async throws {
+    @Test("Get Single Project")
+    func getSingleProject() async throws {
         // GIVEN we have a project we'd like to commit
         let project = Project.mock()
 
@@ -84,8 +87,6 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
 
     @Test("Fetch Single Project Publisher")
     func fetchSingleProjectPublisher() async throws {
-        var cancellables: Set<AnyCancellable> = []
-
         // GIVEN we have a project we'd like to commit
         let project = Project.mock()
 
@@ -95,31 +96,21 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
         // THEN we get a valid ID back
         let newID = try #require(insertedProject.id)
 
-        // THEN the publisher fires as expected
-        await withCheckedContinuation { continuation in
-            // WHEN we request a project from the publisher
-            testSubject.getProject(id: newID)
-                .sink { fetchedProject in
-                    // THEN our fetched project and inserted project
-                    // are identical
-                    #expect(fetchedProject.isEqualToIgnoringID(project))
+        // WHEN we request a project from the publisher
+        let fetchedProject = try await testSubject.getProject(id: newID).firstValue()
 
-                    // THEN the project we just fetched from the DB should
-                    // have a new ID attached to it, and that ID should be `1`
-                    #expect(fetchedProject.id == newID)
-                    #expect(fetchedProject.id == 1)
+        // THEN our fetched project and inserted project
+        // are identical
+        #expect(fetchedProject.isEqualToIgnoringID(project))
 
-                    // Tell our continuation block that we're done here
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `1`
+        #expect(fetchedProject.id == newID)
+        #expect(fetchedProject.id == 1)
     }
 
     @Test("Fetch All Projects Publisher")
     func fetchAllProjectsPublisher() async throws {
-        var cancellables: Set<AnyCancellable> = []
-
         // GIVEN we have two projects we'd like to commit
         let project1 = Project.mock(id: 1)
         let project2 = Project.mock(id: 2)
@@ -128,40 +119,31 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
         let insertedProject1 = try await testSubject.insert(project: project1)
         let insertedProject2 = try await testSubject.insert(project: project2)
 
-        // THEN the publisher fires as expected
-        await withCheckedContinuation { continuation in
-            // WHEN we request all projects from the publisher
-            testSubject.getProjects()
-                .replaceError(with: []) // We will crash if there's an error
-                .sink { fetchedProjects in
-                    let fetchedProject1 = fetchedProjects[0]
-                    let fetchedProject2 = fetchedProjects[1]
+        // WHEN we request all projects from the publisher
+        let fetchedProjects = try await testSubject.getProjects().firstValue()
 
-                    // THEN our fetched projects and the projects
-                    // we created initially are identical
-                    #expect(fetchedProject1.isEqualToIgnoringID(project1))
-                    #expect(fetchedProject2.isEqualToIgnoringID(project2))
+        let fetchedProject1 = fetchedProjects[0]
+        let fetchedProject2 = fetchedProjects[1]
 
-                    // THEN our fetched projects and inserted projects
-                    // are identical
-                    #expect(fetchedProject1 == insertedProject1)
-                    #expect(fetchedProject2 == insertedProject2)
+        // THEN our fetched projects and the projects
+        // we created initially are identical
+        #expect(fetchedProject1.isEqualToIgnoringID(project1))
+        #expect(fetchedProject2.isEqualToIgnoringID(project2))
 
-                    // THEN the project we just fetched from the DB should
-                    // have a new ID attached to it, and that ID should be `1`
-                    #expect(fetchedProject1.id == 1)
-                    #expect(fetchedProject1.id == insertedProject1.id)
+        // THEN our fetched projects and inserted projects
+        // are identical
+        #expect(fetchedProject1 == insertedProject1)
+        #expect(fetchedProject2 == insertedProject2)
 
-                    // THEN the project we just fetched from the DB should
-                    // have a new ID attached to it, and that ID should be `2`
-                    #expect(fetchedProject2.id == 2)
-                    #expect(fetchedProject2.id == insertedProject2.id)
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `1`
+        #expect(fetchedProject1.id == 1)
+        #expect(fetchedProject1.id == insertedProject1.id)
 
-                    // Tell our continuation block that we're done here
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `2`
+        #expect(fetchedProject2.id == 2)
+        #expect(fetchedProject2.id == insertedProject2.id)
     }
 
     @Test("Fetch All Projects")
@@ -618,8 +600,6 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
 
     @Test("Fetch All Models Publisher")
     func fetchAllModelsPublisher() async throws {
-        var cancellables: Set<AnyCancellable> = []
-
         // GIVEN we have two Models to commit
         let model1 = LLMModel.mock(name: "Model 1")
         let model2 = LLMModel.mock(name: "Model 2")
@@ -628,43 +608,34 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
         let insertedModel1 = try await testSubject.insert(model: model1)
         let insertedModel2 = try await testSubject.insert(model: model2)
 
-        // THEN the publisher fires as expected
-        await withCheckedContinuation { continuation in
-            // WHEN we request the models
-            testSubject.getModels()
-                .replaceError(with: [])
-                .sink { fetchedModels in
-                    // THEN the model count is 2
-                    #expect(fetchedModels.count == 2)
+        // WHEN we request the models
+        let fetchedModels = try await testSubject.getModels().firstValue()
 
-                    let fetchedModel1 = fetchedModels[0]
-                    let fetchedModel2 = fetchedModels[1]
+        // THEN the model count is 2
+        #expect(fetchedModels.count == 2)
 
-                    // THEN our fetched models and the projects
-                    // we created initially are identical
-                    #expect(fetchedModel1.isEqualToIgnoringID(model1))
-                    #expect(fetchedModel2.isEqualToIgnoringID(model2))
+        let fetchedModel1 = fetchedModels[0]
+        let fetchedModel2 = fetchedModels[1]
 
-                    // THEN our fetched projects and inserted projects
-                    // are identical
-                    #expect(fetchedModel1 == insertedModel1)
-                    #expect(fetchedModel2 == insertedModel2)
+        // THEN our fetched models and the projects
+        // we created initially are identical
+        #expect(fetchedModel1.isEqualToIgnoringID(model1))
+        #expect(fetchedModel2.isEqualToIgnoringID(model2))
 
-                    // THEN the project we just fetched from the DB should
-                    // have a new ID attached to it, and that ID should be `1`
-                    #expect(fetchedModel1.id == 1)
-                    #expect(fetchedModel1.id == insertedModel1.id)
+        // THEN our fetched projects and inserted projects
+        // are identical
+        #expect(fetchedModel1 == insertedModel1)
+        #expect(fetchedModel2 == insertedModel2)
 
-                    // THEN the project we just fetched from the DB should
-                    // have a new ID attached to it, and that ID should be `2`
-                    #expect(fetchedModel2.id == 2)
-                    #expect(fetchedModel2.id == insertedModel2.id)
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `1`
+        #expect(fetchedModel1.id == 1)
+        #expect(fetchedModel1.id == insertedModel1.id)
 
-                    // Tell our continuation block that we're done here
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the project we just fetched from the DB should
+        // have a new ID attached to it, and that ID should be `2`
+        #expect(fetchedModel2.id == 2)
+        #expect(fetchedModel2.id == insertedModel2.id)
     }
 
     @Test("Fetch All Models")

@@ -17,4 +17,10 @@ public struct Device {
         (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "1.0"
     }
 
+    public static var isUnitTesting: Bool {
+        let envInfo = ProcessInfo.processInfo.environment
+        let isUnitTesting = envInfo["XCTestConfigurationFilePath"] != nil
+        return isUnitTesting
+    }
+
 }

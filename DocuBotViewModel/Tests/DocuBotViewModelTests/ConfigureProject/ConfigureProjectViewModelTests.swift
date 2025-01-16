@@ -830,7 +830,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingSystemPrompt() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
-        
+
         // WHEN we ensure we have filled out some of the details, but not our system prompt
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
@@ -842,13 +842,13 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = ""
-        
+
         // WHEN try and save
         await testSubject.saveButtonSelected()
-        
+
         // THEN an alert is presented
         let alert = try await testSubject.$alertConfiguration.firstCompactValue()
-        
+
         // THEN the alert has the correct title and message
         #expect(
             alert == .init(
@@ -1274,20 +1274,20 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func resyncMessageMetricChangedEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
-        
+
         // GIVEN that our metric isn't dotProduct
         #expect(testSubject.similarityMetric != .dotProduct)
-        
+
         // WHEN we change the metric to dotProduct
         testSubject.similarityMetric = .dotProduct
-        
+
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
-        
+
         // THEN ReSync Alert is correctly set
         let alert = try await testSubject.$alertConfiguration
             .firstCompactValue()
-        
+
         #expect(
             alert == .init(
                 title: "Re-Sync Will Be Needed",
@@ -1475,16 +1475,16 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func newAlertStatusMetricEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
-        
+
         // GIVEN that our metric isn't dotProduct
         #expect(testSubject.similarityMetric != .dotProduct)
-        
+
         // WHEN we change the metric to dotProduct
         testSubject.similarityMetric = .dotProduct
-        
+
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
-        
+
         // THEN ReSync Alert is correctly set
         let alert = try #require(
             try await testSubject.$alertConfiguration.firstCompactValue()
@@ -1589,7 +1589,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
             testSubject.formatConfigurations != [
                 .init(order: 1, format: .rtf, isEnabled: true),
                 .init(order: 2, format: .md, isEnabled: true),
-                .init(order: 3, format: .txt, isEnabled: true),
+                .init(order: 3, format: .txt, isEnabled: true)
             ]
         )
 
@@ -1597,7 +1597,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [
             .init(order: 1, format: .rtf, isEnabled: true),
             .init(order: 2, format: .md, isEnabled: true),
-            .init(order: 3, format: .txt, isEnabled: true),
+            .init(order: 3, format: .txt, isEnabled: true)
         ]
 
         // WHEN we try and save the Project & Settings
@@ -1692,7 +1692,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 0, format: .rtf, isEnabled: false),
                 .init(order: 1, format: .txt, isEnabled: false),
                 .init(order: 2, format: .html, isEnabled: true),
-                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true)
             ]
         )
 
@@ -1708,7 +1708,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 0, format: .rtf, isEnabled: true),
                 .init(order: 1, format: .txt, isEnabled: false),
                 .init(order: 2, format: .html, isEnabled: true),
-                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 3, format: .md, isEnabled: true)
             ]
         )
     }
@@ -1831,7 +1831,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         // Let's create a directory to call our own
         let testURL = FileManager.default
             .temporaryDirectory
-            .appendingPathComponent("test")
+            .appendingPathComponent("DocuBot-Test")
+            .appendingPathComponent("test-project")
         try FileManager.default.createDirectory(
             at: testURL,
             withIntermediateDirectories: true
@@ -1850,7 +1851,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.projectDirectoryText == testURL.path())
 
         // THEN our ProjectName is correctly set
-        #expect(testSubject.projectName == "test")
+        #expect(testSubject.projectName == "test-project")
 
         // THEN our ProjectDirectoryData is not empty or nil
         #expect(testSubject.projectDirectoryBookmarkData?.isEmpty == false)
@@ -1978,6 +1979,8 @@ private extension ConfigureProjectViewModelTests {
         You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.
         """
     }
+
+    // swiftlint:disable:next cyclomatic_complexity
     func helpConfigurationTitle(
         for type: ConfigureProjectViewModel.HelpType
     ) -> String {
@@ -2009,6 +2012,7 @@ private extension ConfigureProjectViewModelTests {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func helpConfigurationContent(
         for type: ConfigureProjectViewModel.HelpType
     ) -> String {

@@ -8,6 +8,7 @@
 @testable import DocuBotService
 import Testing
 
+@Suite("LocalUserDefaultsServiceTests", .serialized)
 struct LocalUserDefaultsServiceTests {
 
     @Test("Key Value")

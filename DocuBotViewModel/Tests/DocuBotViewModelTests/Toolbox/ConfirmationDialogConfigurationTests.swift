@@ -37,7 +37,7 @@ struct ConfirmationDialogConfigurationTests {
     }
 
     @Test("Button Action")
-    func buttonAction() {
+    func buttonAction() async {
         var buttonPressed = false
 
         // GIVEN we have a ButtonConfiguration
@@ -49,7 +49,7 @@ struct ConfirmationDialogConfigurationTests {
         }
 
         // WHEN we perform the button action
-        button.action()
+        await button.action()
 
         // THEN the button action was called
         #expect(buttonPressed == true)
