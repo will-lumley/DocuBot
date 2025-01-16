@@ -115,6 +115,10 @@ class LlamaService: GPTService {
         return output.trimmingTrailingNewlines()
     }
 
+    func stop() {
+        self.llama?.stop()
+    }
+
 }
 
 private extension Configuration {

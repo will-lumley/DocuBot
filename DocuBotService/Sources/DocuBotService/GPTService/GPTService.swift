@@ -23,4 +23,7 @@ public protocol GPTService: Service {
         with systemMessage: String,
         onUpdate: OutputUpdated?
     ) async throws -> String
+
+    func stop()
+
 }

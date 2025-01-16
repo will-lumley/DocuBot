@@ -457,6 +457,7 @@ public extension ProjectViewModel {
     func askButtonSelected() {
         if self.expectingResponse {
             self.currentTask?.cancel()
+            gptService.stop()
 
             self.response = .none
             self.expectingResponse = false

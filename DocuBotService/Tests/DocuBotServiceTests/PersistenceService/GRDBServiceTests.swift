@@ -121,8 +121,8 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
         var cancellables: Set<AnyCancellable> = []
 
         // GIVEN we have two projects we'd like to commit
-        let project1 = Project.mock()
-        let project2 = Project.mock()
+        let project1 = Project.mock(id: 1)
+        let project2 = Project.mock(id: 2)
 
         // WHEN we insert the projects into the database
         let insertedProject1 = try await testSubject.insert(project: project1)
@@ -457,8 +457,8 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
     @Test("Fetch Documents by Project")
     func fetchDocumentsByProject() async throws {
         // GIVEN we have projects to commit
-        let project1 = Project.mock()
-        let project2 = Project.mock()
+        let project1 = Project.mock(id: 1)
+        let project2 = Project.mock(id: 2)
 
         // GIVEN we insert the projects into the database
         let insertedProject1 = try await testSubject.insert(project: project1)
@@ -469,12 +469,12 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
 
         // GIVEN we have mock documents to commit
         let documents1 = [
-            Document.mock(projectID: projectID1),
-            Document.mock(projectID: projectID1)
+            Document.mock(id: 1, projectID: projectID1),
+            Document.mock(id: 2, projectID: projectID1)
         ]
         let documents2 = [
-            Document.mock(projectID: projectID2),
-            Document.mock(projectID: projectID2)
+            Document.mock(id: 3, projectID: projectID2),
+            Document.mock(id: 4, projectID: projectID2)
         ]
 
         // WHEN we insert the documents into the database

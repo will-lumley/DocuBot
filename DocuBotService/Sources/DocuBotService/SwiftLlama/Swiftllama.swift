@@ -157,4 +157,9 @@ public class SwiftLlama {
         }
         return result
     }
+
+    public func stop() {
+        self.model.stop()
+    }
+
 }
