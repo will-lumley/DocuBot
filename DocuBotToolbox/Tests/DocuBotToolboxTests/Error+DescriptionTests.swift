@@ -29,6 +29,7 @@ struct ErrorDescriptionTests {
 
     @Test("LocalizedError Description")
     func localizedErrorDescription() {
+        Issue.record("test")
         #expect(MockLocalizedError.test.description == "this is a test error")
     }
 
