@@ -10,7 +10,7 @@ import DocuBotModel
 import DocuBotService
 import Foundation
 
-public class ProjectSettingsViewModel: DocuBotViewModel {
+public class ProjectSettingsViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
@@ -89,7 +89,7 @@ public class ProjectSettingsViewModel: DocuBotViewModel {
         super.init(serviceContainer: serviceContainer)
     }
 
-    public override func configureBindings() {
+    override public func configureBindings() {
         super.configureBindings()
 
         // If there's even one "true"/checked format, then we'll enable the Continue Button
@@ -233,7 +233,6 @@ public extension ProjectSettingsViewModel {
     }
 
     func saveButtonSelected() {
-        /*
         Task {
             guard let projectID = self.project.id else {
                 return
@@ -280,15 +279,8 @@ public extension ProjectSettingsViewModel {
                 fatalError(error.localizedDescription)
             }
         }
-         */
     }
 
-}
-
-// MARK: - Private
-
-private extension ProjectSettingsViewModel {
-    
 }
 
 // MARK: - Preview

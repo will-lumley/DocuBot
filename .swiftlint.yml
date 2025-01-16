@@ -1,0 +1,43 @@
+# swiftlint_version: 0.54.0
+
+disabled_rules:
+  - inclusive_language
+  - non_optional_string_data_conversion
+  - identifier_name
+  - blanket_disable_command
+
+nesting:
+  type_level:
+    warning: 4
+
+file_length:
+  warning: 500
+
+function_body_length:
+  warning: 100
+
+opt_in_rules:
+  - first_where
+  - modifier_order
+  - sorted_imports
+
+file_length:
+  warning: 750
+
+custom_rules:
+  direct_print:
+    included: ".*\\.swift"
+    name: "print usage"
+    regex: "(?<!// {0,3})(?<!//\t{0,3})((\\bprint)|(Swift\\.print))\\s*\\("
+    message: "Use LogService over print()"
+    severity: warning
+
+excluded:
+  - .build
+  - ./DocuBotUI/.build
+  - ./DocuBotViewModel/.build
+  - ./DocuBotModel/.build
+  - ./DocuBotService/.build
+  - ./DocuBotToolbox/.build
+  - "**/*L10n+Generated*.swift"
+  - "**/*Assets+Generated*.swift"

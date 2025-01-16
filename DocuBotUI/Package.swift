@@ -13,14 +13,17 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotUI",
-            targets: ["DocuBotUI"]),
+            targets: ["DocuBotUI"])
     ],
     dependencies: [
         .package(path: "../DocuBotViewModel"),
         .package(path: "../DocuBotToolbox"),
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
         .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.4.3"),
-        .package(url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git", from: "0.0.4"),
+        .package(
+            url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git",
+            from: "0.0.4"
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -32,7 +35,7 @@ let package = Package(
                 "DocuBotToolbox",
                 "SwiftfulLoadingIndicators",
 
-                .product(name: "Lottie", package: "lottie-ios"),
+                .product(name: "Lottie", package: "lottie-ios")
             ],
             plugins: [
                .plugin(name: "SwiftGenPlugin", package: "SwiftGenPlugin")
@@ -40,6 +43,6 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotUITests",
-            dependencies: ["DocuBotUI"]),
+            dependencies: ["DocuBotUI"])
     ]
 )

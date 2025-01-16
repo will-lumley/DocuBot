@@ -5,15 +5,15 @@
 //  Created by William Lumley on 4/7/2024.
 //
 
-import DocuBotViewModel
-import SwiftUI
 import AppKit
+import DocuBotViewModel
 import SFSafeSymbols
+import SwiftUI
 
 public struct PartialMessageCellView: View {
-    
+
     // MARK: - Properties
-    
+
     @State var content: String
 
     // MARK: - View

@@ -6,13 +6,13 @@
 //
 
 import Combine
-import Foundation
 import DocuBotModel
+import Foundation
 
 public protocol GPTService: Service {
 
-    typealias OutputUpdated = (_ delta: String) -> Void
-    typealias OutputComplete = (_ output: String) -> Void
+    typealias OutputUpdated = @MainActor (_ delta: String) -> Void
+    typealias OutputComplete = @MainActor (_ output: String) -> Void
 
     func respond(
         to query: String,
@@ -20,5 +20,5 @@ public protocol GPTService: Service {
         from project: Project,
         onUpdate: @escaping OutputUpdated,
         onComplete: @escaping OutputComplete
-    ) async
+    ) async throws
 }

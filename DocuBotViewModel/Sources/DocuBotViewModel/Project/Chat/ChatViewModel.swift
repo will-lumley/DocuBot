@@ -12,7 +12,7 @@ import DocuBotToolbox
 import Foundation
 import NaturalLanguage
 
-public class ChatViewModel: DocuBotViewModel, Identifiable {
+public class ChatViewModel: DocuBotViewModel, Identifiable, @unchecked Sendable {
 
     // MARK: - Types
 
@@ -42,13 +42,14 @@ public class ChatViewModel: DocuBotViewModel, Identifiable {
         super.init(serviceContainer: serviceContainer)
     }
 
-    public override func configureBindings() {
+    override public func configureBindings() {
         super.configureBindings()
 
         // Connect our MessageCellViewModels to our DB layer
         persistenceService.getMessages(for: self.chat)
             .map { $0.map { MessageCellViewModel(message: $0) } }
             .replaceError(with: [])
+            .receive(on: DispatchQueue.main)
             .assign(to: \.messages, on: self)
             .store(in: &cancellables)
 
@@ -95,7 +96,6 @@ public extension ChatViewModel {
         self.chatText = ""
         self.loadingState = .loading
 
-        /*
         Task {
             do {
                 // Get the documents that are most relevant to this query
@@ -103,7 +103,6 @@ public extension ChatViewModel {
 
                 // Create a polished query with our relevant documents in tow
                 let formattedQuery = self.createQuery(with: documents, for: query)
-                print(formattedQuery)
 
                 // Shoot it over to the LLM
                 await self.queryGPT(with: formattedQuery)
@@ -111,7 +110,6 @@ public extension ChatViewModel {
                 fatalError(error.localizedDescription)
             }
         }
-         */
     }
 
 }
@@ -142,18 +140,14 @@ private extension ChatViewModel {
     }
 
     func insert(message: Message) {
-        /*
         Task {
             do {
-                print("Inserted Message: \(message.content)")
-                print("")
                 // Insert the message into the database
                 _ = try await persistenceService.insert(message: message)
             } catch {
                 fatalError(error.localizedDescription)
             }
         }
-         */
     }
 
     func getProject(fetchDocuments: Bool) async throws -> Project {
@@ -191,13 +185,12 @@ private extension ChatViewModel {
     }
 
     func queryGPT(with message: String) async {
-        /*
         do {
             // Pull out our project
             let project = try await persistenceService.getProject(id: chat.projectID)
 
             // Pass on our input to our GPT Service
-            await self.gptService.respond(
+            try await self.gptService.respond(
                 to: message,
                 from: self.chat,
                 from: project,
@@ -205,12 +198,11 @@ private extension ChatViewModel {
                     // Add the new bit of string to our partialMessage
                     let currentPartial = self.currentPartialMessage ?? ""
                     let newPartial = currentPartial + newPart
-                    DispatchQueue.main.async {
-                        self.loadingState = .partial(content: newPartial)
-                    }
+
+                    self.loadingState = .partial(content: newPartial)
                 },
                 onComplete: { response in
-                    DispatchQueue.main.async { self.loadingState = .none }
+                    self.loadingState = .none
 
                     // Insert this message into our database
                     let message = Message(
@@ -226,7 +218,6 @@ private extension ChatViewModel {
         } catch {
             fatalError(error.localizedDescription)
         }
-         */
     }
 
 }

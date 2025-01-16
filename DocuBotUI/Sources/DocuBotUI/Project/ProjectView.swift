@@ -37,7 +37,9 @@ public struct ProjectView: View {
                                 ChatCellView(viewModel: cellViewModel)
                                     .tag(cellViewModel.id)
                                     .contextMenu {
-                                        ForEach(viewModel.contextMenuConfigurations(for: cellViewModel)) { configuration in
+                                        ForEach(
+                                            viewModel.contextMenuConfigurations(for: cellViewModel)
+                                        ) { configuration in
                                             Button(configuration.text, action: configuration.onSelect)
                                         }
                                     }

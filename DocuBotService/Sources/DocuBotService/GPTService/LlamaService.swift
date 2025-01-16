@@ -6,8 +6,9 @@
 //
 
 import Combine
-import Foundation
 import DocuBotModel
+import Foundation
+import SwiftLlama
 
 class LlamaService: GPTService {
 
@@ -20,13 +21,11 @@ class LlamaService: GPTService {
     // MARK: - Properties
 
     /// Our interface to llama.cpp
-    // private let llama: LLM
+    private let llama: SwiftLlama
 
     // MARK: - Lifecycle
 
     init() {
-        print("Started LlamaService")
-
         guard let modelPath = Bundle.main.path(
             forResource: "llama-2-7b-chat.Q5_K_S",
             ofType: "gguf"
@@ -35,8 +34,12 @@ class LlamaService: GPTService {
         }
 
         // Create our LLM
-//        self.llama = LLM(from: modelPath, stopSequence: "[/INST]")
-//        self.llama.template = .llama(self.systemMessage)
+        do {
+            let configuration = Configuration(maxTokenCount: 1024 * 1024)
+            self.llama = try SwiftLlama(modelPath: modelPath, modelConfiguration: configuration)
+        } catch {
+            fatalError(error.localizedDescription)
+        }
     }
 
     // MARK: - GPTService
@@ -47,12 +50,27 @@ class LlamaService: GPTService {
         from project: Project,
         onUpdate: @escaping OutputUpdated,
         onComplete: @escaping OutputComplete
-    ) async {
-        // Convert chat messages to LLM history format
+    ) async throws {
+        let prompt = Prompt(
+            type: .llama3,
+            systemPrompt: self.systemMessage,
+            userMessage: query,
+            history: []
+        )
 
-        
-        
+        var output = ""
+        for try await value in await self.llama.start(for: prompt) {
+            output += value
+            Task {
+                await onUpdate(value)
+            }
+        }
+
+        Task {
+            await onComplete(output)
+        }
     }
+
 }
 
 // MARK: - Private
@@ -61,7 +79,12 @@ private extension LlamaService {
 
     var systemMessage: String {
         """
-        You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation and you are expected to answer the user's questions to their code base. You should only respond to user messages and not repeat or continue your own previous responses. Do not reply to this message.
+        You are a helpful assistant named DocuBot.
+        DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries.
+        You have been trained on a directory that contains the relevant documentation.
+        You are expected to answer the user's questions to their code base.
+        You should only respond to user messages and not repeat or continue your own previous responses.
+        Do not reply to this message.
         """
     }
 
@@ -70,6 +93,5 @@ private extension LlamaService {
 // MARK: - DocuBotModel.Chat
 
 extension DocuBotModel.Chat {
-    
 
 }

@@ -1,5 +1,5 @@
-import XCTest
 @testable import DocuBotToolbox
+import XCTest
 
 final class DocuBotToolboxTests: XCTestCase {
     func testExample() throws {

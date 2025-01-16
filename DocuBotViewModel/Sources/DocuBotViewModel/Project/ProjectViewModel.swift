@@ -10,7 +10,7 @@ import DocuBotModel
 import DocuBotService
 import Foundation
 
-public class ProjectViewModel: DocuBotViewModel {
+public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
@@ -50,7 +50,7 @@ public class ProjectViewModel: DocuBotViewModel {
         super.init(serviceContainer: serviceContainer)
     }
 
-    public override func configureBindings() {
+    override public func configureBindings() {
         super.configureBindings()
 
         // Connect our CellViewModels to our DB layer
@@ -107,7 +107,7 @@ public extension ProjectViewModel {
                     title: L10n.Project.Delete.Confirmation.cancelButton,
                     role: .cancel,
                     action: { }
-                ),
+                )
             ]
         )
     }
@@ -129,7 +129,6 @@ public extension ProjectViewModel {
     }
 
     func openSettings() {
-        /*
         Task {
             do {
                 let settings = try await persistenceService.getProjectSettings(for: project)
@@ -144,13 +143,12 @@ public extension ProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
-         */
     }
 
     func contextMenuConfigurations(for cell: ChatCellViewModel) -> [ContextMenuConfiguration] {
         return [
             .init(text: L10n.Project.ChatContextMenu.rename) {
-                
+
             },
             .init(text: L10n.Project.ChatContextMenu.delete) {
                 self.promptDeleteChat(chat: cell.chat)
@@ -179,7 +177,6 @@ private extension ProjectViewModel {
             createdAt: .now
         )
 
-        /*
         Task {
             do {
                 let inserted = try await persistenceService.insert(chat: chat)
@@ -193,11 +190,9 @@ private extension ProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
-         */
     }
 
     func delete(chat: Chat) {
-        /*
         Task {
             do {
                 _ = try await persistenceService.delete(chat: chat)
@@ -208,12 +203,9 @@ private extension ProjectViewModel {
                 fatalError(error.localizedDescription)
             }
         }
-         */
     }
 
     func sync() {
-        print("Starting sync")
-        /*
         Task {
             do {
                 // Pull out the settings
@@ -231,20 +223,13 @@ private extension ProjectViewModel {
                 self.project.documentationChecksum = result.checksum
                 try await self.persistProject()
                 try await self.persist(documents: result.documents)
-
-                // Ensure our project has up to date documents
-                // try self.project.sync(settings)
-                print("Project synced with \(result.documents.count) docs")
-            }
-            catch DocumentParser.DocumentError.bookmarkIsStale {
+            } catch DocumentParser.DocumentError.bookmarkIsStale {
                 self.project.urlBookmarkDataIsStale = true
                 try await self.persistProject()
-            }
-            catch {
+            } catch {
                 fatalError(error.localizedDescription)
             }
         }
-         */
     }
 
     func persistProject() async throws {
@@ -268,17 +253,17 @@ private extension ProjectViewModel {
 extension ProjectViewModel: ChatCellViewModelDelegate {
 
     public func chatRenamed(_ chat: Chat, _ newName: String) {
-//        Task {
-//            // Update the `name` and the `nameType
-//            let newChat = Chat(
-//                id: chat.id,
-//                name: newName,
-//                nameType: .userSet,
-//                projectID: chat.projectID,
-//                createdAt: chat.createdAt
-//            )
-//            try await persistenceService.update(chat: newChat)
-//        }
+        Task {
+            // Update the `name` and the `nameType
+            let newChat = Chat(
+                id: chat.id,
+                name: newName,
+                nameType: .userSet,
+                projectID: chat.projectID,
+                createdAt: chat.createdAt
+            )
+            try await persistenceService.update(chat: newChat)
+        }
     }
 
 }

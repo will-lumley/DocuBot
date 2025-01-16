@@ -13,7 +13,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotViewModel",
-            targets: ["DocuBotViewModel"]),
+            targets: ["DocuBotViewModel"])
     ],
     dependencies: [
         .package(path: "../DocuBotModel"),
@@ -21,7 +21,10 @@ let package = Package(
         .package(path: "../DocuBotToolbox"),
 
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
-        .package(url: "https://github.com/SFSafeSymbols/SFSafeSymbols", from: "4.0.0"),
+        .package(
+            url: "https://github.com/SFSafeSymbols/SFSafeSymbols",
+            from: "4.0.0"
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -40,6 +43,6 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotViewModelTests",
-            dependencies: ["DocuBotViewModel"]),
+            dependencies: ["DocuBotViewModel"])
     ]
 )

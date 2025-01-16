@@ -96,7 +96,7 @@ extension MessageRecord {
                 author: .docubot,
                 chat: 3,
                 createdAt: .now
-            ),
+            )
         ]
     }
 

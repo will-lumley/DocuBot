@@ -35,7 +35,7 @@ public extension Project {
             id: record.id,
             path: record.path,
             name: record.name,
-            isDirty: false, 
+            isDirty: false,
             urlBookmarkData: record.urlBookmarkData,
             urlBookmarkDataIsStale: record.urlBookmarkDataIsStale,
             createdAt: record.createdAt,

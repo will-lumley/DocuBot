@@ -13,7 +13,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotModel",
-            targets: ["DocuBotModel"]),
+            targets: ["DocuBotModel"])
     ],
     dependencies: [
         .package(path: "../DocuBotToolbox"),
@@ -39,6 +39,6 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotModelTests",
-            dependencies: ["DocuBotModel"]),
+            dependencies: ["DocuBotModel"])
     ]
 )

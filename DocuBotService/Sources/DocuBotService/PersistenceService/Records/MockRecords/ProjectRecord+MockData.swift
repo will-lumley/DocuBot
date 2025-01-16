@@ -25,7 +25,7 @@ extension ProjectRecord {
                 id: 3,
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project 3"
-            ),
+            )
         ]
     }
 

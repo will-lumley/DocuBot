@@ -37,7 +37,6 @@ extension ContextMenuConfiguration: Hashable {
     public static func == (lhs: ContextMenuConfiguration, rhs: ContextMenuConfiguration) -> Bool {
         return lhs.text == rhs.text
     }
-    
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.text)

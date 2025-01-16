@@ -1,5 +1,5 @@
-import XCTest
 @testable import DocuBotService
+import XCTest
 
 final class DocuBotServiceTests: XCTestCase {
     func testExample() throws {

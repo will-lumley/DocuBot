@@ -13,7 +13,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "DocuBotService",
-            targets: ["DocuBotService"]),
+            targets: ["DocuBotService"])
     ],
     dependencies: [
         .package(path: "../DocuBotModel"),
@@ -23,7 +23,7 @@ let package = Package(
         .package(
             url: "https://github.com/ShenghaiWang/SwiftLlama.git",
             revision: "abc2dd58ae445c15ea17aa0684259dbd1c772225"
-        ),
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -35,7 +35,7 @@ let package = Package(
                 "DocuBotToolbox",
                 "SwiftLlama",
 
-                .product(name: "GRDB", package: "GRDB.swift"),
+                .product(name: "GRDB", package: "GRDB.swift")
             ],
             plugins: [
                .plugin(name: "SwiftGenPlugin", package: "SwiftGenPlugin")
@@ -43,6 +43,6 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotServiceTests",
-            dependencies: ["DocuBotService"]),
+            dependencies: ["DocuBotService"])
     ]
 )

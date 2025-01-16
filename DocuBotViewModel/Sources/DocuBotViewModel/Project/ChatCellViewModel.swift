@@ -8,7 +8,7 @@
 import DocuBotModel
 import Foundation
 
-public protocol ChatCellViewModelDelegate {
+public protocol ChatCellViewModelDelegate: AnyObject {
     func chatRenamed(_ chat: Chat, _ newName: String)
 }
 
@@ -29,10 +29,6 @@ public class ChatCellViewModel: ObservableObject {
         self.chat = chat
         self.renameTitle = self.chat.name
         self.delegate = delegate
-    }
-
-    func configureBindings() {
-        
     }
 
 }

@@ -45,7 +45,7 @@ public extension Message {
         self.init(
             id: record.id,
             content: record.content,
-            author: .init(record: record.author), 
+            author: .init(record: record.author),
             chatID: record.chat,
             createdAt: record.createdAt
         )

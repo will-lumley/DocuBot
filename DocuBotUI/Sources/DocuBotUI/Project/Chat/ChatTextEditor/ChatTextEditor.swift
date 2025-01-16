@@ -16,14 +16,14 @@ final class ChatTextEditor: NSView, NSTextViewDelegate {
 
     // MARK: - Properties
 
-    //The NSTextView stack
+    // The NSTextView stack
     /*------------------------------------------------------------*/
     public private(set) lazy var textStorage = NSTextStorage()
     public private(set) lazy var layoutManager = NSLayoutManager()
     public private(set) lazy var textContainer = NSTextContainer()
     public private(set) lazy var scrollview = NSScrollView()
     public private(set) lazy var textView = ChatTextView(
-        frame: CGRect(), 
+        frame: CGRect(),
         textContainer: self.textContainer,
         eventDelegate: self
     )
@@ -117,7 +117,7 @@ private extension ChatTextEditor {
         NSLayoutConstraint.activate([
             self.scrollview.widthAnchor.constraint(equalTo: self.widthAnchor),
             self.scrollview.topAnchor.constraint(equalTo: self.topAnchor),
-            self.scrollview.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            self.scrollview.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
     }
 
@@ -140,7 +140,7 @@ private extension ChatTextEditor {
             )
             self.textContainer.widthTracksTextView = true
         }
-        
+
         self.textView.minSize = CGSize(width: 0, height: 0)
         self.textView.maxSize = CGSize(
             width: CGFloat.greatestFiniteMagnitude,
@@ -154,16 +154,15 @@ private extension ChatTextEditor {
             width: contentSize.width,
             height: contentSize.height
         )
-        
+
         if isHorizontalScrollingEnabled {
             textView.autoresizingMask = [.width, .height]
-        }
-        else {
+        } else {
             textView.autoresizingMask = [.width]
         }
-        
+
         self.textView.allowsUndo = true
-        
+
         self.scrollview.borderType = .noBorder
         self.scrollview.hasVerticalScroller = true
         self.scrollview.hasHorizontalScroller = isHorizontalScrollingEnabled

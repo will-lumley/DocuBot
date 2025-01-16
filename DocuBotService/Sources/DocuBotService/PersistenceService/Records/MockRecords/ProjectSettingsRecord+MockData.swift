@@ -34,7 +34,7 @@ extension ProjectSettingsRecord {
                 respondWithDocumentsOnly: false,
                 createdAt: .now,
                 updatedAt: .now
-            ),
+            )
         ]
     }
 
@@ -51,7 +51,7 @@ extension ProjectSettingsRecord {
             id: id,
             project: projectID,
             supportedFormats: supportedFormats,
-            respondWithDocumentsOnly: respondWithDocumentsOnly, 
+            respondWithDocumentsOnly: respondWithDocumentsOnly,
             language: language,
             createdAt: createdAt,
             updatedAt: updatedAt
