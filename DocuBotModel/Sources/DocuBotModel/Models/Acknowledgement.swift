@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Acknowledgement {
+public struct Acknowledgement: Equatable {
 
     // MARK: - Properties
 
@@ -26,10 +26,12 @@ public struct Acknowledgement {
         linkStr: String,
         license: String
     ) {
-        guard let link = URL(string: linkStr) else {
+        guard let link = URL(string: linkStr),
+              let components = URLComponents(url: link, resolvingAgainstBaseURL: false),
+              components.scheme != nil,
+              components.host != nil else {
             return nil
         }
-
         self.author = author
         self.libraryName = libraryName
         self.description = description
