@@ -38,7 +38,7 @@ public struct ProjectView: View {
             self.mainView
             self.syncView
         }
-        .animation(.easeInOut(duration: 1.0), value: viewModel.syncStage != .none)
+        .animation(.easeInOut(duration: 0.50), value: viewModel.syncStage != .none)
         .toolbar {
             ToolbarButton(viewModel: viewModel.sourcesButton)
                 .keyboardShortcut("i", modifiers: [.command])
@@ -121,12 +121,11 @@ public struct ProjectView: View {
                     placeholder: viewModel.textEditorPlaceholder,
                     text: $viewModel.chatText,
                     height: $textEditorHeight,
-                    isEnabled: viewModel.expectingResponse == false,
+                    isEnabled: viewModel.disableTextField == false,
                     onEnterSelected: viewModel.enterSelected
                 )
                 .frame(height: textEditorHeight)
                 .focused($chatTextEditorFocused)
-                .disabled(viewModel.expectingResponse)
             }
             .padding(10)
             .background(Asset.chatTextView.swiftUIColor)
@@ -134,9 +133,12 @@ public struct ProjectView: View {
             .padding(.horizontal)
 
             // Add in a warning message if one is present
-            if let warning = viewModel.warningMessage {
-                Text("\(Image(systemSymbol: .exclamationmarkTriangle)) \(warning)")
-                    .foregroundStyle(Color.yellow)
+            if
+                let alert = viewModel.alertStatus,
+                let title = alert.title,
+                let icon = alert.icon {
+                Text("\(icon) \(title)")
+                    .foregroundStyle(alert.color)
                     .font(.footnote)
                     .padding(.top, 4)
                     .padding(.horizontal)

@@ -446,54 +446,41 @@ public extension ConfigureProjectViewModel {
         }
     }
 
+    var resyncMessage: String? {
+        guard self.resyncNeeded == false else {
+            return nil
+        }
+
+        if self.metricChanged {
+            return L10n.ConfigureProject.Resync.Metric.message
+        } else if self.embeddingModelChanged {
+            return L10n.ConfigureProject.Resync.Model.message
+        } else if self.directoryChanged {
+            return L10n.ConfigureProject.Resync.Directory.message
+        } else if self.formatsChanged {
+            return L10n.ConfigureProject.Resync.Format.message
+        }
+
+        return nil
+    }
+
     func createProjectButtonSelected() {
-        Task {
-            do {
-                // Ensure we have a valid form
-                try self.checkFormValidation()
-
-                // Insert the Project into the DB
-                let project = try self.finalisedProject()
-                let inserted = try await self.persist(project: project)
-                let projectID = try inserted.id.orThrow(Project.ProjectError.missingID)
-
-                // Insert the ProjectSettings into the DB
-                let settings = try self.finalisedSettings(for: projectID)
-                _ = try await self.persist(settings: settings)
-
-                await MainActor.run {
-                    // Let our caller know that we've saved our settings
-                    self.onSave?()
-
-                    // Close this current window
-                    self.onDismiss.send(())
-
-                    // Open the Window with the project that we just inserted, if creating
-                    if self.configureType == .creating {
-                        self.onOpen.send(
-                            .project(
-                                .init(project: inserted)
-                            )
-                        )
+        // Do we need to warn the user of a full-resync?
+        if self.resyncNeeded {
+            if let message = self.resyncMessage {
+                self.alertConfiguration = .init(
+                    title: L10n.ConfigureProject.Resync.title,
+                    message: message,
+                    primaryAction: .init(title: L10n.ConfigureProject.Resync.saveButton) {
+                        Task { await self.save() }
                     }
-                }
-            } catch {
-                logService.log(with: .error, "Failed to persist: \(error)")
-
-                let errorTitle = switch self.configureType {
-                case .creating:
-                    L10n.Error.ConfigureProject.Creating.FailedToCreate.title
-                case .editing:
-                    L10n.Error.ConfigureProject.Editing.FailedToCreate.title
-                }
-
-                await MainActor.run {
-                    self.alertConfiguration = .init(
-                        title: errorTitle,
-                        message: error.description
-                    )
-                }
+                )
+                return
             }
+        }
+
+        Task {
+            await self.save()
         }
     }
 
@@ -527,6 +514,65 @@ public extension ConfigureProjectViewModel {
 
 private extension ConfigureProjectViewModel {
 
+    var newAlertStatus: Project.AlertStatus? {
+        // If we've changed metrics
+        if self.metricChanged {
+            return .warning(warning: .metricChanged)
+        }
+        // If we've changed models
+        else if self.embeddingModelChanged {
+            return .warning(warning: .modelChanged)
+        }
+        // If we've changed formats
+        else if self.formatsChanged {
+            return .warning(warning: .formatsChanged)
+        }
+        // If we've changed directories
+        else if self.directoryChanged {
+            return .warning(warning: .directoryChanged)
+        }
+
+        return nil
+    }
+
+    var metricChanged: Bool {
+        if let projectInfo {
+            return projectInfo.settings.similarityMetric != self.similarityMetric
+        }
+        return false
+    }
+
+    var embeddingModelChanged: Bool {
+        if let projectInfo {
+            return projectInfo.settings.embeddingModel != self.embeddingModel
+        }
+        return false
+    }
+
+    var formatsChanged: Bool {
+        if let projectInfo {
+            return projectInfo.settings.supportedFormats != self.supportedFormats
+        }
+        return false
+    }
+
+    var directoryChanged: Bool {
+        if let projectInfo {
+            return self.projectDirectory?.path() != projectInfo.project.path
+        }
+        return false
+    }
+
+    var resyncNeeded: Bool {
+        self.metricChanged || self.embeddingModelChanged || self.directoryChanged || self.formatsChanged
+    }
+
+    var supportedFormats: [ProjectSettings.DocumentationFormat] {
+        self.formatConfigurations
+            .filter { $0.isEnabled }
+            .map(\.format)
+    }
+
     var configureType: ConfigureType {
         self.projectInfo != nil ? .editing : .creating
     }
@@ -541,20 +587,23 @@ private extension ConfigureProjectViewModel {
 
         // We're modifying an existing project
         if let project = self.projectInfo?.project {
-            // If we've changed directories, we need to mark the project as dirty
-            let changedDirectory = self.projectDirectory?.path() != project.path
-
-            return Project(
+            var project = Project(
                 id: project.id,
                 path: directory.path(),
                 name: self.projectName,
                 urlBookmarkData: bookmarkData,
                 documentationCheckSum: project.documentationChecksum,
-                isDirty: changedDirectory,
                 exampleQuestions: project.exampleQuestions,
+                alertStatus: project.alertStatus,
+                needsFullResync: self.resyncNeeded,
                 createdAt: project.createdAt,
                 updatedAt: .now
             )
+
+            if let newAlertStatus = self.newAlertStatus {
+                project.set(alertStatus: newAlertStatus)
+            }
+            return project
         }
         // We're creating a brand new project
         else {
@@ -563,8 +612,9 @@ private extension ConfigureProjectViewModel {
                 name: self.projectName,
                 urlBookmarkData: bookmarkData,
                 documentationCheckSum: nil,
-                isDirty: true,
                 exampleQuestions: [],
+                alertStatus: .error(error: .firstSync),
+                needsFullResync: true,
                 createdAt: .now,
                 updatedAt: .now
             )
@@ -572,10 +622,6 @@ private extension ConfigureProjectViewModel {
     }
 
     func finalisedSettings(for projectID: Int64) throws -> ProjectSettings {
-        let supportedFormats = self.formatConfigurations
-            .filter { $0.isEnabled }
-            .map(\.format)
-
         // We're modifying an existing project
         if let projectInfo = self.projectInfo {
             return ProjectSettings(
@@ -693,6 +739,56 @@ private extension ConfigureProjectViewModel {
         if self.systemPrompt.isEmpty {
             throw .missingSystemPrompt
         }
+    }
+
+    func save() async {
+        do {
+            // Ensure we have a valid form
+            try self.checkFormValidation()
+
+            // Insert the Project into the DB
+            let project = try self.finalisedProject()
+            let inserted = try await self.persist(project: project)
+            let projectID = try inserted.id.orThrow(Project.ProjectError.missingID)
+
+            // Insert the ProjectSettings into the DB
+            let settings = try self.finalisedSettings(for: projectID)
+            _ = try await self.persist(settings: settings)
+
+            await MainActor.run {
+                // Let our caller know that we've saved our settings
+                self.onSave?()
+
+                // Close this current window
+                self.onDismiss.send(())
+
+                // Open the Window with the project that we just inserted, if creating
+                if self.configureType == .creating {
+                    self.onOpen.send(
+                        .project(
+                            .init(project: inserted)
+                        )
+                    )
+                }
+            }
+        } catch {
+            logService.log(with: .error, "Failed to persist: \(error)")
+
+            let errorTitle = switch self.configureType {
+            case .creating:
+                L10n.Error.ConfigureProject.Creating.FailedToCreate.title
+            case .editing:
+                L10n.Error.ConfigureProject.Editing.FailedToCreate.title
+            }
+
+            await MainActor.run {
+                self.alertConfiguration = .init(
+                    title: errorTitle,
+                    message: error.description
+                )
+            }
+        }
+
     }
 
 }

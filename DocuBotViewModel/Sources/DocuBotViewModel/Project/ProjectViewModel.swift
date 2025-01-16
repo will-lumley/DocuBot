@@ -46,6 +46,9 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// Indicative of if the user is expecting a response or waiting for a response
     @Published public var expectingResponse = false
 
+    /// Controls the disablement of the TextField
+    @Published public var disableTextField = false
+
     /// The project that we're focussing on within this ViewModel
     @Published private var project: Project
 
@@ -76,8 +79,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// The button for the project settings
     @Published public var projectSettingsButton: ToolbarButtonViewModel
 
-    /// A warning message for the user
-    @Published public var warningMessage: String?
+    @Published public var alertStatus: Project.AlertStatus?
 
     /// This fires when we need to request the UI level to request folder permissions
     public let triggerFolderAccessRequest = PassthroughSubject<Void, Never>()
@@ -125,43 +127,27 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             }
             .assign(to: &$questions)
 
-        // Indicate to the user that we need to sync if the project is dirty
+        // If we are dirty, update the sync buttons icon
         self.$project
-            .map(\.isDirty)
-            .map {
-                if $0 {
-                    SFSymbol.exclamationmarkArrowTriangle2Circlepath
-                } else {
-                    SFSymbol.arrowTriangle2Circlepath
-                }
+            .map(\.alertStatus)
+            .map { $0 != .none }
+            .map { isAlert -> SFSymbol in
+                isAlert ? . exclamationmarkArrowTriangle2Circlepath : .arrowTriangle2Circlepath
             }
             .assign(to: \.symbol, on: syncProjectButton)
             .store(in: &cancellables)
 
-        // Indicate to the user that we need to sync if the project is dirty
+        // If we have an alert status, tell the user
         self.$project
-            .map(\.isDirty)
-            .map {
-                if $0 {
-                    ToolbarButtonViewModel.WarningState.warning
-                } else {
-                    ToolbarButtonViewModel.WarningState.none
-                }
-            }
+            .map(\.alertStatus)
+            .assign(to: &$alertStatus)
+
+        // Set the SyncButton to the appropriate colour
+        self.$project
+            .map(\.alertStatus)
+            .map(ToolbarButtonViewModel.WarningState.init)
             .assign(to: \.warningState, on: syncProjectButton)
             .store(in: &cancellables)
-
-        // Indicate to the user that we need to sync if the project is dirty
-        self.$project
-            .map(\.isDirty)
-            .map {
-                if $0 {
-                    L10n.Project.Warning.sync
-                } else {
-                    nil
-                }
-            }
-            .assign(to: &$warningMessage)
 
         // Enable the ViewSources button if we have any sources
         // AND we're not syncing
@@ -184,6 +170,11 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             .map { $0 == .none }
             .assign(to: \.isEnabled, on: projectSettingsButton)
             .store(in: &cancellables)
+
+        // Disable the TextField if we're expecting a response OR we have an error
+        Publishers.CombineLatest($expectingResponse, $project)
+            .map { $0 == true || $1.alertStatus.isError }
+            .assign(to: &$disableTextField)
     }
 
 }
@@ -211,10 +202,9 @@ public extension ProjectViewModel {
                 await MainActor.run {
                     self.configureProjectViewModel = .init(
                         projectInfo: .init(project: self.project, settings: settings),
-                        serviceContainer: self.serviceContainer
-                    ) {
-                        self.primeLlm()
-                    }
+                        serviceContainer: self.serviceContainer,
+                        onSave: self.primeLlm
+                    )
                 }
             } catch {
                 await MainActor.run {
@@ -222,7 +212,7 @@ public extension ProjectViewModel {
                         title: L10n.Error.Project.FailedToExtractSettings.title,
                         message: error.description
                     )
-                    }
+                }
             }
         }
     }
@@ -311,9 +301,7 @@ public extension ProjectViewModel {
                             return
                         }
 
-                        // If we're not expecting a response, we cna ignore this
-                        self.logService.log(with: .info, "Update: \(update)")
-
+                        // If we're not expecting a response, we can ignore this
                         switch self.response {
                         case .response(let currentResponse):
                             let newText = currentResponse + update
@@ -355,7 +343,7 @@ public extension ProjectViewModel {
                     relativeTo: nil
                 )
 
-                self.project.isDirty = true
+                self.project.set(alertStatus: .warning(warning: .directoryChanged))
                 self.project.path = directory.path
                 self.project.urlBookmarkData = bookmarkData
 
@@ -396,7 +384,13 @@ private extension ProjectViewModel {
                 logService.log(with: .info, "Project Dirty: \(isDirty)")
 
                 // If we are, persist it to the DB
-                await MainActor.run { self.project.isDirty = isDirty }
+                await MainActor.run {
+                    if isDirty {
+                        self.project.set(alertStatus: .warning(warning: .isDirty))
+                    } else {
+                        self.project.clearDirtyStatus()
+                    }
+                }
                 try await self.persistProject()
 
             } catch {
@@ -475,7 +469,7 @@ private extension ProjectViewModel {
                 // Put the trimmed content into a prompt template for our LLM
                 // Query the LLM with our prompt
                 // Filter out any nils
-                // Remove the "Question: " prefix
+                // Tidy up any decorations the LLM can put on
                 let exampleQuestions = await documents
                     .shuffled()
                     .prefix(10)
@@ -508,13 +502,19 @@ private extension ProjectViewModel {
                         return question
                     }
                     .compactMap(\.self)
-                    .map { $0.replacingOccurrences(of: "Question: ", with: " ") }
-                    .map { $0.replacingOccurrences(of: ", according to the provided excerpt?", with: "?") }
+                    .map { $0.removing(value: "Question:") }
+                    .map { $0.removing(value: ", according to the provided excerpt") }
+                    .map { $0.removing(value: "according to the provided excerpt") }
+                    .map { $0.removing(value: ", according to the provided documentation") }
+                    .map { $0.removing(value: "according to the provided documentation") }
+                    .map { $0.removing(value: ", in the given context") }
+                    .map { $0.removing(value: "in the given context") }
+                    .map { $0.removingPrefix(upTo: ":\n") }
                     .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
 
                 // Update the project properties
                 DispatchQueue.main.sync {
-                    self.project.isDirty = false
+                    self.project.set(alertStatus: .none)
                     self.project.documentationChecksum = result.checksum
                     self.project.exampleQuestions = exampleQuestions
                 }
@@ -620,6 +620,23 @@ private extension ProjectViewModel {
 
 }
 
+// MARK: - ToolbarButtonViewModel.WarningState
+
+private extension ToolbarButtonViewModel.WarningState {
+
+    init(alertStatus: Project.AlertStatus) {
+        switch alertStatus {
+        case .none:
+            self = .none
+        case .warning:
+            self = .warning
+        case .error:
+            self = .error
+        }
+    }
+
+}
+
 // MARK: - SyncStage
 
 public extension ProjectViewModel.SyncStage {
@@ -665,20 +682,7 @@ public extension ProjectViewModel {
 
     static var mock: ProjectViewModel {
         .init(
-            project: .init(
-                id: 1,
-                path: "/Users/will/Desktop/Project_1",
-                name: "Project 1",
-                urlBookmarkData: .init(),
-                documentationCheckSum: "123",
-                isDirty: false,
-                exampleQuestions: [
-                    "Example example example",
-                    "Example example example"
-                ],
-                createdAt: .now,
-                updatedAt: .now
-            ),
+            project: .mock,
             serviceContainer: .mock
         )
     }

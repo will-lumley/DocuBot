@@ -34,8 +34,9 @@ extension ProjectRecord {
         path: String = "",
         name: String = "",
         urlBookmarkData: Data = .init(),
-        isDirty: Bool = false,
         exampleQuestions: [String] = [],
+        alertStatus: AlertStatus = .none,
+        needsFullResync: Bool = false,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) -> ProjectRecord {
@@ -44,8 +45,9 @@ extension ProjectRecord {
             path: path,
             name: name,
             urlBookmarkData: urlBookmarkData,
-            isDirty: isDirty,
-            exampleQuestions: [],
+            exampleQuestions: exampleQuestions,
+            alertStatus: alertStatus,
+            needsFullResync: needsFullResync,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

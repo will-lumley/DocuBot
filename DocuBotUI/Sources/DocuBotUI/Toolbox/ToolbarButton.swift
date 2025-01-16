@@ -56,6 +56,8 @@ struct ToolbarButton: View {
             viewModel.isEnabled ? Color.secondary : Color.secondary.opacity(0.5)
         case .warning:
             viewModel.isEnabled ? Color.yellow : Color.yellow.opacity(0.5)
+        case .error:
+            viewModel.isEnabled ? Color.red : Color.red.opacity(0.5)
         }
     }
 

@@ -216,20 +216,23 @@ private extension DocumentParser {
                 self.onSyncUpdate(current, total)
             }
 
-            // If we have an existing document from this project
-            if let existingDocument = self.existingDocument(with: document.url) {
-                // If this existing document has existing indexing data
-                if existingDocument.embeddings != nil {
-                    // If this existing document is the same as the new one
-                    if existingDocument.checksum == document.checksum {
-                        // Then we don't need to re-index, let's skip this one
-                        indexed.append(existingDocument)
+            // If we're not supposed to do a full resync
+            if project.needsFullResync == false {
+                // If we have an existing document from this project
+                if let existingDocument = self.existingDocument(with: document.url) {
+                    // If this existing document has existing indexing data
+                    if existingDocument.embeddings != nil {
+                        // If this existing document is the same as the new one
+                        if existingDocument.checksum == document.checksum {
+                            // Then we don't need to re-index, let's skip this one
+                            indexed.append(existingDocument)
 
-                        let title = existingDocument.documentTitle
-                        // swiftlint:disable:next direct_print
-                        print("[DOCUBOT] [INFO] Skipping indexing for \(title)")
+                            let title = existingDocument.documentTitle
+                            // swiftlint:disable:next direct_print
+                            print("[DOCUBOT] [INFO] Skipping indexing for \(title)")
 
-                        continue
+                            continue
+                        }
                     }
                 }
             }

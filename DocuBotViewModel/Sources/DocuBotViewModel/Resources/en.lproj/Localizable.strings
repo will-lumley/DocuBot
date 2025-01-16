@@ -51,6 +51,13 @@
 "ConfigureProject.Creating.formTitle" = "Create your new project";
 "ConfigureProject.Editing.formTitle" = "Update your project";
 
+"ConfigureProject.Resync.title" = "Re-Sync Will Be Needed";
+"ConfigureProject.Resync.Metric.message" = "Changing the similarity metric will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
+"ConfigureProject.Resync.Model.message" = "Changing the similarity model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
+"ConfigureProject.Resync.Format.message" = "Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
+"ConfigureProject.Resync.Directory.message" = "Changing the directorywill require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
+"ConfigureProject.Resync.saveButton" = "Save Settings";
+
 "ConfigureProject.GeneralSection.title" = "General";
 "ConfigureProject.GeneralSection.subtitle" = "Tell us a bit about your project.";
 "ConfigureProject.GeneralSection.Name.title" = "Project Name";
@@ -134,7 +141,13 @@
 "Project.placeholder" = "Write your question here...";
 "Project.StrictMode.responseTemplate" = "Here's some excerpts from your documentation based on your query.\n\n";
 "Project.StrictMode.sourceTemplate" = "# %@\n\n%@\n\n";
-"Project.Warning.sync" = "The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.";
+
+"Project.Warning.isDirty" = "The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.";
+"Project.Warning.directoryChanged" = "The project's location has been changed. A sync is required to ensure the latest changes are reflected.";
+"Project.Warning.metricChanged" = "The project's similarity metric has been changed. A sync is required to ensure the latest changes are reflected.";
+"Project.Warning.modelChanged" = "The project's embedding model has been changed. A sync is required to ensure the latest changes are reflected.";
+"Project.Warning.formatsChanged" = "The project's specified documentation format has been changed. A sync is required to ensure the latest changes are reflected.";
+"Project.Error.firstSync" = "This project has not been synced yet. Please perform an initial sync to load and index the project's documentation.";
 
 "Project.SyncStage.ExtractingDocuments.title" = "Reading documents from disk";
 "Project.SyncStage.ExtractingDocuments.subtitle" = "This shouldn't take too long.";

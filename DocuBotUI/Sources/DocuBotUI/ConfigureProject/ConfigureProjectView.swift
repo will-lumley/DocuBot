@@ -66,10 +66,22 @@ public struct ConfigureProjectView: View {
         }
 
         .alert(item: $viewModel.alertConfiguration) { configuration in
-            Alert(
-                title: Text(configuration.title),
-                message: Text(configuration.message)
-            )
+            if let primaryAction = configuration.primaryAction {
+                Alert(
+                    title: Text(configuration.title),
+                    message: Text(configuration.message),
+                    primaryButton: .default(
+                        Text(primaryAction.title),
+                        action: primaryAction.onSelect
+                    ),
+                    secondaryButton: .cancel()
+                )
+            } else {
+                Alert(
+                    title: Text(configuration.title),
+                    message: Text(configuration.message)
+                )
+            }
         }
 
         .sheet(item: $viewModel.helpConfiguration) { configuration in
