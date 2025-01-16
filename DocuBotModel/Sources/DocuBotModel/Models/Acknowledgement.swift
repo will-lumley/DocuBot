@@ -47,6 +47,15 @@ public extension Acknowledgement {
     static var all: [Acknowledgement] {
         [
             .init(
+                author: "david-swift",
+                libraryName: "SettingsKit",
+                description: """
+                A Swift Package that allows for easy UI building for Settings views.
+                """,
+                linkStr: "https://github.com/david-swift/SettingsKit-macOS",
+                license: "MIT"
+            ),
+            .init(
                 author: "unsignedapps",
                 libraryName: "Vexil",
                 description: """

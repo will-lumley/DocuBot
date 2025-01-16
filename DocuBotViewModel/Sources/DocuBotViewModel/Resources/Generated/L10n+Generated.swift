@@ -526,6 +526,14 @@ internal enum L10n {
         }
       }
     }
+    internal enum Toolbar {
+      /// Settings
+      internal static let settings = L10n.tr("Localizable", "Project.Toolbar.settings", fallback: "Settings")
+      /// Sources
+      internal static let sources = L10n.tr("Localizable", "Project.Toolbar.sources", fallback: "Sources")
+      /// Sync
+      internal static let sync = L10n.tr("Localizable", "Project.Toolbar.sync", fallback: "Sync")
+    }
     internal enum Warning {
       /// The project's location has been changed. A sync is required to ensure the latest changes are reflected.
       internal static let directoryChanged = L10n.tr("Localizable", "Project.Warning.directoryChanged", fallback: "The project's location has been changed. A sync is required to ensure the latest changes are reflected.")

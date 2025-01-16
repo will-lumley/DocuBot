@@ -21,27 +21,10 @@ struct ToolbarButton: View {
         Button(
             action: viewModel.selected,
             label: {
-                if let hoverSymbol = viewModel.hoverSymbol, self.isHovered {
-                    VStack {
-                        Image(systemSymbol: hoverSymbol)
-                            .font(Font.body.weight(.bold))
-                            .imageScale(.large)
-                        if let name = viewModel.name {
-                            Text(name)
-                        }
-                    }
-                } else {
-                    VStack {
-                        Image(systemSymbol: viewModel.symbol)
-                            .font(Font.body.weight(.bold))
-                            .imageScale(.large)
-                            .foregroundStyle(self.foregroundStyle)
-
-                        if let name = viewModel.name {
-                            Text(name)
-                        }
-                    }
-                }
+                Label(viewModel.name, systemSymbol: viewModel.symbol)
+                    .font(Font.body.weight(.bold))
+                    .imageScale(.large)
+                    .foregroundStyle(self.foregroundStyle)
             }
         )
         .disabled(viewModel.isEnabled == false)

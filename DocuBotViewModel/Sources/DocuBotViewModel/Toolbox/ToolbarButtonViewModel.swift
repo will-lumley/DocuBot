@@ -23,7 +23,7 @@ public final class ToolbarButtonViewModel: ObservableObject {
 
     // MARK: - Properties
 
-    @Published public var name: String?
+    @Published public var name: String
     @Published public var symbol: SFSymbol
     @Published public var hoverSymbol: SFSymbol?
     @Published public var isEnabled = true
@@ -34,14 +34,12 @@ public final class ToolbarButtonViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     init(
-        name: String? = nil,
+        name: String,
         symbol: SFSymbol,
-        hoverSymbol: SFSymbol? = nil,
         onSelect: @escaping OnSelect = { }
     ) {
         self.name = name
         self.symbol = symbol
-        self.hoverSymbol = hoverSymbol
         self.onSelect = onSelect
     }
 

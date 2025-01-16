@@ -187,6 +187,9 @@
 "Project.LlmExampleQuestionPrompt.prompt" = "Here is an excerpt from a file.\n\n%@\n\nBased on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.";
 "Project.LlmQueryPrompt.template" = "Here is some information.\n%@\n%@";
 "Project.queryTitle" = "Ask any question about your project.";
+"Project.Toolbar.sources" = "Sources";
+"Project.Toolbar.sync" = "Sync";
+"Project.Toolbar.settings" = "Settings";
 
 "ProjectSettings.windowTitle" = "Project Settings";
 "ProjectSettings.saveButton" = "Save Settings";
