@@ -12,6 +12,8 @@ import Foundation
 import GRDB
 import Testing
 
+// swiftlint:disable line_length
+
 struct GRDBServiceTests { // swiftlint:disable:this type_body_length
 
     // MARK: - Properties
@@ -314,7 +316,6 @@ struct GRDBServiceTests { // swiftlint:disable:this type_body_length
         // Insert the settings
         let insertedSettings = try await testSubject.insert(settings: settings)
         _ = try #require(insertedSettings.id)
-
 
         // Fetch the settings for the project
         let fetchedSettings = try await testSubject.getProjectSettings(for: project)
