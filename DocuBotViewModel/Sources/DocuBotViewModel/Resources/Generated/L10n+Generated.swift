@@ -13,20 +13,40 @@ internal enum L10n {
   internal enum CreateProject {
     /// Create Project
     internal static let createButton = L10n.tr("Localizable", "CreateProject.createButton", fallback: "Create Project")
+    /// Project Settings
+    internal static let formTitle = L10n.tr("Localizable", "CreateProject.formTitle", fallback: "Project Settings")
     /// Create Project
     internal static let windowTitle = L10n.tr("Localizable", "CreateProject.windowTitle", fallback: "Create Project")
     internal enum Configuration {
       internal enum Format {
+        /// Add Custom Format
+        internal static let addFormatButton = L10n.tr("Localizable", "CreateProject.Configuration.Format.addFormatButton", fallback: "Add Custom Format")
         /// .html
         internal static let html = L10n.tr("Localizable", "CreateProject.Configuration.Format.html", fallback: ".html")
         /// .md
         internal static let md = L10n.tr("Localizable", "CreateProject.Configuration.Format.md", fallback: ".md")
+        /// Other
+        internal static let other = L10n.tr("Localizable", "CreateProject.Configuration.Format.other", fallback: "Other")
         /// .rtf
         internal static let rtf = L10n.tr("Localizable", "CreateProject.Configuration.Format.rtf", fallback: ".rtf")
-        /// What format is your documentation in?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Configuration.Format.title", fallback: "What format is your documentation in?")
         /// .txt
         internal static let txt = L10n.tr("Localizable", "CreateProject.Configuration.Format.txt", fallback: ".txt")
+      }
+      internal enum FormatSection {
+        /// What format is your documentation in?
+        internal static let title = L10n.tr("Localizable", "CreateProject.Configuration.FormatSection.title", fallback: "What format is your documentation in?")
+      }
+      internal enum GeneralSection {
+        /// General
+        internal static let title = L10n.tr("Localizable", "CreateProject.Configuration.GeneralSection.title", fallback: "General")
+      }
+      internal enum Language {
+        /// English
+        internal static let english = L10n.tr("Localizable", "CreateProject.Configuration.Language.english", fallback: "English")
+        /// Español
+        internal static let espanol = L10n.tr("Localizable", "CreateProject.Configuration.Language.espanol", fallback: "Español")
+        /// Language
+        internal static let title = L10n.tr("Localizable", "CreateProject.Configuration.Language.title", fallback: "Language")
       }
       internal enum ProjectDirectory {
         /// Project Directory

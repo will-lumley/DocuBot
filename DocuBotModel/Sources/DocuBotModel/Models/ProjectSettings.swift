@@ -11,11 +11,21 @@ public struct ProjectSettings: Hashable {
 
     // MARK: - Types
 
+    public enum Language: Hashable, CaseIterable {
+        case english
+        case espanol
+    }
+
     public enum DocumentationFormat: Hashable, CaseIterable {
+        public static var allCases: [ProjectSettings.DocumentationFormat] {
+            [.rtf, .txt, .html, .md]
+        }
+
         case rtf
         case txt
         case html
         case md
+        case other(String)
     }
 
     // MARK: - Properties
@@ -25,6 +35,7 @@ public struct ProjectSettings: Hashable {
 
     public let supportedFormats: [DocumentationFormat]
     public let respondWithDocumentsOnly: Bool
+    public let language: Language
 
     public let createdAt: Date
     public let updatedAt: Date
@@ -36,6 +47,7 @@ public struct ProjectSettings: Hashable {
         projectID: Int,
         supportedFormats: [DocumentationFormat],
         respondWithDocumentsOnly: Bool,
+        language: Language,
         createdAt: Date,
         updatedAt: Date
     ) {
@@ -44,9 +56,20 @@ public struct ProjectSettings: Hashable {
 
         self.supportedFormats = supportedFormats
         self.respondWithDocumentsOnly = respondWithDocumentsOnly
+        self.language = language
 
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+    }
+
+}
+
+// MARK: - ProjectSettings.Language
+
+extension ProjectSettings.Language: Identifiable {
+
+    public var id: Self {
+        self
     }
 
 }
