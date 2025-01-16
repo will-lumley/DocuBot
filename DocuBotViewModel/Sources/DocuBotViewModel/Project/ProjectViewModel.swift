@@ -99,6 +99,10 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         self.syncProjectButton.onSelect = self.sync
         self.projectSettingsButton.onSelect = self.openSettings
 
+        if project.alertStatus.isFirstSync {
+            self.sync()
+        }
+
         // Every x seconds we check if the project is dirty
         self.checkIfProjectIsDirty()
         Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in

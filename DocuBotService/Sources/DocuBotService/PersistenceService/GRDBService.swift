@@ -178,6 +178,26 @@ class GRDBService: PersistenceService {
         }
     }
 
+    // MARK: Models
+
+    func getModelCount() -> AnyPublisher<Int?, Never> {
+        return ValueObservation.tracking { db in
+            return try ModelRecord.fetchCount(db)
+        }
+        .publisher(in: self.dbQueue)
+        .replaceError(with: nil)
+        .eraseToAnyPublisher()
+    }
+
+    func getModels() -> AnyPublisher<[Model], any Error> {
+        return ValueObservation.tracking { db in
+            return try ModelRecord.fetchAll(db)
+        }
+        .publisher(in: self.dbQueue)
+        .map { $0.map(Model.init) }
+        .eraseToAnyPublisher()
+    }
+
 }
 
 // MARK: - Private
@@ -234,16 +254,9 @@ private extension GRDBService {
         }
 
         do {
-            // Import all the projects
-            try self.dbQueue.write { db in
-                for var record in ProjectRecord.mocks() {
-                    try record.insert(db)
-                }
-            }
-
-            // Import all the project settings
-            try self.dbQueue.write { db in
-                for var record in ProjectSettingsRecord.mocks() {
+            // Import all the models
+            try self.dbQueue.write {db in
+                for var record in ModelRecord.mocks() {
                     try record.insert(db)
                 }
             }

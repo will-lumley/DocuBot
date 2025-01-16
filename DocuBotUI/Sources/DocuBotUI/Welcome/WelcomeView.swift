@@ -19,8 +19,6 @@ public struct WelcomeView: View {
     @State private var dragOffset = CGSize.zero
     @State private var initialLocation: CGPoint = .zero
 
-    @State var selectedProject: WelcomeProjectCellViewModel?
-
     public static let id = "WelcomeView"
 
     // MARK: - Lifecycle
@@ -97,6 +95,7 @@ private extension WelcomeView {
 
             MenuButton(viewModel: viewModel.newProjectButton)
                 .keyboardShortcut("n", modifiers: .command)
+            MenuButton(viewModel: viewModel.openModelManager)
             MenuButton(viewModel: viewModel.viewSourceCodeButton)
             MenuButton(viewModel: viewModel.emailDeveloper)
         }
@@ -130,6 +129,8 @@ private extension WelcomeView {
         // Listen to our OnOpen listener
         .onReceive(viewModel.onOpen) { open in
             switch open {
+            case .modelManager:
+                self.openWindow(id: ModelManagerView.id)
             case .project(let package):
                 self.openWindow(value: package)
             }

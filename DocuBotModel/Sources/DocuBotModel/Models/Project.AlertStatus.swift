@@ -65,4 +65,17 @@ public extension Project.AlertStatus {
         }
     }
 
+    var isFirstSync: Bool {
+        switch self {
+        case .error(let error):
+            if case .firstSync = error {
+                return true
+            } else {
+                return false
+            }
+        default:
+            return false
+        }
+    }
+
 }
