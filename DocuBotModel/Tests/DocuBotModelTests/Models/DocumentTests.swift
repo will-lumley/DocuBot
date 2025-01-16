@@ -13,6 +13,8 @@ struct DocumentTests {
 
     @Test("Document Initialization")
     func documentInitialization() {
+        // GIVEN we have sample data
+        let id = Int64(42)
         let url = URL(string: "https://example.com/document.txt")!
         let fileFormat = ProjectSettings.DocumentationFormat.rtf
         let content = "Sample document content"
@@ -27,8 +29,9 @@ struct DocumentTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we create a document with the sample data
         let document = Document(
-            id: 1,
+            id: id,
             url: url,
             fileFormat: fileFormat,
             content: content,
@@ -39,7 +42,8 @@ struct DocumentTests {
             updatedAt: updatedAt
         )
 
-        #expect(document.id == 1)
+        // THEN the properties all line up
+        #expect(document.id == id)
         #expect(document.url == url)
         #expect(document.fileFormat == fileFormat)
         #expect(document.content == content)
@@ -52,89 +56,119 @@ struct DocumentTests {
 
     @Test("Document Title")
     func documentTitle() {
-        let url = URL(string: "https://example.com/document.txt")!
-        let document = Document(
-            id: nil,
-            url: url,
-            fileFormat: .rtf,
-            content: "Sample content",
-            checksum: "checksum",
-            projectID: 123,
-            embeddings: nil,
-            createdAt: Date(),
-            updatedAt: Date()
+        // GIVEN we have a document with a local URL
+        let document = Document.mock(
+            url: URL(fileURLWithPath: "/path/to/document.txt")
         )
 
+        // WHEN we extract the document title
+        // THEN we get the correct value out
         #expect(document.documentTitle == "document.txt")
     }
 
     @Test("LLM Reference")
     func llmReference() {
-        let url = URL(string: "https://example.com/document.txt")!
-        let content = "Sample content"
-        let document = Document(
-            id: nil,
+        typealias Strings = L10n.Document.LlmReference
+
+        // GIVEN we have a document with a local URL and content
+        let url = URL(fileURLWithPath: "/path/to/document.txt")
+        let content = "this is some content"
+        let document = Document.mock(
             url: url,
-            fileFormat: .rtf,
-            content: content,
-            checksum: "checksum",
-            projectID: 123,
-            embeddings: nil,
-            createdAt: Date(),
-            updatedAt: Date()
+            content: content
         )
 
-        let expectedReference = L10n.Document.LlmReference.template(url.path, content)
-        #expect(document.llmReference == expectedReference)
+        // WHEN we extract the LLM Reference
+        // THEN we get the correct value out
+        #expect(
+            document.llmReference == Strings.template(url.path, content)
+        )
     }
 
     @Test("Generate Checksum for Document Array")
     func generateChecksum() throws {
-        let documents = [
-            Document(
-                id: nil,
-                url: URL(string: "https://example.com/doc1.txt")!,
-                fileFormat: .rtf,
-                content: "Content of document 1",
-                checksum: "checksum1",
-                projectID: 123,
-                embeddings: nil,
-                createdAt: Date(),
-                updatedAt: Date()
+        // GIVEN we have an array of documents
+        let documents: [Document] = [
+            .mock(
+                content: "Content of document 1"
             ),
-            Document(
-                id: nil,
-                url: URL(string: "https://example.com/doc2.txt")!,
-                fileFormat: .md,
-                content: "Content of document 2",
-                checksum: "checksum2",
-                projectID: 123,
-                embeddings: nil,
-                createdAt: Date(),
-                updatedAt: Date()
+            .mock(
+                content: "Content of document 2"
             )
         ]
 
-        let combinedContent = "Content of document 1\nContent of document 2"
-        let expectedChecksum = combinedContent.checksum
-
+        // WHEN we generate the checksum for the array of documents
         let checksum = try documents.generateChecksum()
 
-        #expect(checksum == expectedChecksum)
+        // THEN we get the expected checksum
+        #expect(
+            checksum == "dd5bbde2584792a7ca5aa79863c50dc891ad785827f2e611d10074b813387402"
+        )
     }
 
     @Test("DocumentError Description")
     func documentErrorDescription() {
+        // GIVEN we have a missingID error
         let error = Document.DocumentError.missingID
+
+        // WHEN we pull out the description
         let description = error.errorDescription
+
+        // THEN it's correctly set
         #expect(description == L10n.Error.Document.missingID)
     }
 
     @Test("ChecksumGenerationError Description")
     func checksumGenerationErrorDescription() {
+        // GIVEN we have a failedConversion error
         let error = Document.ChecksumGenerationError.failedConversion
+
+        // WHEN we pull out the description
         let description = error.errorDescription
+
+        // THEN it's correctly set
         #expect(description == L10n.Error.Document.checksumGeneration)
+    }
+
+    @Test("Equality")
+    func equality() {
+        // GIVEN we have two equal documents
+        let equalDocument1 = Document.mock()
+        let equalDocument2 = Document.mock()
+
+        // THEN they should be seen as equal
+        #expect(equalDocument1 == equalDocument2)
+
+        // GIVEN we have two unequal documents
+        let unequalDocument1 = Document.mock(content: "foo")
+        let unequalDocument2 = Document.mock(content: "bar")
+
+        // THEN they should NOT be seen as equal
+        #expect(unequalDocument1 != unequalDocument2)
+    }
+
+    @Test("Equality Ignoring ID")
+    func equalityIgnoringID() {
+        // GIVEN we have two equal documents
+        let equalDocument1 = Document.mock()
+        let equalDocument2 = Document.mock()
+
+        // THEN they should be seen as equal
+        #expect(equalDocument1.isEqualToIgnoringID(equalDocument2))
+
+        // GIVEN we have two unequal documents
+        let unequalDocument1 = Document.mock(content: "foo")
+        let unequalDocument2 = Document.mock(content: "bar")
+
+        // THEN they should NOT be seen as equal
+        #expect(unequalDocument1.isEqualToIgnoringID(unequalDocument2) == false)
+
+        // GIVEN we have two equal documents apart from ID
+        let document1 = Document.mock(id: 1)
+        let document2 = Document.mock(id: 2)
+
+        // THEN they should be seen as equal ignoring ID
+        #expect(document1.isEqualToIgnoringID(document2))
     }
 
 }

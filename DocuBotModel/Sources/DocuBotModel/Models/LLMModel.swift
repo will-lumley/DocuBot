@@ -96,3 +96,29 @@ extension LLMModel: Equatable {
     }
 
 }
+
+// MARK: - ModelError
+
+public extension LLMModel.ModelError {
+
+    var errorDescription: String? {
+        switch self {
+        case .missingID:
+            return L10n.Error.Model.missingID
+        }
+    }
+
+}
+
+// MARK: - ModelFetchError
+
+public extension LLMModel.ModelFetchError {
+
+    var errorDescription: String? {
+        switch self {
+        case .binaryMissing:
+            return L10n.Error.Model.binaryMissing
+        }
+    }
+
+}

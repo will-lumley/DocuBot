@@ -27,7 +27,7 @@ struct LLMModelBridgingTests {
 
     @Test("Model to Record Bridging")
     func modelToRecordBridging() throws {
-        // Prepare sample LLMModel data
+        // GIVEN we have sample data
         let id: Int64? = 42
         let name = "GPT-4"
         let path = "/models/gpt-4"
@@ -35,6 +35,7 @@ struct LLMModelBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we have a Model in the Model layer
         let model = LLMModel(
             id: id,
             name: name,
@@ -44,10 +45,10 @@ struct LLMModelBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to LLMModelRecord
+        // WHEN we bridge the Model to the Storage layer
         let record = LLMModelRecord(model: model)
 
-        // Validate record properties
+        // THEN there is no data loss
         #expect(record.id == model.id)
         #expect(record.name == model.name)
         #expect(record.path == model.path)
@@ -58,7 +59,7 @@ struct LLMModelBridgingTests {
 
     @Test("Record to Model Bridging")
     func recordToModelBridging() throws {
-        // Prepare sample LLMModelRecord data
+        // GIVEN we have sample data
         let id: Int64? = 42
         let name = "GPT-4"
         let path = "/models/gpt-4"
@@ -66,6 +67,7 @@ struct LLMModelBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we have a Model in the Storage layer
         let record = LLMModelRecord(
             id: id,
             name: name,
@@ -75,10 +77,10 @@ struct LLMModelBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to LLMModel
+        // WHEN we bridge the Model to the Model layer
         let model = LLMModel(record: record)
 
-        // Validate model properties
+        // THEN there is no data losss
         #expect(model.id == record.id)
         #expect(model.name == record.name)
         #expect(model.path == record.path)

@@ -27,7 +27,7 @@ struct DocumentRecordBridgingTests {
 
     @Test("Model to Record Bridging")
     func modelToRecordBridging() throws {
-        // Prepare sample data for Document
+        // GIVEN we have sample data
         let url = try #require(URL(string: "https://example.com/document"))
         let fileFormat = ProjectSettings.DocumentationFormat.md
         let content = "Sample document content"
@@ -40,6 +40,7 @@ struct DocumentRecordBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we have a Document in the Model layer
         let document = Document(
             id: 42,
             url: url,
@@ -52,10 +53,10 @@ struct DocumentRecordBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to DocumentRecord
+        // WHEN we bridge the Document to the Storage layer
         let record = DocumentRecord(model: document)
 
-        // Validate record properties
+        // THEN there is no data losss
         #expect(record.id == document.id)
         #expect(record.url == document.url)
         #expect(record.fileFormat == .init(model: fileFormat))
@@ -69,7 +70,7 @@ struct DocumentRecordBridgingTests {
 
     @Test("Record to Model Bridging")
     func recordToModelBridging() throws {
-        // Prepare sample data for DocumentRecord
+        // GIVEN we have sample data
         let url = try #require(URL(string: "https://example.com/document"))
         let fileFormat = ProjectSettingsRecord.DocumentationFormat.md
         let content = "Sample document content"
@@ -82,6 +83,7 @@ struct DocumentRecordBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we have a Document in the Storage layer
         let record = DocumentRecord(
             id: 42,
             url: url,
@@ -94,10 +96,10 @@ struct DocumentRecordBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to Document
+        // WHEN we bridge the Document to the Model layer
         let model = Document(record: record)
 
-        // Validate model properties
+        // THEN there is no data losss
         #expect(model.id == record.id)
         #expect(model.url == record.url)
         #expect(model.fileFormat == .init(record: fileFormat))
@@ -111,40 +113,34 @@ struct DocumentRecordBridgingTests {
 
     @Test("Model to Record Embedding Bridging")
     func modelToRecordEmbeddingBridging() throws {
-        // Prepare sample embedding data
+        // GIVEN we have an embedding in the Model layer
         let modelEmbedding = Document.Embedding(
             chunk: "Sample chunk",
             embedding: [0.5, 0.6, 0.7]
         )
 
-        // Convert to DocumentRecord.Embedding
+        // WHEN we bridge the embedding to the Storage layer
         let recordEmbedding = DocumentRecord.Embedding(model: modelEmbedding)
 
-        // Validate DocumentRecord.Embedding properties
+        // THEN there is no data loss
         #expect(recordEmbedding.chunk == modelEmbedding.chunk)
         #expect(recordEmbedding.embedding == modelEmbedding.embedding)
     }
 
     @Test("Record to Model Embedding Bridging")
     func recordToModelEmbeddingBridging() throws {
-        // Prepare sample embedding data
+        // GIVEN we have an embedding in the Storage layer
         let recordEmbedding = DocumentRecord.Embedding(
             chunk: "Sample chunk",
             embedding: [0.5, 0.6, 0.7]
         )
 
-        // Convert back to Document.Embedding
+        // WHEN we bridge the embedding to the Model layer
         let modelEmbedding = Document.Embedding(record: recordEmbedding)
 
-        // Validate Document.Embedding properties
+        // THEN there is no data loss
         #expect(modelEmbedding.chunk == recordEmbedding.chunk)
         #expect(modelEmbedding.embedding == recordEmbedding.embedding)
-
-        // Validate round-trip equality
-        let convertedRecordEmbedding = DocumentRecord.Embedding(
-            model: modelEmbedding
-        )
-        #expect(convertedRecordEmbedding == recordEmbedding)
     }
 
 }

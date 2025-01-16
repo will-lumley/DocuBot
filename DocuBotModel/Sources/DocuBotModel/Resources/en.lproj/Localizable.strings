@@ -7,4 +7,7 @@
 "Error.Document.bookmarkIsStale" = "Bookmark is stale. Please try syncing again.";
 "Error.Document.checksumGeneration" = "Failed to generate a checksum for document.";
 
+"Error.Model.missingID" = "Failed to perform the operation due to missing model ID.";
+"Error.Model.binaryMissing" = "The model binary is missing or corrupted. Please reload the model from the Model Manager.";
+
 "Document.LlmReference.template" = "SOURCES: %@\n%@";

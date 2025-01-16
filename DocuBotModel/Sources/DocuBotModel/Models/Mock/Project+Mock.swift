@@ -5,22 +5,33 @@
 //  Created by William Lumley on 29/10/2024.
 //
 
+import Foundation
+
 public extension Project {
 
-    static func mock() -> Project {
+    static func mock(
+        id: Int64 = 1,
+        path: String = "/Users/will/Desktop/Project_1",
+        name: String = "Project 1",
+        urlBookmarkData: Data = .init(),
+        documentationChecksum: String = "123",
+        exampleQuestions: [String] = ["foo", "bar"],
+        alertStatus: AlertStatus = .error(error: .firstSync),
+        needsFullResync: Bool = true,
+        createdAt: Date = .now,
+        updatedAt: Date = .now
+    ) -> Project {
         .init(
-            path: "/Users/will/Desktop/Project_1",
-            name: "Project 1",
+            id: id,
+            path: path,
+            name: name,
             urlBookmarkData: .init(),
-            documentationCheckSum: "123",
-            exampleQuestions: [
-                "Example example example",
-                "Example example example"
-            ],
-            alertStatus: .error(error: .firstSync),
-            needsFullResync: true,
-            createdAt: .now,
-            updatedAt: .now
+            documentationCheckSum: documentationChecksum,
+            exampleQuestions: exampleQuestions,
+            alertStatus: alertStatus,
+            needsFullResync: needsFullResync,
+            createdAt: createdAt,
+            updatedAt: updatedAt
         )
     }
 

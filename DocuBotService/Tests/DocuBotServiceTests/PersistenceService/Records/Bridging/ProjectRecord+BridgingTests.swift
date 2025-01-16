@@ -167,29 +167,41 @@ struct ProjectBridgingTests {
 
     @Test("Record to Model AlertStatus With Warning Bridging")
     func recordToModelAlertStatusWithWarningBridging() throws {
-        // Test bridging for AlertStatus: Warning
+        // GIVEN we have a Warning in the Storage layer
         let warningRecord = ProjectRecord.AlertStatus.warning(
             warning: .directoryChanged
         )
+
+        // WHEN we bridge it to the Model layer
         let bridgedWarningModel = Project.AlertStatus(record: warningRecord)
+
+        // THEN there is no data loss
         #expect(bridgedWarningModel == .warning(warning: .directoryChanged))
     }
 
     @Test("Record to Model AlertStatus With Error Bridging")
     func recordToModelAlertStatusWithErrorBridging() throws {
-        // Test bridging for AlertStatus: Error
+        // GIVEN we have an Error in the Storage layer
         let errorRecord = ProjectRecord.AlertStatus.error(
             error: .firstSync
         )
+
+        // WHEN we bridge it to the Model layer
         let bridgedErrorModel = Project.AlertStatus(record: errorRecord)
+
+        // THEN there is no data loss
         #expect(bridgedErrorModel == .error(error: .firstSync))
     }
 
     @Test("Record to Model AlertStatus With None Bridging")
     func recordToModelAlertStatusWithNoneBridging() throws {
-        // Test bridging for AlertStatus: None
+        // GIVEN we have a `None` in the Storage layer
         let noneRecord = ProjectRecord.AlertStatus.none
+
+        // WHEN we bridge it to the Model layer
         let bridgedNoneModel = Project.AlertStatus(record: noneRecord)
+
+        // THEN there is no data loss
         #expect(bridgedNoneModel == .none)
     }
 

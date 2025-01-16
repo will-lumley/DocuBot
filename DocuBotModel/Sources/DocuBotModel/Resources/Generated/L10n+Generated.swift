@@ -30,6 +30,12 @@ internal enum L10n {
       /// No bookmark data found. Please try syncing again.
       internal static let noBookmarkData = L10n.tr("Localizable", "Error.Document.noBookmarkData", fallback: "No bookmark data found. Please try syncing again.")
     }
+    internal enum Model {
+      /// The model binary is missing or corrupted. Please reload the model from the Model Manager.
+      internal static let binaryMissing = L10n.tr("Localizable", "Error.Model.binaryMissing", fallback: "The model binary is missing or corrupted. Please reload the model from the Model Manager.")
+      /// Failed to perform the operation due to missing model ID.
+      internal static let missingID = L10n.tr("Localizable", "Error.Model.missingID", fallback: "Failed to perform the operation due to missing model ID.")
+    }
     internal enum Project {
       /// Failed to perform the operation due to missing project ID.
       internal static let missingID = L10n.tr("Localizable", "Error.Project.missingID", fallback: "Failed to perform the operation due to missing project ID.")
