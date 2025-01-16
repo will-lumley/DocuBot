@@ -11,6 +11,7 @@
 		BE45187E2C35244600F9E9E5 /* DocuBotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */; };
 		BE4518822C35244700F9E9E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE4518812C35244700F9E9E5 /* Assets.xcassets */; };
 		BE4518852C35244700F9E9E5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE4518842C35244700F9E9E5 /* Preview Assets.xcassets */; };
+		BE81DB142C8ECA98009DDD60 /* llama-2-7b-chat.Q5_K_S.gguf in Resources */ = {isa = PBXBuildFile; fileRef = BE81DB132C8ECA98009DDD60 /* llama-2-7b-chat.Q5_K_S.gguf */; };
 		BEB095C42C35780C00429AFD /* DocuBotModel in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095C32C35780C00429AFD /* DocuBotModel */; };
 		BEB095C62C35780C00429AFD /* DocuBotService in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095C52C35780C00429AFD /* DocuBotService */; };
 		BEB095C82C35780C00429AFD /* DocuBotToolbox in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095C72C35780C00429AFD /* DocuBotToolbox */; };
@@ -31,6 +32,7 @@
 		BE4518812C35244700F9E9E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BE4518842C35244700F9E9E5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BE4518862C35244700F9E9E5 /* DocuBot.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DocuBot.entitlements; sourceTree = "<group>"; };
+		BE81DB132C8ECA98009DDD60 /* llama-2-7b-chat.Q5_K_S.gguf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "llama-2-7b-chat.Q5_K_S.gguf"; sourceTree = "<group>"; };
 		BEB095EA2C36604B00429AFD /* Settings.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Settings.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEB095EC2C36604B00429AFD /* SettingsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsApp.swift; sourceTree = "<group>"; };
 		BEB095EE2C36604B00429AFD /* FlagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagView.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 		BE45187C2C35244600F9E9E5 /* Application */ = {
 			isa = PBXGroup;
 			children = (
+				BE81DB112C8EC9DE009DDD60 /* llama */,
 				BE4518812C35244700F9E9E5 /* Assets.xcassets */,
 				BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */,
 				BEB096002C36726300429AFD /* AppDelegate.swift */,
@@ -103,6 +106,14 @@
 				BE4518842C35244700F9E9E5 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		BE81DB112C8EC9DE009DDD60 /* llama */ = {
+			isa = PBXGroup;
+			children = (
+				BE81DB132C8ECA98009DDD60 /* llama-2-7b-chat.Q5_K_S.gguf */,
+			);
+			path = llama;
 			sourceTree = "<group>";
 		};
 		BEB095C22C35780C00429AFD /* Frameworks */ = {
@@ -228,6 +239,7 @@
 			files = (
 				BE4518852C35244700F9E9E5 /* Preview Assets.xcassets in Resources */,
 				BE4518822C35244700F9E9E5 /* Assets.xcassets in Resources */,
+				BE81DB142C8ECA98009DDD60 /* llama-2-7b-chat.Q5_K_S.gguf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,7 +421,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "DocuBot - Development";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -440,7 +452,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "DocuBot - Development";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};

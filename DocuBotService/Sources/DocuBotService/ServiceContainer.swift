@@ -39,7 +39,8 @@ public extension ServiceContainer {
     }
 
     func register<S: Service>(service: S) {
-        print("[DOCUBOT] [INFO] Registering Service: \(service)") // swiftlint:disable:this direct_print
+        // swiftlint:disable:next direct_print
+        print("[DOCUBOT] [INFO] Registering Service: \(service)")
         self.registry[type(of: service).key] = service
     }
 
@@ -68,6 +69,7 @@ private extension ServiceContainer {
 
     func configureServices() {
         self.configureFlagService()
+        self.register(service: LlamaService())
         self.register(service: LocalUserDefaultsService())
         self.configureLogService()
         self.configurePersistenceService()
@@ -90,6 +92,10 @@ public extension ServiceContainer {
 
     var flagService: any FlagService {
         return self.registry[.flag] as! FlagService
+    }
+
+    var gptService: any GPTService {
+        return self.registry[.gpt] as! GPTService
     }
 
     var logService: any LogService {

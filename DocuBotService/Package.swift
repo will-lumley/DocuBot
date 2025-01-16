@@ -19,7 +19,8 @@ let package = Package(
         .package(path: "../DocuBotModel"),
         .package(path: "../DocuBotToolbox"),
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
-        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.21.0"),
+        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.29.0"),
+        .package(url: "https://github.com/eastriverlee/LLM.swift/", branch: "pinned"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -30,6 +31,7 @@ let package = Package(
                 "DocuBotModel",
                 "DocuBotToolbox",
 
+                .product(name: "LLM", package: "LLM.swift"),
                 .product(name: "GRDB", package: "GRDB.swift"),
             ],
             plugins: [

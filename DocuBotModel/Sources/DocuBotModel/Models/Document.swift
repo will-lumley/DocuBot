@@ -8,7 +8,7 @@
 import CryptoKit
 import Foundation
 
-public struct Document {
+public struct Document: Hashable, Codable {
 
     // MARK: - Types
 
@@ -18,13 +18,9 @@ public struct Document {
 
     // MARK: - Properties
 
+    public let url: URL
+    public let fileFormat: ProjectSettings.DocumentationFormat
     public let content: String
-
-    // MARK: - Lifecycle
-
-    public init(content: String) {
-        self.content = content
-    }
 
 }
 

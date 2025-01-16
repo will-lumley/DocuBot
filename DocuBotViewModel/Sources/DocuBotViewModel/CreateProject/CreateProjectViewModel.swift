@@ -47,6 +47,7 @@ public class CreateProjectViewModel: DocuBotViewModel {
     @Published public var directoryText: String
     public let availableLanguages = ProjectSettings.Language.allCases
 
+    public var projectDirectoryBookmarkData: Data?
     @Published public var projectDirectory: URL?
     @Published public var projectName = ""
     @Published public var formatConfigurations: [DocumentationFormatConfiguration]
@@ -221,20 +222,12 @@ public extension CreateProjectViewModel {
             return
         }
 
-        let formats = self.formatConfigurations
-            .map(\.format)
-
-        // Extract all our relevant documents (each document = one string)
-        let documents = Project.loadDocumentationFiles(from: directory, formats: formats)
-        guard let checksum = try? documents.generateChecksum() else {
-            return
-        }
-
         let project = Project(
             path: directory.path(),
             name: self.projectName,
             isDirty: false, 
-            documentationChecksum: checksum,
+            urlBookmarkData: self.projectDirectoryBookmarkData,
+            urlBookmarkDataIsStale: false,
             createdAt: .now,
             updatedAt: .now
         )

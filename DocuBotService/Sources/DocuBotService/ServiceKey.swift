@@ -21,4 +21,7 @@ public enum ServiceKey: String {
 
     /// Logs debugging & diagnostic data
     case log
+
+    /// Provides a text-based service for the user to talk to and receive input from
+    case gpt
 }

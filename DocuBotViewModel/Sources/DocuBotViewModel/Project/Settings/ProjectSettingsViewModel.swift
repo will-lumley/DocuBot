@@ -47,6 +47,7 @@ public class ProjectSettingsViewModel: DocuBotViewModel {
     @Published public var directoryText: String
     public let availableLanguages = ProjectSettings.Language.allCases
 
+    public var projectDirectoryBookmarkData: Data?
     @Published public var projectDirectory: URL?
     @Published public var projectName = ""
     @Published public var formatConfigurations = [DocumentationFormatConfiguration]()
@@ -75,7 +76,6 @@ public class ProjectSettingsViewModel: DocuBotViewModel {
                 )
             }
 
-        print("Other: \(projectSettings.otherFormats)")
         for (index, format) in projectSettings.otherFormats.enumerated() {
             let configuration = DocumentationFormatConfiguration(
                 order: index + formatConfigurations.count,
@@ -84,7 +84,6 @@ public class ProjectSettingsViewModel: DocuBotViewModel {
             )
             formatConfigurations.append(configuration)
         }
-        print("formatConfigurations: \(formatConfigurations)")
         self.formatConfigurations = formatConfigurations
 
         super.init(serviceContainer: serviceContainer)
@@ -238,10 +237,24 @@ public extension ProjectSettingsViewModel {
             guard let projectID = self.project.id else {
                 return
             }
+            guard let projectDirectory = self.projectDirectory else {
+                return
+            }
 
             let supportedFormats = self.formatConfigurations
                 .filter { $0.isEnabled }
                 .map(\.format)
+
+            let project = Project(
+                id: self.project.id,
+                path: projectDirectory.path(),
+                name: self.projectName,
+                isDirty: false,
+                urlBookmarkData: self.projectDirectoryBookmarkData,
+                urlBookmarkDataIsStale: false,
+                createdAt: self.project.createdAt,
+                updatedAt: .now
+            )
 
             let settings = ProjectSettings(
                 id: self.projectSettings.id,
@@ -256,6 +269,7 @@ public extension ProjectSettingsViewModel {
             do {
                 // Update the DB
                 try await persistenceService.update(projectSettings: settings)
+                try await persistenceService.update(project: project)
 
                 // Close this window
                 DispatchQueue.main.async {
@@ -286,7 +300,8 @@ public extension ProjectSettingsViewModel {
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project 1",
                 isDirty: false,
-                documentationChecksum: "123abc",
+                urlBookmarkData: nil,
+                urlBookmarkDataIsStale: true,
                 createdAt: .now,
                 updatedAt: .now
             ),

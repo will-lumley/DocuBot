@@ -16,6 +16,7 @@ public enum PersistenceError: Error {
 public protocol PersistenceService: Service {
 
     func insert(project: Project) async throws -> Project
+    func getProject(id: Int64) async throws -> Project
     func getProjects() -> AnyPublisher<[Project], Error>
     func delete(project: Project) async throws -> Bool
     func update(project: Project) async throws

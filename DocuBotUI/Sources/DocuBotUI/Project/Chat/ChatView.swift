@@ -8,6 +8,7 @@
 import DocuBotViewModel
 import SFSafeSymbols
 import SwiftUI
+import SwiftfulLoadingIndicators
 
 public struct ChatView: View {
 
@@ -30,6 +31,25 @@ public struct ChatView: View {
                                 MessageCellView(viewModel: message)
                                     .id(message.id)
                             }
+
+                            switch viewModel.loadingState {
+                            case .loading:
+                                HStack {
+                                    LoadingIndicator(
+                                        animation: .circleRunner,
+                                        color: .white,
+                                        size: .small
+                                    )
+                                    .padding(.leading, 4)
+                                    Spacer()
+                                }
+                                .id(ChatViewModel.LoadingState.loading)
+                            case .partial(let content):
+                                PartialMessageCellView(content: content)
+                                    .id(content)
+                            case .none:
+                                EmptyView()
+                            }
                         } else {
                             EmptyView()
                         }
@@ -45,6 +65,19 @@ public struct ChatView: View {
                     DispatchQueue.main.async {
                         withAnimation(.easeOut) {
                             proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                        }
+                    }
+                }
+                .onReceive(viewModel.$loadingState) { value in
+                    DispatchQueue.main.async {
+                        withAnimation(.easeOut) {
+                            switch value {
+                            case .loading:
+                                proxy.scrollTo(ChatViewModel.LoadingState.loading, anchor: .bottom)
+                            case .partial(let content):
+                                proxy.scrollTo(content, anchor: .bottom)
+                            case .none:()
+                            }
                         }
                     }
                 }
