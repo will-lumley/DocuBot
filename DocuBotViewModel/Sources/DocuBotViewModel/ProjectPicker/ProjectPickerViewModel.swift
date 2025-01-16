@@ -5,7 +5,10 @@
 //  Created by William Lumley on 4/7/2024.
 //
 
+// Having to import AppKit is very sad, but necessary to open the URL
+import AppKit
 import DocuBotService
+import DocuBotToolbox
 import Foundation
 
 public class ProjectPickerViewModel: DocuBotViewModel {
@@ -16,8 +19,13 @@ public class ProjectPickerViewModel: DocuBotViewModel {
 
     // MARK: - Properties
 
+    /// The Cell ViewModel that has been selected by our user
+    @Published public var selectedProject: ProjectPickerCellViewModel?
+
+    /// The closure that will be called when the CloseWindow button is selected
     private let onCloseWindow: OnCloseWindow
 
+    /// The ViewModels that represent our project cells/rows
     @Published public var projectCellViewModels = [ProjectPickerCellViewModel]()
 
     // MARK: - Lifecycle
@@ -29,6 +37,12 @@ public class ProjectPickerViewModel: DocuBotViewModel {
 
     public override func configureBindings() {
         super.configureBindings()
+
+        self.$selectedProject
+            .sink {
+                print("Selected Project: \($0?.title)")
+            }
+            .store(in: &cancellables)
 
         // Connect our ProjectCellViewModels to our DB layer
         persistenceService.getProjects()
@@ -59,10 +73,37 @@ public extension ProjectPickerViewModel {
     }
 
     var closeButton: IconButtonViewModel {
+        .init(symbol: .xmarkCircle, hoverSymbol: .xmarkCircleFill, onSelect: onCloseWindow)
+    }
+
+    var loadNewProjectButton: MenuButtonViewModel {
+        .init(text: L10n.ProjectPicker.loadNewProject) {
+            print("LOAD NEW PROJECT")
+        }
+    }
+
+    var viewSourceCodeButton: MenuButtonViewModel {
+        .init(text: L10n.ProjectPicker.viewSourceCode) {
+            guard let url = URL(string: Secrets.AppInfo.sourceCodeURL) else {
+                return
+            }
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    var emailDeveloper: MenuButtonViewModel {
+        .init(text: L10n.ProjectPicker.emailDeveloper) {
+            let service = NSSharingService(named: NSSharingService.Name.composeEmail)
+            service?.recipients = [Secrets.AppInfo.developerEmail]
+            service?.perform(withItems: [""])
+        }
+    }
+
+    var emptyProjectConfiguration: EmptyListConfiguration {
         .init(
-            symbol: .xmarkCircle,
-            hoverSymbol: .xmarkCircleFill,
-            onSelect: closeButtonSelected
+            title: L10n.ProjectPicker.emptyProjectTitle,
+            subtitle: L10n.ProjectPicker.emptyProjectSubtitle,
+            icon: .booksVerticalFill
         )
     }
 
@@ -71,10 +112,6 @@ public extension ProjectPickerViewModel {
 // MARK: - Private
 
 private extension ProjectPickerViewModel {
-
-    func closeButtonSelected() {
-        self.onCloseWindow()
-    }
 
 }
 

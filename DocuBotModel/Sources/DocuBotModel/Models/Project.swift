@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Project {
+public struct Project: Hashable {
 
     // MARK: - Properties
 

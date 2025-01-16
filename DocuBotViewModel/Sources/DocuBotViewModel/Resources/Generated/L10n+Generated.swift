@@ -11,6 +11,14 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
   internal enum ProjectPicker {
+    /// Email the Developer
+    internal static let emailDeveloper = L10n.tr("Localizable", "ProjectPicker.emailDeveloper", fallback: "Email the Developer")
+    /// Your insights await – load a new project to get started
+    internal static let emptyProjectSubtitle = L10n.tr("Localizable", "ProjectPicker.emptyProjectSubtitle", fallback: "Your insights await – load a new project to get started")
+    /// Your project list is empty
+    internal static let emptyProjectTitle = L10n.tr("Localizable", "ProjectPicker.emptyProjectTitle", fallback: "Your project list is empty")
+    /// Load New Project
+    internal static let loadNewProject = L10n.tr("Localizable", "ProjectPicker.loadNewProject", fallback: "Load New Project")
     /// Developed by William Lumley
     internal static let subtitle1 = L10n.tr("Localizable", "ProjectPicker.subtitle1", fallback: "Developed by William Lumley")
     /// v%@(%@)
@@ -19,6 +27,8 @@ internal enum L10n {
     }
     /// Welcome to DocuBot
     internal static let title = L10n.tr("Localizable", "ProjectPicker.title", fallback: "Welcome to DocuBot")
+    /// View Source Code
+    internal static let viewSourceCode = L10n.tr("Localizable", "ProjectPicker.viewSourceCode", fallback: "View Source Code")
   }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
