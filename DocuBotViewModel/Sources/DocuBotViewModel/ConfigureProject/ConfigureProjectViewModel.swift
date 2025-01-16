@@ -459,24 +459,6 @@ public extension ConfigureProjectViewModel {
         }
     }
 
-    var resyncMessage: String? {
-        guard self.resyncNeeded == false else {
-            return nil
-        }
-
-        if self.metricChanged {
-            return L10n.ConfigureProject.Resync.Metric.message
-        } else if self.embeddingModelChanged {
-            return L10n.ConfigureProject.Resync.Model.message
-        } else if self.directoryChanged {
-            return L10n.ConfigureProject.Resync.Directory.message
-        } else if self.formatsChanged {
-            return L10n.ConfigureProject.Resync.Format.message
-        }
-
-        return nil
-    }
-
     func saveButtonSelected() async {
         // Do we need to warn the user of a full-resync?
         if self.resyncNeeded {
@@ -526,6 +508,24 @@ public extension ConfigureProjectViewModel {
 // MARK: - Private
 
 private extension ConfigureProjectViewModel {
+
+    var resyncMessage: String? {
+        guard self.resyncNeeded == false else {
+            return nil
+        }
+
+        if self.metricChanged {
+            return L10n.ConfigureProject.Resync.Metric.message
+        } else if self.embeddingModelChanged {
+            return L10n.ConfigureProject.Resync.Model.message
+        } else if self.directoryChanged {
+            return L10n.ConfigureProject.Resync.Directory.message
+        } else if self.formatsChanged {
+            return L10n.ConfigureProject.Resync.Format.message
+        }
+
+        return nil
+    }
 
     var newAlertStatus: Project.AlertStatus? {
         // If we've changed metrics
@@ -796,7 +796,9 @@ private extension ConfigureProjectViewModel {
             // Insert the Project into the DB
             let project = try self.finalisedProject()
             let inserted = try await self.persist(project: project)
-            let projectID = try inserted.id.orThrow(Project.ProjectError.missingID)
+            let projectID = try inserted.id.orThrow(
+                Project.ProjectError.missingID
+            )
 
             // Insert the ProjectSettings into the DB
             let settings = try self.finalisedSettings(for: projectID)
