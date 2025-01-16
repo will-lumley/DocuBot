@@ -7,6 +7,7 @@
 
 import Combine
 import DocuBotService
+import DocuBotToolbox
 import Foundation
 
 /// A base class for view models in the DocuBot application, providing access to shared
@@ -58,7 +59,13 @@ public class DocuBotViewModel: ObservableObject {
     /// - Parameter serviceContainer: The `ServiceContainer` providing shared services.
     public init(serviceContainer: ServiceContainer) {
         self.serviceContainer = serviceContainer
-        self.configureBindingsIfNeeded()
+
+        // We only automatically configure bindings in a
+        // "production" envirionment, we will manually configure
+        // bindings in unit test
+        if Device.isUnitTesting == false {
+            self.configureBindingsIfNeeded()
+        }
     }
 
     /// Configures bindings for the view model if they are needed.

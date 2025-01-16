@@ -127,11 +127,14 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
 
+        testSubject.configureBindingsIfNeeded()
+        var alertIterator = testSubject.$alertConfiguration
+            .values
+            .makeAsyncIterator()
+
         // THEN our prime state is `nil`
         let nextPrime = try #require(try await primedIterator.next())
         #expect(nextPrime == nil)
-
-        var alertIterator = testSubject.$alertConfiguration.values.makeAsyncIterator()
 
         // THEN we have an alert that is nil
         var nextAlert = try #require(await alertIterator.next())
@@ -153,6 +156,8 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
+        testSubject.configureBindingsIfNeeded()
+
         let project = try #require(self.project)
 
         var configureIterator = testSubject.$configureProjectViewModel
@@ -197,6 +202,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
+        testSubject.configureBindingsIfNeeded()
 
         var configureIterator = testSubject.$configureProjectViewModel
             .values
@@ -268,6 +274,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         )
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
+        testSubject.configureBindingsIfNeeded()
 
         var sourcesIterator = testSubject.$sources.values.makeAsyncIterator()
         var responseIterator = testSubject.$response.values.makeAsyncIterator()
@@ -333,6 +340,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         )
         let model = LLMModel.mock(id: 1)
         let testSubject = try await self.mock(true, model, settings)
+        testSubject.configureBindingsIfNeeded()
 
         var sourcesIterator = testSubject.$sources.values.makeAsyncIterator()
         var responseIterator = testSubject.$response.values.makeAsyncIterator()
@@ -422,6 +430,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN a URL is selected
         testSubject.directorySelected(newTestURL)
@@ -453,6 +462,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func noDirectorySelected() async throws {
         // GIVEN a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Listen in the Alert publisher
         var alertIterator = testSubject.$alertConfiguration.values.makeAsyncIterator()
@@ -480,6 +490,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func invalidDirectorySelected() async throws {
         // GIVEN a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Listen in the Alert publisher
         var alertIterator = testSubject.$alertConfiguration.values.makeAsyncIterator()
@@ -520,6 +531,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator to listen to the Questions publisher
         var questionsIterator = testSubject.$questions.values.makeAsyncIterator()
@@ -543,6 +555,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator to listen to the Questions publisher
         var alertStatusIterator = testSubject.$alertStatus.values.makeAsyncIterator()
@@ -562,6 +575,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator to listen to the Questions publisher
         var syncButtonWarningStateIterator = testSubject.syncProjectButton.$warningState.values.makeAsyncIterator()
@@ -588,6 +602,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator to listen to the Questions publisher
         var syncButtonSymbolIterator = testSubject.syncProjectButton.$symbol.values.makeAsyncIterator()
@@ -606,6 +621,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func viewSourcesButtonDisabledSyncing() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our ViewSources button is disabled
         #expect(testSubject.sourcesButton.isEnabled == false)
@@ -641,6 +657,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func viewSourcesButtonDisabledNoSources() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our ViewSources button is disabled
         #expect(testSubject.sourcesButton.isEnabled == false)
@@ -674,6 +691,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func viewSourcesButtonEnabled() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator that listens to our SourcesButton isEnabled state
         var isEnabledIterator = testSubject.sourcesButton.$isEnabled
@@ -700,6 +718,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func syncButtonDisabledWhenSyncing() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator that listens to our SyncButton isEnabled state
         var isEnabledIterator = testSubject.syncProjectButton.$isEnabled
@@ -729,6 +748,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func settingsButtonDisabledWhenSyncing() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our SettingsButton is enabled
         #expect(testSubject.projectSettingsButton.isEnabled == true)
@@ -756,6 +776,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func disableTextViewWhenExpectingResponse() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our TextView is NOT disabled
         #expect(testSubject.disableTextField == false)
@@ -787,6 +808,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our TextView is disabled
         #expect(testSubject.disableTextField == true)
@@ -799,6 +821,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our TextView is NOT disabled
         #expect(testSubject.disableTextField == false)
@@ -808,6 +831,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func askButtonTitle() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator that listens to our AskButton title
         var titleIterator = testSubject.$askButtonTitle.values.makeAsyncIterator()
@@ -833,6 +857,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func askButtonIcon() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator that listens to our AskButton icon
         var iconIterator = testSubject.$askButtonIcon.values.makeAsyncIterator()
@@ -862,6 +887,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator that listens to our TextView isEnabled state
         var isDisabledIterator = testSubject.$shareButtonDisabled.values.makeAsyncIterator()
@@ -887,6 +913,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
+        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator that listens to our ShareContent values
         var shareContentIterator = testSubject.$shareContent.values.makeAsyncIterator()
@@ -951,6 +978,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // Let's listen in on our SyncStage
         var syncStageIterator = testSubject.$syncStage.values.makeAsyncIterator()
@@ -1005,6 +1033,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // Let's listen in on our SyncStage
         var syncStageIterator = testSubject.$syncStage.values.makeAsyncIterator()
@@ -1057,6 +1086,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
+        testSubject.configureBindingsIfNeeded()
 
         // Let's listen in on our SyncStage
         var syncStageIterator = testSubject.$syncStage.values.makeAsyncIterator()

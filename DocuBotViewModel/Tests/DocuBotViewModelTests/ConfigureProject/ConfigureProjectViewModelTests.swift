@@ -140,6 +140,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func initialisationEditing() async throws {
         // GIVEN we have a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN properties are set based on the ProjectInfo
         #expect(testSubject.projectInfo != nil)
@@ -178,6 +179,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formTitleEditing() async throws {
         // GIVEN we have our ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the form title is correctly set
         #expect(testSubject.formTitle == L10n.ConfigureProject.Editing.formTitle)
@@ -196,6 +198,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func saveButtonTitleEditing() async throws {
         // GIVEN we have our ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the form title is correctly set
         #expect(testSubject.saveButtonTitle == L10n.ConfigureProject.Editing.createButton)
@@ -533,6 +536,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingDirectory() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not the project directory
         testSubject.projectDirectory = nil
@@ -556,6 +560,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingDirectoryData() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not the secure URL data
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -580,6 +585,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingName() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not the project name
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -605,6 +611,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingFormat() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not our format types
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -631,6 +638,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingSeed() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not our seed
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -658,6 +666,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingTopK() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not our TopK
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -686,6 +695,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingInvalidTopPLower() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not a valid input for our TopP
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -715,6 +725,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingInvalidTopPUpper() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not a valid input for our TopP
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -744,6 +755,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingContextLength() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not our Context Length
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -773,6 +785,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingBatchSize() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not our Batch Size
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -803,6 +816,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingTokenCount() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not our Token Count
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -834,6 +848,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formValidationEditingMissingSystemPrompt() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we ensure we have filled out some of the details, but not our system prompt
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -953,6 +968,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func editProject() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN there is only 1 project
         #expect(try await persistenceService.getProjects().count == 1)
@@ -1034,6 +1050,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func resetLlmOptions() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
@@ -1265,6 +1282,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func noResyncMessageEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
@@ -1277,6 +1295,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func resyncMessageMetricChangedEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // GIVEN that our metric isn't dotProduct
         #expect(testSubject.similarityMetric != .dotProduct)
@@ -1321,6 +1340,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func resyncMessageEmbeddedModelChangedEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // GIVEN that our metric isn't dotProduct
         #expect(testSubject.embeddingModel != .miniLmAll)
@@ -1363,6 +1383,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func resyncMessageDirectoryChangedEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // GIVEN that our directory isn't /example/path
         #expect(testSubject.projectDirectory != URL(fileURLWithPath: "/example/path"))
@@ -1408,6 +1429,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func resyncMessageFormatsChangedEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we change the formats
         testSubject.formatConfigurations = [
@@ -1460,6 +1482,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func newAlertStatusNoneEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we change nothing
         // WHEN we try and save the Project & Settings
@@ -1478,6 +1501,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func newAlertStatusMetricEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // GIVEN that our metric isn't dotProduct
         #expect(testSubject.similarityMetric != .dotProduct)
@@ -1515,6 +1539,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func newAlertStatusModelEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // GIVEN that our metric isn't miniLmAll
         #expect(testSubject.embeddingModel != .miniLmAll)
@@ -1552,6 +1577,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func newAlertStatusDirectoryEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // WHEN we change the directory
         testSubject.projectDirectory = URL(fileURLWithPath: "/foo/bar")
@@ -1586,6 +1612,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func newAlertStatusFormatsEditing() async throws {
         // GIVEN a ConfigureProjectViewModel for editing
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // GIVEN that our metric isn't miniLmAll
         #expect(
@@ -1909,6 +1936,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func loadValues() async throws {
         // GIVEN we have an existing ConfigureProjectViewModel
         let testSubject = try await self.mockForEditing()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN all of the default values are correctly set
         #expect(testSubject.projectInfo != nil)

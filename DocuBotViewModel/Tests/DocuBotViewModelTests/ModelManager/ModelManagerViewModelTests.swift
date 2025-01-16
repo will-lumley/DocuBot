@@ -313,6 +313,7 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
 
         // Create an iterator to get our values over time
         var iterator = testSubject.$listState.values.makeAsyncIterator()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the ListState is .none
         #expect(await iterator.next() == ListViewState.none)
@@ -357,6 +358,7 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
 
         // Create an iterator to get our values over time
         var iterator = testSubject.$listState.values.makeAsyncIterator()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN the ListState is initially .none
         #expect(await iterator.next() == ListViewState.none)
