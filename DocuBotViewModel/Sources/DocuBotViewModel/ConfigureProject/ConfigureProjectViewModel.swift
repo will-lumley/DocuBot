@@ -8,6 +8,7 @@
 import Combine
 import DocuBotModel
 import DocuBotService
+import DocuBotToolbox
 import Foundation
 
 public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @unchecked Sendable {
@@ -28,14 +29,17 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case maxTokenCount
     }
 
-    public enum LoadState {
-        case idle
-        case creating
-        case created
-    }
-
     public enum OpenWindow {
         case project(ProjectViewModel.OpenWindowPackage)
+    }
+
+    public enum ConfigureType {
+        case creating
+        case editing
+    }
+
+    public enum ConfigurationError: LocalizedError {
+        case noDirectory
     }
 
     public struct FormatConfiguration: Identifiable {
@@ -48,11 +52,18 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         }
     }
 
+    public struct ProjectInfo {
+        public let project: Project
+        public let settings: ProjectSettings
+    }
+
     public typealias Format = ProjectSettings.DocumentationFormat
 
     // MARK: - Properties
 
     public var id = UUID()
+
+    public let projectInfo: ProjectInfo?
 
     @Published public var projectDirectory: URL?
     @Published public var directoryText: String
@@ -65,16 +76,15 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var embeddingModel: ProjectSettings.EmbeddingModel
     @Published public var similarityMetric: ProjectSettings.SimilarityMetric
 
-    @Published public var seed: Int = 1234
-    @Published public var topK: Int = 40
-    @Published public var topP: Double = 0.9
-    @Published public var contextLength: Int = 2048
-    @Published public var temperature: Double = 0.2
-    @Published public var batchSize: Int = 2048
+    @Published public var seed: Int
+    @Published public var topK: Int
+    @Published public var topP: Double
+    @Published public var contextLength: Int
+    @Published public var temperature: Double
+    @Published public var batchSize: Int
     @Published public var stopSequence: String?
-    @Published public var maxTokenCount: Int = 1024*1024
+    @Published public var maxTokenCount: Int
 
-    @Published public var loadState = LoadState.idle
     @Published public var continueButtonEnabled = false
 
     /// The encrypted data that makes up the secure directory bookmark
@@ -83,8 +93,10 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     /// All the languages available for the user to choose from
     public let availableLanguages = ProjectSettings.Language.allCases
 
+    /// All the embedding models the user can choose from
     public let availableEmbeddingModels = ProjectSettings.EmbeddingModel.allCases
 
+    /// All the similarity metric types the user can choose from
     public let availableSimilarityMetrics = ProjectSettings.SimilarityMetric.allCases
 
     /// This will be called to open a new window, along with the info that dictates which window
@@ -96,25 +108,81 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     /// This is used to create or close an `Alert`
     @Published public var alertConfiguration: AlertConfiguration?
 
+    /// This is used to display help information to our user
     @Published public var helpConfiguration: HelpConfiguration?
 
     // MARK: - Lifecycle
 
-    override public init(
+    public init(
+        projectInfo: ProjectInfo? = nil,
         serviceContainer: ServiceContainer
     ) {
-        self.directoryText = L10n.ConfigureProject.Configuration.Directory.select
-        self.selectedLanguage = .english
+        if let projectInfo {
+            let directory = URL(fileURLWithPath: projectInfo.project.path)
+            self.projectInfo = projectInfo
+            self.projectDirectory = directory
+            self.selectedLanguage = projectInfo.settings.language
+            self.directoryText = directory.lastPathComponent
 
-        self.formatConfigurations = Format.allCases
-            .enumerated()
-            .map { index, format in
-                .init(order: index, format: format, isEnabled: format.isOther == false)
+            var formatConfigurations = Format.allCases
+                .enumerated()
+                .map { index, format in
+                    FormatConfiguration(
+                        order: index,
+                        format: format,
+                        isEnabled: projectInfo.settings.isEnabled(format)
+                    )
+                }
+
+            for (index, format) in projectInfo.settings.otherFormats.enumerated() {
+                let configuration = FormatConfiguration(
+                    order: index + formatConfigurations.count,
+                    format: format,
+                    isEnabled: true
+                )
+                formatConfigurations.append(configuration)
             }
+            self.formatConfigurations = formatConfigurations
 
-        self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
-        self.embeddingModel = .distilbert
-        self.similarityMetric = .cosine
+            self.systemPrompt = projectInfo.settings.systemPrompt
+            self.embeddingModel = projectInfo.settings.embeddingModel
+            self.similarityMetric = projectInfo.settings.similarityMetric
+            self.seed = projectInfo.settings.seed
+            self.topK = projectInfo.settings.topK
+            self.topP = projectInfo.settings.topP
+            self.contextLength = projectInfo.settings.contextLength
+            self.temperature = projectInfo.settings.temperature
+            self.batchSize = projectInfo.settings.batchSize
+            self.stopSequence = projectInfo.settings.stopSequence
+            self.maxTokenCount = projectInfo.settings.maxTokenCount
+        } else {
+            self.projectInfo = nil
+
+            self.directoryText = L10n.ConfigureProject.Configuration.Directory.select
+            self.selectedLanguage = .english
+
+            self.formatConfigurations = Format.allCases
+                .enumerated()
+                .map { index, format in
+                    .init(order: index, format: format, isEnabled: format.isOther == false)
+                }
+
+            self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
+            self.embeddingModel = .distilbert
+            self.similarityMetric = .cosine
+            self.seed = 1234
+            self.topK = 40
+            self.topP = 0.9
+            self.contextLength = 2048
+            self.temperature = 0.2
+            self.batchSize = 2048
+            self.stopSequence = ""
+            self.maxTokenCount = 1024*1024
+
+            self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
+            self.embeddingModel = .distilbert
+            self.similarityMetric = .cosine
+        }
 
         super.init(serviceContainer: serviceContainer)
     }
@@ -165,12 +233,13 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
 public extension ConfigureProjectViewModel {
 
-    var windowTitle: String {
-        L10n.ConfigureProject.windowTitle
-    }
-
-    var formTitle: String {
-        L10n.ConfigureProject.formTitle
+   var formTitle: String {
+       switch self.configureType {
+       case .creating:
+           return L10n.ConfigureProject.Creating.formTitle
+       case .editing:
+           return L10n.ConfigureProject.Editing.formTitle
+       }
     }
 
     var projectNameTitle: String {
@@ -338,76 +407,55 @@ public extension ConfigureProjectViewModel {
     // MARK: Other
 
     var createProjectButtonTitle: String {
-        L10n.ConfigureProject.createButton
+        switch self.configureType {
+        case .creating:
+            return L10n.ConfigureProject.Creating.createButton
+        case .editing:
+            return L10n.ConfigureProject.Editing.createButton
+        }
     }
 
     func createProjectButtonSelected() {
-        guard let directory = self.projectDirectory else {
-            return
-        }
-
-        let project = Project(
-            path: directory.path(),
-            name: self.projectName,
-            isDirty: false,
-            urlBookmarkData: self.projectDirectoryBookmarkData,
-            urlBookmarkDataIsStale: false,
-            exampleQuestions: [],
-            createdAt: .now,
-            updatedAt: .now
-        )
-
         Task {
             do {
                 // Insert the Project into the DB
-                let inserted = try await persistenceService.insert(project: project)
-
-                guard let id = inserted.id else {
-                    return
-                }
-
-                let supportedFormats = self.formatConfigurations
-                    .filter { $0.isEnabled }
-                    .map(\.format)
+                let project = try self.finalisedProject()
+                let inserted = try await self.persist(project: project)
+                let projectID = try project.id.orThrow(Project.ProjectError.missingID)
 
                 // Insert the ProjectSettings into the DB
-                let settings = ProjectSettings(
-                    projectID: id,
-                    supportedFormats: supportedFormats,
-                    respondWithDocumentsOnly: false,
-                    language: self.selectedLanguage,
-                    systemPrompt: self.systemPrompt,
-                    embeddingModel: self.embeddingModel,
-                    similarityMetric: self.similarityMetric,
-                    seed: self.seed,
-                    topK: self.topK,
-                    topP: self.topP,
-                    contextLength: self.contextLength,
-                    temperature: self.temperature,
-                    batchSize: self.batchSize,
-                    stopSequence: self.stopSequence,
-                    maxTokenCount: self.maxTokenCount,
-                    createdAt: .now,
-                    updatedAt: .now
-                )
-                _ = try await persistenceService.insert(settings: settings)
+                let settings = try self.finalisedSettings(for: projectID)
+                _ = try await self.persist(settings: settings)
 
                 await MainActor.run {
                     // Close this current window
                     self.onDismiss.send(())
 
-                    // Open the Window with the project that we just inserted
-                    self.onOpen.send(
-                        .project(
-                            .init(project: inserted)
+                    if self.configureType == .creating {
+                        // Open the Window with the project that we just inserted
+                        self.onOpen.send(
+                            .project(
+                                .init(project: inserted)
+                            )
                         )
-                    )
+                    }
                 }
             } catch {
-                self.alertConfiguration = .init(
-                    title: L10n.ConfigureProject.Error.FailedToCreate.title,
-                    message: error.localizedDescription
-                )
+                logService.log(with: .error, "Failed to persist: \(error)")
+
+                let errorTitle = switch self.configureType {
+                case .creating:
+                    L10n.Error.ConfigureProject.Creating.FailedToCreate.title
+                case .editing:
+                    L10n.Error.ConfigureProject.Editing.FailedToCreate.title
+                }
+
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: errorTitle,
+                        message: error.description
+                    )
+                }
             }
         }
     }
@@ -434,12 +482,143 @@ public extension ConfigureProjectViewModel {
 
 }
 
+// MARK: - Private
+
+private extension ConfigureProjectViewModel {
+
+    var configureType: ConfigureType {
+        self.projectInfo != nil ? .editing : .creating
+    }
+
+    func finalisedProject() throws -> Project {
+        guard let directory = self.projectDirectory else {
+            throw ConfigurationError.noDirectory
+        }
+
+        // We're modifying an existing project
+        if let project = self.projectInfo?.project {
+            return Project(
+                id: project.id,
+                path: directory.path(),
+                name: self.projectName,
+                isDirty: false,
+                urlBookmarkData: self.projectDirectoryBookmarkData,
+                urlBookmarkDataIsStale: false,
+                exampleQuestions: [],
+                createdAt: project.createdAt,
+                updatedAt: .now
+            )
+        }
+        // We're creating a brand new project
+        else {
+            return Project(
+                path: directory.path(),
+                name: self.projectName,
+                isDirty: false,
+                urlBookmarkData: self.projectDirectoryBookmarkData,
+                urlBookmarkDataIsStale: false,
+                exampleQuestions: [],
+                createdAt: .now,
+                updatedAt: .now
+            )
+        }
+    }
+
+    func finalisedSettings(for projectID: Int64) throws -> ProjectSettings {
+        let supportedFormats = self.formatConfigurations
+            .filter { $0.isEnabled }
+            .map(\.format)
+
+        // We're modifying an existing project
+        if let projectInfo = self.projectInfo {
+            return ProjectSettings(
+                projectID: projectInfo.settings.projectID,
+                supportedFormats: supportedFormats,
+                respondWithDocumentsOnly: false,
+                language: self.selectedLanguage,
+                systemPrompt: self.systemPrompt,
+                embeddingModel: self.embeddingModel,
+                similarityMetric: self.similarityMetric,
+                seed: self.seed,
+                topK: self.topK,
+                topP: self.topP,
+                contextLength: self.contextLength,
+                temperature: self.temperature,
+                batchSize: self.batchSize,
+                stopSequence: self.stopSequence,
+                maxTokenCount: self.maxTokenCount,
+                createdAt: projectInfo.settings.createdAt,
+                updatedAt: .now
+            )
+        }
+        // We're creating a brand new project
+        else {
+            return ProjectSettings(
+                projectID: projectID,
+                supportedFormats: supportedFormats,
+                respondWithDocumentsOnly: false,
+                language: self.selectedLanguage,
+                systemPrompt: self.systemPrompt,
+                embeddingModel: self.embeddingModel,
+                similarityMetric: self.similarityMetric,
+                seed: self.seed,
+                topK: self.topK,
+                topP: self.topP,
+                contextLength: self.contextLength,
+                temperature: self.temperature,
+                batchSize: self.batchSize,
+                stopSequence: self.stopSequence,
+                maxTokenCount: self.maxTokenCount,
+                createdAt: .now,
+                updatedAt: .now
+            )
+        }
+    }
+
+    func persist(project: Project) async throws -> Project {
+        switch self.configureType {
+        case .creating:
+            let project = try await persistenceService.insert(project: project)
+            return project
+        case .editing:
+            let project = try await persistenceService.update(project: project)
+            return project
+        }
+    }
+
+    func persist(settings: ProjectSettings) async throws -> ProjectSettings {
+        switch self.configureType {
+        case .creating:
+            let settings = try await persistenceService.insert(settings: settings)
+            return settings
+        case .editing:
+            let settings = try await persistenceService.update(settings: settings)
+            return settings
+        }
+    }
+
+}
+
+// MARK: - ConfigurationError
+
+public extension ConfigureProjectViewModel.ConfigurationError {
+
+    var errorDescription: String? {
+        switch self {
+        case .noDirectory:
+            return L10n.Error.ConfigureProject.ConfigurationError.noDirectory
+        }
+    }
+
+}
+
 // MARK: - Preview
 
 public extension ConfigureProjectViewModel {
 
     static var mock: ConfigureProjectViewModel {
         .init(
+            projectInfo: nil,
             serviceContainer: .mock
         )
     }

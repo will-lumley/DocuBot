@@ -1,6 +1,4 @@
-// ---------------------------------------------------------- //
-//                           LOGS
-// ---------------------------------------------------------- //
+"Error.Persistence.valueNotFound" = "Failed to find value.";
 
 "Log.LogType.info" = "[INFO]";
 "Log.LogType.error" = "[ERROR]";

@@ -98,9 +98,12 @@ class GRDBService: PersistenceService {
         }
     }
 
-    func update(project: Project) async throws {
-        try await self.dbQueue.write { db in
-            try ProjectRecord(model: project).update(db)
+    func update(project: Project) async throws -> Project {
+        return try await self.dbQueue.write { db in
+            let record = ProjectRecord(model: project)
+            try record.update(db)
+
+            return Project(record: record)
         }
     }
 
@@ -126,9 +129,12 @@ class GRDBService: PersistenceService {
         }
     }
 
-    func update(projectSettings: ProjectSettings) async throws {
-        try await self.dbQueue.write { db in
-            try ProjectSettingsRecord(model: projectSettings).update(db)
+    func update(settings: ProjectSettings) async throws -> ProjectSettings {
+        return try await self.dbQueue.write { db in
+            let record = ProjectSettingsRecord(model: settings)
+            try record.update(db)
+
+            return ProjectSettings(record: record)
         }
     }
 

@@ -23,7 +23,7 @@ public struct Document: Hashable, Codable, Sendable {
         }
     }
 
-    public enum ChecksumGenerationError: Error {
+    public enum ChecksumGenerationError: LocalizedError {
         case failedConversion
     }
 
@@ -89,6 +89,19 @@ public extension Array where Element == Document {
         }
 
         return checksum
+    }
+
+}
+
+// MARK: - ChecksumGenerationError
+
+public extension Document.ChecksumGenerationError {
+
+    var errorDescription: String? {
+        switch self {
+        case .failedConversion:
+            return L10n.Error.Document.checksumGeneration
+        }
     }
 
 }

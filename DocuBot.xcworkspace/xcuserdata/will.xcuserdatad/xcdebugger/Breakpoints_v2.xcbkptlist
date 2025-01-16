@@ -3,4 +3,178 @@
    uuid = "F5641CA8-A07F-4432-A1DD-68018DB71AF2"
    type = "0"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "272"
+            endingLineNumber = "272"
+            landmarkName = "sync()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - c0f51a82a3ee6b2a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 9d1285df856f25eb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) await resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - f9696879e599af34"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 3ec86bc61ff456a9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(11) await resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 9ca2a970462a2fed"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(12) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 1811f7ff0d75ccee"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(13) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 9580c47ecbbf61ef"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(14) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 11f712fd92f906e8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(15) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 8d66637d59c0bbe9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(16) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 6f1425c393d4ce66"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #9 @Swift.MainActor @Sendable () -&gt; () in closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "279"
+                  endingLineNumber = "279">
+               </Location>
+               <Location
+                  uuid = "A0054AEB-DFC8-4DF6-AB1A-84195C8DE36C - 6f1425c393d4c97d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #9 @Swift.MainActor @Sendable () -&gt; () in closure #1 () async -&gt; () in DocuBotViewModel.ProjectViewModel.sync() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/ProjectViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "272"
+                  endingLineNumber = "272">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

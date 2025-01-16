@@ -14,7 +14,7 @@ public class DocumentParser {
 
     // MARK: - Types
 
-    public enum DocumentError: Error {
+    public enum DocumentError: LocalizedError {
         case noBookmarkData
         case bookmarkIsStale
     }
@@ -245,15 +245,21 @@ private extension DocumentParser {
         }
 
         return count
-        /*
-        return enumerator?.count(where: { nextObject in
-            guard let url = enumerator?.nextObject() as? URL else {
-                return false
-            }
+    }
 
-            return self.validDocumentation(at: url)
-        }) ?? 0
-        */
+}
+
+// MARK: - DocumentParser.DocumentError
+
+extension DocumentParser.DocumentError {
+
+    public var errorDescription: String? {
+        switch self {
+        case .noBookmarkData:
+            return L10n.Error.Document.noBookmarkData
+        case .bookmarkIsStale:
+            return L10n.Error.Document.bookmarkIsStale
+        }
     }
 
 }

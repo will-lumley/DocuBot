@@ -157,14 +157,14 @@ public extension WelcomeViewModel {
                 let success = try await persistenceService.delete(project: project)
                 if success == false {
                     self.alertConfiguration = .init(
-                        title: L10n.Welcome.Error.FailedToDelete.title,
-                        message: L10n.Welcome.Error.FailedToDelete.message
+                        title: L10n.Error.Welcome.FailedToDelete.title,
+                        message: L10n.Error.Welcome.FailedToDelete.message
                     )
                 }
             } catch {
                 self.alertConfiguration = .init(
-                    title: L10n.Welcome.Error.FailedToDelete.title,
-                    message: error.localizedDescription
+                    title: L10n.Error.Welcome.FailedToDelete.title,
+                    message: error.description
                 )
             }
         }
