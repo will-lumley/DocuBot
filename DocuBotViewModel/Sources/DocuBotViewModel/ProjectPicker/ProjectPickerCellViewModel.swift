@@ -80,6 +80,7 @@ public extension ProjectPickerCellViewModel {
                 id: 1,
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project_1",
+                documentationChecksum: "123",
                 createdAt: .now,
                 updatedAt: .now
             )

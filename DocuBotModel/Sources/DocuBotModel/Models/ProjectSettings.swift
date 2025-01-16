@@ -64,6 +64,27 @@ public struct ProjectSettings: Hashable {
 
 }
 
+// MARK: - ProjectSettings.DocumentationFormat
+
+public extension ProjectSettings.DocumentationFormat {
+
+    var extensionName: String {
+        switch self {
+        case .html:
+            return "html"
+        case .md:
+            return "md"
+        case .txt:
+            return "txt"
+        case .rtf:
+            return "rtf"
+        case .other(let value):
+            return value
+        }
+    }
+
+}
+
 // MARK: - ProjectSettings.Language
 
 extension ProjectSettings.Language: Identifiable {

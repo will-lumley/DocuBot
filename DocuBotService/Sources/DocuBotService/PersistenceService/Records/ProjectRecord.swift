@@ -15,6 +15,7 @@ public struct ProjectRecord: Record {
     public let id: Int
     public let path: String
     public let name: String
+    public let documentationChecksum: String
     public let createdAt: Date
     public let updatedAt: Date
 

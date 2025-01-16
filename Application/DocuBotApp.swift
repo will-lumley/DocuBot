@@ -43,7 +43,6 @@ struct DocuBotApp: App {
             if let package {
                 CreateProjectView(
                     viewModel: .init(
-                        directory: package.directory,
                         serviceContainer: delegate.serviceContainer
                     )
                 )

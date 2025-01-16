@@ -82,12 +82,21 @@ public extension ProjectPickerViewModel {
         return L10n.ProjectPicker.subtitle2(versionNumber, buildNumber)
     }
 
-    var loadNewProjectButtonTitle: String {
-        L10n.ProjectPicker.loadNewProject
-    }
-
     var closeButton: IconButtonViewModel {
         .init(symbol: .xmarkCircle, hoverSymbol: .xmarkCircleFill, onSelect: onCloseWindow)
+    }
+
+    var newProjectButton: MenuButtonViewModel {
+        .init(text: L10n.ProjectPicker.loadNewProject) {
+            // Close our window
+            self.onDismiss.send(())
+
+            // Open the CreateProject window
+            self.onOpen.send(
+                .createProject(.init())
+            )
+
+        }
     }
 
     var viewSourceCodeButton: MenuButtonViewModel {
@@ -160,18 +169,6 @@ public extension ProjectPickerViewModel {
                 print("Error: \(error)")
             }
         }
-    }
-
-    func selectDirectoryForNewProject(_ url: URL) {
-        print("URL: \(url)")
-
-        // Close our window
-        self.onDismiss.send(())
-
-        // Open the CreateProject window
-        self.onOpen.send(
-            .createProject(.init(directory: url))
-        )
     }
 
 }

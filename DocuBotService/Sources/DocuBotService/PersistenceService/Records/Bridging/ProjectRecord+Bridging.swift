@@ -17,6 +17,7 @@ public extension ProjectRecord {
             id: model.id,
             path: model.path,
             name: model.name,
+            documentationChecksum: model.documentationChecksum,
             createdAt: model.createdAt,
             updatedAt: model.updatedAt
         )
@@ -33,6 +34,7 @@ public extension Project {
             id: record.id,
             path: record.path,
             name: record.name,
+            documentationChecksum: record.documentationChecksum,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt
         )

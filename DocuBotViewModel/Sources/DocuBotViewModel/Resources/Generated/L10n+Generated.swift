@@ -18,6 +18,10 @@ internal enum L10n {
     /// Create Project
     internal static let windowTitle = L10n.tr("Localizable", "CreateProject.windowTitle", fallback: "Create Project")
     internal enum Configuration {
+      internal enum Directory {
+        /// Select a Directory
+        internal static let select = L10n.tr("Localizable", "CreateProject.Configuration.Directory.select", fallback: "Select a Directory")
+      }
       internal enum Format {
         /// Add Custom Format
         internal static let addFormatButton = L10n.tr("Localizable", "CreateProject.Configuration.Format.addFormatButton", fallback: "Add Custom Format")

@@ -31,3 +31,4 @@
 "CreateProject.Configuration.Format.other" = "Other";
 "CreateProject.Configuration.Format.addFormatButton" = "Add Custom Format";
 "CreateProject.createButton" = "Create Project";
+"CreateProject.Configuration.Directory.select" = "Select a Directory";

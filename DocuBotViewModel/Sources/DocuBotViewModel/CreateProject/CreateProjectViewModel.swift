@@ -5,6 +5,7 @@
 //  Created by William Lumley on 14/8/2024.
 //
 
+import Combine
 import DocuBotModel
 import DocuBotService
 import Foundation
@@ -16,7 +17,7 @@ public class CreateProjectViewModel: DocuBotViewModel {
     public typealias Format = ProjectSettings.DocumentationFormat
 
     public struct OpenWindowPackage: Hashable, Codable {
-        public let directory: URL
+        
     }
 
     public struct DocumentationFormatConfiguration: Identifiable {
@@ -29,20 +30,27 @@ public class CreateProjectViewModel: DocuBotViewModel {
         }
     }
 
+    public enum LoadState {
+        case idle
+        case creating
+        case created
+    }
+
     // MARK: - Properties
 
-    @Published public var formatConfigurations: [DocumentationFormatConfiguration]
+    @Published public var loadState = LoadState.idle
     @Published public var continueButtonEnabled = false
-
-    @Published public var selectedLanguage: ProjectSettings.Language
+    @Published public var directoryText: String
     public let availableLanguages = ProjectSettings.Language.allCases
 
-    public let directory: URL
+    @Published public var formatConfigurations: [DocumentationFormatConfiguration]
+    @Published public var selectedLanguage: ProjectSettings.Language
+    @Published public var directory: URL?
 
     // MARK: - Lifecycle
 
-    public init(directory: URL, serviceContainer: ServiceContainer) {
-        self.directory = directory
+    public override init(serviceContainer: ServiceContainer) {
+        self.directoryText = L10n.CreateProject.Configuration.Directory.select
         self.selectedLanguage = .english
 
         self.formatConfigurations = Format.allCases
@@ -52,20 +60,34 @@ public class CreateProjectViewModel: DocuBotViewModel {
             }
 
         super.init(serviceContainer: serviceContainer)
-
-        self.formatConfigurations.append(
-            .init(order: 9, format: .other("hello"), isEnabled: true)
-        )
     }
 
     public override func configureBindings() {
         super.configureBindings()
 
-        // If there's even one "true"/checked, then we'll enable the Continue Button
-        self.$formatConfigurations
+        // If there's even one "true"/checked format, then we'll enable the Continue Button
+        let formatValidation = self.$formatConfigurations
             .map { $0.map { $0.isEnabled } } // Map it into an array of `Bool`s
             .map { $0.contains(true) }       // Check if there's even one `true`
+
+        // The directory cannot be nil
+        let directoryValidation = self.$directory
+            .map { $0 != nil }
+
+        // Combine the validation publishers
+        Publishers.CombineLatest(formatValidation, directoryValidation)
+            .map { $0 && $1 } // All validations must be met
             .assign(to: &$continueButtonEnabled)
+
+        self.$directory
+            .map { directory in
+                if let directory {
+                    return directory.path()
+                } else {
+                    return L10n.CreateProject.Configuration.Directory.select
+                }
+            }
+            .assign(to: &$directoryText)
     }
 
 }
@@ -94,12 +116,12 @@ public extension CreateProjectViewModel {
         L10n.CreateProject.Configuration.Language.title
     }
 
-    var projectDirectory: String {
-        self.directory.path()
-    }
-
     var formatSectionTitle: String {
         L10n.CreateProject.Configuration.FormatSection.title
+    }
+
+    var createProjectButtonTitle: String {
+        L10n.CreateProject.createButton
     }
 
     func set(formatConfiguration: DocumentationFormatConfiguration, isEnabled: Bool) {
@@ -168,13 +190,43 @@ public extension CreateProjectViewModel {
         self.formatConfigurations.remove(at: index)
     }
 
+    func createProjectButtonSelected() {
+        guard let directory = self.directory else {
+            return
+        }
+
+        let formats = self.formatConfigurations
+            .map(\.format)
+
+        // Extract all our relevant documents (each document = one string)
+        let documents = self.loadDocumentationFiles(from: directory, formats: formats)
+        guard let checksum = try? documents.generateChecksum() else {
+            return
+        }
+
+        print("Checksum: \(checksum)")
+    }
+
 }
 
 // MARK: - Private
 
 private extension CreateProjectViewModel {
 
-    
+    func loadDocumentationFiles(from directory: URL, formats: [Format]) -> [Document] {
+        var strs = [String]()
+        let enumerator = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: nil)
+
+        while let fileURL = enumerator?.nextObject() as? URL {
+            if formats.map(\.extensionName).contains(fileURL.pathExtension) {
+                if let content = try? String(contentsOf: fileURL) {
+                    strs.append(content)
+                }
+            }
+        }
+
+        return strs.map(Document.init)
+    }
 
 }
 
@@ -184,7 +236,6 @@ public extension CreateProjectViewModel {
 
     static var mock: CreateProjectViewModel {
         .init(
-            directory: URL(string: "/Users/will/Desktop/")!,
             serviceContainer: .mock
         )
     }
