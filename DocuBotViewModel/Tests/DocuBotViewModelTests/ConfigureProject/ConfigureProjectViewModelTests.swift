@@ -1696,11 +1696,12 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         let txt = Format(order: 1, format: .txt, isEnabled: true)
         let html = Format(order: 2, format: .html, isEnabled: true)
         let md = Format(order: 3, format: .md, isEnabled: true)
+        let pdf = Format(order: 4, format: .pdf, isEnabled: true)
 
         // THEN we have all our FormatConfigurations
         #expect(
             testSubject.formatConfigurations == [
-                rtf, txt, html, md
+                rtf, txt, html, md, pdf
             ]
         )
 
@@ -1722,7 +1723,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 0, format: .rtf, isEnabled: false),
                 .init(order: 1, format: .txt, isEnabled: false),
                 .init(order: 2, format: .html, isEnabled: true),
-                .init(order: 3, format: .md, isEnabled: true)
+                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 4, format: .pdf, isEnabled: true)
             ]
         )
 
@@ -1738,7 +1740,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 0, format: .rtf, isEnabled: true),
                 .init(order: 1, format: .txt, isEnabled: false),
                 .init(order: 2, format: .html, isEnabled: true),
-                .init(order: 3, format: .md, isEnabled: true)
+                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 4, format: .pdf, isEnabled: true)
             ]
         )
     }
@@ -1754,11 +1757,12 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         let txt = Format(order: 1, format: .txt, isEnabled: true)
         let html = Format(order: 2, format: .html, isEnabled: true)
         let md = Format(order: 3, format: .md, isEnabled: true)
+        let pdf = Format(order: 4, format: .pdf, isEnabled: true)
 
         // THEN we have all our FormatConfigurations
         #expect(
             testSubject.formatConfigurations == [
-                rtf, txt, html, md
+                rtf, txt, html, md, pdf
             ]
         )
 
@@ -1775,7 +1779,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 1, format: .txt, isEnabled: true),
                 .init(order: 2, format: .html, isEnabled: true),
                 .init(order: 3, format: .md, isEnabled: true),
-                .init(order: 4, format: .other(".foo"), isEnabled: true)
+                .init(order: 4, format: .pdf, isEnabled: true),
+                .init(order: 5, format: .other(".foo"), isEnabled: true)
             ]
         )
 
@@ -1792,8 +1797,9 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 1, format: .txt, isEnabled: true),
                 .init(order: 2, format: .html, isEnabled: true),
                 .init(order: 3, format: .md, isEnabled: true),
-                .init(order: 4, format: .other(".foo"), isEnabled: true),
-                .init(order: 5, format: .other(".bar"), isEnabled: true)
+                .init(order: 4, format: .pdf, isEnabled: true),
+                .init(order: 5, format: .other(".foo"), isEnabled: true),
+                .init(order: 6, format: .other(".bar"), isEnabled: true)
             ]
         )
 
@@ -1807,7 +1813,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 1, format: .txt, isEnabled: true),
                 .init(order: 2, format: .html, isEnabled: true),
                 .init(order: 3, format: .md, isEnabled: true),
-                .init(order: 5, format: .other(".bar"), isEnabled: true)
+                .init(order: 4, format: .pdf, isEnabled: true),
+                .init(order: 6, format: .other(".bar"), isEnabled: true)
             ]
         )
     }
@@ -1905,7 +1912,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 0, format: .rtf, isEnabled: true),
                 .init(order: 1, format: .txt, isEnabled: true),
                 .init(order: 2, format: .html, isEnabled: true),
-                .init(order: 3, format: .md, isEnabled: true)
+                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 4, format: .pdf, isEnabled: true)
             ]
         )
 
@@ -1951,7 +1959,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                 .init(order: 0, format: .rtf, isEnabled: true),
                 .init(order: 1, format: .txt, isEnabled: true),
                 .init(order: 2, format: .html, isEnabled: true),
-                .init(order: 3, format: .md, isEnabled: true)
+                .init(order: 3, format: .md, isEnabled: true),
+                .init(order: 4, format: .pdf, isEnabled: false)
             ]
         )
 

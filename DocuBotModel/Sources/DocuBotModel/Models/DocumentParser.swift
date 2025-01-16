@@ -7,6 +7,7 @@
 
 import DocuBotToolbox
 import Foundation
+import PDFKit
 import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
 
@@ -26,6 +27,15 @@ public class DocumentParser {
 
         /// Indicates that the bookmark data is stale and cannot be used.
         case bookmarkIsStale
+    }
+
+    /// Errors that may occur during content extraction
+    public enum ContentExtractionError: LocalizedError {
+        /// Indicates that we could not get access to this file
+        case failedToReadFile
+
+        /// Indicates that we managed to get the file, but couldn't read its contents
+        case failedToReadContent
     }
 
     /// A structure representing the result of a document synchronization operation.
@@ -103,12 +113,14 @@ public extension DocumentParser {
 
         // Create a temporary secure URL with read access to the users document data
         var isStale = false
-        let directory = try URL(
+        guard let directory = try? URL(
             resolvingBookmarkData: urlBookmarkData,
             options: .withSecurityScope,
             relativeTo: nil,
             bookmarkDataIsStale: &isStale
-        )
+        ) else {
+            throw DocumentError.bookmarkIsStale
+        }
 
         // Open up our access, and make sure our data isn't stale
         guard isStale == false, directory.startAccessingSecurityScopedResource() else {
@@ -150,12 +162,14 @@ public extension DocumentParser {
         // Create a temporary secure URL with read access to
         // the users document data.
         var isStale = false
-        let directory = try URL(
+        guard let directory = try? URL(
             resolvingBookmarkData: urlBookmarkData,
             options: .withSecurityScope,
             relativeTo: nil,
             bookmarkDataIsStale: &isStale
-        )
+        ) else {
+            throw DocumentError.bookmarkIsStale
+        }
 
         // Open up our access, and make sure our data isn't stale
         guard isStale == false, directory.startAccessingSecurityScopedResource() else {
@@ -227,7 +241,7 @@ internal extension DocumentParser {
         // Enumerate over each file in the directory
         for url in files {
             // Extract the documents content as a string file
-            guard let content = try? String(contentsOf: url, encoding: .utf8) else {
+            guard let content = try? self.extractContent(from: url) else {
                 continue
             }
 
@@ -250,6 +264,49 @@ internal extension DocumentParser {
         }
 
         return documents
+    }
+
+    /// This function will take in a file URL and extract the content out of the file
+    /// and return it as a `String`.
+    ///
+    /// - Parameter url: The file that we're trying to extract content out of
+    /// - Returns: The contents of the file
+    func extractContent(from url: URL) throws(ContentExtractionError) -> String? {
+        let fileExtension = self.fileExtension(from: url)
+
+        switch fileExtension {
+        case .html, .txt, .md, .other:
+            // Extract the documents content directly as a string file
+            guard let content = try? String(contentsOf: url, encoding: .utf8) else {
+                throw .failedToReadContent
+            }
+            return content
+        case .rtf:
+            // Load the RTF data from the file
+            guard let rtfData = try? Data(contentsOf: url) else {
+                throw .failedToReadFile
+            }
+
+            guard let attrStr = try? NSAttributedString(
+                data: rtfData,
+                options: [.documentType: NSAttributedString.DocumentType.rtf],
+                documentAttributes: nil
+            ) else {
+                throw .failedToReadContent
+            }
+
+            return attrStr.string
+
+        case .pdf:
+            guard
+                let pdf = PDFDocument(url: url),
+                let pdfStr = pdf.string
+            else {
+                throw .failedToReadContent
+            }
+
+            return pdfStr
+        }
     }
 
     /// Indexes the given documents by calculating embeddings.
@@ -434,6 +491,22 @@ extension DocumentParser.DocumentError {
             return L10n.Error.Document.noBookmarkData
         case .bookmarkIsStale:
             return L10n.Error.Document.bookmarkIsStale
+        }
+    }
+
+}
+
+// MARK: - DocumentParser.Content
+
+extension DocumentParser.ContentExtractionError {
+
+    /// A localized description of the document parser error.
+    public var errorDescription: String? {
+        switch self {
+        case .failedToReadFile:
+            return L10n.Error.ContentExtraction.failedToReadFile
+        case .failedToReadContent:
+            return L10n.Error.ContentExtraction.failedToReadContent
         }
     }
 

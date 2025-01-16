@@ -434,7 +434,21 @@ private extension ConfigureProjectViewModel {
 
     /// Checks whether the project directory has been modified.
     var directoryChanged: Bool {
-        self.projectDirectory?.path() != self.projectInfo?.project.path
+        guard var newPath = self.projectDirectory?.path() else {
+            return false
+        }
+        guard var oldPath = self.projectInfo?.project.path else {
+            return false
+        }
+
+        if newPath.hasSuffix("/") {
+            newPath.removeLast()
+        }
+        if oldPath.hasSuffix("/") {
+            oldPath.removeLast()
+        }
+
+        return newPath != oldPath
     }
 
     /// Determines whether any changes require a full resync of the project.
@@ -737,4 +751,4 @@ private extension ConfigureProjectViewModel {
 
     }
 
-}
+} // swiftlint:disable:this file_length

@@ -187,6 +187,8 @@ struct ProjectSettingsBridgingTests {
             #expect(recordFormat == .rtf)
         case .txt:
             #expect(recordFormat == .txt)
+        case .pdf:
+            #expect(recordFormat == .pdf)
         case .other(let value):
             #expect(recordFormat == .other(value))
         }
