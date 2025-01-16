@@ -7,7 +7,7 @@ on:
    branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-test:
 
     runs-on: macos-15
 
@@ -19,9 +19,6 @@ jobs:
 
     - name: Get swift version
       run: swift --version
-
-    - name: Install xcpretty
-      run: gem install xcpretty
 
     - name: Run Tests
       run: |
