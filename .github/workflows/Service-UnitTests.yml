@@ -22,5 +22,5 @@ jobs:
 
     - name: Run Tests
       run: |
-        cd DocuBotToolbox/Sources/DocuBotService
+        cd DocuBotService/Sources/DocuBotService
         xcodebuild test -skipPackagePluginValidation -workspace DocuBot.xcworkspace -scheme DocuBotServiceTests -destination 'platform=macOS' | xcpretty -s -r html
