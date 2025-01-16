@@ -1,0 +1,46 @@
+{
+  "configurations" : [
+    {
+      "id" : "71C17539-1851-44C1-84AE-2FE38A088324",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:..\/DocuBotToolbox",
+        "identifier" : "DocuBotToolboxTests",
+        "name" : "DocuBotToolboxTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/DocuBotService",
+        "identifier" : "DocuBotServiceTests",
+        "name" : "DocuBotServiceTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DocuBotModelTests",
+        "name" : "DocuBotModelTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:..\/DocuBotViewModel",
+        "identifier" : "DocuBotViewModelTests",
+        "name" : "DocuBotViewModelTests"
+      }
+    }
+  ],
+  "version" : 1
+}

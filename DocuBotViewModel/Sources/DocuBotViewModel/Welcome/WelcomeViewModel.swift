@@ -223,7 +223,9 @@ private extension WelcomeViewModel {
             icon: .booksVerticalFill,
             action: .init(
                 title: L10n.Welcome.loadNewProject,
-                onSelect: self.newProjectButton.selected
+                onSelect: { [weak self] in
+                    self?.newProjectButton.selected()
+                }
             )
         )
     }

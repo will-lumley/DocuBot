@@ -22,4 +22,11 @@ jobs:
 
     - name: Run Tests
       run: |
-        set -o pipefail && xcodebuild test -skipPackagePluginValidation -workspace DocuBot.xcworkspace -scheme DocuBotViewModelTests -destination 'platform=macOS'
+        set -o pipefail
+
+        xcodebuild test \
+          -skipPackagePluginValidation \
+          -workspace DocuBot.xcworkspace \
+          -scheme DocuBotViewModelTests \
+          -destination 'platform=macOS' \
+          -parallel-testing-enabled false
