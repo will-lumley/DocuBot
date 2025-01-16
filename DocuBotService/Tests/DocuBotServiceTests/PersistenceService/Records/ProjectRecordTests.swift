@@ -49,7 +49,6 @@ struct ProjectRecordTests {
         let documentationChecksum: String? = "abc123checksum"
         let exampleQuestions = ["What is this project?", "How do I use it?"]
         let alertStatus = ProjectRecord.AlertStatus.warning(warning: .directoryChanged)
-        let needsFullResync = false
         let createdAt = Date()
         let updatedAt = Date()
 
@@ -62,7 +61,6 @@ struct ProjectRecordTests {
             documentationChecksum: documentationChecksum,
             exampleQuestions: exampleQuestions,
             alertStatus: alertStatus,
-            needsFullResync: needsFullResync,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

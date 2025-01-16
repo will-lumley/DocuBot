@@ -313,7 +313,7 @@ private extension GRDBService {
         do {
             try migrator.migrate(self.dbQueue)
         } catch {
-            fatalError("MigrationExecution Failed. ID: \(error)")
+            fatalError("MigrationExecution Failed. Error: \(error)")
         }
     }
 
