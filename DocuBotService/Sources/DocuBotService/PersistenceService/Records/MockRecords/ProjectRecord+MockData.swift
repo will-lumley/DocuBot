@@ -34,6 +34,7 @@ extension ProjectRecord {
         path: String = "",
         name: String = "",
         urlBookmarkData: Data = .init(),
+        isDirty: Bool = false,
         exampleQuestions: [String] = [],
         createdAt: Date = Date(),
         updatedAt: Date = Date()
@@ -43,6 +44,7 @@ extension ProjectRecord {
             path: path,
             name: name,
             urlBookmarkData: urlBookmarkData,
+            isDirty: isDirty,
             exampleQuestions: [],
             createdAt: createdAt,
             updatedAt: updatedAt

@@ -541,12 +541,16 @@ private extension ConfigureProjectViewModel {
 
         // We're modifying an existing project
         if let project = self.projectInfo?.project {
+            // If we've changed directories, we need to mark the project as dirty
+            let changedDirectory = self.projectDirectory?.path() != project.path
+
             return Project(
                 id: project.id,
                 path: directory.path(),
                 name: self.projectName,
-                isDirty: false,
                 urlBookmarkData: bookmarkData,
+                documentationCheckSum: nil,
+                isDirty: changedDirectory,
                 exampleQuestions: project.exampleQuestions,
                 createdAt: project.createdAt,
                 updatedAt: .now
@@ -557,8 +561,9 @@ private extension ConfigureProjectViewModel {
             return Project(
                 path: directory.path(),
                 name: self.projectName,
-                isDirty: false,
                 urlBookmarkData: bookmarkData,
+                documentationCheckSum: nil,
+                isDirty: true,
                 exampleQuestions: [],
                 createdAt: .now,
                 updatedAt: .now
@@ -747,4 +752,4 @@ public extension ConfigureProjectViewModel {
         )
     }
 
-}
+} // swiftlint:disable:this file_length

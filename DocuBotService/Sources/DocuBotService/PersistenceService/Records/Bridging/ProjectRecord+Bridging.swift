@@ -18,6 +18,7 @@ public extension ProjectRecord {
             path: model.path,
             name: model.name,
             urlBookmarkData: model.urlBookmarkData,
+            isDirty: model.isDirty,
             exampleQuestions: model.exampleQuestions,
             createdAt: model.createdAt,
             updatedAt: model.updatedAt
@@ -35,8 +36,9 @@ public extension Project {
             id: record.id,
             path: record.path,
             name: record.name,
-            isDirty: false,
             urlBookmarkData: record.urlBookmarkData,
+            documentationCheckSum: record.documentationChecksum,
+            isDirty: record.isDirty,
             exampleQuestions: record.exampleQuestions,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt

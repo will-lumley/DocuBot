@@ -381,6 +381,10 @@ internal enum L10n {
         }
       }
     }
+    internal enum Warning {
+      /// The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.
+      internal static let sync = L10n.tr("Localizable", "Project.Warning.sync", fallback: "The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.")
+    }
   }
   internal enum ProjectSettings {
     /// Save Settings

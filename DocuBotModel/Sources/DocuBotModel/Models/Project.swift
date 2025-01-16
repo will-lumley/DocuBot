@@ -38,12 +38,10 @@ public struct Project: Hashable, Codable, Sendable {
     public var urlBookmarkData: Data
 
     /// The checksum of all the documentation tokens that exist within our projects path.
-    /// This is a transitive property and is only stored on the model layer.
     public var documentationChecksum: String?
 
     /// Indicative of if the documentation we've loaded into memory is different from the
     /// documentation that exists in the file structure.
-    /// This is a transitive property and is only stored on the model layer.
     public var isDirty: Bool
 
     /// An array of all the documents that belong to this Project.
@@ -66,8 +64,9 @@ public struct Project: Hashable, Codable, Sendable {
         id: Int64? = nil,
         path: String,
         name: String,
-        isDirty: Bool,
         urlBookmarkData: Data,
+        documentationCheckSum: String?,
+        isDirty: Bool,
         exampleQuestions: [String],
         createdAt: Date,
         updatedAt: Date
@@ -76,6 +75,7 @@ public struct Project: Hashable, Codable, Sendable {
         self.path = path
         self.name = name
         self.isDirty = isDirty
+        self.documentationChecksum = documentationCheckSum
         self.urlBookmarkData = urlBookmarkData
         self.exampleQuestions = exampleQuestions
         self.createdAt = createdAt

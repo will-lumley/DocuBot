@@ -50,6 +50,7 @@ public struct ProjectView: View {
 
             ToolbarButton(viewModel: viewModel.syncProjectButton)
                 .keyboardShortcut("s", modifiers: [.command, .shift])
+
             ToolbarButton(viewModel: viewModel.openSettingsButton)
                 .keyboardShortcut(",", modifiers: .command)
         }
@@ -131,6 +132,16 @@ public struct ProjectView: View {
             .background(Asset.chatTextView.swiftUIColor)
             .cornerRadius(35)
             .padding(.horizontal)
+
+            // Add in a warning message if one is present
+            if let warning = viewModel.warningMessage {
+                Text("\(Image(systemSymbol: .exclamationmarkTriangle)) \(warning)")
+                    .foregroundStyle(Color.yellow)
+                    .font(.footnote)
+                    .padding(.top, 4)
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
             switch viewModel.response {
             case .none:
