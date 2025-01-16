@@ -10,89 +10,99 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
-  internal enum CreateProject {
+  internal enum ConfigureProject {
     /// Create Project
-    internal static let createButton = L10n.tr("Localizable", "CreateProject.createButton", fallback: "Create Project")
+    internal static let createButton = L10n.tr("Localizable", "ConfigureProject.createButton", fallback: "Create Project")
     /// Create your new project
-    internal static let formTitle = L10n.tr("Localizable", "CreateProject.formTitle", fallback: "Create your new project")
+    internal static let formTitle = L10n.tr("Localizable", "ConfigureProject.formTitle", fallback: "Create your new project")
     /// Create Project
-    internal static let windowTitle = L10n.tr("Localizable", "CreateProject.windowTitle", fallback: "Create Project")
+    internal static let windowTitle = L10n.tr("Localizable", "ConfigureProject.windowTitle", fallback: "Create Project")
     internal enum AdvancedSection {
       /// Batch Size
-      internal static let batchSize = L10n.tr("Localizable", "CreateProject.AdvancedSection.batchSize", fallback: "Batch Size")
+      internal static let batchSize = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.batchSize", fallback: "Batch Size")
       /// Context Length
-      internal static let contextLength = L10n.tr("Localizable", "CreateProject.AdvancedSection.contextLength", fallback: "Context Length")
+      internal static let contextLength = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.contextLength", fallback: "Context Length")
+      /// Embedding Model
+      internal static let embeddingModel = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.embeddingModel", fallback: "Embedding Model")
       /// Maximum Token Count
-      internal static let maxTokenCount = L10n.tr("Localizable", "CreateProject.AdvancedSection.maxTokenCount", fallback: "Maximum Token Count")
+      internal static let maxTokenCount = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.maxTokenCount", fallback: "Maximum Token Count")
       /// Reset Default Values
-      internal static let resetDefaults = L10n.tr("Localizable", "CreateProject.AdvancedSection.resetDefaults", fallback: "Reset Default Values")
+      internal static let resetDefaults = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.resetDefaults", fallback: "Reset Default Values")
       /// Seed
-      internal static let seed = L10n.tr("Localizable", "CreateProject.AdvancedSection.seed", fallback: "Seed")
+      internal static let seed = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.seed", fallback: "Seed")
+      /// Similarity Metric
+      internal static let similarityMetric = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.similarityMetric", fallback: "Similarity Metric")
       /// Stop Sequence
-      internal static let stopSequence = L10n.tr("Localizable", "CreateProject.AdvancedSection.stopSequence", fallback: "Stop Sequence")
+      internal static let stopSequence = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.stopSequence", fallback: "Stop Sequence")
       /// These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.
-      internal static let subtitle = L10n.tr("Localizable", "CreateProject.AdvancedSection.subtitle", fallback: "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.")
+      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.subtitle", fallback: "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.")
+      /// System Prompt
+      internal static let systemPrompt = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.systemPrompt", fallback: "System Prompt")
       /// Temperature
-      internal static let temperature = L10n.tr("Localizable", "CreateProject.AdvancedSection.temperature", fallback: "Temperature")
+      internal static let temperature = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.temperature", fallback: "Temperature")
       /// Advanced Configuration
-      internal static let title = L10n.tr("Localizable", "CreateProject.AdvancedSection.title", fallback: "Advanced Configuration")
+      internal static let title = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.title", fallback: "Advanced Configuration")
       /// Top K
-      internal static let topK = L10n.tr("Localizable", "CreateProject.AdvancedSection.topK", fallback: "Top K")
+      internal static let topK = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.topK", fallback: "Top K")
       /// Top P
-      internal static let topP = L10n.tr("Localizable", "CreateProject.AdvancedSection.topP", fallback: "Top P")
+      internal static let topP = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.topP", fallback: "Top P")
+      internal enum SystemPrompt {
+        /// You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base.
+        internal static let `default` = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.SystemPrompt.default", fallback: "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base.")
+      }
     }
     internal enum Configuration {
       internal enum Directory {
         /// Select a Directory
-        internal static let select = L10n.tr("Localizable", "CreateProject.Configuration.Directory.select", fallback: "Select a Directory")
+        internal static let select = L10n.tr("Localizable", "ConfigureProject.Configuration.Directory.select", fallback: "Select a Directory")
       }
     }
     internal enum Error {
       internal enum FailedToCreate {
         /// Failed to Create Project
-        internal static let title = L10n.tr("Localizable", "CreateProject.Error.FailedToCreate.title", fallback: "Failed to Create Project")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Error.FailedToCreate.title", fallback: "Failed to Create Project")
       }
     }
     internal enum FormatSection {
       /// We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.
-      internal static let subtitle = L10n.tr("Localizable", "CreateProject.FormatSection.subtitle", fallback: "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.")
+      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.FormatSection.subtitle", fallback: "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.")
       /// What format is your documentation in?
-      internal static let title = L10n.tr("Localizable", "CreateProject.FormatSection.title", fallback: "What format is your documentation in?")
+      internal static let title = L10n.tr("Localizable", "ConfigureProject.FormatSection.title", fallback: "What format is your documentation in?")
       internal enum Format {
         /// Add Custom Format
-        internal static let addFormatButton = L10n.tr("Localizable", "CreateProject.FormatSection.Format.addFormatButton", fallback: "Add Custom Format")
+        internal static let addFormatButton = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.addFormatButton", fallback: "Add Custom Format")
         /// .html
-        internal static let html = L10n.tr("Localizable", "CreateProject.FormatSection.Format.html", fallback: ".html")
+        internal static let html = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.html", fallback: ".html")
         /// .md
-        internal static let md = L10n.tr("Localizable", "CreateProject.FormatSection.Format.md", fallback: ".md")
+        internal static let md = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.md", fallback: ".md")
         /// Other
-        internal static let other = L10n.tr("Localizable", "CreateProject.FormatSection.Format.other", fallback: "Other")
+        internal static let other = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.other", fallback: "Other")
         /// .rtf
-        internal static let rtf = L10n.tr("Localizable", "CreateProject.FormatSection.Format.rtf", fallback: ".rtf")
+        internal static let rtf = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.rtf", fallback: ".rtf")
         /// .txt
-        internal static let txt = L10n.tr("Localizable", "CreateProject.FormatSection.Format.txt", fallback: ".txt")
+        internal static let txt = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.txt", fallback: ".txt")
       }
     }
     internal enum GeneralSection {
       /// Tell us a bit about your project.
-      internal static let subtitle = L10n.tr("Localizable", "CreateProject.GeneralSection.subtitle", fallback: "Tell us a bit about your project.")
+      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.GeneralSection.subtitle", fallback: "Tell us a bit about your project.")
       /// General
-      internal static let title = L10n.tr("Localizable", "CreateProject.GeneralSection.title", fallback: "General")
+      internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.title", fallback: "General")
       internal enum Directory {
         /// Project Directory
-        internal static let title = L10n.tr("Localizable", "CreateProject.GeneralSection.Directory.title", fallback: "Project Directory")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Directory.title", fallback: "Project Directory")
       }
       internal enum Language {
         /// English
-        internal static let english = L10n.tr("Localizable", "CreateProject.GeneralSection.Language.english", fallback: "English")
+        internal static let english = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Language.english", fallback: "English")
         /// Español
-        internal static let espanol = L10n.tr("Localizable", "CreateProject.GeneralSection.Language.espanol", fallback: "Español")
+        internal static let espanol = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Language.espanol", fallback: "Español")
         /// Language
-        internal static let title = L10n.tr("Localizable", "CreateProject.GeneralSection.Language.title", fallback: "Language")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Language.title", fallback: "Language")
       }
       internal enum Name {
         /// Project Name
-        internal static let title = L10n.tr("Localizable", "CreateProject.GeneralSection.Name.title", fallback: "Project Name")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.GeneralSection.Name.title", fallback: "Project Name")
       }
     }
     internal enum Help {
@@ -100,121 +110,169 @@ internal enum L10n {
         /// This parameter defines the number of tokens processed in one batch during the generation or training phase.
         /// 
         /// A batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.BatchSize.content", fallback: "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.BatchSize.content", fallback: "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.")
         /// What does batch size do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.BatchSize.title", fallback: "What does batch size do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.BatchSize.title", fallback: "What does batch size do?")
       }
       internal enum ContextLength {
         /// The context length defines how many tokens the model can consider at once when generating text.
         /// 
         /// By default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.ContextLength.content", fallback: "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.ContextLength.content", fallback: "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.")
         /// What does context length do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.ContextLength.title", fallback: "What does context length do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.ContextLength.title", fallback: "What does context length do?")
+      }
+      internal enum EmbeddingModel {
+        /// An embedding model transforms input data (like text) into numerical vectors that represent the semantic meaning of the data.
+        /// 
+        /// These embeddings are used to measure relationships and similarities between different pieces of content, allowing the model to understand the context and meaning of the input.
+        /// 
+        /// DistilBERT is a small version of the BERT model that has been fine tuned for question & answers.
+        /// MiniLM All, is a smaller model, but it is much faster.
+        /// Multi-QA MiniLM is a small & fast model that has been fine tuned for question & answering.
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.EmbeddingModel.content", fallback: "An embedding model transforms input data (like text) into numerical vectors that represent the semantic meaning of the data.\n\nThese embeddings are used to measure relationships and similarities between different pieces of content, allowing the model to understand the context and meaning of the input.\n\nDistilBERT is a small version of the BERT model that has been fine tuned for question & answers.\nMiniLM All, is a smaller model, but it is much faster.\nMulti-QA MiniLM is a small & fast model that has been fine tuned for question & answering.")
+        /// What does the embedding model do?
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.EmbeddingModel.title", fallback: "What does the embedding model do?")
       }
       internal enum MaxTokenCount {
         /// This sets the maximum number of tokens the model is allowed to generate.
         /// 
         /// Even if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.MaxTokenCount.content", fallback: "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.MaxTokenCount.content", fallback: "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.")
         /// What does max token count do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.MaxTokenCount.title", fallback: "What does max token count do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.MaxTokenCount.title", fallback: "What does max token count do?")
       }
       internal enum Seed {
         /// The seed value is used to initialise the random number generator, which influences how the model generates text.
         /// 
         /// By setting a seed, you ensure that the generation process is deterministic - running the same input with the same seed will result in the same output. This is useful for reproducibility.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.Seed.content", fallback: "The seed value is used to initialise the random number generator, which influences how the model generates text.\n\nBy setting a seed, you ensure that the generation process is deterministic - running the same input with the same seed will result in the same output. This is useful for reproducibility.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.Seed.content", fallback: "The seed value is used to initialise the random number generator, which influences how the model generates text.\n\nBy setting a seed, you ensure that the generation process is deterministic - running the same input with the same seed will result in the same output. This is useful for reproducibility.")
         /// What does seed do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.Seed.title", fallback: "What does seed do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.Seed.title", fallback: "What does seed do?")
+      }
+      internal enum SimilarityMetric {
+        /// A similarity metric is a mathematical function used to compare the embeddings of two pieces of data.
+        /// 
+        /// It helps quantify how closely related two inputs are. Common similarity metrics include cosine similarity, which measures the angle between two vectors, and Euclidean distance, which measures the straight-line distance between them.
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.SimilarityMetric.content", fallback: "A similarity metric is a mathematical function used to compare the embeddings of two pieces of data.\n\nIt helps quantify how closely related two inputs are. Common similarity metrics include cosine similarity, which measures the angle between two vectors, and Euclidean distance, which measures the straight-line distance between them.")
+        /// What does the similarity metric do?
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.SimilarityMetric.title", fallback: "What does the similarity metric do?")
       }
       internal enum StopSequence {
         /// If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.
         /// 
         /// This is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.StopSequence.content", fallback: "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.StopSequence.content", fallback: "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition.")
         /// What does stop sequence do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.StopSequence.title", fallback: "What does stop sequence do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.StopSequence.title", fallback: "What does stop sequence do?")
+      }
+      internal enum SystemPrompt {
+        /// A system message provides background context or guidance to the model to help it generate appropriate responses.
+        /// 
+        /// It defines the model’s role, tone, and behavior. For example, a system message might instruct the model to act as a helpful assistant, limiting its answers to a specific knowledge domain.
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.SystemPrompt.content", fallback: "A system message provides background context or guidance to the model to help it generate appropriate responses.\n\nIt defines the model’s role, tone, and behavior. For example, a system message might instruct the model to act as a helpful assistant, limiting its answers to a specific knowledge domain.")
+        /// What does system prompt do?
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.SystemPrompt.title", fallback: "What does system prompt do?")
       }
       internal enum Temperature {
         /// Temperature controls the "creativity" or randomness of the output.
         /// 
         /// A lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.Temperature.content", fallback: "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.Temperature.content", fallback: "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens.")
         /// What does temperature do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.Temperature.title", fallback: "What does temperature do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.Temperature.title", fallback: "What does temperature do?")
       }
       internal enum TopK {
         /// Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).
         /// 
         /// By default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.TopK.content", fallback: "Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).\n\nBy default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.TopK.content", fallback: "Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).\n\nBy default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred.")
         /// What does top-k do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.TopK.title", fallback: "What does top-k do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.TopK.title", fallback: "What does top-k do?")
       }
       internal enum TopP {
         /// Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.
         /// 
         /// By default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation.
-        internal static let content = L10n.tr("Localizable", "CreateProject.Help.TopP.content", fallback: "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation.")
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.TopP.content", fallback: "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation.")
         /// What does top-p do?
-        internal static let title = L10n.tr("Localizable", "CreateProject.Help.TopP.title", fallback: "What does top-p do?")
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.TopP.title", fallback: "What does top-p do?")
       }
+    }
+  }
+  internal enum EmbeddingModel {
+    internal enum Distilbert {
+      /// Distilbert
+      internal static let title = L10n.tr("Localizable", "EmbeddingModel.Distilbert.title", fallback: "Distilbert")
+    }
+    internal enum MiniLme {
+      /// Mini LME
+      internal static let title = L10n.tr("Localizable", "EmbeddingModel.MiniLme.title", fallback: "Mini LME")
+    }
+    internal enum MultiQaMiniLme {
+      /// Multi QA Mini LME
+      internal static let title = L10n.tr("Localizable", "EmbeddingModel.MultiQaMiniLme.title", fallback: "Multi QA Mini LME")
     }
   }
   internal enum Project {
     /// Ask any question about your project.
     internal static let queryTitle = L10n.tr("Localizable", "Project.queryTitle", fallback: "Ask any question about your project.")
-    internal enum Chat {
-      internal enum NothingSelected {
-        /// No chat selected
-        internal static let title = L10n.tr("Localizable", "Project.Chat.NothingSelected.title", fallback: "No chat selected")
-      }
-    }
     internal enum ChatContextMenu {
       /// Delete
       internal static let delete = L10n.tr("Localizable", "Project.ChatContextMenu.delete", fallback: "Delete")
       /// Rename
       internal static let rename = L10n.tr("Localizable", "Project.ChatContextMenu.rename", fallback: "Rename")
     }
-    internal enum Delete {
-      internal enum Confirmation {
-        /// Cancel
-        internal static let cancelButton = L10n.tr("Localizable", "Project.Delete.Confirmation.cancelButton", fallback: "Cancel")
-        /// Delete this Chat
-        internal static let deleteButton = L10n.tr("Localizable", "Project.Delete.Confirmation.deleteButton", fallback: "Delete this Chat")
-        /// Are you sure you want to delete this chat?
-        internal static let title = L10n.tr("Localizable", "Project.Delete.Confirmation.title", fallback: "Are you sure you want to delete this chat?")
+    internal enum LlmExampleQuestionPrompt {
+      /// Here is an excerpt from a file.
+      /// 
+      /// %@
+      /// 
+      /// Based on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.
+      internal static func prompt(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Project.LlmExampleQuestionPrompt.prompt", String(describing: p1), fallback: "Here is an excerpt from a file.\n\n%@\n\nBased on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.")
       }
-    }
-    internal enum EmptyChat {
-      /// Create a chat with the button below to get started
-      internal static let subtitle = L10n.tr("Localizable", "Project.EmptyChat.subtitle", fallback: "Create a chat with the button below to get started")
-      /// No Chats
-      internal static let title = L10n.tr("Localizable", "Project.EmptyChat.title", fallback: "No Chats")
-    }
-    internal enum EmptyMessages {
-      /// Type something into the textfield below to get started
-      internal static let subtitle = L10n.tr("Localizable", "Project.EmptyMessages.subtitle", fallback: "Type something into the textfield below to get started")
-      /// No Messages
-      internal static let title = L10n.tr("Localizable", "Project.EmptyMessages.title", fallback: "No Messages")
+      /// You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.
+      /// When asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.
+      /// Remember: do not include phrases like "I hope this helps" or "Let me know if you need anything else." Focus only on delivering the requested content without deviation.
+      internal static let systemMessage = L10n.tr("Localizable", "Project.LlmExampleQuestionPrompt.systemMessage", fallback: "You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.\nWhen asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.\nRemember: do not include phrases like \"I hope this helps\" or \"Let me know if you need anything else.\" Focus only on delivering the requested content without deviation.")
     }
     internal enum LlmQueryPrompt {
-      /// Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES").
-      ///             If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-      ///             ALWAYS return a "SOURCES" part in your answer.
+      /// Given the following extracted parts of a long document and a question, create a final answer. If you don't know the answer, just say that you don't know. Don't try to make up an answer.
       /// QUESTION: %@
       /// =========
       /// %@
       /// =========
       /// FINAL ANSWER:
       internal static func template(_ p1: Any, _ p2: Any) -> String {
-        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Given the following extracted parts of a long document and a question, create a final answer with references (\"SOURCES\").\n            If you don't know the answer, just say that you don't know. Don't try to make up an answer.\n            ALWAYS return a \"SOURCES\" part in your answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:")
+        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Given the following extracted parts of a long document and a question, create a final answer. If you don't know the answer, just say that you don't know. Don't try to make up an answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:")
       }
     }
-    internal enum NewChat {
-      /// New Chat
-      internal static let defaultTitle = L10n.tr("Localizable", "Project.NewChat.defaultTitle", fallback: "New Chat")
+    internal enum SyncStage {
+      internal enum BuildingQuestions {
+        /// We've made %@ out of %@ questions. Not long now!
+        internal static func subtitle(_ p1: Any, _ p2: Any) -> String {
+          return L10n.tr("Localizable", "Project.SyncStage.BuildingQuestions.subtitle", String(describing: p1), String(describing: p2), fallback: "We've made %@ out of %@ questions. Not long now!")
+        }
+        /// Building some example questions for you 💡
+        internal static let title = L10n.tr("Localizable", "Project.SyncStage.BuildingQuestions.title", fallback: "Building some example questions for you 💡")
+      }
+      internal enum ExtractingDocuments {
+        /// This shouldn't take too long.
+        internal static let subtitle = L10n.tr("Localizable", "Project.SyncStage.ExtractingDocuments.subtitle", fallback: "This shouldn't take too long.")
+        /// Reading documents from disk
+        internal static let title = L10n.tr("Localizable", "Project.SyncStage.ExtractingDocuments.title", fallback: "Reading documents from disk")
+      }
+      internal enum TrainingDocuments {
+        /// We've gone through %@ out of %@ documents. Sit tight!
+        internal static func subtitle(_ p1: Any, _ p2: Any) -> String {
+          return L10n.tr("Localizable", "Project.SyncStage.TrainingDocuments.subtitle", String(describing: p1), String(describing: p2), fallback: "We've gone through %@ out of %@ documents. Sit tight!")
+        }
+        /// DocuBot is studying %@ 🙇‍♂️
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Project.SyncStage.TrainingDocuments.title", String(describing: p1), fallback: "DocuBot is studying %@ 🙇‍♂️")
+        }
+      }
     }
   }
   internal enum ProjectSettings {
@@ -222,6 +280,20 @@ internal enum L10n {
     internal static let saveButton = L10n.tr("Localizable", "ProjectSettings.saveButton", fallback: "Save Settings")
     /// Project Settings
     internal static let windowTitle = L10n.tr("Localizable", "ProjectSettings.windowTitle", fallback: "Project Settings")
+  }
+  internal enum SimilarityMetric {
+    internal enum Cosine {
+      /// Cosine
+      internal static let title = L10n.tr("Localizable", "SimilarityMetric.Cosine.title", fallback: "Cosine")
+    }
+    internal enum DotProduct {
+      /// Dot Product
+      internal static let title = L10n.tr("Localizable", "SimilarityMetric.DotProduct.title", fallback: "Dot Product")
+    }
+    internal enum EuclideanDistance {
+      /// Euclidean Distance
+      internal static let title = L10n.tr("Localizable", "SimilarityMetric.EuclideanDistance.title", fallback: "Euclidean Distance")
+    }
   }
   internal enum Welcome {
     /// Email the Developer

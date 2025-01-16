@@ -35,6 +35,7 @@ extension ProjectRecord {
         name: String = "",
         urlBookmarkData: Data? = nil,
         urlBookmarkDataIsStale: Bool = false,
+        exampleQuestions: [String] = [],
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) -> ProjectRecord {
@@ -44,6 +45,7 @@ extension ProjectRecord {
             name: name,
             urlBookmarkData: urlBookmarkData,
             urlBookmarkDataIsStale: urlBookmarkDataIsStale,
+            exampleQuestions: [],
             createdAt: createdAt,
             updatedAt: updatedAt
         )

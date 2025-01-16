@@ -5,7 +5,7 @@
 //  Created by William Lumley on 20/8/2024.
 //
 
-import CryptoKit
+import DocuBotToolbox
 import Foundation
 import SimilaritySearchKit
 
@@ -24,7 +24,7 @@ public struct Document: Hashable, Codable, Sendable {
     }
 
     public enum ChecksumGenerationError: Error {
-        case failedStringToDataConversion
+        case failedConversion
     }
 
     // MARK: - Properties
@@ -33,6 +33,7 @@ public struct Document: Hashable, Codable, Sendable {
     public let url: URL
     public let fileFormat: ProjectSettings.DocumentationFormat
     public let content: String
+    public let checksum: String
     public let projectID: Int64
     public var embeddings: [Embedding]?
     public let createdAt: Date
@@ -45,6 +46,7 @@ public struct Document: Hashable, Codable, Sendable {
         url: URL,
         fileFormat: ProjectSettings.DocumentationFormat,
         content: String,
+        checksum: String,
         projectID: Int64,
         embeddings: [Embedding]?,
         createdAt: Date,
@@ -54,6 +56,7 @@ public struct Document: Hashable, Codable, Sendable {
         self.url = url
         self.fileFormat = fileFormat
         self.content = content
+        self.checksum = checksum
         self.projectID = projectID
         self.embeddings = embeddings
         self.createdAt = createdAt
@@ -80,16 +83,12 @@ public extension Array where Element == Document {
         // Concatenate all document contents into a single string
         let combinedContent = self.map(\.content).joined(separator: "\n")
 
-        // Convert the combined content to data
-        guard let contentData = combinedContent.data(using: .utf8) else {
-            throw Document.ChecksumGenerationError.failedStringToDataConversion
+        // Grab their checksum
+        guard let checksum = combinedContent.checksum else {
+            throw Document.ChecksumGenerationError.failedConversion
         }
 
-        // Generate SHA-256 hash
-        let hash = SHA256.hash(data: contentData)
-
-        // Convert hash to hex string
-        return hash.map { String(format: "%02x", $0) }.joined()
+        return checksum
     }
 
 }

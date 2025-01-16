@@ -116,7 +116,7 @@ public class ProjectSettingsViewModel: DocuBotViewModel, @unchecked Sendable {
 
                 // Return the placeholder text if there's no directory
                 else {
-                    return L10n.CreateProject.Configuration.Directory.select
+                    return L10n.ConfigureProject.Configuration.Directory.select
                 }
             }
             .assign(to: &$directoryText)
@@ -143,23 +143,23 @@ public extension ProjectSettingsViewModel {
     }
 
     var projectNameTitle: String {
-        L10n.CreateProject.GeneralSection.Name.title
+        L10n.ConfigureProject.GeneralSection.Name.title
     }
 
     var generalSectionTitle: String {
-        L10n.CreateProject.GeneralSection.title
+        L10n.ConfigureProject.GeneralSection.title
     }
 
     var projectDirectoryTitle: String {
-        L10n.CreateProject.GeneralSection.Directory.title
+        L10n.ConfigureProject.GeneralSection.Directory.title
     }
 
     var languageTitle: String {
-        L10n.CreateProject.GeneralSection.Language.title
+        L10n.ConfigureProject.GeneralSection.Language.title
     }
 
     var formatSectionTitle: String {
-        L10n.CreateProject.FormatSection.title
+        L10n.ConfigureProject.FormatSection.title
     }
 
     var saveButtonTitle: String {
@@ -299,6 +299,7 @@ public extension ProjectSettingsViewModel {
                 isDirty: false,
                 urlBookmarkData: nil,
                 urlBookmarkDataIsStale: true,
+                exampleQuestions: [],
                 createdAt: .now,
                 updatedAt: .now
             ),
@@ -307,6 +308,9 @@ public extension ProjectSettingsViewModel {
                 supportedFormats: [.rtf, .html],
                 respondWithDocumentsOnly: true,
                 language: .english,
+                systemPrompt: "test system prompt",
+                embeddingModel: .distilbert,
+                similarityMetric: .cosine,
                 seed: 100,
                 topK: 100,
                 topP: 100,

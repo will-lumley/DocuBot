@@ -77,6 +77,9 @@ extension ChatTextEditor {
     }
 
     func adjustTextViewHeight() {
+        // Ensure the layout knows what we're working with
+        self.layoutManager.ensureLayout(for: self.textContainer)
+
         // Recalculate the height based on the current size
         let usedRect = self.layoutManager.usedRect(for: self.textContainer)
 
@@ -164,7 +167,6 @@ private extension ChatTextEditor {
         self.textView.allowsUndo = true
 
         self.scrollview.borderType = .noBorder
-        self.scrollview.hasVerticalScroller = true
         self.scrollview.hasHorizontalScroller = isHorizontalScrollingEnabled
         self.scrollview.documentView = self.textView
     }

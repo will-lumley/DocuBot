@@ -14,20 +14,24 @@ public class DocumentParser {
 
     // MARK: - Types
 
-    public struct DocumentSyncReponse {
-        public let checksum: String
-        public let documents: [Document]
-    }
-
     public enum DocumentError: Error {
         case noBookmarkData
         case bookmarkIsStale
     }
 
+    public struct DocumentSyncReponse {
+        public let checksum: String
+        public let documents: [Document]
+    }
+
+    public typealias OnSyncUpdate = (_ progress: Int, _ total: Int) -> Void
+
     // MARK: - Properties
 
     private let project: Project
     private let settings: ProjectSettings
+    private let onSyncUpdate: OnSyncUpdate
+
     private let tokenSplitter = CharacterSplitter(withSeparator: " ")
 
     private var formats: [ProjectSettings.DocumentationFormat] {
@@ -36,9 +40,14 @@ public class DocumentParser {
 
     // MARK: - Lifecycle
 
-    public init(_ project: Project, _ settings: ProjectSettings) {
+    public init(
+        project: Project,
+        settings: ProjectSettings,
+        onSyncUpdate: @escaping OnSyncUpdate
+    ) {
         self.project = project
         self.settings = settings
+        self.onSyncUpdate = onSyncUpdate
     }
 
 }
@@ -51,7 +60,8 @@ public extension DocumentParser {
         // Pull out the files from disk and store them in memory
         let documents = try await self.extractFilesFromDisk()
 
-        // Generate our checksum so we can tell for later if we need to re-sync
+        // Generate our checksum so we can tell for later
+        // if we need to re-sync
         let checksum = try documents.generateChecksum()
         return .init(checksum: checksum, documents: documents)
     }
@@ -108,8 +118,8 @@ private extension DocumentParser {
         var currentFile = 0
 
         let similarityIndex = await SimilarityIndex(
-            model: DistilbertEmbeddings(),
-            metric: CosineSimilarity()
+            model: self.settings.embeddingModel.embeddingsProtocol,
+            metric: self.settings.similarityMetric.metricProtocol
         )
 
         // Enumerate over each file in the directory
@@ -121,11 +131,9 @@ private extension DocumentParser {
             }
 
             currentFile += 1
-            // swiftlint:disable direct_print
-            print("File: \(url)")
-            print("Progress: \(currentFile)/\(totalFileCount)")
-            print(String(format: "Progress: %.2f%%", Double(currentFile) / Double(totalFileCount) * 100))
-            // swiftlint:enable direct_print
+
+            // Update our called on the sync progress
+            self.onSyncUpdate(currentFile, totalFileCount)
 
             // Extract the documents content as a string file
             guard let content = try? String(String(contentsOf: url, encoding: .utf8)) else {
@@ -142,11 +150,16 @@ private extension DocumentParser {
                     return Document.Embedding(chunk: chunk, embedding: value)
                 }
 
+            guard let checksum = content.checksum else {
+                throw Document.ChecksumGenerationError.failedConversion
+            }
+
             // Create the in-memory document representation of this file
             let document = Document(
                 url: url,
                 fileFormat: self.fileExtension(from: url),
                 content: content,
+                checksum: checksum,
                 projectID: settings.projectID,
                 embeddings: embedded,
                 createdAt: .now,

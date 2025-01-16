@@ -13,15 +13,15 @@ public extension ProjectSettings.DocumentationFormat {
     var name: String {
         switch self {
         case .html:
-            return L10n.CreateProject.FormatSection.Format.html
+            return L10n.ConfigureProject.FormatSection.Format.html
         case .md:
-            return L10n.CreateProject.FormatSection.Format.md
+            return L10n.ConfigureProject.FormatSection.Format.md
         case .rtf:
-            return L10n.CreateProject.FormatSection.Format.rtf
+            return L10n.ConfigureProject.FormatSection.Format.rtf
         case .txt:
-            return L10n.CreateProject.FormatSection.Format.txt
+            return L10n.ConfigureProject.FormatSection.Format.txt
         case .other:
-            return L10n.CreateProject.FormatSection.Format.other
+            return L10n.ConfigureProject.FormatSection.Format.other
         }
     }
 

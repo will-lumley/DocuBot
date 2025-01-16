@@ -15,6 +15,9 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     // MARK: - Types
 
     public enum HelpType {
+        case systemPrompt
+        case embeddingModel
+        case similarityMetric
         case seed
         case topK
         case topP
@@ -58,6 +61,10 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     @Published public var formatConfigurations: [FormatConfiguration]
 
+    @Published public var systemPrompt: String
+    @Published public var embeddingModel: ProjectSettings.EmbeddingModel
+    @Published public var similarityMetric: ProjectSettings.SimilarityMetric
+
     @Published public var seed: Int = 1234
     @Published public var topK: Int = 40
     @Published public var topP: Double = 0.9
@@ -76,6 +83,10 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     /// All the languages available for the user to choose from
     public let availableLanguages = ProjectSettings.Language.allCases
 
+    public let availableEmbeddingModels = ProjectSettings.EmbeddingModel.allCases
+
+    public let availableSimilarityMetrics = ProjectSettings.SimilarityMetric.allCases
+
     /// This will be called to open a new window, along with the info that dictates which window
     @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
 
@@ -92,7 +103,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     override public init(
         serviceContainer: ServiceContainer
     ) {
-        self.directoryText = L10n.CreateProject.Configuration.Directory.select
+        self.directoryText = L10n.ConfigureProject.Configuration.Directory.select
         self.selectedLanguage = .english
 
         self.formatConfigurations = Format.allCases
@@ -100,6 +111,10 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             .map { index, format in
                 .init(order: index, format: format, isEnabled: format.isOther == false)
             }
+
+        self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
+        self.embeddingModel = .distilbert
+        self.similarityMetric = .cosine
 
         super.init(serviceContainer: serviceContainer)
     }
@@ -132,7 +147,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
                 // Return the placeholder text if there's no directory
                 else {
-                    return L10n.CreateProject.Configuration.Directory.select
+                    return L10n.ConfigureProject.Configuration.Directory.select
                 }
             }
             .assign(to: &$directoryText)
@@ -151,43 +166,43 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 public extension ConfigureProjectViewModel {
 
     var windowTitle: String {
-        L10n.CreateProject.windowTitle
+        L10n.ConfigureProject.windowTitle
     }
 
     var formTitle: String {
-        L10n.CreateProject.formTitle
+        L10n.ConfigureProject.formTitle
     }
 
     var projectNameTitle: String {
-        L10n.CreateProject.GeneralSection.Name.title
+        L10n.ConfigureProject.GeneralSection.Name.title
     }
 
     // MARK: General Section
 
     var generalSectionTitle: String {
-        L10n.CreateProject.GeneralSection.title
+        L10n.ConfigureProject.GeneralSection.title
     }
 
     var generalSectionSubtitle: String {
-        L10n.CreateProject.GeneralSection.subtitle
+        L10n.ConfigureProject.GeneralSection.subtitle
     }
 
     var projectDirectoryTitle: String {
-        L10n.CreateProject.GeneralSection.Directory.title
+        L10n.ConfigureProject.GeneralSection.Directory.title
     }
 
     var languageTitle: String {
-        L10n.CreateProject.GeneralSection.Language.title
+        L10n.ConfigureProject.GeneralSection.Language.title
     }
 
     // MARK: Format Section
 
     var formatSectionTitle: String {
-        L10n.CreateProject.FormatSection.title
+        L10n.ConfigureProject.FormatSection.title
     }
 
     var formatSectionSubtitle: String {
-        L10n.CreateProject.FormatSection.subtitle
+        L10n.ConfigureProject.FormatSection.subtitle
     }
 
     func set(
@@ -265,53 +280,65 @@ public extension ConfigureProjectViewModel {
     // MARK: Advanced Section
 
     var advancedSectionTitle: String {
-        L10n.CreateProject.AdvancedSection.title
+        L10n.ConfigureProject.AdvancedSection.title
     }
 
     var advancedSectionSubitle: String {
-        L10n.CreateProject.AdvancedSection.subtitle
+        L10n.ConfigureProject.AdvancedSection.subtitle
+    }
+
+    var systemPromptTitle: String {
+        L10n.ConfigureProject.AdvancedSection.systemPrompt
+    }
+
+    var embeddingModelTitle: String {
+        L10n.ConfigureProject.AdvancedSection.embeddingModel
+    }
+
+    var similarityMetricTitle: String {
+        L10n.ConfigureProject.AdvancedSection.similarityMetric
     }
 
     var seedTitle: String {
-        L10n.CreateProject.AdvancedSection.seed
+        L10n.ConfigureProject.AdvancedSection.seed
     }
 
     var topKTitle: String {
-        L10n.CreateProject.AdvancedSection.topK
+        L10n.ConfigureProject.AdvancedSection.topK
     }
 
     var topPTitle: String {
-        L10n.CreateProject.AdvancedSection.topP
+        L10n.ConfigureProject.AdvancedSection.topP
     }
 
     var contextLengthTitle: String {
-        L10n.CreateProject.AdvancedSection.contextLength
+        L10n.ConfigureProject.AdvancedSection.contextLength
     }
 
     var temperatureTitle: String {
-        L10n.CreateProject.AdvancedSection.temperature
+        L10n.ConfigureProject.AdvancedSection.temperature
     }
 
     var batchSizeTitle: String {
-        L10n.CreateProject.AdvancedSection.batchSize
+        L10n.ConfigureProject.AdvancedSection.batchSize
     }
 
     var stopSequenceTitle: String {
-        L10n.CreateProject.AdvancedSection.stopSequence
+        L10n.ConfigureProject.AdvancedSection.stopSequence
     }
 
     var maxTokenCountTitle: String {
-        L10n.CreateProject.AdvancedSection.maxTokenCount
+        L10n.ConfigureProject.AdvancedSection.maxTokenCount
     }
 
     var resetDefaultButtonTitle: String {
-        L10n.CreateProject.AdvancedSection.resetDefaults
+        L10n.ConfigureProject.AdvancedSection.resetDefaults
     }
 
     // MARK: Other
 
     var createProjectButtonTitle: String {
-        L10n.CreateProject.createButton
+        L10n.ConfigureProject.createButton
     }
 
     func createProjectButtonSelected() {
@@ -325,6 +352,7 @@ public extension ConfigureProjectViewModel {
             isDirty: false,
             urlBookmarkData: self.projectDirectoryBookmarkData,
             urlBookmarkDataIsStale: false,
+            exampleQuestions: [],
             createdAt: .now,
             updatedAt: .now
         )
@@ -348,6 +376,9 @@ public extension ConfigureProjectViewModel {
                     supportedFormats: supportedFormats,
                     respondWithDocumentsOnly: false,
                     language: self.selectedLanguage,
+                    systemPrompt: self.systemPrompt,
+                    embeddingModel: self.embeddingModel,
+                    similarityMetric: self.similarityMetric,
                     seed: self.seed,
                     topK: self.topK,
                     topP: self.topP,
@@ -374,7 +405,7 @@ public extension ConfigureProjectViewModel {
                 }
             } catch {
                 self.alertConfiguration = .init(
-                    title: L10n.CreateProject.Error.FailedToCreate.title,
+                    title: L10n.ConfigureProject.Error.FailedToCreate.title,
                     message: error.localizedDescription
                 )
             }
@@ -388,6 +419,9 @@ public extension ConfigureProjectViewModel {
     }
 
     func resetDefaultValuesButtonSelected() {
+        self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
+        self.embeddingModel = .distilbert
+        self.similarityMetric = .cosine
         self.seed = 1234
         self.topK = 40
         self.topP = 0.9

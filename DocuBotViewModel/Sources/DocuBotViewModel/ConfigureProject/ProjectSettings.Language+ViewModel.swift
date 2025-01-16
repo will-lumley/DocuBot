@@ -13,9 +13,9 @@ public extension ProjectSettings.Language {
     var name: String {
         switch self {
         case .english:
-            return L10n.CreateProject.GeneralSection.Language.english
+            return L10n.ConfigureProject.GeneralSection.Language.english
         case .espanol:
-            return L10n.CreateProject.GeneralSection.Language.espanol
+            return L10n.ConfigureProject.GeneralSection.Language.espanol
         }
     }
 

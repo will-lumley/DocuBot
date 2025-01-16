@@ -17,6 +17,18 @@ public struct ProjectSettingsRecord: Record {
         case espanol
     }
 
+    public enum EmbeddingModel: String, Hashable, Codable, Sendable {
+        case distilbert
+        case miniLmAll
+        case multiQaMiniLm
+    }
+
+    public enum SimilarityMetric: String, Hashable, Codable, Sendable {
+        case cosine
+        case dotProduct
+        case euclideanDistance
+    }
+
     public enum DocumentationFormat: Hashable, Codable, CaseIterable, Sendable {
         public static var allCases: [ProjectSettingsRecord.DocumentationFormat] {
             [.rtf, .txt, .html, .md]
@@ -37,6 +49,10 @@ public struct ProjectSettingsRecord: Record {
     public let supportedFormats: [DocumentationFormat]
     public let respondWithDocumentsOnly: Bool
     public let language: Language
+
+    public let systemPrompt: String
+    public let embeddingModel: EmbeddingModel
+    public let similarityMetric: SimilarityMetric
 
     public let seed: Int
     public let topK: Int

@@ -7,13 +7,32 @@
 
 extension HelpConfiguration {
 
-    typealias Strings = L10n.CreateProject.Help
+    typealias Strings = L10n.ConfigureProject.Help
 
+    // swiftlint:disable:next cyclomatic_complexity
     init(
         type: ConfigureProjectViewModel.HelpType,
         onDismiss: @escaping HelpConfiguration.OnDismiss
     ) {
         switch type {
+        case .systemPrompt:
+            self.init(
+                title: Strings.SystemPrompt.title,
+                content: Strings.SystemPrompt.content,
+                onDismiss: onDismiss
+            )
+        case .embeddingModel:
+            self.init(
+                title: Strings.EmbeddingModel.title,
+                content: Strings.EmbeddingModel.content,
+                onDismiss: onDismiss
+            )
+        case .similarityMetric:
+            self.init(
+                title: Strings.SimilarityMetric.title,
+                content: Strings.SimilarityMetric.content,
+                onDismiss: onDismiss
+            )
         case .batchSize:
             self.init(
                 title: Strings.BatchSize.title,

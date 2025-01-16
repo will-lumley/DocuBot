@@ -16,6 +16,18 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         case espanol
     }
 
+    public enum EmbeddingModel: String, CaseIterable, Hashable, Codable, Sendable {
+        case distilbert
+        case miniLmAll
+        case multiQaMiniLm
+    }
+
+    public enum SimilarityMetric: String, CaseIterable, Hashable, Codable, Sendable {
+        case cosine
+        case dotProduct
+        case euclideanDistance
+    }
+
     public enum DocumentationFormat: Hashable, CaseIterable, Codable, Sendable {
         public static var allCases: [ProjectSettings.DocumentationFormat] {
             [.rtf, .txt, .html, .md]
@@ -47,6 +59,10 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     public let respondWithDocumentsOnly: Bool
     public let language: Language
 
+    public let systemPrompt: String
+    public let embeddingModel: EmbeddingModel
+    public let similarityMetric: SimilarityMetric
+
     public let seed: Int
     public let topK: Int
     public let topP: Double
@@ -67,6 +83,9 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         supportedFormats: [DocumentationFormat],
         respondWithDocumentsOnly: Bool,
         language: Language,
+        systemPrompt: String,
+        embeddingModel: EmbeddingModel,
+        similarityMetric: SimilarityMetric,
         seed: Int,
         topK: Int,
         topP: Double,
@@ -84,6 +103,10 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         self.supportedFormats = supportedFormats
         self.respondWithDocumentsOnly = respondWithDocumentsOnly
         self.language = language
+
+        self.systemPrompt = systemPrompt
+        self.embeddingModel = embeddingModel
+        self.similarityMetric = similarityMetric
 
         self.seed = seed
         self.topK = topK

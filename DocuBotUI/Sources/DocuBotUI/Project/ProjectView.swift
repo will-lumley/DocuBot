@@ -13,11 +13,13 @@ public struct ProjectView: View {
 
     // MARK: - Properties
 
-    @Environment(\.openWindow) var openWindow
-
     @StateObject var viewModel: ProjectViewModel
 
+    @Environment(\.openWindow) var openWindow
+
     @State var textEditorHeight = CGFloat(20)
+    @State var isSyncing = true
+
     @FocusState private var chatTextEditorFocused: Bool
 
     // MARK: - Lifecycle
@@ -30,26 +32,11 @@ public struct ProjectView: View {
 
     public var body: some View {
 
-        VStack {
-            Text(viewModel.queryTitle)
-                .font(.title)
-                .bold()
-
-            VStack {
-                ChatTextEditorView(
-                    text: $viewModel.chatText,
-                    height: $textEditorHeight,
-                    onEnterSelected: viewModel.enterSelected
-                )
-                .frame(height: textEditorHeight)
-                .focused($chatTextEditorFocused)
-            }
-            .padding(10)
-            .background(Asset.chatTextView.swiftUIColor)
-            .cornerRadius(35)
-            .padding(.horizontal)
+        ZStack {
+            self.mainView
+            self.syncView
         }
-
+        .animation(.easeInOut(duration: 1.0), value: isSyncing)
         .toolbar {
             ToolbarButton(viewModel: viewModel.syncProjectButton)
                 .keyboardShortcut("s", modifiers: [.command, .shift])
@@ -67,6 +54,72 @@ public struct ProjectView: View {
 
         .navigationTitle(viewModel.windowTitle)
         .frame(minWidth: 650, minHeight: 550)
+    }
+
+    private var mainView: some View {
+        VStack {
+            Text(viewModel.queryTitle)
+                .font(.title)
+                .bold()
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 20) {
+                    ForEach(viewModel.questionViewModels) { viewModel in
+                        ProjectQuestionView(viewModel: viewModel)
+                            .frame(width: 300)
+                   }
+                }
+                .padding(.leading)
+            }
+
+            VStack {
+                ChatTextEditorView(
+                    text: $viewModel.chatText,
+                    height: $textEditorHeight,
+                    onEnterSelected: viewModel.enterSelected
+                )
+                .frame(height: textEditorHeight)
+                .focused($chatTextEditorFocused)
+            }
+            .padding(10)
+            .background(Asset.chatTextView.swiftUIColor)
+            .cornerRadius(35)
+            .padding(.horizontal)
+
+            Text(viewModel.responseText)
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(.leading)
+        }
+        .disabled(viewModel.syncStage != nil)
+        .blur(radius: (viewModel.syncStage != nil) ? 3 : 0)
+    }
+
+    private var syncView: some View {
+        ZStack {
+            if let syncStage = viewModel.syncStage {
+                Color.black.opacity(0.85)
+                    .edgesIgnoringSafeArea(.all)
+
+                VStack {
+                    Text(syncStage.title)
+                        .font(.title)
+                        .bold()
+
+                    Text(syncStage.subtitle)
+                        .font(.headline)
+                        .padding(.top, 2)
+
+                    if let progress = syncStage.progress {
+                        ProgressView(
+                            value: Float(progress.value),
+                            total: Float(progress.total)
+                        )
+                            .padding()
+                    }
+                }
+            }
+        }
     }
 
 }

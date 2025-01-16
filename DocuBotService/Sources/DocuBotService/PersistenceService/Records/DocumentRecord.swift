@@ -23,6 +23,7 @@ public struct DocumentRecord: Record {
     public let url: URL
     public let fileFormat: ProjectSettingsRecord.DocumentationFormat
     public let content: String
+    public let checksum: String
     public let project: Int64
     public let embeddings: [DocumentRecord.Embedding]?
     public let createdAt: Date

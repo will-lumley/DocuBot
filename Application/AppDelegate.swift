@@ -13,7 +13,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Properties
 
     var isTesting: Bool {
-        let isUnitTesting = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        let envInfo = ProcessInfo.processInfo.environment
+        let isUnitTesting = envInfo["XCTestConfigurationFilePath"] != nil
         return isUnitTesting
     }
 
