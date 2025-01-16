@@ -20,6 +20,12 @@ internal enum L10n {
     }
   }
   internal enum Error {
+    internal enum ContentExtraction {
+      /// Failed to read the file's contents.
+      internal static let failedToReadContent = L10n.tr("Localizable", "Error.ContentExtraction.failedToReadContent", fallback: "Failed to read the file's contents.")
+      /// Failed to find the file on your computer.
+      internal static let failedToReadFile = L10n.tr("Localizable", "Error.ContentExtraction.failedToReadFile", fallback: "Failed to find the file on your computer.")
+    }
     internal enum Document {
       /// Bookmark is stale. Please try syncing again.
       internal static let bookmarkIsStale = L10n.tr("Localizable", "Error.Document.bookmarkIsStale", fallback: "Bookmark is stale. Please try syncing again.")

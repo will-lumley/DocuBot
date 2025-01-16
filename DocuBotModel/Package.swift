@@ -47,7 +47,10 @@ let package = Package(
                 .product(name: "SimilaritySearchKitDistilbert", package: "similarity-search-kit"),
                 .product(name: "SimilaritySearchKitMiniLMMultiQA", package: "similarity-search-kit"),
                 .product(name: "SimilaritySearchKitMiniLMAll", package: "similarity-search-kit")
-
+            ],
+            resources: [
+                .copy("Resources/test.pdf"),
+                .copy("Resources/test.rtf")
             ]
         )
     ]

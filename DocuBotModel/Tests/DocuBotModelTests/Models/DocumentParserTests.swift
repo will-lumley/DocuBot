@@ -24,8 +24,28 @@ struct DocumentParserTests {
     // MARK: - Lifecycle
 
     init() {
-        self.mockProject = .mock()
-        self.mockSettings = .mock()
+        guard let projectDirectory = try? Self.createTestProjectAndDocuments(
+            with: [.txt, .rtf, .html, .md, .pdf]
+        ) else {
+            fatalError()
+        }
+
+        // Let's create BookmarkData to access it
+        guard let bookmarkData = try? projectDirectory.bookmarkData(
+            options: .securityScopeAllowOnlyReadAccess,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        ) else {
+            fatalError()
+        }
+
+        self.mockProject = .mock(
+            path: projectDirectory.path(),
+            urlBookmarkData: bookmarkData
+        )
+        self.mockSettings = .mock(
+            supportedFormats: [.txt, .rtf, .html, .md, .pdf]
+        )
 
         self.parser = DocumentParser(
             project: self.mockProject,
@@ -58,6 +78,80 @@ struct DocumentParserTests {
         await #expect(throws: DocumentParser.DocumentError.noBookmarkData) {
             try await self.parser.createAndParse()
         }
+    }
+
+    @Test("Create and Parse")
+    mutating func createAndParse() async throws {
+        // WHEN we parse ALL our documents
+        let syncResult = try await self.parser.createAndParse()
+
+        // THEN our checksum is correctly set
+        let expectedChecksum = "d5cf7244f446b0eae0d42c90e6dd2340480bee3a22c539a56843f14bd7716b73"
+        #expect(syncResult.checksum == expectedChecksum)
+
+        // THEN we have the correct amount of documents returned
+        #expect(syncResult.documents.count == 5)
+
+        let html = syncResult.documents[0]
+        let txt  = syncResult.documents[1]
+        let md   = syncResult.documents[2]
+        let pdf  = syncResult.documents[3]
+        let rtf  = syncResult.documents[4]
+
+        // Using the static helper functions to create the comparison
+        // document means we're only comparing the equality of the
+        // document content and document embeddings value
+
+        // THEN the .html document is correctly created
+        #expect(
+            html == Self.testHtmlDocument(
+                url: html.url,
+                createdAt: html.createdAt,
+                updatedAt: html.updatedAt
+            )
+        )
+
+        // THEN the .txt document is correctly created
+        #expect(
+            txt == Self.testTxtDocument(
+                url: txt.url,
+                createdAt: txt.createdAt,
+                updatedAt: txt.updatedAt
+            )
+        )
+
+        // THEN the .md document is correctly created
+        #expect(
+            md == Self.testMdDocument(
+                url: md.url,
+                createdAt: md.createdAt,
+                updatedAt: md.updatedAt
+            )
+        )
+
+        // THEN the .rtf document is correctly created
+        #expect(
+            rtf == Self.testRtfDocument(
+                url: rtf.url,
+                createdAt: rtf.createdAt,
+                updatedAt: rtf.updatedAt
+            )
+        )
+
+        // THEN the .pdf document is correctly created
+        #expect(
+            pdf == Self.testPdfDocument(
+                url: pdf.url,
+                createdAt: pdf.createdAt,
+                updatedAt: pdf.updatedAt
+            )
+        )
+
+        for document in syncResult.documents {
+            print("Document: \(document)")
+            print("\n\n")
+        }
+        print("")
     }
 
     @Test("Check Project Is Dirty with No Bookmark Data")
@@ -288,6 +382,121 @@ struct DocumentParserTests {
         #expect(
             parser.existingDocument(with: newDocument.url) == newDocument
         )
+    }
+
+}
+
+// MARK: - Private
+
+private extension DocumentParserTests {
+
+    static func createTestProjectAndDocuments(
+        with types: [ProjectSettings.DocumentationFormat]
+    ) throws -> URL {
+        let fileManager = FileManager.default
+
+        // Let's create a new directory to call our own
+        let testURL = fileManager
+            .temporaryDirectory
+            .appendingPathComponent("DocuBot-Test")
+            .appendingPathComponent("test-project3/")
+
+        try fileManager.createDirectory(
+            at: testURL,
+            withIntermediateDirectories: true
+        )
+
+        if types.contains(.txt) {
+            // Add a test .txt to our project directory
+            fileManager.createFile(
+                atPath: testURL
+                    .appendingPathComponent("test1.txt", conformingTo: .text)
+                    .path(),
+                contents: "Hello, World!".data(using: .utf8)
+            )
+        }
+
+        if types.contains(.md) {
+            // Add a test .md to our project directory
+            fileManager.createFile(
+                atPath: testURL
+                    .appendingPathComponent("test2.md", conformingTo: .text)
+                    .path(),
+                contents: "## Hello, World!".data(using: .utf8)
+            )
+        }
+
+        if types.contains(.html) {
+            // Add a test .html to our project directory
+            fileManager.createFile(
+                atPath: testURL
+                    .appendingPathComponent("test3.html", conformingTo: .text)
+                    .path(),
+                contents: "<html><body>Hello, World!</body></html>".data(using: .utf8)
+            )
+        }
+
+        if types.contains(.pdf) {
+            // Add a test .pdf to our project directory
+            let origin = Self.testPdfUrl
+            let destination = testURL.appendingPathComponent(
+                "test.pdf",
+                conformingTo: .pdf
+            )
+
+            if fileManager.fileExists(atPath: destination.path()) == false {
+                try fileManager.copyItem(
+                    at: origin,
+                    to: destination
+                )
+            }
+        }
+
+        if types.contains(.rtf) {
+            // Add a test .rtf to our project directory
+            let origin = Self.testRtfUrl
+            let destination = testURL.appendingPathComponent(
+                "test.rtf",
+                conformingTo: .rtf
+            )
+
+            if fileManager.fileExists(atPath: destination.path()) == false {
+                try fileManager.copyItem(
+                    at: origin,
+                    to: destination
+                )
+            }
+        }
+
+        return testURL
+    }
+
+    /// This will fetch our local test PDF.
+    ///
+    /// - Returns: The URL for our test PDF.
+    static var testPdfUrl: URL {
+        guard let path = Bundle.module.path(
+            forResource: "test",
+            ofType: "pdf"
+        ) else {
+            fatalError()
+        }
+
+        return URL(fileURLWithPath: path)
+    }
+
+    /// This will fetch our local test RTF.
+    ///
+    /// - Returns: The URL for our test RTF.
+    static var testRtfUrl: URL {
+        guard let path = Bundle.module.path(
+            forResource: "test",
+            ofType: "rtf"
+        ) else {
+            fatalError()
+        }
+
+        return URL(fileURLWithPath: path)
     }
 
 }

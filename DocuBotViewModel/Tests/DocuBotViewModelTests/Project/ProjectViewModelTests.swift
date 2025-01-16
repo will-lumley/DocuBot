@@ -691,12 +691,12 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     func viewSourcesButtonEnabled() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
-        testSubject.configureBindingsIfNeeded()
 
         // Setup an iterator that listens to our SourcesButton isEnabled state
         var isEnabledIterator = testSubject.sourcesButton.$isEnabled
             .values
             .makeAsyncIterator()
+        testSubject.configureBindingsIfNeeded()
 
         // THEN our ViewSources button is disabled
         #expect(testSubject.sourcesButton.isEnabled == false)
