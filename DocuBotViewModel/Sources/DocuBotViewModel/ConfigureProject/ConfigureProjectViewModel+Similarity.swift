@@ -21,7 +21,6 @@ public extension ConfigureProjectViewModel {
         L10n.ConfigureProject.SimilaritySection.subtitle
     }
 
-    
     /// The title for the embedding model configuration option.
     ///
     /// - Returns: A localized string representing the title of the embedding model option.

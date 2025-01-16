@@ -28,13 +28,9 @@ struct OptionalOrThrowTests {
 
     @Test("Throws Properly")
     func throwsProperly() {
-        do {
+        #expect(throws: MockError.test) {
             let wrappedValue: String? = nil
             _ = try wrappedValue.orThrow(MockError.test)
-
-            Issue.record("`orThrow` did not throw error.")
-        } catch {
-            #expect(error == .test)
         }
     }
 

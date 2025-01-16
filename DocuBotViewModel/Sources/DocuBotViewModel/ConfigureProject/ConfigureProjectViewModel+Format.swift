@@ -88,7 +88,8 @@ public extension ConfigureProjectViewModel {
     /// - Returns: The newly created `FormatConfiguration`.
     ///
     /// - Discussion:
-    /// This method generates a new `FormatConfiguration` with an incremented ID, `other` format, and sets it as enabled.
+    /// This method generates a new `FormatConfiguration` with an
+    /// incremented ID, `other` format, and sets it as enabled.
     @discardableResult
     func createNewFormat() -> FormatConfiguration {
         let largestID = self.formatConfigurations.max {
