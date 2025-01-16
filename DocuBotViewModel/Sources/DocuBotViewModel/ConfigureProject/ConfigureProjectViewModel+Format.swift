@@ -64,14 +64,23 @@ public extension ConfigureProjectViewModel {
         self.formatConfigurations[index] = newConfiguration
     }
 
-    func createNewFormat() {
-        self.formatConfigurations.append(
-            .init(
-                order: self.formatConfigurations.count + 1,
-                format: .other("."),
-                isEnabled: true
-            )
+    @discardableResult
+    func createNewFormat() -> FormatConfiguration {
+        let largestID = self.formatConfigurations.max {
+            $0.id < $1.id
+        }?.id ?? 0
+
+        let newValue = FormatConfiguration(
+            order: largestID + 1,
+            format: .other("."),
+            isEnabled: true
         )
+
+        self.formatConfigurations.append(
+            newValue
+        )
+
+        return newValue
     }
 
     func remove(formatConfiguration: FormatConfiguration) {
