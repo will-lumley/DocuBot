@@ -1,4 +1,7 @@
 "Error.Persistence.valueNotFound" = "Failed to find value.";
+"Error.GPT.noModel" = "Failed to find the selected model, %@.";
+"Error.GPT.failedToCreateLLM" = "Failed to create LLM. %@.";
+"Error.GPT.llmNotInitialised" = "LLM Instance is not initialised.";
 
 "Log.LogType.info" = "[INFO]";
 "Log.LogType.error" = "[ERROR]";

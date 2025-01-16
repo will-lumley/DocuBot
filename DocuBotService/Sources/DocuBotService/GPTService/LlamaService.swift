@@ -32,13 +32,13 @@ class LlamaService: GPTService {
 
     // MARK: - GPTService
 
-    func prime(with settings: ProjectSettings) {
+    func prime(with settings: ProjectSettings) throws(GPTError) {
         let modelName = "llama-2-7b-chat.Q5_K_S"
         guard let modelPath = Bundle.main.path(
             forResource: modelName,
             ofType: "gguf"
         ) else {
-            fatalError("Failed to find model")
+            throw GPTError.noModel(modelName: modelName)
         }
 
         // Create our LLM
@@ -52,7 +52,7 @@ class LlamaService: GPTService {
                 modelConfiguration: configuration
             )
         } catch {
-            fatalError("Failed to create LLM. \(error)")
+            throw GPTError.failedToCreateLLM(reason: error.localizedDescription)
         }
 
     }
@@ -63,7 +63,7 @@ class LlamaService: GPTService {
         onUpdate: OutputUpdated?
     ) async throws -> String {
         guard let llama else {
-            fatalError()
+            throw GPTError.llmNotInitialised
         }
 
         // Create our prompt

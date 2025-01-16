@@ -11,6 +11,18 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
   internal enum Error {
+    internal enum Gpt {
+      /// Failed to create LLM. %@.
+      internal static func failedToCreateLLM(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Error.GPT.failedToCreateLLM", String(describing: p1), fallback: "Failed to create LLM. %@.")
+      }
+      /// LLM Instance is not initialised.
+      internal static let llmNotInitialised = L10n.tr("Localizable", "Error.GPT.llmNotInitialised", fallback: "LLM Instance is not initialised.")
+      /// Failed to find the selected model, %@.
+      internal static func noModel(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Error.GPT.noModel", String(describing: p1), fallback: "Failed to find the selected model, %@.")
+      }
+    }
     internal enum Persistence {
       /// Failed to find value.
       internal static let valueNotFound = L10n.tr("Localizable", "Error.Persistence.valueNotFound", fallback: "Failed to find value.")
