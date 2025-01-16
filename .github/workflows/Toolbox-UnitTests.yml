@@ -21,7 +21,9 @@ jobs:
       run: gem install xcpretty
 
     - name: Navigate to Toolbox Directory
-      run: cd DocuBotToolbox/Sources/DocuBotToolbox
+      run: |
+        pwd
+        cd DocuBotToolbox/Sources/DocuBotToolbox
 
     - name: Run Tests
       run: |
