@@ -27,7 +27,7 @@ struct ProjectBridgingTests {
 
     @Test("Model to Record Bridging")
     func modelToRecordBridging() throws {
-        // Prepare sample Project data
+        // GIVEN we have sample data
         let id: Int64? = 42
         let path = "/projects/sample"
         let name = "Sample Project"
@@ -39,6 +39,7 @@ struct ProjectBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we have a Project in the Model layer
         let project = Project(
             id: id,
             path: path,
@@ -52,10 +53,10 @@ struct ProjectBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to ProjectRecord
+        // WHEN we bridge the Project to the Storage layer
         let record = ProjectRecord(model: project)
 
-        // Validate record properties
+        // THEN there is no data loss
         #expect(record.id == project.id)
         #expect(record.path == project.path)
         #expect(record.name == project.name)
@@ -70,7 +71,7 @@ struct ProjectBridgingTests {
 
     @Test("Record to Model Bridging")
     func recordToModelBridging() throws {
-        // Prepare sample ProjectRecord data
+        // GIVEN we have sample data
         let id: Int64? = 42
         let path = "/projects/sample"
         let name = "Sample Project"
@@ -82,6 +83,7 @@ struct ProjectBridgingTests {
         let createdAt = Date()
         let updatedAt = Date()
 
+        // WHEN we have a Project in the Storage layer
         let record = ProjectRecord(
             id: id,
             path: path,
@@ -95,10 +97,10 @@ struct ProjectBridgingTests {
             updatedAt: updatedAt
         )
 
-        // Convert to Project
+        // WHEN we bridge the Project to the Model layer
         let project = Project(record: record)
 
-        // Validate model properties
+        // THEN there is no data loss
         #expect(project.id == record.id)
         #expect(project.path == record.path)
         #expect(project.name == record.name)
@@ -118,11 +120,13 @@ struct ProjectBridgingTests {
     func modelToRecordAlertStatusWithWarningBridging(
         warning: Project.AlertStatus.WarningState
     ) throws {
-        // Create the model and convert it to a record
+        // GIVEN we have a Warning in the Model layer
         let model = Project.AlertStatus.warning(warning: warning)
+
+        // WHEN we bridge it to the Storage layer
         let record = ProjectRecord.AlertStatus(model: model)
 
-        // Assert the record matches the model
+        // THEN there is no data loss
         let expectedRecord = ProjectRecord.AlertStatus.warning(
             warning: .init(model: warning)
         )
@@ -136,11 +140,13 @@ struct ProjectBridgingTests {
     func modelToRecordAlertStatusWithErrorBridging(
         error: Project.AlertStatus.ErrorState
     ) throws {
-        // Create the model and convert it to a record
+        // GIVEN we have an Error in the Model layer
         let model = Project.AlertStatus.error(error: error)
+
+        // WHEN we bridge it to the Storage layer
         let record = ProjectRecord.AlertStatus(model: model)
 
-        // Assert the record matches the model
+        // THEN there is no data loss
         let expectedRecord = ProjectRecord.AlertStatus.error(
             error: .init(model: error)
         )
@@ -149,9 +155,13 @@ struct ProjectBridgingTests {
 
     @Test("Model to Record AlertStatus With Error Bridging")
     func modelToRecordAlertStatusWithNoneBridging() throws {
-        // Test bridging for AlertStatus: None
+        // GIVEN we have a `None` in the Model layer
         let model = Project.AlertStatus.none
+
+        // WHEN we bridge it to the Storage layer
         let record = ProjectRecord.AlertStatus(model: model)
+
+        // THEN there is no data loss
         #expect(record == .none)
     }
 
