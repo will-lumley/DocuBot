@@ -862,7 +862,7 @@ private extension ProjectViewModel {
                 return question
             }
             .compactMap(\.self)
-            .map { $0.removingLeading(patttern: "* ") }
+            // .map { $0.removingLeading(patttern: "* ") }
             .map { $0.removing(value: "Question:") }
             .map { $0.removing(value: ", according to the provided excerpt") }
             .map { $0.removing(value: "according to the provided excerpt") }
@@ -871,7 +871,6 @@ private extension ProjectViewModel {
             .map { $0.removing(value: ", in the given context") }
             .map { $0.removing(value: "in the given context") }
             .map { $0.removing(value: "<|eot_id|>") }
-            .map { $0.removingPrefix(upTo: ":\n") }
             .map { $0.removingPrefix(upTo: ":\n") }
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
     }

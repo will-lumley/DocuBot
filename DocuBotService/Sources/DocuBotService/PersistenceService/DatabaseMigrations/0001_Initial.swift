@@ -61,6 +61,7 @@ struct Initial: DatabaseMigration {
                 .notNull()
             table.column("project", .integer)
                 .notNull()
+                .references("projects", onDelete: .cascade)
             table.column("fileFormat", .blob)
                 .notNull()
             table.column("content", .text)

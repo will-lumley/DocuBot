@@ -262,7 +262,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
         // Bind the project directory updates to the directory text.
         self.$projectDirectory
-            .compactMap { $0?.path() }
+            .compactMap { $0?.path(percentEncoded: false) }
             .assign(to: &$projectDirectoryText)
     }
 
@@ -424,10 +424,15 @@ private extension ConfigureProjectViewModel {
 
     /// Checks whether the project directory has been modified.
     var directoryChanged: Bool {
-        guard var newPath = self.projectDirectory?.path() else {
+        guard var newPath = self.projectDirectory?
+            .path(percentEncoded: false)
+            .removingPercentEncoding else {
             return false
         }
-        guard var oldPath = self.projectInfo?.project.path else {
+        guard var oldPath = self.projectInfo?.project
+            .path
+            .removingPercentEncoding
+        else {
             return false
         }
 
@@ -479,7 +484,7 @@ private extension ConfigureProjectViewModel {
         if let project = self.projectInfo?.project {
             var project = Project(
                 id: project.id,
-                path: directory.path(),
+                path: directory.path(percentEncoded: false),
                 name: self.projectName,
                 urlBookmarkData: bookmarkData,
                 documentationCheckSum: project.documentationChecksum,
@@ -497,7 +502,7 @@ private extension ConfigureProjectViewModel {
         // We're creating a brand new project
         else {
             return Project(
-                path: directory.path(),
+                path: directory.path(percentEncoded: false),
                 name: self.projectName,
                 urlBookmarkData: bookmarkData,
                 documentationCheckSum: nil,
