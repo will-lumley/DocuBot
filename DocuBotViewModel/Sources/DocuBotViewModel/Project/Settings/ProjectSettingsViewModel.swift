@@ -254,7 +254,10 @@ public extension ProjectSettingsViewModel {
             )
 
             do {
+                // Update the DB
                 try await persistenceService.update(projectSettings: settings)
+
+                // Close this window
                 DispatchQueue.main.async {
                     self.onDismiss.send(())
                 }
@@ -282,6 +285,7 @@ public extension ProjectSettingsViewModel {
                 id: 1,
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project 1",
+                isDirty: false,
                 documentationChecksum: "123abc",
                 createdAt: .now,
                 updatedAt: .now

@@ -34,6 +34,7 @@ public extension Project {
             id: record.id,
             path: record.path,
             name: record.name,
+            isDirty: false,
             documentationChecksum: record.documentationChecksum,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt

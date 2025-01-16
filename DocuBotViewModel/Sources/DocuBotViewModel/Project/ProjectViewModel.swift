@@ -41,7 +41,7 @@ public class ProjectViewModel: DocuBotViewModel {
     /// This will be called when we want to open a new window, along with the info that dictates which window
     @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
 
-    private let project: Project
+    private var project: Project
 
     // MARK: - Lifecycle
 
@@ -83,6 +83,12 @@ public extension ProjectViewModel {
     var createChatButton: ToolbarButtonViewModel {
         .init(symbol: .squareAndPencil) {
             self.createNewChat()
+        }
+    }
+
+    var syncProjectButton: ToolbarButtonViewModel {
+        .init(symbol: .arrowTriangle2Circlepath) {
+            self.sync()
         }
     }
 
@@ -199,6 +205,34 @@ private extension ProjectViewModel {
         }
     }
 
+    func sync() {
+        Task {
+            do {
+                // Pull out the settings
+                let settings = try await persistenceService.getProjectSettings(for: project)
+
+                // Check if the project is dirty
+                let result = try self.project.checkIfDirty(with: settings)
+
+                switch result {
+                case .clean:
+                    print("Yay we're clean")
+                case .dirty(newChecksum: let newChecksum):
+                    print("NewChecksum: \(newChecksum)")
+                    // Update the checksum
+                    self.project.documentationChecksum = newChecksum
+                    self.project.isDirty = true
+
+                    // Update the DB
+                    try await persistenceService.update(project: self.project)
+                }
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+            
+        }
+    }
+
 }
 
 // MARK: - ChatCellViewModelDelegate
@@ -231,6 +265,7 @@ public extension ProjectViewModel {
                 id: 1,
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project 1",
+                isDirty: false,
                 documentationChecksum: "123abc",
                 createdAt: .now,
                 updatedAt: .now

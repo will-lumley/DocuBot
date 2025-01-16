@@ -40,7 +40,7 @@ public extension Array where Element == Document {
         guard let contentData = combinedContent.data(using: .utf8) else {
             throw Document.ChecksumGenerationError.failedStringToDataConversion
         }
-        
+
         // Generate SHA-256 hash
         let hash = SHA256.hash(data: contentData)
 

@@ -75,6 +75,12 @@ class GRDBService: PersistenceService {
         }
     }
 
+    func update(project: Project) async throws {
+        try await self.dbQueue.write { db in
+            try ProjectRecord(model: project).update(db)
+        }
+    }
+
     // MARK: ProjectSettings
 
     func insert(settings: ProjectSettings) async throws -> ProjectSettings {

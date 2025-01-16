@@ -11,13 +11,13 @@ import AppKit
 import SFSafeSymbols
 
 public struct MessageCellView: View {
-
+    
     // MARK: - Properties
-
+    
     @StateObject var viewModel: MessageCellViewModel
-
+    
     // MARK: - View
-
+    
     public var body: some View {
         if viewModel.originIsUser {
             HStack {
@@ -31,7 +31,7 @@ public struct MessageCellView: View {
             }
         }
     }
-
+    
     var messageView: some View {
         Text(viewModel.messageContent)
             .font(.body)
@@ -42,6 +42,7 @@ public struct MessageCellView: View {
                     .fill(viewModel.originIsUser ? Color.blue : Color.gray)
             )
     }
+
 }
 
 // MARK: - Preview

@@ -10,6 +10,14 @@ import Foundation
 
 public class MessageCellViewModel: ObservableObject {
 
+    // MARK: - Types
+
+    private enum MessageShapeState {
+        case top
+        case middle
+        case bottom
+    }
+
     // MARK: - Properties
 
     let message: Message

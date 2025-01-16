@@ -71,9 +71,12 @@ public struct ProjectView: View {
         .dialogIcon(.init(systemSymbol: .trashCircleFill))
 
         .toolbar {
+            ToolbarButton(viewModel: viewModel.syncProjectButton)
+                .keyboardShortcut("s", modifiers: [.command, .shift])
             ToolbarButton(viewModel: viewModel.openSettingsButton)
-                .keyboardShortcut(",", modifiers: [.command])
+                .keyboardShortcut(",", modifiers: .command)
             ToolbarButton(viewModel: viewModel.createChatButton)
+                .keyboardShortcut("n", modifiers: .command)
         }
 
         // Listen to our OnOpen listener
