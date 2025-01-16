@@ -6,8 +6,8 @@
 //
 
 import Combine
-import Foundation
 @testable import DocuBotModel
+import Foundation
 import Testing
 
 @Suite("DownloadTaskTests", .disabled("CI Flakiness"))
@@ -87,7 +87,7 @@ struct DownloadTaskTests {
         // THEN we should receive updates from our publisher
         await withCheckedContinuation { continuation in
             publisher
-                .sink { newValue in
+                .sink { _ in
                     // THEN we should get updates on our progress
                     continuation.resume()
                 }

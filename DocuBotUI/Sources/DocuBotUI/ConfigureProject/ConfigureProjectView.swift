@@ -45,7 +45,11 @@ public struct ConfigureProjectView: View {
             .formStyle(.grouped)
 
             Button(
-                action: viewModel.saveButtonSelected,
+                action: {
+                    Task {
+                        await viewModel.saveButtonSelected()
+                    }
+                },
                 label: {
                     Text(viewModel.saveButtonTitle)
                         .frame(maxWidth: .infinity)
@@ -67,6 +71,7 @@ public struct ConfigureProjectView: View {
             switch open {
             case .project(let package):
                 self.openWindow(value: package)
+            case .none: ()
             }
         }
 
@@ -255,7 +260,7 @@ public struct ConfigureProjectView: View {
             Text(viewModel.similaritySectionTitle)
                 .font(.headline)
 
-            Text(viewModel.similaritySectionSubitle)
+            Text(viewModel.similaritySectionSubtitle)
                 .font(.subheadline)
 
             Button(

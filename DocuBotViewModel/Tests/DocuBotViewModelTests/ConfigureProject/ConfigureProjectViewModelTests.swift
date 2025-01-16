@@ -11,13 +11,16 @@ import DocuBotModel
 import Foundation
 import Testing
 
-class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
+// swiftlint:disable line_length
+
+@Suite("ConfigureProjectViewModelTests", .serialized)
+class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable { // swiftlint:disable:this type_body_length
 
     @Test("Label Values")
     func labelValues() async {
         // Load a testing model into our DB
         await self.persistTestModel()
-    
+
         // GIVEN we have a ConfigureProjectViewModel
         let testSubject = ConfigureProjectViewModel(
             serviceContainer: self.serviceContainer
@@ -31,13 +34,19 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.languageTitle == "Language")
         #expect(testSubject.modelTitle == "LLM Model")
         #expect(testSubject.formatSectionTitle == "What format is your documentation in?")
-        #expect(testSubject.formatSectionSubtitle == "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.")
         #expect(testSubject.similaritySectionTitle == "Similarity Metric Configuration")
-        #expect(testSubject.similaritySectionSubtitle == "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.\nChanging these will require a full resync of your project.")
         #expect(testSubject.embeddingModelTitle == "Embedding Model")
         #expect(testSubject.similarityMetricTitle == "Similarity Metric")
         #expect(testSubject.llmSectionTitle == "LLM Configuration")
-        #expect(testSubject.llmSectionSubitle == "Adjust advanced settings for the LLM, including model parameters and behavior to optimise performance and responsiveness. Adjust them only if you need something specific.")
+        #expect(
+            testSubject.formatSectionSubtitle == "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later."
+        )
+        #expect(
+            testSubject.similaritySectionSubtitle == "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.\nChanging these will require a full resync of your project."
+        )
+        #expect(
+            testSubject.llmSectionSubitle == "Adjust advanced settings for the LLM, including model parameters and behavior to optimise performance and responsiveness. Adjust them only if you need something specific."
+        )
 
         #expect(testSubject.systemPromptTitle == "System Prompt")
         #expect(testSubject.seedTitle == "Seed")
@@ -100,7 +109,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func projectDirectoryText() async {
         // Load a testing model into our DB
         await self.persistTestModel()
-    
+
         // GIVEN we have our ConfigureProjectViewModel
         let testSubject = ConfigureProjectViewModel(
             serviceContainer: self.serviceContainer
@@ -121,7 +130,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formTitleCreating() async {
         // Load a testing model into our DB
         await self.persistTestModel()
-    
+
         // WHEN we initialise the ConfigureProjectViewModel for editing
         let testSubject = ConfigureProjectViewModel(
             serviceContainer: self.serviceContainer
@@ -135,7 +144,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func formTitleEditing() async {
         // Load a testing model into our DB
         await self.persistTestModel()
-    
+
         // GIVEN a mock ProjectInfo
         let projectInfo = ConfigureProjectViewModel.ProjectInfo(
             project: Project.mock(),
@@ -156,7 +165,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func saveButtonTitleCreating() async {
         // Load a testing model into our DB
         await self.persistTestModel()
-    
+
         // WHEN we initialise the ConfigureProjectViewModel for editing
         let testSubject = ConfigureProjectViewModel(
             serviceContainer: self.serviceContainer
@@ -170,7 +179,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     func saveButtonTitleEditing() async {
         // Load a testing model into our DB
         await self.persistTestModel()
-    
+
         // GIVEN a mock ProjectInfo
         let projectInfo = ConfigureProjectViewModel.ProjectInfo(
             project: Project.mock(),
@@ -200,7 +209,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -236,7 +245,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -273,7 +282,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.projectDirectoryBookmarkData = Data()
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -312,7 +321,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: false)]
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -352,7 +361,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -393,7 +402,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -416,15 +425,15 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     @Test("Form Validation - Creating - Invalid TopP - Lower Bounds")
     func formValidationCreatingInvalidTopPLower() async throws {
         var cancellables = [AnyCancellable]()
-        
+
         // Load a testing model into our DB
         await self.persistTestModel()
-        
+
         // GIVEN a ConfigureProjectViewModel
         let testSubject = ConfigureProjectViewModel(
             serviceContainer: self.serviceContainer
         )
-        
+
         // WHEN we ensure we have filled out some of the details, but not a valid input for our TopP
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
@@ -433,10 +442,10 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 10
         testSubject.topK = 10
         testSubject.topP = -1
-        
+
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
-        
+        await testSubject.saveButtonSelected()
+
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
             testSubject.$alertConfiguration
@@ -448,7 +457,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                             message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
                         )
                     )
-                    
+
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -477,7 +486,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topP = 11
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -519,7 +528,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.contextLength = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -562,7 +571,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.batchSize = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -606,7 +615,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.maxTokenCount = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -651,7 +660,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.systemPrompt = ""
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -688,7 +697,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.projectDirectory = nil
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -725,9 +734,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = nil
 
-
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -766,7 +774,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.projectName = ""
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -806,7 +814,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: false)]
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -847,7 +855,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -889,7 +897,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -912,10 +920,10 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     @Test("Form Validation - Editing - Invalid TopP - Lower Bounds")
     func formValidationEditingInvalidTopPLower() async throws {
         var cancellables = [AnyCancellable]()
-        
+
         // Load a testing model into our DB
         await self.persistTestModel()
-        
+
         // GIVEN a ConfigureProjectViewModel
         let testSubject = ConfigureProjectViewModel(
             projectInfo: .init(project: .mock(), settings: .mock()),
@@ -930,10 +938,10 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 10
         testSubject.topK = 10
         testSubject.topP = -1
-        
+
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
-        
+        await testSubject.saveButtonSelected()
+
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
             testSubject.$alertConfiguration
@@ -945,7 +953,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
                             message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
                         )
                     )
-                    
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -975,7 +982,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topP = 11
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -1018,7 +1025,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.contextLength = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -1062,7 +1069,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.batchSize = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -1107,7 +1114,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.maxTokenCount = 0
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -1140,7 +1147,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
             serviceContainer: self.serviceContainer
         )
 
-        // WHEN we ensure we have filled out some of the details, but not our Token Count
+        // WHEN we ensure we have filled out some of the details, but not our system prompt
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
         testSubject.projectName = "Test Name"
@@ -1153,7 +1160,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.systemPrompt = ""
 
         // WHEN we validate the form
-        testSubject.saveButtonSelected()
+        await testSubject.saveButtonSelected()
 
         // THEN the correct error is shown
         await withCheckedContinuation { continuation in
@@ -1174,41 +1181,337 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     }
 
     @Test("Save Project - Creating")
-    func createProject() {
-        
+    func createProject() async throws {
+        var cancellables = [AnyCancellable]()
+
+        var onSavedCalled = false
+
+        // Ensure that there is no Projects in the DB
+        let allProjects = try await persistenceService.getProjects()
+        #expect(allProjects.count == 0)
+
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with no existing Project
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        ) {
+            onSavedCalled = true
+        }
+
+        // WHEN we ensure we have filled out all of the details
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true),
+            .init(order: 2, format: .md, isEnabled: false),
+            .init(order: 2, format: .txt, isEnabled: true)
+        ]
+        testSubject.seed = 10
+        testSubject.topK = 5
+        testSubject.topP = 0.5
+        testSubject.contextLength = 10
+        testSubject.batchSize = 15
+        testSubject.stopSequence = "abc"
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "This is a system prompt"
+        testSubject.embeddingModel = .multiQaMiniLm
+        testSubject.similarityMetric = .euclideanDistance
+        testSubject.strictMode = true
+
+        // WHEN we save the Project
+        await testSubject.saveButtonSelected()
+
+        // THEN a new Project has been created on the DB
+        var newProject: Project!
+        await withCheckedContinuation { continuation in
+            self.persistenceService.getProjects()
+                .replaceError(with: [])
+                .sink { allProjects in
+                    // THEN there is only one newly create Project
+                    #expect(allProjects.count == 1)
+                    newProject = allProjects.first!
+
+                    // THEN the Project has the correct attributes
+                    #expect(newProject.id == 1)
+                    #expect(newProject.path == "/example/path")
+                    #expect(newProject.name == "Test Name")
+                    #expect(newProject.urlBookmarkData == Data())
+                    #expect(newProject.documentationChecksum == nil)
+                    #expect(newProject.exampleQuestions == [])
+                    #expect(newProject.alertStatus == .error(error: .firstSync))
+                    #expect(newProject.needsFullResync == true)
+                    #expect(
+                        newProject.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
+                    )
+                    #expect(
+                        newProject.updatedAt.secondsFrom1970 == Date.now.secondsFrom1970
+                    )
+
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN a new ProjectSettings has been created on the DB
+        let settings = try await persistenceService.getProjectSettings(
+            for: .mock(id: 1)
+        )
+
+        // THEN the ProjectSettings has the correct attributes
+        #expect(settings.id == 1)
+        #expect(settings.projectID == 1)
+        #expect(settings.modelID == 1)
+        #expect(settings.supportedFormats == [.rtf, .txt])
+        #expect(settings.language == .english)
+        #expect(settings.embeddingModel == .multiQaMiniLm)
+        #expect(settings.similarityMetric == .euclideanDistance)
+        #expect(settings.seed == 10)
+        #expect(settings.topK == 5)
+        #expect(settings.topP == 0.5)
+        #expect(settings.batchSize == 15)
+        #expect(settings.stopSequence == "abc")
+        #expect(settings.maxTokenCount == 1024)
+        #expect(settings.systemPrompt == "This is a system prompt")
+        #expect(settings.strictMode == true)
+
+        // THEN we've opened up our Project's new window
+        let newWindow = try #require(testSubject.onOpen.value)
+        #expect(
+            newWindow == .project(
+                .init(project: newProject)
+            )
+        )
+
+        // THEN onSave has been called
+        #expect(onSavedCalled == true)
     }
 
     @Test("Save Project - Editing")
-    func editProject() {
-        
+    func editProject() async throws {
+        var cancellables = [AnyCancellable]()
+
+        var onSavedCalled = false
+
+        // Ensure that there is no Projects in the DB
+        let allProjects = try await persistenceService.getProjects()
+        #expect(allProjects.count == 0)
+
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        let project = Project.mock(id: 1)
+        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
+
+        // GIVEN that we have an existing Project & Settings in the DB
+        _ = try await persistenceService.insert(project: project)
+        _ = try await persistenceService.insert(settings: settings)
+
+        // GIVEN a ConfigureProjectViewModel with an existing Project
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
+            serviceContainer: self.serviceContainer
+        ) {
+            onSavedCalled = true
+        }
+
+        // WHEN we ensure we have filled out all of the details
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.model = .mock(id: 1)
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true),
+            .init(order: 2, format: .md, isEnabled: false),
+            .init(order: 2, format: .txt, isEnabled: true)
+        ]
+        testSubject.seed = 20
+        testSubject.topK = 5
+        testSubject.topP = 0.5
+        testSubject.contextLength = 10
+        testSubject.batchSize = 15
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "This is a system prompt"
+        testSubject.embeddingModel = .multiQaMiniLm
+        testSubject.similarityMetric = .euclideanDistance
+        testSubject.strictMode = true
+
+        // WHEN we save the Project
+        await testSubject.saveButtonSelected()
+
+        // THEN a new Project has been created on the DB
+        await withCheckedContinuation { continuation in
+            self.persistenceService.getProjects()
+                .replaceError(with: [])
+                .sink { allProjects in
+                    // THEN there is only one newly create Project
+                    #expect(allProjects.count == 1)
+                    let project = allProjects.first!
+
+                    // THEN the Project has the correct attributes
+                    #expect(project.id == 1)
+                    #expect(project.path == "/example/path")
+                    #expect(project.name == "Test Name")
+                    #expect(project.urlBookmarkData == Data())
+                    #expect(project.documentationChecksum == "123")
+                    #expect(project.exampleQuestions == ["foo", "bar"])
+                    #expect(project.alertStatus == .error(error: .firstSync))
+                    #expect(project.needsFullResync == true)
+                    #expect(
+                        project.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
+                    )
+                    #expect(
+                        project.updatedAt.secondsFrom1970 == Date.now.secondsFrom1970
+                    )
+
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN a new ProjectSettings has been created on the DB
+        let fetchedSettings = try await persistenceService.getProjectSettings(
+            for: .mock(id: 1)
+        )
+
+        // THEN the ProjectSettings has the correct attributes
+        #expect(fetchedSettings.id == 1)
+        #expect(fetchedSettings.projectID == 1)
+        #expect(fetchedSettings.modelID == 1)
+        #expect(fetchedSettings.supportedFormats == [.rtf, .txt])
+        #expect(fetchedSettings.language == .english)
+        #expect(fetchedSettings.embeddingModel == .multiQaMiniLm)
+        #expect(fetchedSettings.similarityMetric == .euclideanDistance)
+        #expect(fetchedSettings.seed == 20)
+        #expect(fetchedSettings.topK == 5)
+        #expect(fetchedSettings.topP == 0.5)
+        #expect(fetchedSettings.batchSize == 15)
+        #expect(fetchedSettings.maxTokenCount == 1024)
+        #expect(fetchedSettings.systemPrompt == "This is a system prompt")
+        #expect(fetchedSettings.strictMode == true)
+
+        // THEN onSave has been called
+        #expect(onSavedCalled == true)
+
+        // THEN we haven't opened up any new window
+        #expect(testSubject.onOpen.value == nil)
     }
 
     @Test("Reset LLM Options")
-    func resetLlmOptions() {
-//        // GIVEN a ConfigureProjectViewModel with custom LLM options
-//        let testSubject = ConfigureProjectViewModel(
-//            serviceContainer: .mock
-//        )
-//        testSubject.seed = 5678
-//        testSubject.topK = 50
-//        testSubject.temperature = 0.7
-//
-//        // WHEN the resetLlmOptions method is called
-//        testSubject.resetLlmOptions()
-//
-//        // THEN the LLM options are reset to their default values
-//        #expect(testSubject.seed == 1234)
-//        #expect(testSubject.topK == 40)
-//        #expect(testSubject.temperature == 0.2)
+    func resetLlmOptions() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with custom LLM options
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.model = .mock(id: 1)
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true),
+            .init(order: 2, format: .md, isEnabled: false),
+            .init(order: 2, format: .txt, isEnabled: true)
+        ]
+        testSubject.seed = 20
+        testSubject.topK = 5
+        testSubject.topP = 0.5
+        testSubject.contextLength = 10
+        testSubject.temperature = 15
+        testSubject.batchSize = 15
+        testSubject.stopSequence = "foobar"
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "This is a system prompt"
+
+        testSubject.embeddingModel = .multiQaMiniLm
+        testSubject.similarityMetric = .euclideanDistance
+
+        // WHEN the resetLlmOptions method is called
+        testSubject.resetLlmOptions()
+
+        // THEN the LLM options are reset to their default values
+        #expect(testSubject.seed == 1234)
+        #expect(testSubject.topK == 40)
+        #expect(testSubject.topP == 0.9)
+        #expect(testSubject.contextLength == 2048)
+        #expect(testSubject.temperature == 0.2)
+        #expect(testSubject.batchSize == 2048)
+        #expect(testSubject.stopSequence == "")
+        #expect(testSubject.maxTokenCount == 1048576)
+        #expect(testSubject.systemPrompt == "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.") // swiftlint:disable:this line_length
+        #expect(testSubject.strictMode == false)
+
+        // THEN nothing else has been changed
+        #expect(testSubject.projectName == "Test Name")
+        #expect(testSubject.projectDirectory == URL(fileURLWithPath: "/example/path"))
+        #expect(testSubject.embeddingModel == .multiQaMiniLm)
+        #expect(testSubject.similarityMetric == .euclideanDistance)
     }
 
     @Test("Reset Similarity Options")
-    func resetSimilarityOptions() {
-        
+    func resetSimilarityOptions() async {
+        // Load a testing model into our DB
+        await self.persistTestModel()
+
+        // GIVEN a ConfigureProjectViewModel with custom LLM options
+        let testSubject = ConfigureProjectViewModel(
+            serviceContainer: self.serviceContainer
+        )
+
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.model = .mock(id: 1)
+        testSubject.projectName = "Test Name"
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true),
+            .init(order: 2, format: .md, isEnabled: false),
+            .init(order: 2, format: .txt, isEnabled: true)
+        ]
+        testSubject.seed = 20
+        testSubject.topK = 5
+        testSubject.topP = 0.5
+        testSubject.contextLength = 10
+        testSubject.temperature = 15
+        testSubject.batchSize = 15
+        testSubject.stopSequence = "foobar"
+        testSubject.maxTokenCount = 1024
+        testSubject.systemPrompt = "This is a system prompt"
+
+        testSubject.embeddingModel = .multiQaMiniLm
+        testSubject.similarityMetric = .euclideanDistance
+
+        // WHEN the resetLlmOptions method is called
+        testSubject.resetSimilarityOptions()
+
+        // THEN the similarity options are reset to their default values
+        #expect(testSubject.embeddingModel == .distilbert)
+        #expect(testSubject.similarityMetric == .cosine)
+
+        // THEN nothing else has been changed
+        #expect(testSubject.projectName == "Test Name")
+        #expect(testSubject.projectDirectory == URL(fileURLWithPath: "/example/path"))
+        #expect(testSubject.seed == 20)
+        #expect(testSubject.topK == 5)
+        #expect(testSubject.topP == 0.5)
+        #expect(testSubject.contextLength == 10)
+        #expect(testSubject.temperature == 15)
+        #expect(testSubject.batchSize == 15)
+        #expect(testSubject.stopSequence == "foobar")
+        #expect(testSubject.maxTokenCount == 1024)
+        #expect(testSubject.systemPrompt == "This is a system prompt")
+        #expect(testSubject.strictMode == false)
     }
 
     @Test("ReSync Message")
-    func reSyncMessage() {
+    func resyncMessage() {
         
     }
 
@@ -1252,6 +1555,26 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 //        #expect(addedFormatCount == removedFormatCount + 1)
     }
 
+    @Test("On Save Called")
+    func onSaveCalled() {
+//        // GIVEN a ConfigureProjectViewModel
+//        let testSubject = ConfigureProjectViewModel(
+//            serviceContainer: .mock
+//        )
+//
+//        // WHEN a new format is added
+//        testSubject.createNewFormat()
+//        let addedFormatCount = testSubject.formatConfigurations.count
+//
+//        // AND the format is removed
+//        let newFormat = testSubject.formatConfigurations.last!
+//        testSubject.remove(formatConfiguration: newFormat)
+//        let removedFormatCount = testSubject.formatConfigurations.count
+//
+//        // THEN the format is added and removed correctly
+//        #expect(addedFormatCount == removedFormatCount + 1)
+    }
+
     @Test("FormValidationError Descriptions")
     func formValidationErrorDescriptions() {
         typealias Error = ConfigureProjectViewModel.FormValidationError
@@ -1263,11 +1586,14 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(Error.missingFormat.description == "Please ensure that at least one format has been enabled.")
         #expect(Error.missingSeed.description == "Please ensure that a valid seed value is provided.")
         #expect(Error.missingTopK.description == "Please ensure that a valid Top-K value is provided.")
-        #expect(Error.invalidTopP.description == "Please ensure that the Top-P value is within the range of 0.0 and 1.0.")
         #expect(Error.missingContextLength.description == "Please ensure that a valid context length is provided.")
         #expect(Error.missingBatchSize.description == "Please ensure that a valid batch size is provided.")
         #expect(Error.missingMaxTokenCount.description == "Please ensure that a valid maximum token count is provided.")
         #expect(Error.missingSystemPrompt.description == "Please ensure that a valid system prompt is provided.")
+        #expect(
+            Error.invalidTopP.description == "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
+        )
     }
 
-}
+    // swiftlint:enable line_length
+} // swiftlint:disable:this file_length
