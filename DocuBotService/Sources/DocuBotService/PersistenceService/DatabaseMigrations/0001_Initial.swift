@@ -30,8 +30,6 @@ struct Initial: DatabaseMigration {
                 .notNull()
             table.column("alertStatus", .blob)
                 .notNull()
-            table.column("needsFullResync", .boolean)
-                .notNull()
             table.column("createdAt", .datetime)
                 .notNull()
             table.column("updatedAt", .datetime)

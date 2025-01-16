@@ -403,7 +403,6 @@ private extension ConfigureProjectViewModel {
                 documentationCheckSum: project.documentationChecksum,
                 exampleQuestions: project.exampleQuestions,
                 alertStatus: project.alertStatus,
-                needsFullResync: self.resyncNeeded,
                 createdAt: project.createdAt,
                 updatedAt: .now
             )
@@ -422,7 +421,6 @@ private extension ConfigureProjectViewModel {
                 documentationCheckSum: nil,
                 exampleQuestions: [],
                 alertStatus: .error(error: .firstSync),
-                needsFullResync: true,
                 createdAt: .now,
                 updatedAt: .now
             )

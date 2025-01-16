@@ -51,9 +51,6 @@ public struct Project: Hashable, Codable, Sendable {
     /// The warning state that exists for this project
     public private(set) var alertStatus: AlertStatus
 
-    /// Indicative of if we need to do a full resync when the next sync occurs
-    public var needsFullResync: Bool
-
     /// When this project was created
     public let createdAt: Date
 
@@ -70,7 +67,6 @@ public struct Project: Hashable, Codable, Sendable {
         documentationCheckSum: String?,
         exampleQuestions: [String],
         alertStatus: AlertStatus,
-        needsFullResync: Bool,
         createdAt: Date,
         updatedAt: Date
     ) {
@@ -81,7 +77,6 @@ public struct Project: Hashable, Codable, Sendable {
         self.urlBookmarkData = urlBookmarkData
         self.exampleQuestions = exampleQuestions
         self.alertStatus = alertStatus
-        self.needsFullResync = needsFullResync
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -179,7 +174,6 @@ extension Project: Equatable {
             lhs.documents == rhs.documents &&
             lhs.exampleQuestions == rhs.exampleQuestions &&
             lhs.alertStatus == rhs.alertStatus &&
-            lhs.needsFullResync == rhs.needsFullResync &&
             lhs.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
             lhs.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
     }
@@ -194,7 +188,6 @@ extension Project: Equatable {
             self.documents == rhs.documents &&
             self.exampleQuestions == rhs.exampleQuestions &&
             self.alertStatus == rhs.alertStatus &&
-            self.needsFullResync == rhs.needsFullResync &&
             self.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
             self.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
     }

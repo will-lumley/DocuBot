@@ -25,11 +25,10 @@ public extension Project {
             id: id,
             path: path,
             name: name,
-            urlBookmarkData: .init(),
+            urlBookmarkData: urlBookmarkData,
             documentationCheckSum: documentationChecksum,
             exampleQuestions: exampleQuestions,
             alertStatus: alertStatus,
-            needsFullResync: needsFullResync,
             createdAt: createdAt,
             updatedAt: updatedAt
         )

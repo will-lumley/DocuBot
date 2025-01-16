@@ -13,7 +13,7 @@ import Foundation
 import SFSafeSymbols
 import Testing
 
-@Suite("ProjectViewModelTests", .tags(.view), .serialized)
+@Suite("ProjectViewModelTests", .tags(.view), .serialized, .timeLimit(.minutes(1)))
 // swiftlint:disable:next type_body_length
 class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
@@ -597,7 +597,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         }
     }
 
-    @Test("View Sources Button - Disabled - Syncing", .disabled())
+    @Test("View Sources Button - Disabled - Syncing")
     func viewSourcesButtonDisabledSyncing() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
@@ -633,106 +633,448 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     }
 
     @Test("View Sources Button - Disabled - No Sources")
-    func viewSourcesButtonDisabledNoSources() {
-        // Intentionally left blank.
+    func viewSourcesButtonDisabledNoSources() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // THEN our ViewSources button is disabled
+        #expect(testSubject.sourcesButton.isEnabled == false)
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // Setup an iterator that listens to our SourcesButton isEnabled state
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled.values.makeAsyncIterator()
+
+        // THEN the ViewSources button is at first NOT enabled
+        var nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == false)
+
+        // THEN the ViewSources button is then enabled
+        nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == true)
+
+        // WHEN the `sources` are removed
+        testSubject.sources = nil
+
+        // THEN the ViewSources is NOT enabled
+        nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == false)
     }
 
     @Test("View Sources Button - Enabled")
-    func viewSourcesButtonEnabledNoSources() {
-        // Intentionally left blank.
+    func viewSourcesButtonEnabled() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // THEN our ViewSources button is disabled
+        #expect(testSubject.sourcesButton.isEnabled == false)
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // Setup an iterator that listens to our SourcesButton isEnabled state
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled.values.makeAsyncIterator()
+
+        // THEN the ViewSources button is at first NOT enabled
+        var nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == false)
+
+        // THEN the ViewSources button is then enabled
+        nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == true)
     }
 
     @Test("Sync Button - Disabled - Syncing")
-    func syncButtonDisabledWhenSyncing() {
-        // Intentionally left blank.
+    func syncButtonDisabledWhenSyncing() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // THEN our SyncButton is enabled
+        #expect(testSubject.syncProjectButton.isEnabled == true)
+
+        // Setup an iterator that listens to our SyncButton isEnabled state
+        var isEnabledIterator = testSubject.syncProjectButton.$isEnabled.values.makeAsyncIterator()
+
+        // THEN the SyncButton is at first enabled
+        var nextSyncButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSyncButtonEnabled == true)
+
+        // WHEN the sync button is selected
+        testSubject.syncProjectButton.selected()
+
+        // THEN our SyncButton is NOT enabled
+        nextSyncButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSyncButtonEnabled == false)
+
+        // THEN after our sync, the SyncButton is enabled again
+        nextSyncButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSyncButtonEnabled == true)
     }
 
     @Test("Settings Button - Disabled - Syncing")
-    func settingsButtonDisabledWhenSyncing() {
-        // Intentionally left blank.
+    func settingsButtonDisabledWhenSyncing() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // THEN our SettingsButton is enabled
+        #expect(testSubject.projectSettingsButton.isEnabled == true)
+
+        // Setup an iterator that listens to our SettingsButton isEnabled state
+        var isEnabledIterator = testSubject.projectSettingsButton.$isEnabled.values.makeAsyncIterator()
+
+        // THEN the SettingsButton is at first enabled
+        var nextSettingsButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSettingsButtonEnabled == true)
+
+        // WHEN the SyncButton is selected
+        testSubject.syncProjectButton.selected()
+
+        // THEN our SettingsButton is NOT enabled
+        nextSettingsButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSettingsButtonEnabled == false)
+
+        // THEN after our sync, the SettingsButton is enabled again
+        nextSettingsButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSettingsButtonEnabled == true)
     }
 
-    @Test("Text View - Disabled - Syncing")
-    func disableTextViewWhenSyncing() {
-        // Intentionally left blank.
+    @Test("Text View - Disabled - Expecting Response")
+    func disableTextViewWhenExpectingResponse() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // THEN our TextView is NOT disabled
+        #expect(testSubject.disableTextField == false)
+
+        // Setup an iterator that listens to our TextView isEnabled state
+        var isDisabledIterator = testSubject.$disableTextField.values.makeAsyncIterator()
+
+        // THEN the TextView is at first NOT disabled
+        var nextTextViewDisabled = await isDisabledIterator.next()
+        #expect(nextTextViewDisabled == false)
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // THEN our TextView is disabled
+        nextTextViewDisabled = await isDisabledIterator.next()
+        #expect(nextTextViewDisabled == true)
+
+        // THEN after our question is answered, the TextView is NOT disabled, again
+        nextTextViewDisabled = await isDisabledIterator.next()
+        #expect(nextTextViewDisabled == false)
     }
 
     @Test("Text View - Disabled - Error")
-    func disableTextViewWhenError() {
-        // Intentionally left blank.
+    func disableTextViewWhenError() async throws {
+        // GIVEN we have a Project that has an error
+        let project = Project.mock(alertStatus: .error(error: .firstSync))
+
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock(project)
+
+        // THEN our TextView is disabled
+        #expect(testSubject.disableTextField == true)
     }
 
-    @Test("Ask Button Title - Expecting Response")
-    func askButtonTitleExpectingResponse() {
-        // Intentionally left blank.
+    @Test("Text View - Enabled - Warning")
+    func enableTextViewWhenError() async throws {
+        // GIVEN we have a Project that has a warning
+        let project = Project.mock(alertStatus: .warning(warning: .isDirty))
+
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock(project)
+
+        // THEN our TextView is NOT disabled
+        #expect(testSubject.disableTextField == false)
     }
 
-    @Test("Ask Button Title - Not Expecting Response")
-    func askButtonTitleNotExpectingResponse() {
-        // Intentionally left blank.
+    @Test("Ask Button - Title")
+    func askButtonTitle() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // Setup an iterator that listens to our AskButton title
+        var titleIterator = testSubject.$askButtonTitle.values.makeAsyncIterator()
+
+        // THEN the AskButton title is "Ask"
+        var nextTitle = await titleIterator.next()
+        #expect(nextTitle == "Ask Question")
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // THEN the AskButton title is "Cancel"
+        nextTitle = await titleIterator.next()
+        #expect(nextTitle == "Cancel")
+
+        // THEN once the response is provided, the AskButton title reverts back to "Ask"
+        nextTitle = await titleIterator.next()
+        #expect(nextTitle == "Ask Question")
     }
 
-    @Test("Ask Button Icon - Expecting Response")
-    func askButtonIconExpectingResponse() {
-        // Intentionally left blank.
-    }
+    @Test("Ask Button - Icon")
+    func askButtonIcon() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
 
-    @Test("Ask Button Icon - Not Expecting Response")
-    func askButtonIconNotExpectingResponse() {
-        // Intentionally left blank.
-    }
+        // Setup an iterator that listens to our AskButton icon
+        var iconIterator = testSubject.$askButtonIcon.values.makeAsyncIterator()
 
-    @Test("Share Button - Disabled - No Share Content")
-    func shareButtonDisabledNoShareContent() {
-        // Intentionally left blank.
+        // THEN the AskButton icon is "Ask"
+        var nextIcon = await iconIterator.next()
+        #expect(nextIcon == .playFill)
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // THEN the AskButton title is "Cancel"
+        nextIcon = await iconIterator.next()
+        #expect(nextIcon == .stopFill)
+
+        // THEN once the response is provided, the AskButton title reverts back to "Ask"
+        nextIcon = await iconIterator.next()
+        #expect(nextIcon == .playFill)
     }
 
     @Test("Share Button - Disabled - Expecting Response")
-    func shareButtonDisabledExpectingResponse() {
-        // Intentionally left blank.
+    func shareButtonDisabledExpectingResponse() async throws {
+        // Ensure that our GPT responds with "Hello, World!"
+        let expectedResponse = "Hello, World!"
+        mockGptService.responseResult = .success(expectedResponse)
+
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // Setup an iterator that listens to our TextView isEnabled state
+        var isDisabledIterator = testSubject.$shareButtonDisabled.values.makeAsyncIterator()
+        var nextShareButtonDisabled = await isDisabledIterator.next()
+
+        // THEN the ShareButton is at first disabled
+        #expect(nextShareButtonDisabled == true)
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // THEN our ShareButton is NOT disabled
+        nextShareButtonDisabled = await isDisabledIterator.next()
+        #expect(nextShareButtonDisabled == false)
     }
 
     @Test("Response Feeds Into Share Content")
-    func responseIsShareContent() {
-        // Intentionally left blank.
+    func responseIsShareContent() async throws {
+        // Ensure that our GPT responds with "Hello, World!"
+        let expectedResponse = "Hello, World!"
+        mockGptService.responseResult = .success(expectedResponse)
+
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // Setup an iterator that listens to our ShareContent values
+        var shareContentIterator = testSubject.$shareContent.values.makeAsyncIterator()
+        var nextShareContent = try #require(await shareContentIterator.next())
+
+        // THEN the ShareContent is at first `nil`
+        #expect(nextShareContent == nil)
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // Iterate over every single character, as we should receive each one
+        // consecutively
+        var responseSoFar = ""
+        for char in expectedResponse {
+            // THEN the response is "H", then "e", "l", etc
+            nextShareContent = try #require(await shareContentIterator.next())
+            responseSoFar += String(char)
+
+            #expect(nextShareContent == responseSoFar)
+        }
+
+        // THEN our response is "Hello, World!"
+        #expect(nextShareContent == expectedResponse)
     }
 
     @Test("Sync on Launch - First Sync")
-    func syncOnLaunchFirstSync() {
+    func syncOnLaunchFirstSync() async throws {
+        // Let's create a new directory to call our own
+        let testURL = FileManager.default
+            .temporaryDirectory
+            .appendingPathComponent("DocuBot-Test")
+            .appendingPathComponent("test-project2/")
+        try FileManager.default.createDirectory(
+            at: testURL,
+            withIntermediateDirectories: true
+        )
 
+        // Add a test document to our project directory
+        FileManager.default.createFile(
+            atPath: testURL
+                .appendingPathComponent("test1.txt", conformingTo: .text)
+                .path(),
+            contents: "Hello, World!".data(using: .utf8)
+        )
+
+        // Let's create BookmarkData to access it
+        let bookmarkData = try testURL.bookmarkData(
+            options: .securityScopeAllowOnlyReadAccess,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        )
+
+        // GIVEN we have a Project that is supposed to sync at first
+        let project = Project.mock(
+            id: 1,
+            path: testURL.path(),
+            urlBookmarkData: bookmarkData,
+            alertStatus: .error(error: .firstSync)
+        )
+
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock(project)
+
+        // Let's listen in on our SyncStage
+        var syncStageIterator = testSubject.$syncStage.values.makeAsyncIterator()
+
+        // THEN our next SyncStage is `extractingDocumentsFromDisk`
+        var nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage == .extractingDocumentsFromDisk)
+
+        // THEN our next SyncStage is `trainingDocuments`
+        nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage?.isTrainingDocuments == true)
+
+        // THEN our next SyncStage is `buildingExampleQuestions`
+        nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage?.isBuildingExampleQuestions == true)
     }
 
     @Test("No Sync on Launch")
-    func noSyncOnLaunch() {
+    func noSyncOnLaunch() async throws {
+        // Let's create a new directory to call our own
+        let testURL = FileManager.default
+            .temporaryDirectory
+            .appendingPathComponent("DocuBot-Test")
+            .appendingPathComponent("test-project2/")
+        try FileManager.default.createDirectory(
+            at: testURL,
+            withIntermediateDirectories: true
+        )
 
+        // Add a test document to our project directory
+        FileManager.default.createFile(
+            atPath: testURL
+                .appendingPathComponent("test1.txt", conformingTo: .text)
+                .path(),
+            contents: "Hello, World!".data(using: .utf8)
+        )
+
+        // Let's create BookmarkData to access it
+        let bookmarkData = try testURL.bookmarkData(
+            options: .securityScopeAllowOnlyReadAccess,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        )
+
+        // GIVEN we have a Project that is supposed to sync at first
+        let project = Project.mock(
+            id: 1,
+            path: testURL.path(),
+            urlBookmarkData: bookmarkData,
+            alertStatus: .none
+        )
+
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock(project)
+
+        // Let's listen in on our SyncStage
+        var syncStageIterator = testSubject.$syncStage.values.makeAsyncIterator()
+
+        // THEN our next SyncStage is `nil`
+        let nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage == nil)
+
+        // WHEN we wait a hot couple of seconds
+        try await Task.sleep(for: .seconds(5))
+
+        // THEN we are still `nil` and not syncing
+        #expect(testSubject.syncStage == nil)
     }
 
     @Test("Sync - Sync Button")
-    func syncFromSyncButton() {
-        /*
-         // Let's create a new directory to call our own
-         let testURL = FileManager.default
-             .temporaryDirectory
-             .appendingPathComponent("DocuBot-Test")
-             .appendingPathComponent("test-project2/")
-         try FileManager.default.createDirectory(
-             at: testURL,
-             withIntermediateDirectories: true
-         )
+    func syncFromSyncButton() async throws {
+        // Let's create a new directory to call our own
+        let testURL = FileManager.default
+            .temporaryDirectory
+            .appendingPathComponent("DocuBot-Test")
+            .appendingPathComponent("test-project2/")
+        try FileManager.default.createDirectory(
+            at: testURL,
+            withIntermediateDirectories: true
+        )
 
-         // GIVEN we have a Project with no example questions
-         let project = Project.mock(
-             id: 1,
-             path: testURL.path(),
-             exampleQuestions: [],
-             alertStatus: .none
-         )
+        // Add a test document to our project directory
+        FileManager.default.createFile(
+            atPath: testURL
+                .appendingPathComponent("test1.txt", conformingTo: .text)
+                .path(),
+            contents: "Hello, World!".data(using: .utf8)
+        )
 
-         // GIVEN we have a ProjectViewModel
-         let testSubject = try await self.mock(project)
+        // Let's create BookmarkData to access it
+        let bookmarkData = try testURL.bookmarkData(
+            options: .securityScopeAllowOnlyReadAccess,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        )
 
-         testSubject.
-         */
+        // GIVEN we have a Project that is supposed to sync at first
+        let project = Project.mock(
+            id: 1,
+            path: testURL.path(),
+            urlBookmarkData: bookmarkData,
+            alertStatus: .none
+        )
+
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock(project)
+
+        // Let's listen in on our SyncStage
+        var syncStageIterator = testSubject.$syncStage.values.makeAsyncIterator()
+
+        // THEN our next SyncStage is `nil`
+        var nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage == nil)
+
+        // WHEN we wait a hot couple of seconds
+        try await Task.sleep(for: .seconds(5))
+
+        // THEN we are still `nil` and not syncing
+        #expect(testSubject.syncStage == nil)
+
+        // WHEN we select the sync button
+        testSubject.syncProjectButton.selected()
+
+        // THEN our next SyncStage is `extractingDocumentsFromDisk`
+        nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage == .extractingDocumentsFromDisk)
+
+        // THEN our next SyncStage is `trainingDocuments`
+        nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage?.isTrainingDocuments == true)
+
+        // THEN our next SyncStage is `buildingExampleQuestions`
+        nextSyncStage = try #require(await syncStageIterator.next())
+        #expect(nextSyncStage?.isBuildingExampleQuestions == true)
+
     }
 
     @Test("Ask Question - Stop")
@@ -882,6 +1224,33 @@ private extension ProjectViewModel.ResponseStatus {
         }
 
         return response == value
+    }
+
+}
+
+// MARK: - ProjectViewModel.SyncStage
+
+private extension ProjectViewModel.SyncStage {
+
+    var isExtractingDocumentsFromDisk: Bool {
+        guard case .extractingDocumentsFromDisk = self else {
+            return false
+        }
+        return true
+    }
+
+    var isTrainingDocuments: Bool {
+        guard case .trainingDocuments = self else {
+            return false
+        }
+        return true
+    }
+
+    var isBuildingExampleQuestions: Bool {
+        guard case .buildingExampleQuestions = self else {
+            return false
+        }
+        return true
     }
 
 }

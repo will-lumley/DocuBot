@@ -21,7 +21,6 @@ public extension ProjectRecord {
             documentationChecksum: model.documentationChecksum,
             exampleQuestions: model.exampleQuestions,
             alertStatus: .init(model: model.alertStatus),
-            needsFullResync: model.needsFullResync,
             createdAt: model.createdAt,
             updatedAt: model.updatedAt
         )
@@ -87,7 +86,6 @@ public extension Project {
             documentationCheckSum: record.documentationChecksum,
             exampleQuestions: record.exampleQuestions,
             alertStatus: .init(record: record.alertStatus),
-            needsFullResync: record.needsFullResync,
             createdAt: record.createdAt,
             updatedAt: record.updatedAt
         )

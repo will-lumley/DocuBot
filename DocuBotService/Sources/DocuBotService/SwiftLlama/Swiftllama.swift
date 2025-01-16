@@ -67,7 +67,9 @@ public class SwiftLlama {
             finish()
             generatedTokenCache = ""
         }
-        defer { model.clear() }
+        defer {
+            model.clear()
+        }
         do {
             try model.start(for: prompt)
             while model.shouldContinue {
@@ -119,7 +121,10 @@ public class SwiftLlama {
     }
 
     @SwiftLlamaActor
-    public func start(for prompt: Prompt, sessionSupport: Bool = false) -> AsyncThrowingStream<String, Error> {
+    public func start(
+        for prompt: Prompt,
+        sessionSupport: Bool = false
+    ) -> AsyncThrowingStream<String, Error> {
         let sessionPrompt = prepare(sessionSupport: sessionSupport, for: prompt)
         return .init { continuation in
             Task {
@@ -129,6 +134,7 @@ public class SwiftLlama {
                 } finish: { [weak self] in
                     continuation.finish()
                     self?.session?.endResponse()
+                    self?.model.clear()
                 }
             }
         }
@@ -160,6 +166,10 @@ public class SwiftLlama {
 
     public func stop() {
         self.model.stop()
+    }
+
+    public func clear() {
+        self.model.clear()
     }
 
 }

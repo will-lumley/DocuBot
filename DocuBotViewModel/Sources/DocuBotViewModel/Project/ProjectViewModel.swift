@@ -185,6 +185,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             .map { sources, syncStage in
                 return sources != nil && syncStage == .none
             }
+            .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .assign(to: \.isEnabled, on: sourcesButton)
             .store(in: &cancellables)
@@ -192,12 +193,14 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         // Disable the SyncButton if we're syncing
         self.$syncStage
             .map { $0 == .none }
+            .removeDuplicates()
             .assign(to: \.isEnabled, on: syncProjectButton)
             .store(in: &cancellables)
 
         // Disable the Settings button if we're syncing
         self.$syncStage
             .map { $0 == .none }
+            .removeDuplicates()
             .assign(to: \.isEnabled, on: projectSettingsButton)
             .store(in: &cancellables)
 
@@ -206,6 +209,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         // we have an error
         Publishers.CombineLatest($expectingResponse, $project)
             .map { $0 == true || $1.alertStatus.isError }
+            .removeDuplicates()
             .assign(to: &$disableTextField)
 
         // Set the Ask button to say "Ask" if we are NOT expecting a response
@@ -218,6 +222,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
                     return L10n.Project.QueryButton.Ask.title
                 }
             }
+            .removeDuplicates()
             .assign(to: &$askButtonTitle)
 
         // Set the Ask button to say "Stop" if we are expecting a response
@@ -229,6 +234,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
                     return SFSymbol.playFill
                 }
             }
+            .removeDuplicates()
             .assign(to: &$askButtonIcon)
 
         // If we do NOT have ShareContent
@@ -237,6 +243,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         // We disable our button
         Publishers.CombineLatest(self.$shareContent, self.$expectingResponse)
             .map { $0 == nil || $1 == true }
+            .removeDuplicates()
             .assign(to: &$shareButtonDisabled)
 
         // If we have a response, we can share it
@@ -279,7 +286,9 @@ public extension ProjectViewModel {
             do {
                 let settings = try await self.getProjectSettings()
                 let allModels = try await persistenceService.getModels()
-                let model = try await persistenceService.getModel(id: settings.modelID)
+                let model = try await persistenceService.getModel(
+                    id: settings.modelID
+                )
 
                 await MainActor.run {
                     self.configureProjectViewModel = .init(
@@ -462,7 +471,9 @@ private extension ProjectViewModel {
                             self.response = .response(response: update)
                         }
                     }
-                    await MainActor.run { self.expectingResponse = false }
+                    await MainActor.run {
+                        self.expectingResponse = false
+                    }
                     self.logService.log(with: .info, "Response: \(response)")
                 }
 
@@ -548,6 +559,12 @@ private extension ProjectViewModel {
 
         Task {
             do {
+                // After we've done everything, we want the `syncStage`
+                // to go back to `nil`
+                defer {
+                    Task { await MainActor.run { self.syncStage = nil } }
+                }
+
                 // Pull out the settings
                 let settings = try await persistenceService.getProjectSettings(
                     for: project
@@ -598,18 +615,11 @@ private extension ProjectViewModel {
                 // Persist the Project and Documents
                 try await self.persistProject()
                 try await self.persist(documents: documents)
-
-                // Let the user interact with the UI again
-                await MainActor.run {
-                    self.syncStage = nil
-                }
             } catch let error as DocumentParser.DocumentError {
                 logService.log(with: .error, "Failed to sync. \(error.description)")
 
                 // If we're here this means our bookmark data is stale/non-existent
                 await MainActor.run {
-                    self.syncStage = nil
-
                     self.alertConfiguration = .init(
                         title: L10n.Error.Project.StaleBookmark.title,
                         message: L10n.Error.Project.StaleBookmark.message,
@@ -624,8 +634,6 @@ private extension ProjectViewModel {
                 logService.log(with: .error, "Failed to sync. \(error.description)")
 
                 await MainActor.run {
-                    self.syncStage = nil
-
                     self.alertConfiguration = .init(
                         title: L10n.Error.Project.FailedToSync.title,
                         message: error.description
