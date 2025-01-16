@@ -11,7 +11,7 @@ import DocuBotToolbox
 @testable import DocuBotViewModel
 import Testing
 
-@Suite("AboutViewModelTests", .serialized)
+@Suite("AboutViewModelTests", .serialized, .tags(.view))
 class AboutViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Label Values")
@@ -38,15 +38,7 @@ class AboutViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Open Licence")
     func openLicence() async throws {
-        // Let's swizzle our NSWorkspace methods.
-        // This is highly recommended against generally, and for good reason,
-        // however I'm using it here exclusively for the purposes of testing.
-        NSWorkspace.swizzleOpen()
-
-        // Listen in on the open method being called
-        NSWorkspace.onOpenHandler = { url in
-            self.openedURL = url
-        }
+        self.swizzleWorkspaceOpen()
 
         // GIVEN we have an AboutViewModel
         let testSubject = AboutViewModel(serviceContainer: .mock)
@@ -61,15 +53,7 @@ class AboutViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Open Privacy Policy")
     func openPrivacyPolicy() async throws {
-        // Let's swizzle our NSWorkspace methods.
-        // This is highly recommended against generally, and for good reason,
-        // however I'm using it here exclusively for the purposes of testing.
-        NSWorkspace.swizzleOpen()
-
-        // Listen in on the open method being called
-        NSWorkspace.onOpenHandler = { url in
-            self.openedURL = url
-        }
+        self.swizzleWorkspaceOpen()
 
         // GIVEN we have an AboutViewModel
         let testSubject = AboutViewModel(serviceContainer: .mock)

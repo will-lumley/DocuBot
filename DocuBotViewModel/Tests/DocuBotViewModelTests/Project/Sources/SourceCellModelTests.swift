@@ -11,6 +11,7 @@ import DocuBotModel
 import Foundation
 import Testing
 
+@Suite("SourceCellModelTests", .tags(.view))
 class SourceCellModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Labels")
@@ -32,12 +33,7 @@ class SourceCellModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Context Menu Items")
     func contextMenuItems() async throws {
-        NSWorkspace.swizzleFileViewing()
-
-        // Listen in on the file viewing method being called
-        NSWorkspace.onFileViewingHandler = { urls in
-            self.viewedFiles = urls
-        }
+        self.swizzleWorkspaceFileViewing()
 
         // GIVEN we have a SourceCellModel
         let testSubject = SourceCellModel(

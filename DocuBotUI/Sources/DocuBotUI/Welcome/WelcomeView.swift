@@ -101,9 +101,9 @@ private extension WelcomeView {
 
             MenuButton(viewModel: viewModel.newProjectButton)
                 .keyboardShortcut("n", modifiers: .command)
-            MenuButton(viewModel: viewModel.openModelManager)
+            MenuButton(viewModel: viewModel.openModelManagerButton)
             MenuButton(viewModel: viewModel.viewSourceCodeButton)
-            MenuButton(viewModel: viewModel.emailDeveloper)
+            MenuButton(viewModel: viewModel.emailDeveloperButton)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 

@@ -67,3 +67,23 @@ public struct SourceCell: View {
 #Preview {
     SourceCell(viewModel: .mock)
 }
+
+public extension SourceCellModel {
+
+    static var mock: SourceCellModel {
+        .init(
+            document: .init(
+                url: .desktopDirectory,
+                fileFormat: .md,
+                content: "Hello, there!",
+                checksum: "123",
+                projectID: 1,
+                embeddings: nil,
+                createdAt: .now,
+                updatedAt: .now
+            ),
+            score: 0.65
+        )
+    }
+
+}

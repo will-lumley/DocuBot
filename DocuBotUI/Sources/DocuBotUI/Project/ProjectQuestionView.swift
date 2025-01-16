@@ -77,3 +77,14 @@ struct CapsuleButtonStyle: ButtonStyle {
     )
         .padding()
 }
+
+public extension ProjectQuestionViewModel {
+
+    static var mock: ProjectQuestionViewModel {
+        .init(
+            // swiftlint:disable:next line_length
+            content: "What are the @MainActor attributes in the context of MVVM, and why are they important for View Model classes?"
+        ) { _ in }
+    }
+
+}

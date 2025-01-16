@@ -33,7 +33,7 @@ public class WelcomeProjectCellModel: ObservableObject {
 extension WelcomeProjectCellModel: Identifiable {
 
     public var id: Int64 {
-        self.project.id ?? Int64(-1)
+        self.project.id ?? -1
     }
 
 }
@@ -42,7 +42,10 @@ extension WelcomeProjectCellModel: Identifiable {
 
 extension WelcomeProjectCellModel: Hashable {
 
-    public static func == (lhs: WelcomeProjectCellModel, rhs: WelcomeProjectCellModel) -> Bool {
+    public static func == (
+        lhs: WelcomeProjectCellModel,
+        rhs: WelcomeProjectCellModel
+    ) -> Bool {
         return lhs.project == rhs.project
     }
 
@@ -72,7 +75,7 @@ public extension WelcomeProjectCellModel {
 
 }
 
-// MARK: - Preview
+// MARK: - Mock
 
 public extension WelcomeProjectCellModel {
 

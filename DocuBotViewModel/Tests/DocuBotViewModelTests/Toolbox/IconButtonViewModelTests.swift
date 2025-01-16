@@ -9,6 +9,7 @@
 import SFSafeSymbols
 import Testing
 
+@Suite("IconButtonViewModelTests", .tags(.toolbox))
 struct IconButtonViewModelTests {
 
     @Test("Initialisation")

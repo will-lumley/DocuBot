@@ -9,6 +9,7 @@
 import SFSafeSymbols
 import Testing
 
+@Suite("EmptyListConfigurationTests", .tags(.toolbox))
 struct EmptyListConfigurationTests {
 
     @Test("Initialisation")

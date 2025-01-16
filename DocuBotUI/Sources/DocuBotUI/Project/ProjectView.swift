@@ -237,3 +237,14 @@ public struct ProjectView: View {
 #Preview {
     ProjectView(viewModel: .mock)
 }
+
+public extension ProjectViewModel {
+
+    static var mock: ProjectViewModel {
+        .init(
+            project: .mock(),
+            serviceContainer: .mock
+        )
+    }
+
+}

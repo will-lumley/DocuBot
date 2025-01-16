@@ -12,7 +12,7 @@ import DocuBotService
 import Foundation
 import Testing
 
-@Suite("ModelManagerViewModelTests", .serialized)
+@Suite("ModelManagerViewModelTests", .serialized, .tags(.view))
 class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Labels")
@@ -243,12 +243,7 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
 
     @Test("Download More Button Selected")
     func downloadMoreButtonSelected() {
-        NSWorkspace.swizzleOpen()
-
-        // Listen in on the open method being called
-        NSWorkspace.onOpenHandler = { url in
-            self.openedURL = url
-        }
+        self.swizzleWorkspaceOpen()
 
         // GIVEN we have a ModelManagerViewModel
         let testSubject = ModelManagerViewModel(
@@ -338,7 +333,7 @@ class ModelManagerViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable 
 
         // Because I'm a silly goose and don't know how to get the next
         // fired item in the publisher chain
-        try await Task.sleep(for: .seconds(1))
+        try await Task.sleep(for: .seconds(2))
 
         // THEN the default model is attempted to be downloaded
         listState = try await testSubject.$listState.firstValue()

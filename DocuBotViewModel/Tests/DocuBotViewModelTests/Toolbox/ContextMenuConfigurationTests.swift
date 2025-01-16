@@ -8,6 +8,7 @@
 @testable import DocuBotViewModel
 import Testing
 
+@Suite("ContextMenuConfigurationTests", .tags(.toolbox))
 struct ContextMenuConfigurationTests {
 
     @Test("Initialisation")

@@ -8,6 +8,7 @@
 @testable import DocuBotViewModel
 import Testing
 
+@Suite("MenuButtonViewModelTests", .tags(.toolbox))
 struct MenuButtonViewModelTests {
 
     @Test("Initialisation")

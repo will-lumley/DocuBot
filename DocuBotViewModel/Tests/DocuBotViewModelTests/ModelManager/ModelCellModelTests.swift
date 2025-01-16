@@ -9,6 +9,7 @@ import DocuBotModel
 @testable import DocuBotViewModel
 import Testing
 
+@Suite("ModelCellModelTests", .tags(.view))
 struct ModelCellModelTests {
 
     @Test("Title")

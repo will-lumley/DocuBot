@@ -8,6 +8,7 @@
 @testable import DocuBotViewModel
 import Testing
 
+@Suite("HelpConfigurationTests", .tags(.toolbox))
 struct HelpConfigurationTests {
 
     @Test("Initialisation")

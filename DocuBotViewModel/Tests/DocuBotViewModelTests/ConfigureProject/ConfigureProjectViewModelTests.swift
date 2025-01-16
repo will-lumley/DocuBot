@@ -16,6 +16,7 @@ import Testing
 @Suite(
     "ConfigureProjectViewModelTests",
     .serialized,
+    .tags(.view),
     .timeLimit(.minutes(1))
 )
 class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable { // swiftlint:disable:this type_body_length

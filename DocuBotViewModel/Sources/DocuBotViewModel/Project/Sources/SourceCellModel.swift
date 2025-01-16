@@ -21,7 +21,7 @@ public class SourceCellModel: ObservableObject {
 
     // MARK: - Lifecycle
 
-    init(
+    public init(
         document: Document,
         score: Float,
         delegate: SourceCellModelDelegate? = nil
@@ -78,34 +78,29 @@ private extension SourceCellModel {
 
 }
 
+// MARK: - Hashable
+
+extension SourceCellModel: Hashable {
+
+    public static func == (
+        lhs: SourceCellModel,
+        rhs: SourceCellModel
+    ) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.document)
+    }
+
+}
+
 // MARK: - Identifiable
 
 extension SourceCellModel: Identifiable {
 
     public var id: Int64 {
         self.document.id ?? -1
-    }
-
-}
-
-// MARK: - Mock
-
-public extension SourceCellModel {
-
-    static var mock: SourceCellModel {
-        .init(
-            document: .init(
-                url: .desktopDirectory,
-                fileFormat: .md,
-                content: "Hello, there!",
-                checksum: "123",
-                projectID: 1,
-                embeddings: nil,
-                createdAt: .now,
-                updatedAt: .now
-            ),
-            score: 0.65
-        )
     }
 
 }

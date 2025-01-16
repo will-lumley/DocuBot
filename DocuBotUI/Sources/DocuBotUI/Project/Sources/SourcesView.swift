@@ -30,3 +30,41 @@ public struct SourcesView: View {
 #Preview {
     SourcesView(viewModel: .mock)
 }
+
+public extension SourcesViewModel {
+
+    static var mock: SourcesViewModel {
+        .init(
+            sources: [
+                .init(
+                    document: .init(
+                        url: .desktopDirectory,
+                        fileFormat: .md,
+                        content: "Hello, there!",
+                        checksum: "123",
+                        projectID: 1,
+                        embeddings: nil,
+                        createdAt: .now,
+                        updatedAt: .now
+                    ),
+                    score: 0.65
+                ),
+                .init(
+                    document: .init(
+                        url: .desktopDirectory,
+                        fileFormat: .md,
+                        content: "Hello, there!",
+                        checksum: "123",
+                        projectID: 1,
+                        embeddings: nil,
+                        createdAt: .now,
+                        updatedAt: .now
+                    ),
+                    score: 0.65
+                )
+            ],
+            serviceContainer: .mock
+        )
+    }
+
+}
