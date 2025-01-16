@@ -3,4 +3,160 @@
    uuid = "F5641CA8-A07F-4432-A1DD-68018DB71AF2"
    type = "0"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C9CF9B8F-4285-4EE6-AE86-A49BF4250244"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DocuBotModel/Sources/DocuBotModel/Models/DocumentParser.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
+            landmarkName = "extractFilesFromDisk()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C9CF9B8F-4285-4EE6-AE86-A49BF4250244 - 3d4bde5a4a3beafb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for DocuBotModel.DocumentParser.extractFilesFromDisk() async throws -&gt; Swift.Array&lt;DocuBotModel.Document&gt;"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotModel/Sources/DocuBotModel/Models/DocumentParser.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126">
+               </Location>
+               <Location
+                  uuid = "C9CF9B8F-4285-4EE6-AE86-A49BF4250244 - 769e77328490e6e5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for DocuBotModel.DocumentParser.extractFilesFromDisk() async throws -&gt; Swift.Array&lt;DocuBotModel.Document&gt;"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotModel/Sources/DocuBotModel/Models/DocumentParser.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E86A653D-33E0-476F-8D05-10143F3ABF29"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DocuBotModel/Sources/DocuBotModel/Models/DocumentParser.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "131"
+            endingLineNumber = "131"
+            landmarkName = "extractFilesFromDisk()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E86A653D-33E0-476F-8D05-10143F3ABF29 - 3d4bde5a4a3bea00"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for DocuBotModel.DocumentParser.extractFilesFromDisk() async throws -&gt; Swift.Array&lt;DocuBotModel.Document&gt;"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotModel/Sources/DocuBotModel/Models/DocumentParser.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "131"
+                  endingLineNumber = "131">
+               </Location>
+               <Location
+                  uuid = "E86A653D-33E0-476F-8D05-10143F3ABF29 - 769e77328490e61e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for DocuBotModel.DocumentParser.extractFilesFromDisk() async throws -&gt; Swift.Array&lt;DocuBotModel.Document&gt;"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotModel/Sources/DocuBotModel/Models/DocumentParser.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "131"
+                  endingLineNumber = "131">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ECBA5078-DEBB-4233-83C0-2116B05B70F7"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../../Library/Developer/Xcode/DerivedData/DocuBot-dktjunbgtjdqzidzkkbsnvuuyvdj/SourcePackages/checkouts/similarity-search-kit/Sources/SimilaritySearchKit/Core/Embeddings/Splitters/TokenSplitter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "93"
+            endingLineNumber = "93"
+            landmarkName = "split(text:chunkSize:overlapSize:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ACE83885-B78A-4FB8-BF90-E25FA60C17D1"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DocuBotViewModel/Sources/DocuBotViewModel/Project/Chat/ChatViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "enterSelected()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "ACE83885-B78A-4FB8-BF90-E25FA60C17D1 - 7900ca7e9299f52"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; () in DocuBotViewModel.ChatViewModel.enterSelected() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/Chat/ChatViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "108"
+                  endingLineNumber = "108">
+               </Location>
+               <Location
+                  uuid = "ACE83885-B78A-4FB8-BF90-E25FA60C17D1 - 9534c851828543d4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (SimilaritySearchKit.SimilarityIndex.SearchResult) -&gt; Swift.Optional&lt;Swift.Int64&gt; in closure #1 () async -&gt; () in DocuBotViewModel.ChatViewModel.enterSelected() -&gt; ()"
+                  moduleName = "DocuBot.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/will/Documents/Dev/Projects/OpenSource/will-lumley/DocuBot/DocuBotViewModel/Sources/DocuBotViewModel/Project/Chat/ChatViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "109"
+                  endingLineNumber = "109">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

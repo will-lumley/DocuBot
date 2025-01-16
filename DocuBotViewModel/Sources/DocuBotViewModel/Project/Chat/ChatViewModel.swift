@@ -10,6 +10,7 @@ import DocuBotModel
 import DocuBotService
 import DocuBotToolbox
 import Foundation
+import NaturalLanguage
 
 public class ChatViewModel: DocuBotViewModel, Identifiable {
 
@@ -77,9 +78,12 @@ public extension ChatViewModel {
             return
         }
 
+        // Cache our query
+        let query = self.chatText
+
         // Create our message from our user
         let message = Message(
-            content: self.chatText,
+            content: query,
             author: .user,
             chatID: self.id,
             createdAt: .now
@@ -91,8 +95,33 @@ public extension ChatViewModel {
         self.chatText = ""
         self.loadingState = .loading
 
+        Task {
+            do {
+                let project = try await self.getProject(fetchDocuments: true)
+                let results = try await project.fetchRelevantDocumentation(for: query)
+
+                for result in results {
+                    print("Result: \(result)\n\n\n")
+                }
+
+                // Pull out the IDs of our documents
+                let ids = results.compactMap { result -> Int64? in
+                    guard let idStr = result.metadata["id"] else {
+                        return nil
+                    }
+                    return Int64(idStr)
+                }
+                let documents = try await persistenceService.getDocuments(ids: ids)
+                
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+        }
+
         // Ask the GPT our question
-        self.queryGPT(with: self.chatText)
+        Task {
+            // await self.queryGPT(with: foo)
+        }
     }
 
 }
@@ -135,43 +164,54 @@ private extension ChatViewModel {
         }
     }
 
-    func queryGPT(with message: String) {
-        Task {
-            do {
-                // Pull out our project
-                let project = try await persistenceService.getProject(id: chat.projectID)
+    func getProject(fetchDocuments: Bool) async throws -> Project {
+        var project = try await persistenceService.getProject(id: chat.projectID)
 
-                // Pass on our input to our GPT Service
-                await self.gptService.respond(
-                    to: message,
-                    from: self.chat,
-                    from: project,
-                    onUpdate: { newPart in
-                        // Add the new bit of string to our partialMessage
-                        let currentPartial = self.currentPartialMessage ?? ""
-                        let newPartial = currentPartial + newPart
-                        DispatchQueue.main.async {
-                            self.loadingState = .partial(content: newPartial)
-                        }
-                    },
-                    onComplete: { response in
-                        print("ChatID: \(self.id)")
-                        DispatchQueue.main.async { self.loadingState = .none }
+        if fetchDocuments == false {
+            return project
+        }
 
-                        // Insert this message into our database
-                        let message = Message(
-                            content: response,
-                            author: .docubot,
-                            chatID: self.id,
-                            createdAt: .now
-                        )
-                        self.insert(message: message)
+        let documents = try await persistenceService.getDocuments(for: project)
+        project.load(documents: documents)
+
+        return project
+    }
+
+    func queryGPT(with message: String) async {
+        do {
+            // Pull out our project
+            let project = try await persistenceService.getProject(id: chat.projectID)
+
+            // Pass on our input to our GPT Service
+            await self.gptService.respond(
+                to: message,
+                from: self.chat,
+                from: project,
+                onUpdate: { newPart in
+                    // Add the new bit of string to our partialMessage
+                    let currentPartial = self.currentPartialMessage ?? ""
+                    let newPartial = currentPartial + newPart
+                    DispatchQueue.main.async {
+                        self.loadingState = .partial(content: newPartial)
                     }
-                )
+                },
+                onComplete: { response in
+                    print("ChatID: \(self.id)")
+                    DispatchQueue.main.async { self.loadingState = .none }
 
-            } catch {
-                fatalError(error.localizedDescription)
-            }
+                    // Insert this message into our database
+                    let message = Message(
+                        content: response,
+                        author: .docubot,
+                        chatID: self.id,
+                        createdAt: .now
+                    )
+                    self.insert(message: message)
+                }
+            )
+
+        } catch {
+            fatalError(error.localizedDescription)
         }
     }
 

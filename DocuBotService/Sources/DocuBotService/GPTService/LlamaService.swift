@@ -57,6 +57,8 @@ class LlamaService: GPTService {
             onComplete(output)
         }
 
+        print("History: \(self.llama.history)")
+
         // Send the user's message and receive a response from the bot
         let question = self.llama.preprocess(query, self.llama.history)
         print("Question: \(question)")
@@ -70,9 +72,6 @@ class LlamaService: GPTService {
                 // Tell our caller that we have an update
                 onUpdate(responseDelta)
             }
-
-            // Tell our caller we're done here
-            onComplete(output)
 
             return output
         }

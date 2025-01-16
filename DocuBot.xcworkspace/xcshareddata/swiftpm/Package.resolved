@@ -1,5 +1,5 @@
 {
-  "originHash" : "e41dad5224bb7dc8e4c18421118b05bfe7c4b7ef0abe7e87a21dd784a39a3663",
+  "originHash" : "767dc6120b5d1de4efd79819318bdf177d2e24e8075312ae4c0c1e0620e5cdb7",
   "pins" : [
     {
       "identity" : "grdb.swift",
@@ -43,6 +43,15 @@
       "state" : {
         "revision" : "7cca2d60925876b5953a2cf7341cd80fbeac983c",
         "version" : "4.1.1"
+      }
+    },
+    {
+      "identity" : "similarity-search-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZachNagengast/similarity-search-kit.git",
+      "state" : {
+        "revision" : "9bec54706c8124bb9b20a3a06d566066a9f55712",
+        "version" : "0.0.15"
       }
     },
     {

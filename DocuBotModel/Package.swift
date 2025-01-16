@@ -17,6 +17,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../DocuBotToolbox"),
+        .package(url: "https://github.com/ZachNagengast/similarity-search-kit.git", from: "0.0.15"),
         .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2")
     ],
     targets: [
@@ -25,7 +26,12 @@ let package = Package(
         .target(
             name: "DocuBotModel",
             dependencies: [
-                "DocuBotToolbox"
+                "DocuBotToolbox",
+                // "SimilaritySearchKit",
+                .product(name: "SimilaritySearchKit", package: "similarity-search-kit"),
+                .product(name: "SimilaritySearchKitDistilbert", package: "similarity-search-kit"),
+                .product(name: "SimilaritySearchKitMiniLMMultiQA", package: "similarity-search-kit"),
+                .product(name: "SimilaritySearchKitMiniLMAll", package: "similarity-search-kit")
             ],
             plugins: [
                .plugin(name: "SwiftGenPlugin", package: "SwiftGenPlugin")

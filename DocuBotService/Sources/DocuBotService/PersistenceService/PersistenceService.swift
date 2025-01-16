@@ -33,4 +33,9 @@ public protocol PersistenceService: Service {
     func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error>
     func insert(message: Message) async throws -> Message
 
+    func getDocuments(ids: [Int64]) async throws -> [Document]
+    func getDocuments(for project: Project) async throws -> [Document]
+    func insert(documents: [Document]) async throws -> [Document]
+    func delete(documents: [Document]) async throws -> Int
+
 }

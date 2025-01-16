@@ -174,6 +174,46 @@ class GRDBService: PersistenceService {
         }
     }
 
+    // MARK: Documents
+
+    func getDocuments(ids: [Int64]) async throws -> [Document] {
+        return try await dbQueue.read { db in
+            let records = try DocumentRecord.fetchAll(db, ids: ids)
+            return records.map(Document.init)
+        }
+    }
+
+    func getDocuments(for project: Project) async throws -> [Document] {
+        return try await dbQueue.read { db in
+            let request = DocumentRecord.filter(Column("project") == project.id)
+            let records = try DocumentRecord.fetchAll(db, request)
+
+            return records.map(Document.init)
+        }
+    }
+
+    func insert(documents: [Document]) async throws -> [Document] {
+        return try await self.dbQueue.write { db in
+            var insertedDocuments = [Document]()
+
+            for document in documents {
+                var record = DocumentRecord(model: document)
+                try record.insert(db)
+                let insertedDocument = Document(record: record)
+                insertedDocuments.append(insertedDocument)
+            }
+            
+            return insertedDocuments
+        }
+    }
+
+    func delete(documents: [Document]) async throws -> Int {
+        return try await self.dbQueue.write { db in
+            let ids = documents.compactMap(\.id)
+            return try DocumentRecord.deleteAll(db, keys: ids)
+        }
+    }
+
 }
 
 // MARK: - Private
