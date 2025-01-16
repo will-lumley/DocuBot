@@ -333,7 +333,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         // consecutively
         var responseSoFar = ""
         for char in expectedResponse {
-            // THEN the response is "H", then "e", "l", etc
+            // THEN the response is "H", then "He", "Hel", etc
             nextResponse = try #require(await responseIterator.next())
             responseSoFar += String(char)
 
@@ -958,7 +958,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         // consecutively
         var responseSoFar = ""
         for char in expectedResponse {
-            // THEN the response is "H", then "e", "l", etc
+            // THEN the response is "H", then "He", "Hel", etc
             nextShareContent = try #require(await shareContentIterator.next())
             responseSoFar += String(char)
 

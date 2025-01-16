@@ -97,12 +97,12 @@ public extension Acknowledgement {
                 license: "MIT"
             ),
             .init(
-                author: "Shenghai Wang",
-                libraryName: "SwiftLlama",
+                author: "eastriverlee",
+                libraryName: "LLM.swift",
                 description: """
                 A Swift Package that provides a Swift-y API wrapper to llama.cpp.
                 """,
-                linkStr: "https://github.com/ShenghaiWang/SwiftLlama",
+                linkStr: "https://github.com/eastriverlee/LLM.swift",
                 license: "MIT"
             ),
             .init(

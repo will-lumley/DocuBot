@@ -15,7 +15,7 @@ public extension String {
     /// - Parameter value: The substring to remove.
     /// - Returns: A new string with all occurrences of the specified substring removed.
     func removing(value: String) -> String {
-        return self.replacingOccurrences(of: value, with: "")
+        return self.replacingOccurrences(of: value, with: "", options: .caseInsensitive)
     }
 
     /// Removes everything from the beginning of the string up to and including a specified pattern.
