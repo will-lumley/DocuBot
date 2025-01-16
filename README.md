@@ -5,6 +5,7 @@
 <p align="center">
   <img src="https://github.com/will-lumley/DocuBot/actions/workflows/Toolbox-UnitTests.yml/badge.svg?branch=main" alt="Toolbox Tests">
   <img src="https://github.com/will-lumley/DocuBot/actions/workflows/Service-UnitTests.yml/badge.svg?branch=main" alt="Service Tests">
+  <img src="https://github.com/will-lumley/DocuBot/actions/workflows/Model-UnitTests.yml/badge.svg?branch=main" alt="Model Tests">
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/Swift-6.0-orange.svg" alt="Swift 6.0">

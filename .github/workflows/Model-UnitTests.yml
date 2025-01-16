@@ -1,0 +1,25 @@
+name: Service Tests
+
+on:
+ push:
+   branches: [ "main" ]
+ pull_request:
+   branches: [ "main" ]
+
+jobs:
+  build-and-test:
+
+    runs-on: macos-15
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+          submodules: 'recursive'
+
+    - name: Get swift version
+      run: swift --version
+
+    - name: Run Tests
+      run: |
+        set -o pipefail && xcodebuild test -skipPackagePluginValidation -workspace DocuBot.xcworkspace -scheme DocuBotModelTests -destination 'platform=macOS'
