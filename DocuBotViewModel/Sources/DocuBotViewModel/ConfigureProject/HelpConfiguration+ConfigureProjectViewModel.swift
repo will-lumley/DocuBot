@@ -7,7 +7,7 @@
 
 extension HelpConfiguration {
 
-    typealias Strings = L10n.ConfigureProject.Help
+    private typealias Strings = L10n.ConfigureProject.Help
 
     // swiftlint:disable:next cyclomatic_complexity
     init(

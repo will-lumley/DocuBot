@@ -42,7 +42,7 @@ public struct ConfigureProjectView: View {
                 self.similaritySection
                 self.llmSection
             }
-            .formStyle(GroupedFormStyle())
+            .formStyle(.grouped)
 
             Button(
                 action: viewModel.saveButtonSelected,
@@ -302,6 +302,7 @@ public struct ConfigureProjectView: View {
 
             // TopP
             LabeledContent {
+                Text(viewModel.topP.formatted())
                 Slider(value: $viewModel.topP, in: 0...1, step: 0.1)
             } label: {
                 HStack {

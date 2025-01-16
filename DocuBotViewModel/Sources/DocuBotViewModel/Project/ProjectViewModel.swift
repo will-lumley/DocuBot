@@ -690,7 +690,7 @@ private extension ProjectViewModel {
         // Ideally this would be done on the Model layer,
         // however due to the fact that we're using GPTService
         // to create the questions, we're unable to do so.
-        let totalQuestions     = 10
+        let totalQuestions     = preferenceStoreService.numberOfExampleQuestions
         var completedQuestions = 0
 
         // We'll pull 10 random documents from the project
@@ -702,7 +702,7 @@ private extension ProjectViewModel {
         // Tidy up any decorations the LLM can put on
         return await documents
             .shuffled()
-            .prefix(10)
+            .prefix(totalQuestions)
             .map(\.content)
             .map { $0.trim(by: 150) }
             .map { L10n.Project.LlmExampleQuestionPrompt.prompt($0) }

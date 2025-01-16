@@ -8,5 +8,9 @@
 import Foundation
 
 public protocol PreferenceStoreService: Service {
-    var finishedOnboarding: Bool { get set }
+    var launchedPreviously: Bool { get set }
+    var numberOfExampleQuestions: Int { get set }
+    var displaySimilarityScoring: Bool { get set }
+    var documentPrefixCount: Int { get set }
+    var similarityFloorScore: Double { get set }
 }

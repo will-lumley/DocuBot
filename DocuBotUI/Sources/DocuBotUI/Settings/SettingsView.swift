@@ -13,7 +13,6 @@ public struct SettingsView: View {
     // MARK: - Properties
 
     @StateObject public var viewModel: SettingsViewModel
-    @State private var selection: SettingsSection? = .general
 
     // MARK: - Lifecycle
 
@@ -24,59 +23,131 @@ public struct SettingsView: View {
     // MARK: - View
 
     public var body: some View {
-        NavigationSplitView {
-            List(selection: $selection) {
-                NavigationLink(value: SettingsSection.general) {
-                    Label("General", systemImage: "gear")
-                }
-                NavigationLink(value: SettingsSection.accounts) {
-                    Label("Accounts", systemImage: "person.crop.circle")
-                }
-                NavigationLink(value: SettingsSection.advanced) {
-                    Label("Advanced", systemImage: "gearshape")
-                }
+        TabView {
+            Tab(viewModel.generalSectionTitle, systemImage: viewModel.generalSectionIcon.rawValue) {
+                self.generalSettings
             }
-            .navigationTitle("Settings")
-        } detail: {
-            if let selection = selection {
-                switch selection {
-                case .general:
-                    GeneralSettingsView()
-                case .accounts:
-                    AccountsSettingsView()
-                case .advanced:
-                    AdvancedSettingsView()
-                }
-            } else {
-                Text("Select a setting from the sidebar.")
-                    .foregroundStyle(.secondary)
+            Tab(viewModel.embeddingSectionTitle, systemImage: viewModel.embeddingSectionIcon.rawValue) {
+                self.embeddingSettings
             }
         }
-    }
-
-    enum SettingsSection: Hashable {
-        case general, accounts, advanced
-    }
-
-    struct GeneralSettingsView: View {
-        var body: some View {
-            Text("General Settings")
-            // Add content for General settings here
+        .frame(maxWidth: 500, minHeight: 150)
+        .sheet(item: $viewModel.helpConfiguration) { configuration in
+            HelpView(configuration: configuration)
         }
     }
 
-    struct AccountsSettingsView: View {
-        var body: some View {
-            Text("Accounts Settings")
-            // Add content for Accounts settings here
+    private var generalSettings: some View {
+        Form {
+            Section {
+
+                // Number of Example Questions
+                LabeledContent {
+                    Text(viewModel.numberOfExampleQuestions.formatted())
+                    Slider(
+                        value: .init(
+                            get: {
+                                return Double(viewModel.numberOfExampleQuestions)
+                            },
+                            set: { newValue in
+                                viewModel.numberOfExampleQuestions = Int(newValue)
+                            }
+                        ),
+                        in: 0...10,
+                        step: 1
+                    )
+                } label: {
+                    HStack {
+                        HelpButton {
+                            viewModel.helpButtonSelected(
+                                with: .numberOfExampleQuestions
+                            )
+                        }
+                        Text(viewModel.numberOfExampleQuestionsTitle)
+                    }
+                }
+
+                // Display Similarity Scoring
+                LabeledContent {
+                    Toggle(
+                        isOn: $viewModel.displaySimilarityScoring,
+                        label: {
+                            EmptyView()
+                        }
+                    )
+                    .toggleStyle(.switch)
+                } label: {
+                    HStack {
+                        HelpButton {
+                            viewModel.helpButtonSelected(
+                                with: .displaySimilarityScoring
+                            )
+                        }
+                        Text(viewModel.displaySimilarityScoringTitle)
+                    }
+                }
+            }
         }
+        .formStyle(.grouped)
     }
 
-    struct AdvancedSettingsView: View {
-        var body: some View {
-            Text("Advanced Settings")
-            // Add content for Advanced settings here
+    private var embeddingSettings: some View {
+        Form {
+            Section {
+
+                // Document Prefix Count
+                LabeledContent {
+                    Text(viewModel.documentPrefixCount.formatted())
+                    Slider(
+                        value: .init(
+                            get: {
+                                return Double(viewModel.documentPrefixCount)
+                            },
+                            set: { newValue in
+                                viewModel.documentPrefixCount = Int(newValue)
+                            }
+                        ),
+                        in: 3...10,
+                        step: 1
+                    )
+                } label: {
+                    HStack {
+                        HelpButton {
+                            viewModel.helpButtonSelected(
+                                with: .documentPrefixCount
+                            )
+                        }
+                        Text(viewModel.documentPrefixCountTitle)
+                    }
+                }
+
+                // Similarity Floor Score
+                LabeledContent {
+                    Text(viewModel.similarityFloorScore.formatted())
+                    Slider(
+                        value: $viewModel.similarityFloorScore,
+                        in: 10...90,
+                        step: 10
+                    )
+                } label: {
+                    HStack {
+                        HelpButton {
+                            viewModel.helpButtonSelected(
+                                with: .similarityFloorScore
+                            )
+                        }
+                        Text(viewModel.similarityFloorScoreTitle)
+                    }
+                }
+            }
         }
+        .formStyle(.grouped)
     }
 
+}
+
+// MARK: - Preview
+
+#Preview {
+    SettingsView(viewModel: .mock)
 }
