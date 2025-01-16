@@ -1,2 +1,3 @@
 *.xcuserstate
 *.xcbkptlist
+build/reports/*
