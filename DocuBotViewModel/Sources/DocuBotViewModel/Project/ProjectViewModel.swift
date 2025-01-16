@@ -73,6 +73,9 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// The button for syncing the project
     @Published public var syncProjectButton: ToolbarButtonViewModel
 
+    /// The button for the project settings
+    @Published public var projectSettingsButton: ToolbarButtonViewModel
+
     /// A warning message for the user
     @Published public var warningMessage: String?
 
@@ -83,13 +86,16 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
     public init(project: Project, serviceContainer: ServiceContainer) {
         self.project = project
+
         self.sourcesButton = .init(symbol: .docTextMagnifyingglass)
         self.syncProjectButton = .init(symbol: .arrowTriangle2Circlepath)
+        self.projectSettingsButton = .init(symbol: .gear)
 
         super.init(serviceContainer: serviceContainer)
 
         self.sourcesButton.onSelect = { [weak self] in self?.isShowingSources.toggle() }
         self.syncProjectButton.onSelect = self.sync
+        self.projectSettingsButton.onSelect = self.openSettings
 
         self.primeLlm()
     }
@@ -153,10 +159,25 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             .assign(to: &$warningMessage)
 
         // Enable the ViewSources button if we have any sources
-        self.$sources
-            .map { $0 != nil }
+        // AND we're not syncing
+        Publishers.CombineLatest(self.$sources, self.$syncStage)
+            .map { sources, syncStage in
+                return sources != nil && syncStage == .none
+            }
             .receive(on: DispatchQueue.main)
             .assign(to: \.isEnabled, on: sourcesButton)
+            .store(in: &cancellables)
+
+        // Disable the SyncButton if we're syncing
+        self.$syncStage
+            .map { $0 == .none }
+            .assign(to: \.isEnabled, on: syncProjectButton)
+            .store(in: &cancellables)
+
+        // Disable the Settings button if we're syncing
+        self.$syncStage
+            .map { $0 == .none }
+            .assign(to: \.isEnabled, on: projectSettingsButton)
             .store(in: &cancellables)
     }
 
@@ -165,12 +186,6 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 // MARK: - Public
 
 public extension ProjectViewModel {
-
-    var openSettingsButton: ToolbarButtonViewModel {
-        .init(symbol: .gear) {
-            self.openSettings()
-        }
-    }
 
     var windowTitle: String {
         self.project.name
