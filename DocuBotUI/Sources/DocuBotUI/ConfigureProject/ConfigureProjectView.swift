@@ -369,7 +369,7 @@ public struct ConfigureProjectView: View {
                 }
             }
 
-            // StrictMode
+            // Strict Mode
             LabeledContent {
                 Toggle(isOn: $viewModel.strictMode, label: {
                     EmptyView()
