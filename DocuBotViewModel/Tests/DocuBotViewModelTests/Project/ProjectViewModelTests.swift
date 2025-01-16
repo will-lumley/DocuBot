@@ -14,6 +14,7 @@ import SFSafeSymbols
 import Testing
 
 @Suite("ProjectViewModelTests", .tags(.view), .serialized)
+// swiftlint:disable:next type_body_length
 class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     // MARK: - Properties
@@ -303,7 +304,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         for char in expectedResponse {
             // THEN the response is "H", then "e", "l", etc
             nextResponse = try #require(await responseIterator.next())
-            responseSoFar = responseSoFar + String(char)
+            responseSoFar += String(char)
 
             #expect(nextResponse.isResponse(with: responseSoFar))
         }
@@ -349,7 +350,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // THEN the next Sources is not `nil`
         nextSources = try #require(await sourcesIterator.next())
-        
+
         // THEN the next Sources is set correct
         #expect(nextSources?.id == 1)
         #expect(
@@ -369,11 +370,6 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // THEN `expectingResponse` is false
         #expect(nextExpectingResponse == false)
-    }
-
-    @Test("Ask Question - Stop")
-    func askQuestionStop() async throws {
-        
     }
 
     @Test("Example Question Selected")
@@ -440,7 +436,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // THEN our Project Path is updated
         #expect(updatedProject.path == newTestURL.path())
-        
+
         // THEN our Project Data is still set
         #expect(updatedProject.urlBookmarkData.isEmpty == false)
 
@@ -601,9 +597,39 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         }
     }
 
-    @Test("View Sources Button - Disabled - Syncing")
-    func viewSourcesButtonDisabledSyncing() {
-        // Intentionally left blank.
+    @Test("View Sources Button - Disabled - Syncing", .disabled())
+    func viewSourcesButtonDisabledSyncing() async throws {
+        // GIVEN we have a ProjectViewModel
+        let testSubject = try await self.mock()
+
+        // THEN our ViewSources button is disabled
+        #expect(testSubject.sourcesButton.isEnabled == false)
+
+        // WHEN a question is asked
+        testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
+        testSubject.askButtonSelected()
+
+        // Setup an iterator that listens to our SourcesButton isEnabled state
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled.values.makeAsyncIterator()
+
+        // THEN the ViewSources button is at first NOT enabled
+        var nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == false)
+
+        // THEN the ViewSources button is then enabled
+        nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == true)
+
+        // WHEN the sync button is selected
+        testSubject.syncProjectButton.selected()
+
+        // THEN our ViewSources is NOT enabled
+        nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == false)
+
+        // THEN after our question is answered our ViewSources is back to enabled
+        nextSourcesButtonEnabled = await isEnabledIterator.next()
+        #expect(nextSourcesButtonEnabled == true)
     }
 
     @Test("View Sources Button - Disabled - No Sources")
@@ -673,12 +699,12 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     @Test("Sync on Launch - First Sync")
     func syncOnLaunchFirstSync() {
-        
+
     }
 
     @Test("No Sync on Launch")
     func noSyncOnLaunch() {
-        
+
     }
 
     @Test("Sync - Sync Button")
@@ -709,6 +735,11 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
          */
     }
 
+    @Test("Ask Question - Stop")
+    func askQuestionStop() async throws {
+
+    }
+
 }
 
 // MARK: - Private
@@ -716,6 +747,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 private extension ProjectViewModelTests {
 
     var expectedStrictResponse: String {
+        // swiftlint:disable:next line_length
         "Here\'s some excerpts from your documentation based on your query.\n\n# file.md\n\nTest Documentation: ViewController\n\nOverview\n\nPurpose\nThis document outlines the test coverage for ViewController. The ViewController is responsible for rendering the main UI and handling user interactions. The tests will verify:\n\t1.\tUI rendering\n\t2.\tUser input handling\n\t3.\tData flow between the ViewController and its ViewModel (or other dependencies)\n\t4.\tBehaviour under edge cases and errors\n\nTest Environment\n\nRequirements\n\t•\tXcode: Version 15 or later\n\t•\tSwift: 5.10 / 6\n\t•\tTesting Framework: SwiftTesting (or XCTest if applicable)\n\t•\tDependencies: Mocking framework (e.g., Mockingbird, MockitoSwift)\n\t•\tDevice/Simulator: iPhone 14 running iOS 17\n\nTest Cases\n\t1.\tUI Rendering\n\nTest ID: TC-001\nTest Case: Verify ViewController loads the UI\nSteps:\n\t1.\tLaunch the app. Open the target screen.\n\t2.\tCheck labels, buttons, and table views.\nExpected Result: All UI elements are visible.\n\nTest ID: TC-002\nTest Case: Verify\n\n"
     }
 
@@ -869,4 +901,4 @@ extension Project.AlertStatus: @retroactive CaseIterable {
         return [Project.AlertStatus.none] + allWarning + allError
     }
 
-}
+}  // swiftlint:disable:this file_length

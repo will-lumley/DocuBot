@@ -122,7 +122,7 @@ public struct ProjectView: View {
                     text: $viewModel.chatText,
                     height: $textEditorHeight,
                     isEnabled: viewModel.disableTextField == false,
-                    onEnterSelected: viewModel.enterSelected
+                    onEnterSelected: viewModel.askButtonSelected
                 )
                 .frame(height: textEditorHeight)
                 .focused($chatTextEditorFocused)
