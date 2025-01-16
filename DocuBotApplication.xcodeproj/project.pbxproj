@@ -38,6 +38,7 @@
 		BEB095F32C36604C00429AFD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BEB095F52C36604C00429AFD /* Settings.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Settings.entitlements; sourceTree = "<group>"; };
 		BEB096002C36726300429AFD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BEC6F0F02CE42D26001634A1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +70,7 @@
 		BE4518712C35244600F9E9E5 = {
 			isa = PBXGroup;
 			children = (
+				BEC6F0F02CE42D26001634A1 /* README.md */,
 				BE45187C2C35244600F9E9E5 /* Application */,
 				BEB095EB2C36604B00429AFD /* Settings */,
 				BE45187B2C35244600F9E9E5 /* Products */,
