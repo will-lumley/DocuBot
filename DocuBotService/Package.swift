@@ -46,6 +46,10 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotServiceTests",
-            dependencies: ["DocuBotService"])
+            dependencies: ["DocuBotService"],
+            resources: [
+                .copy("Resources/distilgpt2Q4_0.gguf")
+            ]
+        )
     ]
 )

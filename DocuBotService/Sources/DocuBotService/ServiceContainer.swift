@@ -39,24 +39,16 @@ public extension ServiceContainer {
         Bundle.main.bundleIdentifier == Secrets.BundleIDs.settings
     }
 
-    func register<S: Service>(service: S) {
-        // swiftlint:disable:next direct_print
-        print("[DOCUBOT] [INFO] Registering Service: \(service)")
-        self.registry[type(of: service).key] = service
-    }
-
 }
 
 // MARK: - Private
 
 private extension ServiceContainer {
 
-    func configureFlagService() {
-        self.register(service: VexilFlagService())
-    }
-
-    func configurePersistenceService() {
-        self.register(service: GRDBService(serviceContainer: self))
+    func register<S: Service>(service: S) {
+        // swiftlint:disable:next direct_print
+        print("[DOCUBOT] [INFO] Registering Service: \(service)")
+        self.registry[type(of: service).key] = service
     }
 
     func configureLogService() {
@@ -69,16 +61,17 @@ private extension ServiceContainer {
     }
 
     func configureServices() {
-        self.configureFlagService()
+        self.register(service: VexilFlagService())
         self.register(service: LlamaService())
         self.register(service: LocalUserDefaultsService())
         self.configureLogService()
-        self.configurePersistenceService()
+        self.register(service: GRDBService(serviceContainer: self))
     }
 
     func configureTestServices() {
         self.register(service: MockFlagService())
-        self.register(service: LocalUserDefaultsService())
+        self.register(service: MockGPTService())
+        self.register(service: MockPreferenceStoreService())
         self.register(service: PrintLogService())
         self.register(service: GRDBService(serviceContainer: self))
     }

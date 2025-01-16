@@ -9,6 +9,8 @@ public enum Secrets {
     }
 
     public enum AppInfo {
+        public static let licnceURL = ""
+        public static let privacyPolicyURL = ""
         public static let sourceCodeURL = "https://github.com/will-lumley/DocuBot"
         public static let developerEmail = "will@lumley.io"
     }

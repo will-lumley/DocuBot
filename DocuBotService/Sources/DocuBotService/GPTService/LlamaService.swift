@@ -21,7 +21,7 @@ class LlamaService: GPTService {
     // MARK: - Properties
 
     /// Our interface to llama.cpp
-    private var llama: SwiftLlama?
+    var llama: SwiftLlama?
 
     // MARK: - Lifecycle
 
@@ -46,9 +46,20 @@ class LlamaService: GPTService {
                 modelConfiguration: configuration
             )
         } catch {
-            throw GPTError.failedToCreateLLM(
-                reason: error.localizedDescription
-            )
+            if let llamaError = error as? SwiftLlamaError {
+                switch llamaError {
+                case .decodeError:
+                    throw GPTError.failedToCreateLLMDecodingError
+                case .others(let reason):
+                    throw GPTError.failedToCreateLLM(
+                        reason: reason
+                    )
+                }
+            } else {
+                throw GPTError.failedToCreateLLM(
+                    reason: error.localizedDescription
+                )
+            }
         }
 
     }
@@ -98,10 +109,7 @@ class LlamaService: GPTService {
             }
 
             output += formattedValue
-
-            Task {
-                await onUpdate?(formattedValue)
-            }
+            await onUpdate?(formattedValue)
         }
 
         return output.trimmingTrailingNewlines()

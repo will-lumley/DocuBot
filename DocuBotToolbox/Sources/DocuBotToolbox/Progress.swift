@@ -7,16 +7,26 @@
 
 public struct Progress: Hashable, Sendable {
 
+    // MARK: - Properties
+
     public let value: Double
     public let total: Double
 
-    public var percentage: Double {
-        value / total * 100
-    }
+    // MARK: - Lifecycle
 
     public init(value: Double, total: Double) {
         self.value = value
         self.total = total
+    }
+
+}
+
+// MARK: - Public
+
+public extension Progress {
+
+    var percentage: Double {
+        value / total * 100
     }
 
 }
