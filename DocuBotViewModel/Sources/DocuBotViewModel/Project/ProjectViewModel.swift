@@ -834,7 +834,7 @@ public extension ProjectViewModel {
 
     static var mock: ProjectViewModel {
         .init(
-            project: .mock,
+            project: .mock(),
             serviceContainer: .mock
         )
     }

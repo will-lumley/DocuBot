@@ -5,6 +5,7 @@
 //  Created by William Lumley on 13/11/2024.
 //
 
+import DocuBotModel
 @testable import DocuBotService
 import Foundation
 @testable import GRDB
@@ -31,15 +32,17 @@ struct DocumentRecordTests {
 
     @Test("Insert and Fetch")
     func insertAndFetch() throws {
-        // Run the migrations
+        // GIVEN we have our DB migrations
         let migrations = Index.migrations
+
+        // GIVEN we perform our migrations
         try dbQueue.write { db in
             for migration in migrations {
                 try migration.perform(db: db)
             }
         }
 
-        // Prepare sample data
+        // GIVEN we have sample data
         let url = try #require(URL(string: "https://example.com/document"))
         let fileFormat = ProjectSettingsRecord.DocumentationFormat.rtf
         let content = "Sample content"
@@ -54,7 +57,10 @@ struct DocumentRecordTests {
         let createdAt = Date()
         let updatedAt = Date()
 
-        // Insert a document record
+        // GIVEN we have a ProjectRecord to commit
+        var project = ProjectRecord(model: .mock())
+
+        // GIVEN we have a DocumentRecord to commit, with our sample data
         var document = DocumentRecord(
             id: nil,
             url: url,
@@ -67,48 +73,41 @@ struct DocumentRecordTests {
             updatedAt: updatedAt
         )
 
+        // WHEN we commit the records to the DB
         try dbQueue.write { db in
+            try project.insert(db)
             try document.insert(db)
         }
 
-        // Verify that the record was inserted and fetched correctly
         try dbQueue.read { db in
+            // THEN we fetch our Document
             let fetchedDocument = try #require(
                 try DocumentRecord.fetchOne(db)
             )
 
-            // A new ID has been assigned
+            // THEN our Document has been given an ID
             let newID = try #require(fetchedDocument.id)
             #expect(newID == 1)
-            #expect(fetchedDocument.url == url)
-            #expect(fetchedDocument.fileFormat == fileFormat)
-            #expect(fetchedDocument.content == content)
-            #expect(fetchedDocument.checksum == checksum)
-            #expect(fetchedDocument.project == projectID)
-            #expect(fetchedDocument.embeddings == embeddings)
-            #expect(Int(fetchedDocument.createdAt.timeIntervalSince1970) == Int(createdAt.timeIntervalSince1970))
-            #expect(Int(fetchedDocument.updatedAt.timeIntervalSince1970) == Int(updatedAt.timeIntervalSince1970))
+
+            // THEN our FetchedDocument has the correct data filled out
+            let fetchedDocumentModel = Document(record: fetchedDocument)
+            let documentModel = Document(record: document)
+            #expect(fetchedDocumentModel.isEqualToIgnoringID(documentModel))
         }
     }
 
     @Test("ID Setting")
     func idSetting() throws {
-        var document = DocumentRecord(
-            id: nil,
-            url: URL(string: "https://example.com/document")!,
-            fileFormat: .rtf,
-            content: "Sample content",
-            checksum: "12345abcde",
-            project: 1,
-            embeddings: nil,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
+        // GIVEN we have a DocumentRecord with no existing ID
+        var testSubject = DocumentRecord(model: .mock())
 
-        // Simulate the didInsert behaviour
-        document.didInsert(
+        // WHEN we insert this Model into the DB
+        // and SQLite gives it an ID of 42
+        testSubject.didInsert(
             InsertionSuccess(rowID: 42, persistenceContainer: .init())
         )
-        #expect(document.id == 42)
+
+        // THEN we have been given the ID of 42
+        #expect(testSubject.id == 42)
     }
 }

@@ -84,4 +84,15 @@ extension LLMModel: Equatable {
             lhs.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
     }
 
+    public func isEqualToIgnoringID(
+        _ rhs: LLMModel
+    ) -> Bool {
+        return
+            self.path == rhs.path &&
+            self.name == rhs.name &&
+            self.size == rhs.size &&
+            self.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            self.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
+    }
+
 }

@@ -12,6 +12,7 @@
 //  Created by William Lumley on 15/11/2024.
 //
 
+import DocuBotModel
 @testable import DocuBotService
 import Foundation
 @testable import GRDB
@@ -38,17 +39,19 @@ struct ProjectSettingsRecordTests {
 
     @Test("Insert and Fetch")
     func insertAndFetch() throws {
-        // Run the migrations
+        // GIVEN we have our DB migrations
         let migrations = Index.migrations
+
+        // GIVEN we perform our migrations
         try dbQueue.write { db in
             for migration in migrations {
                 try migration.perform(db: db)
             }
         }
 
-        // Prepare sample data
-        let projectID: Int64 = 1
-        let modelID: Int64 = 1
+        // GIVEN we have sample data
+        let projectID = Int64(1)
+        let modelID = Int64(1)
         let supportedFormats: [ProjectSettingsRecord.DocumentationFormat] = [.rtf, .md]
         let language = ProjectSettingsRecord.Language.english
         let embeddingModel = ProjectSettingsRecord.EmbeddingModel.miniLmAll
@@ -66,31 +69,13 @@ struct ProjectSettingsRecordTests {
         let createdAt = Date()
         let updatedAt = Date()
 
-        // Insert an LLMModelRecord
-        var model = LLMModelRecord(
-            id: nil,
-            name: "name",
-            path: "path",
-            size: 1,
-            createdAt: createdAt,
-            updatedAt: updatedAt
-        )
+        // GIVEN we have an LLMModelRecord to commit
+        var model = LLMModelRecord(model: .mock())
 
-        // Insert a ProjectRecord
-        var project = ProjectRecord(
-            id: nil,
-            path: "path",
-            name: "name",
-            urlBookmarkData: Data(),
-            documentationChecksum: "documentationChecksum",
-            exampleQuestions: ["example"],
-            alertStatus: .none,
-            needsFullResync: true,
-            createdAt: createdAt,
-            updatedAt: updatedAt
-        )
+        // GIVEN we have a ProjectRecord to commit
+        var project = ProjectRecord(model: .mock())
 
-        // Insert a ProjectSettingsRecord
+        // GIVEN we have our ProjectSettings to commit, with our sample data
         var projectSettings = ProjectSettingsRecord(
             id: nil,
             project: projectID,
@@ -113,70 +98,42 @@ struct ProjectSettingsRecordTests {
             updatedAt: updatedAt
         )
 
+        // WHEN we commit the records to the DB
         try dbQueue.write { db in
             try model.insert(db)
             try project.insert(db)
             try projectSettings.insert(db)
         }
 
-        // Verify that the record was inserted and fetched correctly
         try dbQueue.read { db in
+            // THEN we fetch our ProjectSettings
             let fetchedSettings = try #require(
                 try ProjectSettingsRecord.fetchOne(db)
             )
 
-            // A new ID has been assigned
+            // THEN our ProjectSettings has been given an ID
             let newID = try #require(fetchedSettings.id)
             #expect(newID == 1)
-            #expect(fetchedSettings.project == projectID)
-            #expect(fetchedSettings.model == modelID)
-            #expect(fetchedSettings.supportedFormats == supportedFormats)
-            #expect(fetchedSettings.language == language)
-            #expect(fetchedSettings.embeddingModel == embeddingModel)
-            #expect(fetchedSettings.similarityMetric == similarityMetric)
-            #expect(fetchedSettings.seed == seed)
-            #expect(fetchedSettings.topK == topK)
-            #expect(fetchedSettings.topP == topP)
-            #expect(fetchedSettings.contextLength == contextLength)
-            #expect(fetchedSettings.temperature == temperature)
-            #expect(fetchedSettings.batchSize == batchSize)
-            #expect(fetchedSettings.stopSequence == stopSequence)
-            #expect(fetchedSettings.maxTokenCount == maxTokenCount)
-            #expect(fetchedSettings.systemPrompt == systemPrompt)
-            #expect(fetchedSettings.strictMode == strictMode)
-            #expect(Int(fetchedSettings.createdAt.timeIntervalSince1970) == Int(createdAt.timeIntervalSince1970))
-            #expect(Int(fetchedSettings.updatedAt.timeIntervalSince1970) == Int(updatedAt.timeIntervalSince1970))
+
+            // THEN our FetchedProjectSettings has the correct data filled out
+            let fetchedSettingsModel = ProjectSettings(record: fetchedSettings)
+            let projectSettingsModel = ProjectSettings(record: projectSettings)
+            #expect(fetchedSettingsModel.isEqualToIgnoringID(projectSettingsModel))
         }
     }
 
     @Test("ID Setting")
     func idSetting() throws {
-        var projectSettings = ProjectSettingsRecord(
-            id: nil,
-            project: 1,
-            model: 2,
-            supportedFormats: [.rtf, .txt],
-            language: .english,
-            embeddingModel: .multiQaMiniLm,
-            similarityMetric: .dotProduct,
-            seed: 67890,
-            topK: 20,
-            topP: 0.8,
-            contextLength: 256,
-            temperature: 0.5,
-            batchSize: 32,
-            stopSequence: nil,
-            maxTokenCount: 512,
-            systemPrompt: "Analyze the document.",
-            strictMode: false,
-            createdAt: Date(),
-            updatedAt: Date()
-        )
+        // GIVEN we have a ProjectSettingsRecord with no existing ID
+        var testSubject = ProjectSettingsRecord(model: .mock())
 
-        // Simulate the didInsert behaviour
-        projectSettings.didInsert(
+        // WHEN we insert this ProjectSettings into the DB
+        // and SQLite gives it an ID of 42
+        testSubject.didInsert(
             InsertionSuccess(rowID: 42, persistenceContainer: .init())
         )
-        #expect(projectSettings.id == 42)
+
+        // THEN we have been given the ID of 42
+        #expect(testSubject.id == 42)
     }
 }

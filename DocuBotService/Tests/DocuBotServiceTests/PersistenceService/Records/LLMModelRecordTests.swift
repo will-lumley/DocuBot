@@ -5,6 +5,7 @@
 //  Created by William Lumley on 13/11/2024.
 //
 
+import DocuBotModel
 @testable import DocuBotService
 import Foundation
 @testable import GRDB
@@ -31,22 +32,24 @@ struct LLMModelRecordTests {
 
     @Test("Insert and Fetch")
     func insertAndFetch() throws {
-        // Run the migrations
+        // GIVEN we have our DB migrations
         let migrations = Index.migrations
+
+        // GIVEN we perform our migrations
         try dbQueue.write { db in
             for migration in migrations {
                 try migration.perform(db: db)
             }
         }
 
-        // Prepare sample data
+        // GIVEN we have sample data
         let name = "GPT-4"
         let path = "/models/gpt-4"
         let size: Int64 = 1024 * 1024 * 1024 // 1 GB
         let createdAt = Date()
         let updatedAt = Date()
 
-        // Insert an LLMModelRecord
+        // GIVEN we have our Model to commit, with our sample data
         var model = LLMModelRecord(
             id: nil,
             name: name,
@@ -56,42 +59,40 @@ struct LLMModelRecordTests {
             updatedAt: updatedAt
         )
 
+        // WHEN we commit the records to the DB
         try dbQueue.write { db in
             try model.insert(db)
         }
 
-        // Verify that the record was inserted and fetched correctly
         try dbQueue.read { db in
+            // THEN we fetch our Model
             let fetchedModel = try #require(
                 try LLMModelRecord.fetchOne(db)
             )
 
-            // A new ID has been assigned
+            // THEN our Model has been given an ID
             let newID = try #require(fetchedModel.id)
             #expect(newID == 1)
-            #expect(fetchedModel.name == name)
-            #expect(fetchedModel.path == path)
-            #expect(fetchedModel.size == size)
-            #expect(Int(fetchedModel.createdAt.timeIntervalSince1970) == Int(createdAt.timeIntervalSince1970))
-            #expect(Int(fetchedModel.updatedAt.timeIntervalSince1970) == Int(updatedAt.timeIntervalSince1970))
+
+            // THEN our FetchedProjectSettings has the correct data filled out
+            let fetchedLLMModel = LLMModel(record: fetchedModel)
+            let modelModel = LLMModel(record: model)
+            #expect(fetchedLLMModel.isEqualToIgnoringID(modelModel))
         }
     }
 
     @Test("ID Setting")
     func idSetting() throws {
-        var model = LLMModelRecord(
-            id: nil,
-            name: "GPT-4",
-            path: "/models/gpt-4",
-            size: 1024 * 1024 * 1024, // 1 GB
-            createdAt: Date(),
-            updatedAt: Date()
-        )
+        // GIVEN we have a LLMModelRecord with no existing ID
+        var testSubject = LLMModelRecord(model: .mock())
 
-        // Simulate the didInsert behaviour
-        model.didInsert(
+        // WHEN we insert this Model into the DB
+        // and SQLite gives it an ID of 42
+        testSubject.didInsert(
             InsertionSuccess(rowID: 42, persistenceContainer: .init())
         )
-        #expect(model.id == 42)
+
+        // THEN we have been given the ID of 42
+        #expect(testSubject.id == 42)
     }
 }
