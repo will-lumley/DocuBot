@@ -60,11 +60,11 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     @Published public var seed: Int = 1234
     @Published public var topK: Int = 40
-    @Published public var topP: Float = 0.9
+    @Published public var topP: Double = 0.9
     @Published public var contextLength: Int = 2048
-    @Published public var temperature: Float = 0.2
+    @Published public var temperature: Double = 0.2
     @Published public var batchSize: Int = 2048
-    @Published public var stopSequence: String = ""
+    @Published public var stopSequence: String?
     @Published public var maxTokenCount: Int = 1024*1024
 
     @Published public var loadState = LoadState.idle
@@ -348,6 +348,14 @@ public extension ConfigureProjectViewModel {
                     supportedFormats: supportedFormats,
                     respondWithDocumentsOnly: false,
                     language: self.selectedLanguage,
+                    seed: self.seed,
+                    topK: self.topK,
+                    topP: self.topP,
+                    contextLength: self.contextLength,
+                    temperature: self.temperature,
+                    batchSize: self.batchSize,
+                    stopSequence: self.stopSequence,
+                    maxTokenCount: self.maxTokenCount,
                     createdAt: .now,
                     updatedAt: .now
                 )

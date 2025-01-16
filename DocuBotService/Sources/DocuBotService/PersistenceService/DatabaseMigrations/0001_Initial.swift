@@ -67,41 +67,24 @@ struct Initial: DatabaseMigration {
                 .notNull()
             table.column("language", .text)
                 .notNull()
+            table.column("seed", .integer)
+                .notNull()
+            table.column("topK", .integer)
+                .notNull()
+            table.column("topP", .double)
+                .notNull()
+            table.column("contextLength", .integer)
+                .notNull()
+            table.column("temperature", .double)
+                .notNull()
+            table.column("batchSize", .integer)
+                .notNull()
+            table.column("stopSequence", .text)
+            table.column("maxTokenCount", .integer)
+                .notNull()
             table.column("createdAt", .datetime)
                 .notNull()
             table.column("updatedAt", .datetime)
-                .notNull()
-        }
-
-        // Create chats table
-        try db.create(table: "chats") { table in
-            table.column("id", .integer)
-                .unique()
-                .primaryKey(autoincrement: true)
-            table.column("name", .text)
-                .notNull()
-            table.column("nameType", .blob)
-                .notNull()
-            table.column("project", .integer)
-                .notNull()
-                .references("projects", onDelete: .cascade)
-            table.column("createdAt", .datetime)
-                .notNull()
-        }
-
-        // Create messages table
-        try db.create(table: "messages") { table in
-            table.column("id", .integer)
-                .unique()
-                .primaryKey(autoincrement: true)
-            table.column("content", .text)
-                .notNull()
-            table.column("author", .blob)
-                .notNull()
-            table.column("chat", .integer)
-                .notNull()
-                .references("chats", onDelete: .cascade)
-            table.column("createdAt", .datetime)
                 .notNull()
         }
     }

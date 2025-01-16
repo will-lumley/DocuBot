@@ -47,6 +47,15 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     public let respondWithDocumentsOnly: Bool
     public let language: Language
 
+    public let seed: Int
+    public let topK: Int
+    public let topP: Double
+    public let contextLength: Int
+    public let temperature: Double
+    public let batchSize: Int
+    public let stopSequence: String?
+    public let maxTokenCount: Int
+
     public let createdAt: Date
     public let updatedAt: Date
 
@@ -58,6 +67,14 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         supportedFormats: [DocumentationFormat],
         respondWithDocumentsOnly: Bool,
         language: Language,
+        seed: Int,
+        topK: Int,
+        topP: Double,
+        contextLength: Int,
+        temperature: Double,
+        batchSize: Int,
+        stopSequence: String?,
+        maxTokenCount: Int,
         createdAt: Date,
         updatedAt: Date
     ) {
@@ -67,6 +84,15 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         self.supportedFormats = supportedFormats
         self.respondWithDocumentsOnly = respondWithDocumentsOnly
         self.language = language
+
+        self.seed = seed
+        self.topK = topK
+        self.topP = topP
+        self.contextLength = contextLength
+        self.temperature = temperature
+        self.batchSize = batchSize
+        self.stopSequence = stopSequence
+        self.maxTokenCount = maxTokenCount
 
         self.createdAt = createdAt
         self.updatedAt = updatedAt

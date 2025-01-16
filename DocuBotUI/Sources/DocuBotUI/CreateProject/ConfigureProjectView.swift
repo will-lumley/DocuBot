@@ -293,7 +293,17 @@ public struct ConfigureProjectView: View {
 
             // StopSequence
             LabeledContent {
-                TextField("", text: $viewModel.stopSequence)
+                TextField(
+                    "",
+                    text: Binding(
+                        get: {
+                            return viewModel.stopSequence ?? ""
+                        },
+                        set: { newValue in
+                            viewModel.stopSequence = newValue
+                        }
+                    )
+                )
             } label: {
                 HStack {
                     HelpButton {

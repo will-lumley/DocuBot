@@ -38,6 +38,15 @@ public struct ProjectSettingsRecord: Record {
     public let respondWithDocumentsOnly: Bool
     public let language: Language
 
+    public let seed: Int
+    public let topK: Int
+    public let topP: Double
+    public let contextLength: Int
+    public let temperature: Double
+    public let batchSize: Int
+    public let stopSequence: String?
+    public let maxTokenCount: Int
+
     public let createdAt: Date
     public let updatedAt: Date
 

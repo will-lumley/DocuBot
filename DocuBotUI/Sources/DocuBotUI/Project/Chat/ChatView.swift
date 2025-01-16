@@ -4,7 +4,7 @@
 //
 //  Created by William Lumley on 25/8/2024.
 //
-
+/*
 import DocuBotViewModel
 import SFSafeSymbols
 import SwiftfulLoadingIndicators
@@ -119,3 +119,4 @@ public struct ChatView: View {
 #Preview {
     ChatView(viewModel: .mock)
 }
+*/
