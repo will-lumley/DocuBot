@@ -120,6 +120,7 @@ public struct ProjectView: View {
                     placeholder: viewModel.textEditorPlaceholder,
                     text: $viewModel.chatText,
                     height: $textEditorHeight,
+                    isEnabled: viewModel.expectingResponse == false,
                     onEnterSelected: viewModel.enterSelected
                 )
                 .frame(height: textEditorHeight)

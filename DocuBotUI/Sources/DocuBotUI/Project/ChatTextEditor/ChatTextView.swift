@@ -25,6 +25,15 @@ class ChatTextView: NSTextView {
 
     @objc var placeholderAttributedString: NSAttributedString?
 
+    var isEnabled: Bool {
+        get {
+            return self.isEditable
+        }
+        set {
+            self.isEditable = newValue
+        }
+    }
+
     // MARK: - Lifecycle
 
     init(

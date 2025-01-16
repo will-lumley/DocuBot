@@ -16,16 +16,23 @@ struct ChatTextEditorView: NSViewRepresentable {
 
     // MARK: - Properties
 
+    /// The placeholder string that will be present when `text` is empty
     let placeholder: String?
+
+    /// The text that the user (or developer) has inputted into the TextView
     @Binding var text: String
+
+    /// The calculated height of the TextView, based on the `text`
     @Binding var height: CGFloat
 
-    // This will be connected to the `ChatTextEditor` view's
-    // `onEnterSelected`, so by connecting this closure we can allow
-    // this event to be listened directly within our SwiftUI view
-    var onEnterSelected: OnEnterSelected
+    var isEnabled: Bool
 
     private let maxHeight = CGFloat(25)
+
+    /// This will be connected to the `ChatTextEditor` view's `onEnterSelected`,
+    /// so by connecting this closure we can allow this event to be listened directly
+    /// within our SwiftUI view
+    var onEnterSelected: OnEnterSelected
 
     // MARK: - NSViewRepresentable
 
@@ -52,6 +59,8 @@ struct ChatTextEditorView: NSViewRepresentable {
             if view.text != self.text {
                 view.text = self.text
             }
+
+            view.isEnabled = self.isEnabled
 
             // The window may have been resized, let's re-adjust
             view.adjustTextViewHeight()
