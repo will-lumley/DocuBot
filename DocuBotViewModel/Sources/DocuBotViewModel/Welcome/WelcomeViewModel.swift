@@ -13,7 +13,7 @@ import DocuBotService
 import DocuBotToolbox
 import Foundation
 
-public class ProjectPickerViewModel: DocuBotViewModel {
+public class WelcomeViewModel: DocuBotViewModel {
 
     // MARK: - Types
 
@@ -22,6 +22,7 @@ public class ProjectPickerViewModel: DocuBotViewModel {
 
     public enum OpenWindow {
         case createProject(CreateProjectViewModel.OpenWindowPackage)
+        case project(ProjectViewModel.OpenWindowPackage)
     }
 
     // MARK: - Properties
@@ -30,7 +31,7 @@ public class ProjectPickerViewModel: DocuBotViewModel {
     private let onCloseWindow: OnCloseWindow
 
     /// The ViewModels that represent our project cells/rows
-    @Published public var projectCellViewModels = [ProjectPickerCellViewModel]()
+    @Published public var projects: [WelcomeProjectCellViewModel]?
 
     /// This will be called when we want to open a new window, along with the info that dictates which window
     @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
@@ -56,16 +57,16 @@ public class ProjectPickerViewModel: DocuBotViewModel {
 
         // Connect our ProjectCellViewModels to our DB layer
         persistenceService.getProjects()
-            .map { $0.map { ProjectPickerCellViewModel(project: $0, delegate: self) } }
+            .map { $0.map { WelcomeProjectCellViewModel(project: $0, delegate: self) } }
             .replaceError(with: [])
-            .assign(to: &$projectCellViewModels)
+            .assign(to: &$projects)
     }
 
 }
 
 // MARK: - Public
 
-public extension ProjectPickerViewModel {
+public extension WelcomeViewModel {
 
     var title: String {
         L10n.ProjectPicker.title
@@ -95,7 +96,6 @@ public extension ProjectPickerViewModel {
             self.onOpen.send(
                 .createProject(.init())
             )
-
         }
     }
 
@@ -144,7 +144,7 @@ public extension ProjectPickerViewModel {
         )
     }
 
-    func contextMenuConfigurations(for cell: ProjectPickerCellViewModel) -> [ContextMenuConfiguration] {
+    func contextMenuConfigurations(for cell: WelcomeProjectCellViewModel) -> [ContextMenuConfiguration] {
         return [
             .init(text: L10n.ProjectPicker.ProjectContextMenu.open) {
                 self.open(project: cell.project)
@@ -163,10 +163,10 @@ public extension ProjectPickerViewModel {
             do {
                 let success = try await persistenceService.delete(project: project)
                 if success == false {
-                    print("Error: no deleting")
+                    fatalError("Error: no deleting")
                 }
             } catch {
-                print("Error: \(error)")
+                fatalError(error.localizedDescription)
             }
         }
     }
@@ -175,11 +175,16 @@ public extension ProjectPickerViewModel {
 
 // MARK: - Private
 
-private extension ProjectPickerViewModel {
+private extension WelcomeViewModel {
 
     func open(project: Project) {
-        // TODO: Implement this
-        print("Opened: \(project.name)")
+        // Close our window
+        self.onDismiss.send(())
+
+        // Open the CreateProject window
+        self.onOpen.send(
+            .project(.init(project: project))
+        )
     }
 
     func promptDeletion(project: Project) {
@@ -196,9 +201,9 @@ private extension ProjectPickerViewModel {
 
 }
 
-// MARK: - ProjectPickerCellViewModelDelegate
+// MARK: - WelcomeProjectCellViewModelDelegate
 
-extension ProjectPickerViewModel: ProjectPickerCellViewModelDelegate {
+extension WelcomeViewModel: WelcomeProjectCellViewModelDelegate {
 
     public func openProject(_ project: Project) {
         self.open(project: project)
@@ -208,9 +213,9 @@ extension ProjectPickerViewModel: ProjectPickerCellViewModelDelegate {
 
 // MARK: - Preview
 
-public extension ProjectPickerViewModel {
+public extension WelcomeViewModel {
 
-    static var mock: ProjectPickerViewModel {
+    static var mock: WelcomeViewModel {
         .init(onCloseWindow: { }, serviceContainer: .mock)
     }
 

@@ -1,5 +1,5 @@
 //
-//  ProjectPickerCellViewModel.swift
+//  WelcomeProjectCellViewModel.swift
 //
 //
 //  Created by William Lumley on 22/7/2024.
@@ -8,20 +8,20 @@
 import Foundation
 import DocuBotModel
 
-public protocol ProjectPickerCellViewModelDelegate {
+public protocol WelcomeProjectCellViewModelDelegate {
     func openProject(_ project: Project)
 }
 
-public class ProjectPickerCellViewModel: ObservableObject {
+public class WelcomeProjectCellViewModel: ObservableObject {
 
     // MARK: - Properties
 
     let project: Project
-    public var delegate: ProjectPickerCellViewModelDelegate?
+    public var delegate: WelcomeProjectCellViewModelDelegate?
 
     // MARK: - Lifecycle
 
-    init(project: Project, delegate: ProjectPickerCellViewModelDelegate? = nil) {
+    init(project: Project, delegate: WelcomeProjectCellViewModelDelegate? = nil) {
         self.project = project
         self.delegate = delegate
     }
@@ -30,19 +30,19 @@ public class ProjectPickerCellViewModel: ObservableObject {
 
 // MARK: - Identifiable
 
-extension ProjectPickerCellViewModel: Identifiable {
+extension WelcomeProjectCellViewModel: Identifiable {
 
     public var id: Int {
-        self.project.id
+        self.project.id ?? -1
     }
 
 }
 
 // MARK: - Hashable
 
-extension ProjectPickerCellViewModel: Hashable {
+extension WelcomeProjectCellViewModel: Hashable {
 
-    public static func == (lhs: ProjectPickerCellViewModel, rhs: ProjectPickerCellViewModel) -> Bool {
+    public static func == (lhs: WelcomeProjectCellViewModel, rhs: WelcomeProjectCellViewModel) -> Bool {
         return lhs.project == rhs.project
     }
 
@@ -54,7 +54,7 @@ extension ProjectPickerCellViewModel: Hashable {
 
 // MARK: - Public
 
-public extension ProjectPickerCellViewModel {
+public extension WelcomeProjectCellViewModel {
 
     var title: String {
         self.project.name
@@ -72,9 +72,9 @@ public extension ProjectPickerCellViewModel {
 
 // MARK: - Preview
 
-public extension ProjectPickerCellViewModel {
+public extension WelcomeProjectCellViewModel {
 
-    static var mock: ProjectPickerCellViewModel {
+    static var mock: WelcomeProjectCellViewModel {
         .init(
             project: .init(
                 id: 1,

@@ -19,7 +19,7 @@ public struct MessageRecord: Record {
 
     // MARK: - Properties
 
-    public let id: Int
+    public let id: Int?
     public let content: String
     public let author: Author
     public let chat: Int

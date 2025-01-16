@@ -1,5 +1,5 @@
 //
-//  ProjectPickerView.swift
+//  WelcomeView.swift
 //
 //
 //  Created by William Lumley on 4/7/2024.
@@ -8,22 +8,26 @@
 import DocuBotViewModel
 import SwiftUI
 
-public struct ProjectPickerView: View {
+public struct WelcomeView: View {
 
     // MARK: - Properties
 
     @Environment(\.dismiss) var dismiss
     @Environment(\.openWindow) var openWindow
 
-    @StateObject var viewModel: ProjectPickerViewModel
+    // @State private var window: NSWindow?
+
+    @StateObject var viewModel: WelcomeViewModel
     @State private var dragOffset = CGSize.zero
     @State private var initialLocation: CGPoint = .zero
 
-    @State var selectedProject: ProjectPickerCellViewModel?
+    @State var selectedProject: WelcomeProjectCellViewModel?
+
+    public static let id = "WelcomeView"
 
     // MARK: - Lifecycle
 
-    public init(viewModel: ProjectPickerViewModel) {
+    public init(viewModel: WelcomeViewModel) {
         self._viewModel = StateObject(wrappedValue: viewModel)
     }
 
@@ -53,13 +57,19 @@ public struct ProjectPickerView: View {
             }
         )
         .dialogIcon(.init(systemSymbol: .trashCircleFill))
+        .onAppear {
+            if let window = NSApplication.shared.windows.last {
+                window.standardWindowButton(.closeButton)?.superview?.isHidden = true
+                window.titlebarAppearsTransparent = true
+            }
+        }
     }
 
 }
 
 // MARK: - Private
 
-private extension ProjectPickerView {
+private extension WelcomeView {
 
     var welcomeView: some View {
         VStack {
@@ -118,32 +128,38 @@ private extension ProjectPickerView {
             switch open {
             case .createProject(let package):
                 self.openWindow(value: package)
+            case .project(let package):
+                self.openWindow(value: package)
             }
         }
     }
 
     var projectListView: some View {
         VStack {
-            if viewModel.projectCellViewModels.isEmpty {
-                EmptyListView(configuration: viewModel.emptyProjectConfiguration)
-            } else {
-                List(viewModel.projectCellViewModels) { cellViewModel in
-                    ProjectPickerCellView(viewModel: cellViewModel)
-                        .contextMenu {
-                            ForEach(viewModel.contextMenuConfigurations(for: cellViewModel)) { configuration in
-                                Button(configuration.text, action: configuration.onSelect)
+            if let projects = viewModel.projects {
+                if projects.isEmpty {
+                    EmptyListView(configuration: viewModel.emptyProjectConfiguration)
+                } else {
+                    List(projects) { project in
+                        WelcomeProjectCellView(viewModel: project)
+                            .contextMenu {
+                                ForEach(viewModel.contextMenuConfigurations(for: project)) { configuration in
+                                    Button(configuration.text, action: configuration.onSelect)
+                                }
                             }
-                        }
+                    }
+                    // Yucky dirty hack to compensate for the lack of toolbar
+                    .padding(.top, -24)
                 }
-                // Yucky dirty hack to compensate for the lack of toolbar
-                .padding(.top, -24)
+            } else {
+                EmptyView()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     func moveWindow(by offset: CGSize) {
-        if let window = NSApplication.shared.windows.first {
+        if let window = NSApplication.shared.windows.last {
             var newFrame = window.frame
             newFrame.origin.x += offset.width
             newFrame.origin.y -= offset.height
@@ -155,5 +171,5 @@ private extension ProjectPickerView {
 // MARK: - Preview
 
 #Preview {
-    ProjectPickerView(viewModel: .mock)
+    WelcomeView(viewModel: .mock)
 }

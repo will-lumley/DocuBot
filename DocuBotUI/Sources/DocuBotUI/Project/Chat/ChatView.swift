@@ -1,14 +1,15 @@
 //
 //  ChatView.swift
-//  
 //
-//  Created by William Lumley on 3/7/2024.
+//
+//  Created by William Lumley on 25/8/2024.
 //
 
 import DocuBotViewModel
+import SFSafeSymbols
 import SwiftUI
 
-struct ChatView: View {
+public struct ChatView: View {
 
     // MARK: - Properties
 
@@ -16,8 +17,8 @@ struct ChatView: View {
 
     // MARK: - View
 
-    var body: some View {
-        Text("Hello, World!")
+    public var body: some View {
+        Text(viewModel.foo)
     }
 
 }

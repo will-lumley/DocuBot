@@ -1,5 +1,5 @@
 //
-//  ProjectPickerCellView.swift
+//  WelcomeProjectCellView.swift
 //
 //
 //  Created by William Lumley on 4/7/2024.
@@ -9,11 +9,11 @@ import DocuBotViewModel
 import SwiftUI
 import SFSafeSymbols
 
-public struct ProjectPickerCellView: View {
+public struct WelcomeProjectCellView: View {
 
     // MARK: - Properties
 
-    @StateObject var viewModel: ProjectPickerCellViewModel
+    @StateObject var viewModel: WelcomeProjectCellViewModel
 
     // MARK: - View
 
@@ -49,5 +49,5 @@ public struct ProjectPickerCellView: View {
 // MARK: - Preview
 
 #Preview {
-    ProjectPickerCellView(viewModel: .mock)
+    WelcomeProjectCellView(viewModel: .mock)
 }

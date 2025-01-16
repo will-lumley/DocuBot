@@ -12,7 +12,7 @@ public struct ProjectRecord: Record {
 
     // MARK: - Properties
 
-    public let id: Int
+    public let id: Int?
     public let path: String
     public let name: String
     public let documentationChecksum: String

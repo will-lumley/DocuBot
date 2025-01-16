@@ -43,9 +43,10 @@ public class CreateProjectViewModel: DocuBotViewModel {
     @Published public var directoryText: String
     public let availableLanguages = ProjectSettings.Language.allCases
 
+    @Published public var projectDirectory: URL?
+    @Published public var projectName = ""
     @Published public var formatConfigurations: [DocumentationFormatConfiguration]
     @Published public var selectedLanguage: ProjectSettings.Language
-    @Published public var directory: URL?
 
     // MARK: - Lifecycle
 
@@ -71,7 +72,7 @@ public class CreateProjectViewModel: DocuBotViewModel {
             .map { $0.contains(true) }       // Check if there's even one `true`
 
         // The directory cannot be nil
-        let directoryValidation = self.$directory
+        let directoryValidation = self.$projectDirectory
             .map { $0 != nil }
 
         // Combine the validation publishers
@@ -79,15 +80,26 @@ public class CreateProjectViewModel: DocuBotViewModel {
             .map { $0 && $1 } // All validations must be met
             .assign(to: &$continueButtonEnabled)
 
-        self.$directory
+        // When the directory is updated
+        self.$projectDirectory
             .map { directory in
+                // If the directory exists, return the path
                 if let directory {
                     return directory.path()
-                } else {
+                }
+
+                // Return the placeholder text if there's no directory
+                else {
                     return L10n.CreateProject.Configuration.Directory.select
                 }
             }
             .assign(to: &$directoryText)
+
+        // When the directory is updated, update the name
+        self.$projectDirectory
+            .compactMap { $0 }
+            .map { $0.lastPathComponent }
+            .assign(to: &$projectName)
     }
 
 }
@@ -102,6 +114,10 @@ public extension CreateProjectViewModel {
 
     var formTitle: String {
         L10n.CreateProject.formTitle
+    }
+
+    var projectNameTitle: String {
+        L10n.CreateProject.Configuration.Name.title
     }
 
     var generalSectionTitle: String {
@@ -191,7 +207,7 @@ public extension CreateProjectViewModel {
     }
 
     func createProjectButtonSelected() {
-        guard let directory = self.directory else {
+        guard let directory = self.projectDirectory else {
             return
         }
 
@@ -203,8 +219,24 @@ public extension CreateProjectViewModel {
         guard let checksum = try? documents.generateChecksum() else {
             return
         }
-
         print("Checksum: \(checksum)")
+
+        let project = Project(
+            id: 0,
+            path: directory.path(),
+            name: self.projectName,
+            documentationChecksum: checksum,
+            createdAt: .now,
+            updatedAt: .now
+        )
+
+        Task {
+            do {
+                try await persistenceService.insert(project: project)
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+        }
     }
 
 }

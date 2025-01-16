@@ -8,7 +8,7 @@
 import DocuBotViewModel
 import SwiftUI
 
-struct IconButton: View {
+struct ToolbarButton: View {
 
     // MARK: - Properties
 
@@ -32,18 +32,15 @@ struct IconButton: View {
                 }
             }
         )
-        .buttonStyle(PlainButtonStyle())
         .disabled(viewModel.isEnabled == false)
         .onHover { hovering in
-            withAnimation(.easeIn(duration: 0.075)) {
-                self.isHovered = hovering
-            }
+            self.isHovered = hovering
         }
     }
 
 }
 
 #Preview {
-    IconButton(viewModel: .mock)
+    ToolbarButton(viewModel: .mock)
         .frame(width: 100, height: 100)
 }

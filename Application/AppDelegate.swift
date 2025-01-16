@@ -31,4 +31,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         serviceContainer.logService.log(with: .info, "Starting application.")
     }
 
+    
 }

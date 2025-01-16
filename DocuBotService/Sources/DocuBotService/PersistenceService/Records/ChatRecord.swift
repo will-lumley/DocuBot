@@ -10,10 +10,19 @@ import GRDB
 
 public struct ChatRecord: Record {
 
+    // MARK: - Types
+
+    public enum NameType: Hashable, Codable {
+        case userSet
+        case docuBotSet
+        case automatic
+    }
+
     // MARK: - Properties
 
-    public let id: Int
+    public var id: Int?
     public let name: String
+    public let nameType: NameType
     public let project: Int
     public let createdAt: Date
 
