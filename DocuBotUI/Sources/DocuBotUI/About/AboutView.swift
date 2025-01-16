@@ -40,6 +40,7 @@ public struct AboutView: View {
             Text(viewModel.acknowledgementsTitle)
                 .font(.title)
                 .padding(.top)
+                .padding(.bottom, 2)
 
             Text(viewModel.acknowledgementsSubtitle)
                 .font(.headline)
