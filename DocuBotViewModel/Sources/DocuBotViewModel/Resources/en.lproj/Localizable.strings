@@ -13,8 +13,6 @@
 "Error.ConfigureProject.FormValidation.missingSeed" = "Please ensure that a valid seed value is provided.";
 "Error.ConfigureProject.FormValidation.missingTopK" = "Please ensure that a valid Top-K value is provided.";
 "Error.ConfigureProject.FormValidation.invalidTopP" = "Please ensure that the Top-P value is within the range of 0.0 and 1.0.";
-"Error.ConfigureProject.FormValidation.missingContextLength" = "Please ensure that a valid context length is provided.";
-"Error.ConfigureProject.FormValidation.missingBatchSize" = "Please ensure that a valid batch size is provided.";
 "Error.ConfigureProject.FormValidation.missingMaxTokenCount" = "Please ensure that a valid maximum token count is provided.";
 "Error.ConfigureProject.FormValidation.missingSystemPrompt" = "Please ensure that a valid system prompt is provided.";
 "Error.ModelManager.ModelError.title" = "Failed to get file access";
@@ -108,9 +106,7 @@
 "ConfigureProject.AdvancedSection.seed" = "Seed";
 "ConfigureProject.AdvancedSection.topK" = "Top K";
 "ConfigureProject.AdvancedSection.topP" = "Top P";
-"ConfigureProject.AdvancedSection.contextLength" = "Context Length";
 "ConfigureProject.AdvancedSection.temperature" = "Temperature";
-"ConfigureProject.AdvancedSection.batchSize" = "Batch Size";
 "ConfigureProject.AdvancedSection.stopSequence" = "Stop Sequence";
 "ConfigureProject.AdvancedSection.maxTokenCount" = "Maximum Token Count";
 "ConfigureProject.AdvancedSection.resetDefaults" = "Reset Default Values";
@@ -134,14 +130,8 @@
 "ConfigureProject.Help.TopP.title" = "What does top-p do?";
 "ConfigureProject.Help.TopP.content" = "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation.";
 
-"ConfigureProject.Help.ContextLength.title" = "What does context length do?";
-"ConfigureProject.Help.ContextLength.content" = "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.";
-
 "ConfigureProject.Help.Temperature.title" = "What does temperature do?";
 "ConfigureProject.Help.Temperature.content" = "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens.";
-
-"ConfigureProject.Help.BatchSize.title" = "What does batch size do?";
-"ConfigureProject.Help.BatchSize.content" = "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.";
 
 "ConfigureProject.Help.StopSequence.title" = "What does stop sequence do?";
 "ConfigureProject.Help.StopSequence.content" = "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition.";
@@ -188,7 +178,7 @@
 
 "Project.LlmExampleQuestionPrompt.systemMessage" = "You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.\nWhen asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.\nRemember: do not include phrases like \"I hope this helps\" or \"Let me know if you need anything else.\" Focus only on delivering the requested content without deviation.";
 "Project.LlmExampleQuestionPrompt.prompt" = "Here is an excerpt from a file.\n\n%@\n\nBased on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.";
-"Project.LlmQueryPrompt.template" = "Here is some information.\n%@\n%@";
+"Project.LlmQueryPrompt.template" = "Here is some information I want you to consider before answering the question.\n%@\nHere is the question.\n%@\nUse the information provided above to answer the question.";
 "Project.queryTitle" = "Ask any question about your project.";
 "Project.Toolbar.sources" = "Sources";
 "Project.Toolbar.sync" = "Sync";

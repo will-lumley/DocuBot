@@ -111,10 +111,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.seedTitle == "Seed")
         #expect(testSubject.topKTitle == "Top K")
         #expect(testSubject.topPTitle == "Top P")
-        #expect(testSubject.contextLengthTitle == "Context Length")
-        #expect(testSubject.contextLengthTitle == "Context Length")
         #expect(testSubject.temperatureTitle == "Temperature")
-        #expect(testSubject.batchSizeTitle == "Batch Size")
         #expect(testSubject.stopSequenceTitle == "Stop Sequence")
         #expect(testSubject.maxTokenCountTitle == "Maximum Token Count")
         #expect(testSubject.strictModeTitle == "Strict Mode")
@@ -133,7 +130,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.selectedLanguage == .english)
         #expect(testSubject.embeddingModel == .distilbert)
         #expect(testSubject.similarityMetric == .cosine)
-        #expect(testSubject.contextLength == 2048)
     }
 
     @Test("Initialisation - Editing")
@@ -410,65 +406,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
     }
 
-    @Test("Form Validation - Creating - Missing Context Length")
-    func formValidationCreatingMissingContextLength() async throws {
-        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
-        let testSubject = await self.mockForCreating()
-
-        // WHEN we ensure we have filled out some of the details, but not our Context Length
-        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
-        testSubject.projectDirectoryBookmarkData = Data()
-        testSubject.projectName = "Test Name"
-        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
-        testSubject.seed = 10
-        testSubject.topK = 5
-        testSubject.contextLength = 0
-
-        // WHEN try and save
-        await testSubject.saveButtonSelected()
-
-        // THEN an alert is presented
-        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
-
-        // THEN the alert has the correct title and message
-        #expect(
-            alert == .init(
-                title: "Failed to Create Project",
-                message: "Please ensure that a valid context length is provided."
-            )
-        )
-    }
-
-    @Test("Form Validation - Creating - Missing Batch Size")
-    func formValidationCreatingMissingBatchSize() async throws {
-        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
-        let testSubject = await self.mockForCreating()
-
-        // WHEN we ensure we have filled out some of the details, but not our Batch Size
-        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
-        testSubject.projectDirectoryBookmarkData = Data()
-        testSubject.projectName = "Test Name"
-        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
-        testSubject.seed = 10
-        testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 0
-
-        // WHEN try and save
-        await testSubject.saveButtonSelected()
-
-        // THEN an alert is presented
-        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
-
-        // THEN the alert has the correct title and message
-        #expect(
-            alert == .init(
-                title: "Failed to Create Project",
-                message: "Please ensure that a valid batch size is provided."
-            )
-        )
-    }
-
     @Test("Form Validation - Creating - Missing Token Count")
     func formValidationCreatingMissingTokenCount() async throws {
         // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
@@ -481,8 +418,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 0
 
         // WHEN try and save
@@ -512,8 +447,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = ""
 
@@ -751,67 +684,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
     }
 
-    @Test("Form Validation - Editing - Missing Context Length")
-    func formValidationEditingMissingContextLength() async throws {
-        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
-        let testSubject = try await self.mockForEditing()
-        testSubject.configureBindingsIfNeeded()
-
-        // WHEN we ensure we have filled out some of the details, but not our Context Length
-        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
-        testSubject.projectDirectoryBookmarkData = Data()
-        testSubject.projectName = "Test Name"
-        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
-        testSubject.seed = 10
-        testSubject.topK = 5
-        testSubject.contextLength = 0
-
-        // WHEN try and save
-        await testSubject.saveButtonSelected()
-
-        // THEN an alert is presented
-        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
-
-        // THEN the alert has the correct title and message
-        #expect(
-            alert == .init(
-                title: "Failed to Update Project",
-                message: "Please ensure that a valid context length is provided."
-            )
-        )
-    }
-
-    @Test("Form Validation - Editing - Missing Batch Size")
-    func formValidationEditingMissingBatchSize() async throws {
-        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
-        let testSubject = try await self.mockForEditing()
-        testSubject.configureBindingsIfNeeded()
-
-        // WHEN we ensure we have filled out some of the details, but not our Batch Size
-        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
-        testSubject.projectDirectoryBookmarkData = Data()
-        testSubject.projectName = "Test Name"
-        testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
-        testSubject.seed = 10
-        testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 0
-
-        // WHEN try and save
-        await testSubject.saveButtonSelected()
-
-        // THEN an alert is presented
-        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
-
-        // THEN the alert has the correct title and message
-        #expect(
-            alert == .init(
-                title: "Failed to Update Project",
-                message: "Please ensure that a valid batch size is provided."
-            )
-        )
-    }
-
     @Test("Form Validation - Editing - Missing Token Count")
     func formValidationEditingMissingTokenCount() async throws {
         // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
@@ -825,8 +697,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 0
 
         // WHEN try and save
@@ -857,8 +727,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = ""
 
@@ -898,8 +766,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 10
         testSubject.topK = 5
         testSubject.topP = 0.5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.stopSequence = "abc"
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "This is a system prompt"
@@ -949,7 +815,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(settings.seed == 10)
         #expect(settings.topK == 5)
         #expect(settings.topP == 0.5)
-        #expect(settings.batchSize == 15)
         #expect(settings.stopSequence == "abc")
         #expect(settings.maxTokenCount == 1024)
         #expect(settings.systemPrompt == "This is a system prompt")
@@ -979,8 +844,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 20
         testSubject.topK = 5
         testSubject.topP = 0.5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "This is a system prompt"
         testSubject.strictMode = true
@@ -1036,7 +899,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(settings.seed == 20)
         #expect(settings.topK == 5)
         #expect(settings.topP == 0.5)
-        #expect(settings.batchSize == 15)
         #expect(settings.stopSequence == "xyz")
         #expect(settings.maxTokenCount == 1024)
         #expect(settings.systemPrompt == "This is a system prompt")
@@ -1064,9 +926,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 20
         testSubject.topK = 5
         testSubject.topP = 0.5
-        testSubject.contextLength = 10
         testSubject.temperature = 15
-        testSubject.batchSize = 15
         testSubject.stopSequence = "foobar"
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "This is a system prompt"
@@ -1081,9 +941,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.seed == 1234)
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.9)
-        #expect(testSubject.contextLength == 2048)
         #expect(testSubject.temperature == 0.2)
-        #expect(testSubject.batchSize == 2048)
         #expect(testSubject.stopSequence == "")
         #expect(testSubject.maxTokenCount == 1048576)
         #expect(testSubject.systemPrompt == "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.")
@@ -1121,9 +979,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 20
         testSubject.topK = 5
         testSubject.topP = 0.5
-        testSubject.contextLength = 10
         testSubject.temperature = 15
-        testSubject.batchSize = 15
         testSubject.stopSequence = "foobar"
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "This is a system prompt"
@@ -1144,9 +1000,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.seed == 20)
         #expect(testSubject.topK == 5)
         #expect(testSubject.topP == 0.5)
-        #expect(testSubject.contextLength == 10)
         #expect(testSubject.temperature == 15)
-        #expect(testSubject.batchSize == 15)
         #expect(testSubject.stopSequence == "foobar")
         #expect(testSubject.maxTokenCount == 1024)
         #expect(testSubject.systemPrompt == "This is a system prompt")
@@ -1165,8 +1019,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "Test"
 
@@ -1190,8 +1042,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "Test"
 
@@ -1215,8 +1065,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "Test"
 
@@ -1239,8 +1087,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "Test"
 
@@ -1266,8 +1112,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 10
         testSubject.topK = 5
-        testSubject.contextLength = 10
-        testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "Test"
 
@@ -1932,10 +1776,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.seed == 1234)
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.9)
-        #expect(testSubject.contextLength == 2048)
 
         #expect(testSubject.temperature == 0.2)
-        #expect(testSubject.batchSize == 2048)
         #expect(testSubject.stopSequence == "")
         #expect(testSubject.maxTokenCount == 1048576)
         #expect(testSubject.strictMode == false)
@@ -1980,10 +1822,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.seed == 1024)
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.2)
-        #expect(testSubject.contextLength == 100)
 
         #expect(testSubject.temperature == 0.2)
-        #expect(testSubject.batchSize == 1024)
         #expect(testSubject.stopSequence == nil)
         #expect(testSubject.maxTokenCount == 1024)
         #expect(testSubject.strictMode == false)
@@ -2008,8 +1848,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(Error.missingFormat.description == "Please ensure that at least one format has been enabled.")
         #expect(Error.missingSeed.description == "Please ensure that a valid seed value is provided.")
         #expect(Error.missingTopK.description == "Please ensure that a valid Top-K value is provided.")
-        #expect(Error.missingContextLength.description == "Please ensure that a valid context length is provided.")
-        #expect(Error.missingBatchSize.description == "Please ensure that a valid batch size is provided.")
         #expect(Error.missingMaxTokenCount.description == "Please ensure that a valid maximum token count is provided.")
         #expect(Error.missingSystemPrompt.description == "Please ensure that a valid system prompt is provided.")
         #expect(
@@ -2029,7 +1867,6 @@ private extension ConfigureProjectViewModelTests {
         """
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
     func helpConfigurationTitle(
         for type: ConfigureProjectViewModel.HelpType
     ) -> String {
@@ -2044,12 +1881,8 @@ private extension ConfigureProjectViewModelTests {
             return "What does top-k do?"
         case .topP:
             return "What does top-p do?"
-        case .contextLength:
-            return "What does context length do?"
         case .temperature:
             return "What does temperature do?"
-        case .batchSize:
-            return "What does batch size do?"
         case .stopSequence:
             return "What does stop sequence do?"
         case .maxTokenCount:
@@ -2061,7 +1894,6 @@ private extension ConfigureProjectViewModelTests {
         }
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
     func helpConfigurationContent(
         for type: ConfigureProjectViewModel.HelpType
     ) -> String {
@@ -2076,12 +1908,8 @@ private extension ConfigureProjectViewModelTests {
             return "Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).\n\nBy default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred."
         case .topP:
             return "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation."
-        case .contextLength:
-            return "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text."
         case .temperature:
             return "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens."
-        case .batchSize:
-            return "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation."
         case .stopSequence:
             return "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition."
         case .maxTokenCount:

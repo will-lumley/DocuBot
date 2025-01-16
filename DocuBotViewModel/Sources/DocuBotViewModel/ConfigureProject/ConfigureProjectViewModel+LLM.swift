@@ -49,25 +49,11 @@ public extension ConfigureProjectViewModel {
         L10n.ConfigureProject.AdvancedSection.topP
     }
 
-    /// The title for the context length configuration option.
-    ///
-    /// - Returns: A localized string representing the title of the context length option.
-    var contextLengthTitle: String {
-        L10n.ConfigureProject.AdvancedSection.contextLength
-    }
-
     /// The title for the temperature configuration option.
     ///
     /// - Returns: A localized string representing the title of the temperature option.
     var temperatureTitle: String {
         L10n.ConfigureProject.AdvancedSection.temperature
-    }
-
-    /// The title for the batch size configuration option.
-    ///
-    /// - Returns: A localized string representing the title of the batch size option.
-    var batchSizeTitle: String {
-        L10n.ConfigureProject.AdvancedSection.batchSize
     }
 
     /// The title for the stop sequence configuration option.
@@ -98,9 +84,7 @@ public extension ConfigureProjectViewModel {
     /// - `seed`: 1234
     /// - `topK`: 40
     /// - `topP`: 0.9
-    /// - `contextLength`: 2048
     /// - `temperature`: 0.2
-    /// - `batchSize`: 2048
     /// - `stopSequence`: Empty string
     /// - `maxTokenCount`: 1 MB (1024 * 1024)
     /// - `systemPrompt`: Default localized string
@@ -115,9 +99,7 @@ public extension ConfigureProjectViewModel {
         self.seed = 1234
         self.topK = 40
         self.topP = 0.9
-        self.contextLength = 2048
         self.temperature = 0.2
-        self.batchSize = 2048
         self.stopSequence = ""
         self.maxTokenCount = 1024*1024
         self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default

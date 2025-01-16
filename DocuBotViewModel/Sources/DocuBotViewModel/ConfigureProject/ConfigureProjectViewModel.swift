@@ -27,9 +27,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case seed
         case topK
         case topP
-        case contextLength
         case temperature
-        case batchSize
         case stopSequence
         case maxTokenCount
         case systemPrompt
@@ -46,8 +44,6 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case missingSeed
         case missingTopK
         case invalidTopP
-        case missingContextLength
-        case missingBatchSize
         case missingMaxTokenCount
         case missingSystemPrompt
     }
@@ -127,9 +123,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var seed: Int
     @Published public var topK: Int
     @Published public var topP: Double
-    @Published public var contextLength: Int
     @Published public var temperature: Double
-    @Published public var batchSize: Int
     @Published public var stopSequence: String?
     @Published public var maxTokenCount: Int
     @Published public var strictMode: Bool
@@ -219,9 +213,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.seed = projectInfo.settings.seed
             self.topK = projectInfo.settings.topK
             self.topP = projectInfo.settings.topP
-            self.contextLength = projectInfo.settings.contextLength
             self.temperature = projectInfo.settings.temperature
-            self.batchSize = projectInfo.settings.batchSize
             self.stopSequence = projectInfo.settings.stopSequence
             self.maxTokenCount = projectInfo.settings.maxTokenCount
             self.strictMode = projectInfo.settings.strictMode
@@ -251,9 +243,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.seed = 1234
             self.topK = 40
             self.topP = 0.9
-            self.contextLength = 2048
             self.temperature = 0.2
-            self.batchSize = 2048
             self.stopSequence = ""
             self.maxTokenCount = 1024*1024
             self.strictMode = false
@@ -540,9 +530,7 @@ private extension ConfigureProjectViewModel {
                 seed: self.seed,
                 topK: self.topK,
                 topP: self.topP,
-                contextLength: self.contextLength,
                 temperature: self.temperature,
-                batchSize: self.batchSize,
                 stopSequence: self.stopSequence,
                 maxTokenCount: self.maxTokenCount,
                 systemPrompt: self.systemPrompt,
@@ -565,9 +553,7 @@ private extension ConfigureProjectViewModel {
                 seed: self.seed,
                 topK: self.topK,
                 topP: self.topP,
-                contextLength: self.contextLength,
                 temperature: self.temperature,
-                batchSize: self.batchSize,
                 stopSequence: self.stopSequence,
                 maxTokenCount: self.maxTokenCount,
                 systemPrompt: self.systemPrompt,
@@ -616,8 +602,6 @@ private extension ConfigureProjectViewModel {
     ///
     /// - Throws: `FormValidationError` if validation fails.
     func checkFormValidation() throws(FormValidationError) {
-        // swiftlint:disable:previous cyclomatic_complexity
-
         // Check our project directory
         if self.projectDirectory == nil {
             throw .missingDirectory
@@ -654,16 +638,6 @@ private extension ConfigureProjectViewModel {
         // Check our TopP
         if self.topP < 0 || self.topP > 1 {
             throw .invalidTopP
-        }
-
-        // Check our ContextLength
-        if self.contextLength <= 0 {
-            throw .missingContextLength
-        }
-
-        // Check our BatchSize
-        if self.batchSize <= 0 {
-            throw .missingBatchSize
         }
 
         // Check our MaxTokenCount
@@ -751,4 +725,4 @@ private extension ConfigureProjectViewModel {
 
     }
 
-} // swiftlint:disable:this file_length
+}

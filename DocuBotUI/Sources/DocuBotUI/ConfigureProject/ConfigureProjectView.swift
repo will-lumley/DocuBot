@@ -329,22 +329,6 @@ public struct ConfigureProjectView: View {
                 }
             }
 
-            // ContextLength
-            LabeledContent {
-                TextField(
-                    "",
-                    value: $viewModel.contextLength,
-                    format: .number
-                )
-            } label: {
-                HStack {
-                    HelpButton {
-                        viewModel.helpButtonSelected(with: .contextLength)
-                    }
-                    Text(viewModel.contextLengthTitle)
-                }
-            }
-
             // Temperature
             LabeledContent {
                 Text(viewModel.temperature.formatted())
@@ -355,22 +339,6 @@ public struct ConfigureProjectView: View {
                         viewModel.helpButtonSelected(with: .temperature)
                     }
                     Text(viewModel.temperatureTitle)
-                }
-            }
-
-            // Batch Size
-            LabeledContent {
-                TextField(
-                    "",
-                    value: $viewModel.batchSize,
-                    format: .number
-                )
-            } label: {
-                HStack {
-                    HelpButton {
-                        viewModel.helpButtonSelected(with: .batchSize)
-                    }
-                    Text(viewModel.batchSizeTitle)
                 }
             }
 

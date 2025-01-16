@@ -30,10 +30,6 @@ internal enum L10n {
   }
   internal enum ConfigureProject {
     internal enum AdvancedSection {
-      /// Batch Size
-      internal static let batchSize = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.batchSize", fallback: "Batch Size")
-      /// Context Length
-      internal static let contextLength = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.contextLength", fallback: "Context Length")
       /// Embedding Model
       internal static let embeddingModel = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.embeddingModel", fallback: "Embedding Model")
       /// Maximum Token Count
@@ -126,22 +122,6 @@ internal enum L10n {
       }
     }
     internal enum Help {
-      internal enum BatchSize {
-        /// This parameter defines the number of tokens processed in one batch during the generation or training phase.
-        /// 
-        /// A batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.
-        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.BatchSize.content", fallback: "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.")
-        /// What does batch size do?
-        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.BatchSize.title", fallback: "What does batch size do?")
-      }
-      internal enum ContextLength {
-        /// The context length defines how many tokens the model can consider at once when generating text.
-        /// 
-        /// By default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.
-        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.ContextLength.content", fallback: "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.")
-        /// What does context length do?
-        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.ContextLength.title", fallback: "What does context length do?")
-      }
       internal enum EmbeddingModel {
         /// An embedding model transforms input data (like text) into numerical vectors that represent the semantic meaning of the data.
         /// 
@@ -294,10 +274,6 @@ internal enum L10n {
       internal enum FormValidation {
         /// Please ensure that the Top-P value is within the range of 0.0 and 1.0.
         internal static let invalidTopP = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.invalidTopP", fallback: "Please ensure that the Top-P value is within the range of 0.0 and 1.0.")
-        /// Please ensure that a valid batch size is provided.
-        internal static let missingBatchSize = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingBatchSize", fallback: "Please ensure that a valid batch size is provided.")
-        /// Please ensure that a valid context length is provided.
-        internal static let missingContextLength = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingContextLength", fallback: "Please ensure that a valid context length is provided.")
         /// Please ensure that a project directory has been selected.
         internal static let missingDirectory = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingDirectory", fallback: "Please ensure that a project directory has been selected.")
         /// No secure directory data is avaiable to DocuBot.
@@ -471,11 +447,13 @@ internal enum L10n {
       internal static let systemMessage = L10n.tr("Localizable", "Project.LlmExampleQuestionPrompt.systemMessage", fallback: "You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.\nWhen asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.\nRemember: do not include phrases like \"I hope this helps\" or \"Let me know if you need anything else.\" Focus only on delivering the requested content without deviation.")
     }
     internal enum LlmQueryPrompt {
-      /// Here is some information.
+      /// Here is some information I want you to consider before answering the question.
       /// %@
+      /// Here is the question.
       /// %@
+      /// Use the information provided above to answer the question.
       internal static func template(_ p1: Any, _ p2: Any) -> String {
-        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Here is some information.\n%@\n%@")
+        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Here is some information I want you to consider before answering the question.\n%@\nHere is the question.\n%@\nUse the information provided above to answer the question.")
       }
     }
     internal enum QueryButton {
