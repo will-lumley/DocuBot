@@ -65,6 +65,9 @@ public struct ProjectSettingsRecord: Record {
         // Portable document file (.pdf).
         case pdf
 
+        // Microsoft Word format (.docx)
+        case word
+
         /// Any other format specified by the user.
         case other(String)
     }

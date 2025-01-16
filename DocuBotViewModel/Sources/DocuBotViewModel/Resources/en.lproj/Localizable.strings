@@ -98,6 +98,7 @@
 "ConfigureProject.FormatSection.Format.rtf" = ".rtf";
 "ConfigureProject.FormatSection.Format.html" = ".html";
 "ConfigureProject.FormatSection.Format.pdf" = ".pdf";
+"ConfigureProject.FormatSection.Format.word" = ".docx";
 "ConfigureProject.FormatSection.Format.other" = "Other";
 "ConfigureProject.FormatSection.Format.addFormatButton" = "Add Custom Format";
 

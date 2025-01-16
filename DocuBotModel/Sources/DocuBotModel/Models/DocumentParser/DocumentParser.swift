@@ -271,41 +271,22 @@ internal extension DocumentParser {
     ///
     /// - Parameter url: The file that we're trying to extract content out of
     /// - Returns: The contents of the file
-    func extractContent(from url: URL) throws(ContentExtractionError) -> String? {
+    func extractContent(
+        from url: URL
+    ) throws(ContentExtractionError) -> String? {
         let fileExtension = self.fileExtension(from: url)
 
         switch fileExtension {
-        case .html, .txt, .md, .other:
-            // Extract the documents content directly as a string file
-            guard let content = try? String(contentsOf: url, encoding: .utf8) else {
-                throw .failedToReadContent
-            }
-            return content
+        case .txt, .md, .other:
+            return try self.loadPlainText(from: url)
         case .rtf:
-            // Load the RTF data from the file
-            guard let rtfData = try? Data(contentsOf: url) else {
-                throw .failedToReadFile
-            }
-
-            guard let attrStr = try? NSAttributedString(
-                data: rtfData,
-                options: [.documentType: NSAttributedString.DocumentType.rtf],
-                documentAttributes: nil
-            ) else {
-                throw .failedToReadContent
-            }
-
-            return attrStr.string
-
+            return try self.loadDocumentText(from: url, with: .rtf)
+        case .html:
+            return try self.loadDocumentText(from: url, with: .html)
         case .pdf:
-            guard
-                let pdf = PDFDocument(url: url),
-                let pdfStr = pdf.string
-            else {
-                throw .failedToReadContent
-            }
-
-            return pdfStr
+            return try self.loadPdf(from: url)
+        case .word:
+            return try self.loadDocumentText(from: url, with: .officeOpenXML)
         }
     }
 

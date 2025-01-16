@@ -93,6 +93,8 @@ internal enum L10n {
         internal static let rtf = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.rtf", fallback: ".rtf")
         /// .txt
         internal static let txt = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.txt", fallback: ".txt")
+        /// .docx
+        internal static let word = L10n.tr("Localizable", "ConfigureProject.FormatSection.Format.word", fallback: ".docx")
       }
     }
     internal enum GeneralSection {

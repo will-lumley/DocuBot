@@ -50,7 +50,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
 
         /// All the cases apart from .other
         public static var allCases: [ProjectSettings.DocumentationFormat] {
-            [.rtf, .txt, .html, .md, .pdf]
+            [.rtf, .txt, .html, .md, .pdf, .word]
         }
 
         /// Rich Text Format.
@@ -68,6 +68,9 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         /// PDF format.
         case pdf
 
+        /// MSWord format.
+        case word
+
         /// Any other format represented by a string.
         case other(String)
 
@@ -81,6 +84,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
             case "html": self = .html
             case "md": self = .md
             case "pdf": self = .pdf
+            case "docx": self = .word
             default: self = .other(rawValue)
             }
         }
@@ -336,6 +340,8 @@ public extension ProjectSettings.DocumentationFormat {
             return "rtf"
         case .pdf:
             return "pdf"
+        case .word:
+            return "docx"
         case .other(let value):
             return value
         }

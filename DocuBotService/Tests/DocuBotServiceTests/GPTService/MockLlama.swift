@@ -9,7 +9,7 @@
 import Foundation
 import Testing
 
-class MockLlama: SwiftLlama {
+class MockLlama: SwiftLlama, @unchecked Sendable {
 
     // MARK: - Properties
 

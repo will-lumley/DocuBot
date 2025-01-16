@@ -420,6 +420,10 @@ private extension ProjectViewModel {
         self.expectingResponse = true
 
         self.currentTask = Task {
+            defer {
+                self.expectingResponse = false
+            }
+
             do {
                 let query = self.chatText
                 let settings = try await self.getProjectSettings()
@@ -489,7 +493,6 @@ private extension ProjectViewModel {
 
                     await MainActor.run {
                         self.response = .response(response: response)
-                        self.expectingResponse = false
                     }
 
                 } else {
@@ -520,15 +523,11 @@ private extension ProjectViewModel {
                             self.response = .response(response: update)
                         }
                     }
-                    await MainActor.run {
-                        self.expectingResponse = false
-                    }
                     self.logService.log(with: .info, "Response: \(response)")
                 }
 
             } catch {
                 await MainActor.run {
-                    self.expectingResponse = false
                     self.alertConfiguration = .init(
                         title: L10n.Error.Project.GptTalk.title,
                         message: error.description
@@ -566,7 +565,7 @@ private extension ProjectViewModel {
                 )
                 // Are we dirty?
                 let isDirty = try await documentBuilder.checkProjectIsDirty()
-                // logService.log(with: .info, "Project Dirty: \(isDirty)")
+                logService.log(with: .info, "Project Dirty: \(isDirty)")
 
                 // If we are, persist it to the DB
                 await MainActor.run {
@@ -615,12 +614,10 @@ private extension ProjectViewModel {
                     with: settings
                 )
             } catch {
-                await MainActor.run {
-                    self.alertConfiguration = .init(
-                        title: L10n.Error.Project.FailedToStartLlm.title,
-                        message: error.description
-                    )
-                }
+                self.alertConfiguration = .init(
+                    title: L10n.Error.Project.FailedToStartLlm.title,
+                    message: error.description
+                )
             }
         }
     }

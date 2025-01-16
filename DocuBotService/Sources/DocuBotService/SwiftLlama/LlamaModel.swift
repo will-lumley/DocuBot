@@ -71,9 +71,13 @@ class LlamaModel {
     }
 
     func `continue`() throws -> String {
-        let newToken =  llama_sampler_sample(sampler, context, batch.n_tokens - 1)
+        let newToken =  llama_sampler_sample(
+            sampler,
+            context,
+            batch.n_tokens - 1
+        )
 
-        if llama_token_is_eog(model, newToken) || generatedTokenAccount == n_len {
+        if llama_token_is_eog(model, newToken) || ended /*|| generatedTokenAccount == n_len*/ {
             temporaryInvalidCChars.removeAll()
             ended = true
             return ""
@@ -141,9 +145,13 @@ class LlamaModel {
     }
 
     func clear() {
+        // swiftlint:disable:next direct_print
+        print("LlamaModel cleared.")
+        self.ended = true
+
         tokens.removeAll()
         temporaryInvalidCChars.removeAll()
-        llama_kv_cache_clear(context)
+        // llama_kv_cache_clear(context)
         batch.clear()
     }
 
