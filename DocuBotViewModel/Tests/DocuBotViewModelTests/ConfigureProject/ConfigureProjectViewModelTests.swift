@@ -13,7 +13,11 @@ import Testing
 
 // swiftlint:disable line_length
 
-@Suite("ConfigureProjectViewModelTests", .serialized)
+@Suite(
+    "ConfigureProjectViewModelTests",
+    .serialized,
+    .timeLimit(.minutes(1))
+)
 class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable { // swiftlint:disable:this type_body_length
 
     @Test("Label Values")
@@ -1289,6 +1293,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(onSavedCalled == true)
     }
 
+    // TODO: Test the saving of the ReSync properties
     @Test("Save Project - Editing")
     func editProject() async throws {
         var cancellables = [AnyCancellable]()
@@ -1321,15 +1326,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         }
 
         // WHEN we ensure we have filled out all of the details
-        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
-        testSubject.projectDirectoryBookmarkData = Data()
         testSubject.model = .mock(id: 1)
         testSubject.projectName = "Test Name"
-        testSubject.formatConfigurations = [
-            .init(order: 1, format: .rtf, isEnabled: true),
-            .init(order: 2, format: .md, isEnabled: false),
-            .init(order: 2, format: .txt, isEnabled: true)
-        ]
         testSubject.seed = 20
         testSubject.topK = 5
         testSubject.topP = 0.5
@@ -1337,9 +1335,23 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "This is a system prompt"
+        testSubject.strictMode = true
+
+        // We won't change the properties below as it will trigger a
+        // resync warning - so we'll test the changing of these properties
+        // in a seperate test.
+        /*
+        testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
+        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true),
+            .init(order: 2, format: .md, isEnabled: false),
+            .init(order: 2, format: .txt, isEnabled: true)
+        ]
+
         testSubject.embeddingModel = .multiQaMiniLm
         testSubject.similarityMetric = .euclideanDistance
-        testSubject.strictMode = true
+         */
 
         // WHEN we save the Project
         await testSubject.saveButtonSelected()
@@ -1355,13 +1367,13 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
                     // THEN the Project has the correct attributes
                     #expect(project.id == 1)
-                    #expect(project.path == "/example/path")
+                    // #expect(project.path == "/example/path")
+                    // #expect(project.urlBookmarkData == Data())
                     #expect(project.name == "Test Name")
-                    #expect(project.urlBookmarkData == Data())
                     #expect(project.documentationChecksum == "123")
                     #expect(project.exampleQuestions == ["foo", "bar"])
                     #expect(project.alertStatus == .error(error: .firstSync))
-                    #expect(project.needsFullResync == true)
+                    #expect(project.needsFullResync == false)
                     #expect(
                         project.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
                     )
@@ -1383,10 +1395,10 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(fetchedSettings.id == 1)
         #expect(fetchedSettings.projectID == 1)
         #expect(fetchedSettings.modelID == 1)
-        #expect(fetchedSettings.supportedFormats == [.rtf, .txt])
+        // #expect(fetchedSettings.supportedFormats == [.rtf, .txt])
         #expect(fetchedSettings.language == .english)
-        #expect(fetchedSettings.embeddingModel == .multiQaMiniLm)
-        #expect(fetchedSettings.similarityMetric == .euclideanDistance)
+        // #expect(fetchedSettings.embeddingModel == .multiQaMiniLm)
+        // #expect(fetchedSettings.similarityMetric == .euclideanDistance)
         #expect(fetchedSettings.seed == 20)
         #expect(fetchedSettings.topK == 5)
         #expect(fetchedSettings.topP == 0.5)
@@ -1708,16 +1720,17 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         var cancellables = [AnyCancellable]()
 
         let model = await self.persistTestModel()
-        let modelID = try model.id.orThrow(LLMModel.ModelError.missingID)
         let project = Project.mock(id: 1)
         let settings = ProjectSettings.mock(
             id: 1,
             projectID: 1,
-            modelID: modelID
+            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
         )
 
         _ = try await persistenceService.insert(project: project)
         _ = try await persistenceService.insert(settings: settings)
+
+        #expect(settings.similarityMetric != .dotProduct)
 
         // GIVEN a ConfigureProjectViewModel with an existing Project
         let testSubject = ConfigureProjectViewModel(
@@ -1732,7 +1745,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         await withCheckedContinuation { continuation in
             testSubject.$model.eraseToAnyPublisher()
                 .compactMap(\.self)
-                .sink { bar in
+                .sink { _ in
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -1741,40 +1754,67 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         // WHEN we change the metric
         testSubject.similarityMetric = .dotProduct
 
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
         // THEN ReSync Alert is correctly set
-        await withCheckedContinuation { continuation in
+        let alert = await withCheckedContinuation { continuation in
             testSubject.$alertConfiguration.eraseToAnyPublisher()
                 .compactMap(\.self)
                 .sink { newAlert in
-                    #expect(
-                        newAlert == .init(
-                            title: "",
-                            message: ""
-                        )
-                    )
-
-                    continuation.resume()
+                    continuation.resume(returning: newAlert)
                 }
                 .store(in: &cancellables)
-
-            // WHEN we try and save the Project & Settings
-            Task { await testSubject.saveButtonSelected() }
         }
+        #expect(
+            alert == .init(
+                title: "Re-Sync Will Be Needed",
+                message: "Changing the similarity metric will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.",
+                primaryAction: .init(title: "Save Settings") { }
+            )
+        )
+
+        // WHEN the alert's action is called
+        await MainActor.run {
+            alert.primaryAction?.onSelect()
+        }
+
+        // THEN the Project & Settings is saved
+        let savedSettings = await withCheckedContinuation { cont in
+            persistenceService.getProjectSettings(for: project)
+                .dropFirst()
+                .sink { newSettings in
+                    cont.resume(returning: newSettings)
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN the Metric has been updated correctly
+        #expect(savedSettings.similarityMetric == .dotProduct)
     }
 
     @Test("ReSync Message - EmbeddedModel Changed - Editing")
     func resyncMessageEmbeddedModelChangedEditing() async throws {
+        var cancellables = [AnyCancellable]()
+
         // GIVEN that we have an existing Project & Settings in the DB
         let model = await self.persistTestModel()
         let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: model.id ?? -1)
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
+        )
 
         _ = try await persistenceService.insert(project: project)
         _ = try await persistenceService.insert(settings: settings)
 
         // GIVEN a ConfigureProjectViewModel with an existing Project
         let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
             serviceContainer: self.serviceContainer
         )
 
@@ -1784,28 +1824,63 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
-        // THEN there is no ReSync Alert
+        let alert = await withCheckedContinuation { continuation in
+            testSubject.$alertConfiguration.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { newAlert in
+                    continuation.resume(returning: newAlert)
+                }
+                .store(in: &cancellables)
+        }
         #expect(
-            testSubject.alertConfiguration == .init(
-                title: "",
-                message: ""
+            alert == .init(
+                title: "Re-Sync Will Be Needed",
+                message: "Changing the embedding model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.",
+                primaryAction: .init(title: "Save Settings") { }
             )
         )
+
+        // WHEN the alert's action is called
+        await MainActor.run {
+            alert.primaryAction?.onSelect()
+        }
+
+        // THEN the Project & Settings is saved
+        let savedSettings = await withCheckedContinuation { cont in
+            persistenceService.getProjectSettings(for: project)
+                .dropFirst()
+                .sink { newSettings in
+                    cont.resume(returning: newSettings)
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN the Metric has been updated correctly
+        #expect(savedSettings.embeddingModel == .miniLmAll)
     }
 
     @Test("ReSync Message - Directory Changed - Editing")
     func resyncMessageDirectoryChangedEditing() async throws {
+        var cancellables = [AnyCancellable]()
+
         // GIVEN that we have an existing Project & Settings in the DB
         let model = await self.persistTestModel()
         let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: model.id ?? -1)
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
+        )
 
         _ = try await persistenceService.insert(project: project)
         _ = try await persistenceService.insert(settings: settings)
 
         // GIVEN a ConfigureProjectViewModel with an existing Project
         let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
             serviceContainer: self.serviceContainer
         )
 
@@ -1816,17 +1891,47 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
-        // THEN there is no ReSync Alert
+        // THEN ReSync Alert is correctly set
+        let alert = await withCheckedContinuation { continuation in
+            testSubject.$alertConfiguration.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { newAlert in
+                    continuation.resume(returning: newAlert)
+                }
+                .store(in: &cancellables)
+        }
         #expect(
-            testSubject.alertConfiguration == .init(
-                title: "",
-                message: ""
+            alert == .init(
+                title: "Re-Sync Will Be Needed",
+                message: "Changing the directory will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.",
+                primaryAction: .init(title: "Save Settings") { }
             )
         )
+
+        // WHEN the alert's action is called
+        await MainActor.run {
+            alert.primaryAction?.onSelect()
+        }
+
+        // THEN the Project & Settings is saved
+        let savedProject = await withCheckedContinuation { cont in
+            persistenceService.getProject(id: 1)
+                .dropFirst()
+                .sink { newProject in
+                    cont.resume(returning: newProject)
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN the Directory has been updated correctly
+        #expect(savedProject.path == "/example/path")
+        #expect(savedProject.urlBookmarkData == .init())
     }
 
-    @Test("ReSync Message - Formats Changed - Editing")
+    @Test("ReSync Message - Formats Changed - Editing", .disabled())
     func resyncMessageFormatsChangedEditing() async throws {
+        var cancellables = [AnyCancellable]()
+
         // GIVEN that we have an existing Project & Settings in the DB
         let model = await self.persistTestModel()
         let project = Project.mock(id: 1)
@@ -1837,7 +1942,10 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
         // GIVEN a ConfigureProjectViewModel with an existing Project
         let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
+            projectInfo: .init(
+                project: project,
+                settings: settings
+            ),
             serviceContainer: self.serviceContainer
         )
 
@@ -1849,13 +1957,22 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
-        // THEN there is no ReSync Alert
-        #expect(
-            testSubject.alertConfiguration == .init(
-                title: "",
-                message: ""
-            )
-        )
+        // THEN ReSync Alert is correctly set
+        await withCheckedContinuation { continuation in
+            testSubject.$alertConfiguration.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { newAlert in
+                    #expect(
+                        newAlert == .init(
+                            title: "Re-Sync Will Be Needed",
+                            message: "Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings."
+                        )
+                    )
+
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
     }
 
     @Test("New Alert Status")

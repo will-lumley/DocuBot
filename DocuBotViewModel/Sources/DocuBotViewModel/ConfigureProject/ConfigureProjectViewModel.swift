@@ -460,22 +460,6 @@ public extension ConfigureProjectViewModel {
     }
 
     func saveButtonSelected() async {
-        // Do we need to warn the user of a full-resync?
-        if self.resyncNeeded {
-            if let message = self.resyncMessage {
-                await MainActor.run {
-                    self.alertConfiguration = .init(
-                        title: L10n.ConfigureProject.Resync.title,
-                        message: message,
-                        primaryAction: .init(title: L10n.ConfigureProject.Resync.saveButton) {
-                            Task { await self.save() }
-                        }
-                    )
-                }
-                return
-            }
-        }
-
         await self.save()
     }
 
@@ -510,10 +494,6 @@ public extension ConfigureProjectViewModel {
 private extension ConfigureProjectViewModel {
 
     var resyncMessage: String? {
-        guard self.resyncNeeded == false else {
-            return nil
-        }
-
         if self.metricChanged {
             return L10n.ConfigureProject.Resync.Metric.message
         } else if self.embeddingModelChanged {
@@ -788,10 +768,30 @@ private extension ConfigureProjectViewModel {
         }
     }
 
-    func save() async {
+    func save(showResyncWarnings: Bool = true) async {
         do {
             // Ensure we have a valid form
             try self.checkFormValidation()
+
+            // Do we need to warn the user of a full-resync?
+            if self.resyncNeeded && showResyncWarnings {
+                if let message = self.resyncMessage {
+                    await MainActor.run {
+                        self.alertConfiguration = .init(
+                            title: L10n.ConfigureProject.Resync.title,
+                            message: message,
+                            primaryAction: .init(title: L10n.ConfigureProject.Resync.saveButton) {
+                                Task {
+                                    await self.save(
+                                        showResyncWarnings: false
+                                    )
+                                }
+                            }
+                        )
+                    }
+                    return
+                }
+            }
 
             // Insert the Project into the DB
             let project = try self.finalisedProject()

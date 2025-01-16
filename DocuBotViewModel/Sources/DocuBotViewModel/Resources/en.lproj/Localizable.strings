@@ -75,9 +75,9 @@
 
 "ConfigureProject.Resync.title" = "Re-Sync Will Be Needed";
 "ConfigureProject.Resync.Metric.message" = "Changing the similarity metric will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
-"ConfigureProject.Resync.Model.message" = "Changing the similarity model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
+"ConfigureProject.Resync.Model.message" = "Changing the embedding model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
 "ConfigureProject.Resync.Format.message" = "Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
-"ConfigureProject.Resync.Directory.message" = "Changing the directorywill require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
+"ConfigureProject.Resync.Directory.message" = "Changing the directory will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.";
 "ConfigureProject.Resync.saveButton" = "Save Settings";
 
 "ConfigureProject.GeneralSection.title" = "General";

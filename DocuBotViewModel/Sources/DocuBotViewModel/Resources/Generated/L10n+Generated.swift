@@ -235,8 +235,8 @@ internal enum L10n {
       /// Re-Sync Will Be Needed
       internal static let title = L10n.tr("Localizable", "ConfigureProject.Resync.title", fallback: "Re-Sync Will Be Needed")
       internal enum Directory {
-        /// Changing the directorywill require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
-        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Directory.message", fallback: "Changing the directorywill require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
+        /// Changing the directory will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
+        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Directory.message", fallback: "Changing the directory will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
       }
       internal enum Format {
         /// Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
@@ -247,8 +247,8 @@ internal enum L10n {
         internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Metric.message", fallback: "Changing the similarity metric will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
       }
       internal enum Model {
-        /// Changing the similarity model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
-        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Model.message", fallback: "Changing the similarity model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
+        /// Changing the embedding model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.
+        internal static let message = L10n.tr("Localizable", "ConfigureProject.Resync.Model.message", fallback: "Changing the embedding model will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.")
       }
     }
     internal enum SimilaritySection {

@@ -137,6 +137,20 @@ class GRDBService: PersistenceService {
         }
     }
 
+    func getProjectSettings(for project: Project) -> AnyPublisher<ProjectSettings, Never> {
+        return ValueObservation.tracking { db in
+            let request = ProjectSettingsRecord.filter(
+                Column("id") == project.id
+            )
+            return try ProjectSettingsRecord.fetchOne(db, request)
+        }
+        .publisher(in: self.dbQueue)
+        .replaceError(with: nil)
+        .compactMap { $0 }
+        .map(ProjectSettings.init)
+        .eraseToAnyPublisher()
+    }
+
     func update(settings: ProjectSettings) async throws -> ProjectSettings {
         return try await self.dbQueue.write { db in
             let record = ProjectSettingsRecord(model: settings)

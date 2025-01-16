@@ -42,10 +42,29 @@ struct AlertConfigurationTests {
         #expect(primaryActionSelected == true)
     }
 
-    @Test("ID Creation")
-    func idCreation() {
+    @Test("ID Creation with No Action")
+    func idCreationWithNoAction() {
         // GIVEN we have an AlertConfiguration
-        let testSubject = AlertConfiguration(title: "title", message: "message")
+        let testSubject = AlertConfiguration(
+            title: "title",
+            message: "message",
+            primaryAction: .init(
+                title: "this is an action",
+                onSelect: { }
+            )
+        )
+
+        // THEN the ID is set correctly
+        #expect(testSubject.id == "titlemessagethis is an action")
+    }
+
+    @Test("ID Creation with Action")
+    func idCreationWithAction() {
+        // GIVEN we have an AlertConfiguration
+        let testSubject = AlertConfiguration(
+            title: "title",
+            message: "message"
+        )
 
         // THEN the ID is set correctly
         #expect(testSubject.id == "titlemessage")
