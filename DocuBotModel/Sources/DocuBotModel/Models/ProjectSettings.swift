@@ -122,14 +122,8 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     /// The top P value for controlling token generation.
     public let topP: Double
 
-    /// The context length for the model.
-    public let contextLength: Int
-
     /// The temperature value for controlling randomness in token generation.
     public let temperature: Double
-
-    /// The batch size for processing.
-    public let batchSize: Int
 
     /// The stop sequence used to terminate text generation.
     public let stopSequence: String?
@@ -164,9 +158,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     ///   - seed: The random seed for reproducibility.
     ///   - topK: The top K value for token generation.
     ///   - topP: The top P value for token generation.
-    ///   - contextLength: The context length for the model.
     ///   - temperature: The randomness control value.
-    ///   - batchSize: The batch size for processing.
     ///   - stopSequence: The stop sequence for text generation (optional).
     ///   - maxTokenCount: The maximum token count for text generation.
     ///   - systemPrompt: The system prompt for model context.
@@ -184,9 +176,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         seed: Int,
         topK: Int,
         topP: Double,
-        contextLength: Int,
         temperature: Double,
-        batchSize: Int,
         stopSequence: String?,
         maxTokenCount: Int,
         systemPrompt: String,
@@ -204,9 +194,7 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         self.seed = seed
         self.topK = topK
         self.topP = topP
-        self.contextLength = contextLength
         self.temperature = temperature
-        self.batchSize = batchSize
         self.stopSequence = stopSequence
         self.maxTokenCount = maxTokenCount
         self.systemPrompt = systemPrompt
@@ -266,9 +254,7 @@ extension ProjectSettings: Equatable {
             lhs.seed == rhs.seed &&
             lhs.topK == rhs.topK &&
             lhs.topP == rhs.topP &&
-            lhs.contextLength == rhs.contextLength &&
             lhs.temperature == rhs.temperature &&
-            lhs.batchSize == rhs.batchSize &&
             lhs.stopSequence == rhs.stopSequence &&
             lhs.maxTokenCount == rhs.maxTokenCount &&
             lhs.systemPrompt == rhs.systemPrompt &&
@@ -294,9 +280,7 @@ extension ProjectSettings: Equatable {
             self.seed == rhs.seed &&
             self.topK == rhs.topK &&
             self.topP == rhs.topP &&
-            self.contextLength == rhs.contextLength &&
             self.temperature == rhs.temperature &&
-            self.batchSize == rhs.batchSize &&
             self.stopSequence == rhs.stopSequence &&
             self.maxTokenCount == rhs.maxTokenCount &&
             self.systemPrompt == rhs.systemPrompt &&

@@ -26,9 +26,7 @@ public extension ProjectSettings {
     ///   - seed: The seed value for random operations (default is `1024`).
     ///   - topK: The top-K parameter for the model (default is `40`).
     ///   - topP: The top-P parameter for the model (default is `0.2`).
-    ///   - contextLength: The context length for the model (default is `100`).
     ///   - temperature: The temperature parameter for the model (default is `0.2`).
-    ///   - batchSize: The batch size for processing (default is `1024`).
     ///   - stopSequence: An optional stop sequence for text generation (default is `nil`).
     ///   - maxTokenCount: The maximum token count (default is `1024`).
     ///   - systemPrompt: The system prompt for the bot (default is `"You are a good bot"`).
@@ -58,9 +56,7 @@ public extension ProjectSettings {
         seed: Int = 1024,
         topK: Int = 40,
         topP: Double = 0.2,
-        contextLength: Int = 100,
         temperature: Double = 0.2,
-        batchSize: Int = 1024,
         stopSequence: String? = nil,
         maxTokenCount: Int = 1024,
         systemPrompt: String = "You are a good bot",
@@ -79,9 +75,7 @@ public extension ProjectSettings {
             seed: seed,
             topK: topK,
             topP: topP,
-            contextLength: contextLength,
             temperature: temperature,
-            batchSize: batchSize,
             stopSequence: stopSequence,
             maxTokenCount: maxTokenCount,
             systemPrompt: systemPrompt,

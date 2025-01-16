@@ -275,8 +275,7 @@ struct InitialMigrationTests { // swiftlint:disable:this type_body_length
     }
 
     @Test("Project Settings Table Schema")
-    func projectSettingsTableSchema() throws { // swiftlint:disable:this function_body_length
-
+    func projectSettingsTableSchema() throws {
         // GIVEN we have not completed a migration for the Settings table
         try dbQueue.read { db in
             let tableExists = try db.tableExists("project-settings")
@@ -382,54 +381,40 @@ struct InitialMigrationTests { // swiftlint:disable:this type_body_length
             #expect(columns[11].defaultValueSQL == nil)
             #expect(columns[11].isNotNull == true)
 
-            // THEN there is a ContextLength column with the correct attributes
-            #expect(columns[12].type == "INTEGER")
+            // THEN there is a Temperature column with the correct attributes
+            #expect(columns[12].type == "DOUBLE")
             #expect(columns[12].primaryKeyIndex == 0)
-            #expect(columns[12].name == "contextLength")
+            #expect(columns[12].name == "temperature")
             #expect(columns[12].defaultValueSQL == nil)
             #expect(columns[12].isNotNull == true)
 
-            // THEN there is a Temperature column with the correct attributes
-            #expect(columns[13].type == "DOUBLE")
+            // THEN there is a StopSequence column with the correct attributes
+            #expect(columns[13].type == "TEXT")
             #expect(columns[13].primaryKeyIndex == 0)
-            #expect(columns[13].name == "temperature")
+            #expect(columns[13].name == "stopSequence")
             #expect(columns[13].defaultValueSQL == nil)
-            #expect(columns[13].isNotNull == true)
+            #expect(columns[13].isNotNull == false)
 
-            // THEN there is a BatchSize column with the correct attributes
+            // THEN there is a MaxTokenCount column with the correct attributes
             #expect(columns[14].type == "INTEGER")
             #expect(columns[14].primaryKeyIndex == 0)
-            #expect(columns[14].name == "batchSize")
+            #expect(columns[14].name == "maxTokenCount")
             #expect(columns[14].defaultValueSQL == nil)
             #expect(columns[14].isNotNull == true)
 
-            // THEN there is a StopSequence column with the correct attributes
-            #expect(columns[15].type == "TEXT")
-            #expect(columns[15].primaryKeyIndex == 0)
-            #expect(columns[15].name == "stopSequence")
-            #expect(columns[15].defaultValueSQL == nil)
-            #expect(columns[15].isNotNull == false)
-
-            // THEN there is a MaxTokenCount column with the correct attributes
-            #expect(columns[16].type == "INTEGER")
-            #expect(columns[16].primaryKeyIndex == 0)
-            #expect(columns[16].name == "maxTokenCount")
-            #expect(columns[16].defaultValueSQL == nil)
-            #expect(columns[16].isNotNull == true)
-
             // THEN there is a CreatedAt column with the correct attributes
-            #expect(columns[17].type == "DATETIME")
-            #expect(columns[17].primaryKeyIndex == 0)
-            #expect(columns[17].name == "createdAt")
-            #expect(columns[17].defaultValueSQL == nil)
-            #expect(columns[17].isNotNull == true)
+            #expect(columns[15].type == "DATETIME")
+            #expect(columns[15].primaryKeyIndex == 0)
+            #expect(columns[15].name == "createdAt")
+            #expect(columns[15].defaultValueSQL == nil)
+            #expect(columns[15].isNotNull == true)
 
             // THEN there is an UpdatedAt column with the correct attributes
-            #expect(columns[18].type == "DATETIME")
-            #expect(columns[18].primaryKeyIndex == 0)
-            #expect(columns[18].name == "updatedAt")
-            #expect(columns[18].defaultValueSQL == nil)
-            #expect(columns[18].isNotNull == true)
+            #expect(columns[16].type == "DATETIME")
+            #expect(columns[16].primaryKeyIndex == 0)
+            #expect(columns[16].name == "updatedAt")
+            #expect(columns[16].defaultValueSQL == nil)
+            #expect(columns[16].isNotNull == true)
         }
     }
 

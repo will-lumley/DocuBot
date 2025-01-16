@@ -38,9 +38,7 @@ struct ProjectSettingsBridgingTests {
         let seed = 12345
         let topK = 10
         let topP = 0.9
-        let contextLength = 512
         let temperature = 0.7
-        let batchSize = 16
         let stopSequence = "###"
         let maxTokenCount = 1024
         let systemPrompt = "Summarize the document."
@@ -60,9 +58,7 @@ struct ProjectSettingsBridgingTests {
             seed: seed,
             topK: topK,
             topP: topP,
-            contextLength: contextLength,
             temperature: temperature,
-            batchSize: batchSize,
             stopSequence: stopSequence,
             maxTokenCount: maxTokenCount,
             systemPrompt: systemPrompt,
@@ -85,9 +81,7 @@ struct ProjectSettingsBridgingTests {
         #expect(record.seed == model.seed)
         #expect(record.topK == model.topK)
         #expect(record.topP == model.topP)
-        #expect(record.contextLength == model.contextLength)
         #expect(record.temperature == model.temperature)
-        #expect(record.batchSize == model.batchSize)
         #expect(record.stopSequence == model.stopSequence)
         #expect(record.maxTokenCount == model.maxTokenCount)
         #expect(record.systemPrompt == model.systemPrompt)
@@ -109,9 +103,7 @@ struct ProjectSettingsBridgingTests {
         let seed = 12345
         let topK = 10
         let topP = 0.9
-        let contextLength = 512
         let temperature = 0.7
-        let batchSize = 16
         let stopSequence = "###"
         let maxTokenCount = 1024
         let systemPrompt = "Summarize the document."
@@ -131,9 +123,7 @@ struct ProjectSettingsBridgingTests {
             seed: seed,
             topK: topK,
             topP: topP,
-            contextLength: contextLength,
             temperature: temperature,
-            batchSize: batchSize,
             stopSequence: stopSequence,
             maxTokenCount: maxTokenCount,
             systemPrompt: systemPrompt,
@@ -156,9 +146,7 @@ struct ProjectSettingsBridgingTests {
         #expect(settings.seed == record.seed)
         #expect(settings.topK == record.topK)
         #expect(settings.topP == record.topP)
-        #expect(settings.contextLength == record.contextLength)
         #expect(settings.temperature == record.temperature)
-        #expect(settings.batchSize == record.batchSize)
         #expect(settings.stopSequence == record.stopSequence)
         #expect(settings.maxTokenCount == record.maxTokenCount)
         #expect(settings.systemPrompt == record.systemPrompt)
