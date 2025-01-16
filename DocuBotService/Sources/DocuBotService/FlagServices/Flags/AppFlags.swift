@@ -12,6 +12,9 @@ public struct AppFlags: FlagContainer {
 
     // MARK: - Flags
 
+    @FlagGroup(description: "Flags controlling the Persistence Service")
+    public var database: DatabaseFlags
+
     @FlagGroup(description: "Flags controlling which services will be leveraged")
     public var services: ServiceFlags
 

@@ -28,7 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - AppDelegate
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-
+        serviceContainer.logService.log(with: .info, "Starting application.")
     }
 
 }

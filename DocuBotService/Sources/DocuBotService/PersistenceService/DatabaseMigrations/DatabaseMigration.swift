@@ -13,6 +13,6 @@ protocol DatabaseMigration {
     typealias DatabaseMigrationAction = (Database) throws -> Void
 
     var identifier: String { get }
-    func perform(db: Database)
+    func perform(db: Database) throws
 
 }

@@ -5,9 +5,10 @@
 //  Created by William Lumley on 3/7/2024.
 //
 
+import DocuBotService
 import Foundation
 
-public class ChatViewModel: ObservableObject {
+public class ChatViewModel: DocuBotViewModel {
 
     // MARK: - Properties
 
@@ -15,8 +16,9 @@ public class ChatViewModel: ObservableObject {
 
     // MARK: - Lifecycle
 
-    public init(text: String) {
+    public init(text: String, serviceContainer: ServiceContainer) {
         self.text = text
+        super.init(serviceContainer: serviceContainer)
     }
     
 }
@@ -26,7 +28,7 @@ public class ChatViewModel: ObservableObject {
 public extension ChatViewModel {
 
     static var mock: ChatViewModel {
-        .init(text: "fii")
+        .init(text: "foo", serviceContainer: .mock)
     }
 
 }
