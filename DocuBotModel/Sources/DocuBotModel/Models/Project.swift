@@ -38,7 +38,12 @@ public struct Project: Hashable, Codable, Sendable {
     public var urlBookmarkData: Data
 
     /// The checksum of all the documentation tokens that exist within our projects path.
-    public var documentationChecksum: String?
+    public var documentationChecksum: String? {
+        didSet {
+            print("Setting Checksum: \(documentationChecksum)")
+            print()
+        }
+    }
 
     /// Indicative of if the documentation we've loaded into memory is different from the
     /// documentation that exists in the file structure.

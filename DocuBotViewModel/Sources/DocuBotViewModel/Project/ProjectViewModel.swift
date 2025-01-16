@@ -439,6 +439,12 @@ private extension ProjectViewModel {
                     for: project
                 )
 
+                // Pull out the documents
+                let existingDocuments = try await persistenceService.getDocuments(
+                    for: project
+                )
+                await MainActor.run { self.project.load(documents: existingDocuments) }
+
                 // Setup our DocumentBuilder
                 let documentBuilder = DocumentParser(
                     project: self.project,
@@ -470,7 +476,9 @@ private extension ProjectViewModel {
                 // Query the LLM with our prompt
                 // Filter out any nils
                 // Remove the "Question: " prefix
-                let exampleQuestions = await documents.shuffled().prefix(10)
+                let exampleQuestions = await documents
+                    .shuffled()
+                    .prefix(10)
                     .map(\.content)
                     .map { $0.trim(by: 150) }
                     .map { L10n.Project.LlmExampleQuestionPrompt.prompt($0) }

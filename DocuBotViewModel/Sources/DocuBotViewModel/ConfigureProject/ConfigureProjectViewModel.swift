@@ -549,7 +549,7 @@ private extension ConfigureProjectViewModel {
                 path: directory.path(),
                 name: self.projectName,
                 urlBookmarkData: bookmarkData,
-                documentationCheckSum: nil,
+                documentationCheckSum: project.documentationChecksum,
                 isDirty: changedDirectory,
                 exampleQuestions: project.exampleQuestions,
                 createdAt: project.createdAt,

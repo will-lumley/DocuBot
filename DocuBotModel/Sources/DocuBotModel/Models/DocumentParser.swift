@@ -115,16 +115,17 @@ public extension DocumentParser {
             throw DocumentError.bookmarkIsStale
         }
 
+        // Pull out our files from disk
         let files = try await self.extractFilesFromDisk(from: directory)
+
+        // Create documents out of them
         let documents = try await self.createDocuments(from: files)
 
+        // Compare the collection of documents' checksum against the current checksum
         let newChecksum = try documents.generateChecksum()
         guard let oldChecksum = self.project.documentationChecksum else {
             return false
         }
-
-        print("New Checksum: \(newChecksum)")
-        print("Old Checksum: \(oldChecksum)")
 
         return newChecksum != oldChecksum
     }
@@ -206,6 +207,32 @@ private extension DocumentParser {
 
         // Iterate over each document and index it
         for document in documents {
+            // Everytime we finish an iteration, update our progress
+            defer {
+                // Update our progress
+                current += 1
+
+                // Update our called on the sync progress
+                self.onSyncUpdate(current, total)
+            }
+
+            // If we have an existing document from this project
+            if let existingDocument = self.existingDocument(with: document.url) {
+                // If this existing document has existing indexing data
+                if existingDocument.embeddings != nil {
+                    // If this existing document is the same as the new one
+                    if existingDocument.checksum == document.checksum {
+                        // Then we don't need to re-index, let's skip this one
+                        indexed.append(existingDocument)
+
+                        let title = existingDocument.documentTitle
+                        // swiftlint:disable:next direct_print
+                        print("[DOCUBOT] [INFO] Skipping indexing for \(title)")
+
+                        continue
+                    }
+                }
+            }
 
             // Split the content into chunks
             let chunks = self.chunks(from: document.content)
@@ -229,16 +256,15 @@ private extension DocumentParser {
                 updatedAt: document.updatedAt
             )
             indexed.append(indexedDocument)
-
-            // Update our progress
-            current += 1
-
-            // Update our called on the sync progress
-            self.onSyncUpdate(current, total)
-
         }
 
         return indexed
+    }
+
+    func existingDocument(with url: URL) -> Document? {
+        return self.project.documents?.first(where: {
+            $0.url == url
+        })
     }
 
     func chunks(from content: String) -> [String] {

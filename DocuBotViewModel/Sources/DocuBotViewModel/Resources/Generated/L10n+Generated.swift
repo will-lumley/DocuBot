@@ -213,7 +213,8 @@ internal enum L10n {
     }
     internal enum SimilaritySection {
       /// These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.
-      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.SimilaritySection.subtitle", fallback: "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.")
+      /// Changing these will require a full resync of your project.
+      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.SimilaritySection.subtitle", fallback: "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.\nChanging these will require a full resync of your project.")
       /// Similarity Metric Configuration
       internal static let title = L10n.tr("Localizable", "ConfigureProject.SimilaritySection.title", fallback: "Similarity Metric Configuration")
     }
