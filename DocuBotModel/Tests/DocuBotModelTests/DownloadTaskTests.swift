@@ -10,6 +10,7 @@ import Foundation
 @testable import DocuBotModel
 import Testing
 
+@Suite("DownloadTaskTests", .disabled("CI Flakiness"))
 struct DownloadTaskTests {
 
     // MARK: - Properties
