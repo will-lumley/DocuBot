@@ -1817,6 +1817,16 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
             serviceContainer: self.serviceContainer
         )
 
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { _ in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
+
         // WHEN we change the embedding model
         testSubject.embeddingModel = .miniLmAll
 
@@ -1882,6 +1892,16 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
             ),
             serviceContainer: self.serviceContainer
         )
+
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { _ in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
 
         // WHEN we change the directory
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -1950,6 +1970,16 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
             ),
             serviceContainer: self.serviceContainer
         )
+
+        // We need to wait for the model to be loaded before proceeding
+        await withCheckedContinuation { continuation in
+            testSubject.$model.eraseToAnyPublisher()
+                .compactMap(\.self)
+                .sink { _ in
+                    continuation.resume()
+                }
+                .store(in: &cancellables)
+        }
 
         // WHEN we change the formats
         testSubject.formatConfigurations = [
