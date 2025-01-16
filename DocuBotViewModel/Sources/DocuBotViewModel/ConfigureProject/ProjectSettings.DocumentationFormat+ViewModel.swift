@@ -10,6 +10,9 @@ import Foundation
 
 public extension ProjectSettings.DocumentationFormat {
 
+    /// The localized name of the documentation format.
+    ///
+    /// - Returns: A string representing the name of the documentation format, localized for the current locale.
     var name: String {
         switch self {
         case .html:
@@ -25,6 +28,9 @@ public extension ProjectSettings.DocumentationFormat {
         }
     }
 
+    /// The custom string value associated with the `.other` format.
+    ///
+    /// - Returns: A string representing the custom format if `.other` is selected, or `nil` for other cases.
     var otherStr: String? {
         switch self {
         case .other(let value):

@@ -13,7 +13,7 @@
 /// - Note: This implementation is inspired by an article on
 /// [Swift by Sundell](https://www.swiftbysundell.com/articles/async-and-concurrent-forEach-and-map/).
 public extension Sequence {
-    
+
     /// Applies an asynchronous transformation to each element of the sequence.
     ///
     /// This method iterates through the sequence and applies the provided `transform` function

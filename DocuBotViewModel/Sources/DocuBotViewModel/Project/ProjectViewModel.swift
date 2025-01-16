@@ -13,95 +13,109 @@ import Foundation
 import SFSafeSymbols
 import SimilaritySearchKit
 
+/// A ViewModel for managing the lifecycle, interactions, and state of a project within the DocuBot application.
 public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
-    /// This is a struct that contains the information used to open this view
-    /// (ie. the `ProjectView`) itself.
+    /// A package containing information required to open the `ProjectView`.
     public struct OpenWindowPackage: Hashable, Codable {
-         public let project: Project
+        /// The project to be opened.
+        public let project: Project
     }
 
+    /// Represents the response status for a user query.
     public enum ResponseStatus: Hashable, Sendable {
+        /// No response has been initiated.
         case none
+        /// The system is processing the request.
         case loading
+        /// A response has been received.
         case response(response: String)
     }
 
+    /// Represents the synchronization stage of a project.
     public enum SyncStage: Hashable, Sendable {
+        /// Extracting documents from disk.
         case extractingDocumentsFromDisk
+        /// Training documents with progress tracking.
         case trainingDocuments(project: Project, progress: DocuBotToolbox.Progress)
+        /// Building example questions with progress tracking.
         case buildingExampleQuestions(project: Project, progress: DocuBotToolbox.Progress)
     }
 
     // MARK: - Properties
 
-    /// The text our user is asking
+    /// The text input by the user for querying.
     @Published public var chatText = ""
 
-    /// The content that will be shared when the user selects the ShareButton
+    /// The content to be shared when the user selects the Share button.
     @Published public var shareContent: String?
 
-    /// The text our LLM has responded back with
+    /// The response status of the query.
     @Published public var response = ResponseStatus.none
 
-    /// Indicative of if the user is expecting a response or waiting for a response
+    /// Indicates whether the system is waiting for a response.
     @Published public var expectingResponse = false
 
-    /// Controls the disablement of the TextField
+    /// Controls the enablement of the text field.
     @Published public var disableTextField = false
 
-    /// The project that we're focussing on within this ViewModel
+    /// The project currently being managed by this ViewModel.
     @Published private var project: Project
 
-    /// The syncing stage of our project
+    /// The current synchronization stage of the project.
     @Published public var syncStage: SyncStage?
 
-    /// The ViewModels that make up our example questions
+    /// The list of example questions as ViewModels.
     @Published public var questions = [ProjectQuestionViewModel]()
 
-    /// A flag that controls whether we're showing sources to the user or not
+    /// Indicates whether the sources view is displayed.
     @Published public var isShowingSources = false
 
-    /// The ViewModel that displays our Sources content to the user
+    /// The ViewModel managing the sources content.
     @Published public var sources: SourcesViewModel?
 
-    /// Our "settings" ViewModel for this project
+    /// The settings ViewModel for configuring the project.
     @Published public var configureProjectViewModel: ConfigureProjectViewModel?
 
-    /// This is used to create or close a generic `Alert`
+    /// Configuration for the alert displayed to the user.
     @Published public var alertConfiguration: AlertConfiguration?
 
-    /// The button for displaying the list of sources
+    /// Toolbar button for displaying the list of sources.
     @Published public var sourcesButton: ToolbarButtonViewModel
 
-    /// The button for syncing the project
+    /// Toolbar button for syncing the project.
     @Published public var syncProjectButton: ToolbarButtonViewModel
 
-    /// The button for the project settings
+    /// Toolbar button for accessing project settings.
     @Published public var projectSettingsButton: ToolbarButtonViewModel
 
-    /// The AlertStatus for the project that we're viewing
+    /// The alert status of the project being viewed.
     @Published public var alertStatus: Project.AlertStatus?
 
-    /// The title for our Ask/Cancel button
+    /// The title of the Ask/Cancel button.
     @Published public var askButtonTitle = L10n.Project.QueryButton.Ask.title
 
-    /// The icon for our Ask/Cancel button
+    /// The icon for the Ask/Cancel button.
     @Published public var askButtonIcon: SFSymbol = .playFill
 
-    /// The enabled/disabled state for our ShareButton
+    /// Indicates whether the Share button is disabled.
     @Published public var shareButtonDisabled = false
 
-    /// This fires when we need to request the UI level to request folder permissions
+    /// A publisher that triggers folder access requests.
     public let triggerFolderAccessRequest = PassthroughSubject<Void, Never>()
 
-    /// This is the query task that's currently being implemented
+    /// The task currently executing a query.
     private var currentTask: Task<(), Never>?
 
     // MARK: - Lifecycle
 
+    /// Initializes a new `ProjectViewModel`.
+    ///
+    /// - Parameters:
+    ///   - project: The project managed by this ViewModel.
+    ///   - serviceContainer: The service container providing shared services.
     public init(project: Project, serviceContainer: ServiceContainer) {
         self.project = project
 
@@ -138,6 +152,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         self.primeLlm()
     }
 
+    /// Configures bindings for the ViewModel.
     override public func configureBindings() {
         super.configureBindings()
 
@@ -265,22 +280,27 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
 public extension ProjectViewModel {
 
+    /// The title for the window displaying this project.
     var windowTitle: String {
         self.project.name
     }
 
+    /// The title for the query input section.
     var queryTitle: String {
         L10n.Project.queryTitle
     }
 
+    /// The placeholder text for the query text editor.
     var textEditorPlaceholder: String {
         L10n.Project.placeholder
     }
 
+    /// The title for the Share button.
     var shareButtonTitle: String {
         L10n.Project.ShareButton.title
     }
 
+    /// Handles the selection of the settings button.
     func openSettings() {
         Task {
             do {
@@ -313,10 +333,21 @@ public extension ProjectViewModel {
         }
     }
 
+    /// Handles the selection of an example question.
+    ///
+    /// - Parameter question: The example question selected by the user.
     func exampleQuestionSelected(_ question: String) {
         self.chatText = question
     }
 
+    /// Updates the project's directory and persists the changes.
+    ///
+    /// - Parameter directory: The URL of the new directory. If `nil`, an error is thrown.
+    ///
+    /// - Discussion:
+    /// This function sets the project's directory, updates the bookmark data for the directory,
+    /// and marks the project with a `directoryChanged` alert status. It then attempts to persist
+    /// the updated project configuration. If an error occurs, an alert is displayed to the user.
     func directorySelected(_ directory: URL?) {
         Task {
             do {
@@ -348,6 +379,12 @@ public extension ProjectViewModel {
         }
     }
 
+    /// Handles the selection of the Ask/Cancel button.
+    ///
+    /// - Discussion:
+    /// If the system is currently expecting a response (indicating a query is in progress), this
+    /// function cancels the ongoing task and stops the GPT service. Otherwise, it initiates the
+    /// query process by calling `parseQuestion()`.
     func askButtonSelected() {
         if self.expectingResponse {
             self.currentTask?.cancel()
@@ -366,6 +403,18 @@ public extension ProjectViewModel {
 
 private extension ProjectViewModel {
 
+    /// Parses the user query and generates a response using the configured LLM and relevant project documents.
+    ///
+    /// - Discussion:
+    /// This function retrieves the most relevant project documents based on the user's query.
+    /// It formats the query with the document data and sends it to the LLM for processing.
+    /// The response is then updated in the ViewModel.
+    ///
+    /// - Workflow:
+    /// 1. Fetch relevant documents and their metadata.
+    /// 2. Format the query based on the project's settings.
+    /// 3. Process the query using the LLM.
+    /// 4. Handle and display the response or update alerts on errors.
     func parseQuestion() {
         self.response = .loading
         self.expectingResponse = true
@@ -489,6 +538,18 @@ private extension ProjectViewModel {
         }
     }
 
+    /// Checks if the project's state has been modified and updates the project's alert status.
+    ///
+    /// - Discussion:
+    /// This function compares the project's current state with its stored state to determine if changes have
+    /// occurred (e.g., changes in documents or settings). If the project is "dirty," it updates the alert status
+    /// to warn the user.
+    ///
+    /// - Workflow:
+    /// 1. Fetch the project's settings.
+    /// 2. Use `DocumentParser` to compare the current state with stored data.
+    /// 3. Update the alert status if discrepancies are found.
+    /// 4. Persist the updated project state.
     func checkIfProjectIsDirty() {
         Task {
             do {
@@ -530,6 +591,16 @@ private extension ProjectViewModel {
         }
     }
 
+    /// Configures the LLM with the project's settings and associated model.
+    ///
+    /// - Discussion:
+    /// This function prepares the LLM by providing it with the necessary configurations and models for
+    /// processing user queries.
+    ///
+    /// - Workflow:
+    /// 1. Retrieve the project's settings and model.
+    /// 2. Configure the LLM with the retrieved data.
+    /// 3. Handle any errors that occur during the priming process by displaying alerts.
     func primeLlm() {
         Task {
             do {
@@ -554,6 +625,17 @@ private extension ProjectViewModel {
         }
     }
 
+    /// Synchronizes the project by extracting documents, training them, and building example questions.
+    ///
+    /// - Discussion:
+    /// This function manages the synchronization process, which involves parsing documents from the
+    /// project directory, analyzing them, and updating the project state with example questions.
+    ///
+    /// - Workflow:
+    /// 1. Fetch project settings and existing documents.
+    /// 2. Parse documents using `DocumentParser`.
+    /// 3. Generate example questions.
+    /// 4. Update and persist the project's state.
     func sync() {
         self.syncStage = .extractingDocumentsFromDisk
 
@@ -643,10 +725,17 @@ private extension ProjectViewModel {
         }
     }
 
+    /// Persists the current state of the project to the database.
+    ///
+    /// - Throws: An error if the persistence process fails.
     func persistProject() async throws {
         _ = try await persistenceService.update(project: self.project)
     }
 
+    /// Persists the given documents to the database after deleting existing ones.
+    ///
+    /// - Parameter documents: The list of documents to be persisted.
+    /// - Throws: An error if the persistence process fails.
     func persist(documents: [Document]) async throws {
         // Delete all the pre-existing documents
         let toBeDeleted = try await persistenceService.getDocuments(
@@ -661,6 +750,11 @@ private extension ProjectViewModel {
         }
     }
 
+    /// Retrieves the project's current state, optionally including its associated documents.
+    ///
+    /// - Parameter fetchDocuments: A flag indicating whether to fetch associated documents.
+    /// - Returns: The project's current state.
+    /// - Throws: An error if the project retrieval process fails.
     func getProject(fetchDocuments: Bool) async throws -> Project {
         // Fetch the project
         let projectID = try self.project.id.orThrow(Project.ProjectError.missingID)
@@ -678,12 +772,21 @@ private extension ProjectViewModel {
         return project
     }
 
+    /// Retrieves the project's settings from the database.
+    ///
+    /// - Returns: The project's settings.
+    /// - Throws: An error if the settings retrieval process fails.
     func getProjectSettings() async throws -> ProjectSettings {
         return try await persistenceService.getProjectSettings(
             for: self.project
         )
     }
 
+    /// Searches for the most relevant documents for the given query.
+    ///
+    /// - Parameter message: The user's query string.
+    /// - Returns: A list of relevant documents with similarity scores.
+    /// - Throws: An error if the document retrieval process fails.
     func fetchRelevantDocumentation(
         with message: String
     ) async throws -> [SimilarityIndex.SearchResult] {
@@ -699,11 +802,24 @@ private extension ProjectViewModel {
         return results
     }
 
+    /// Formats a query string with the content of relevant documents.
+    ///
+    /// - Parameters:
+    ///   - documents: The list of document content to include in the query.
+    ///   - query: The user's query string.
+    /// - Returns: A formatted query string.
     func createQuery(with documents: [String], for query: String) -> String {
         let sources = documents.joined(separator: "\n\n")
         return L10n.Project.LlmQueryPrompt.template(sources, query)
     }
 
+    /// Generates example questions based on the project's documents.
+    ///
+    /// - Parameters:
+    ///   - documents: The list of documents to use for generating questions.
+    ///   - settings: The project's settings.
+    /// - Returns: A list of example questions.
+    /// - Throws: An error if the question generation process fails.
     func buildExampleQuestions(
         from documents: [Document],
         with settings: ProjectSettings
@@ -775,6 +891,10 @@ private extension ProjectViewModel {
 
 private extension ToolbarButtonViewModel.WarningState {
 
+    /// Initializes a `ToolbarButtonViewModel.WarningState` based on a project's alert status.
+    ///
+    /// - Parameter alertStatus: The current alert status of the project, indicating whether there is
+    /// no alert (`none`), a warning, or an error.
     init(alertStatus: Project.AlertStatus) {
         switch alertStatus {
         case .none:
@@ -792,6 +912,9 @@ private extension ToolbarButtonViewModel.WarningState {
 
 public extension ProjectViewModel.SyncStage {
 
+    /// The title representing the current synchronization stage.
+    ///
+    /// - Returns: A localized string representing the synchronization stage title.
     var title: String {
         switch self {
         case .extractingDocumentsFromDisk:
@@ -803,6 +926,9 @@ public extension ProjectViewModel.SyncStage {
         }
     }
 
+    /// The subtitle providing additional context about the synchronization stage.
+    ///
+    /// - Returns: A localized string with progress details or additional context.
     var subtitle: String {
         switch self {
         case .extractingDocumentsFromDisk:
@@ -820,6 +946,10 @@ public extension ProjectViewModel.SyncStage {
         }
     }
 
+    /// The progress of the current synchronization stage, if applicable.
+    ///
+    /// - Returns: A `Progress` object tracking the progress of the stage,
+    /// or `nil` if progress tracking is not applicable.
     var progress: DocuBotToolbox.Progress? {
         switch self {
         case .extractingDocumentsFromDisk:
@@ -837,6 +967,9 @@ public extension ProjectViewModel.SyncStage {
 
 extension ProjectViewModel: SourceCellModelDelegate {
 
+    /// Determines whether similarity scores should be displayed for source documents.
+    ///
+    /// - Returns: `true` if similarity scores should be shown; otherwise, `false`.
     public func shouldShowScore() -> Bool {
         return preferenceStoreService.displaySimilarityScoring
     }

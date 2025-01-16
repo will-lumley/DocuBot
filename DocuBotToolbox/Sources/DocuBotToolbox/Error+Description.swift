@@ -9,7 +9,7 @@ import Foundation
 
 /// An extension on `Error` to provide a custom description of the error.
 public extension Error {
-    
+
     /// A string representation of the error.
     ///
     /// This property prioritises a more detailed, human-readable description of the error:

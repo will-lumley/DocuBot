@@ -5,10 +5,21 @@
 //  Created by William Lumley on 12/11/2024.
 //
 
+/// Extends `HelpConfiguration` to support initialization from specific settings help types.
 extension HelpConfiguration {
 
+    /// A shorthand for accessing localized strings specific to settings help.
     private typealias Strings = L10n.Settings.Help
 
+    /// Initializes a `HelpConfiguration` based on a settings help type.
+    ///
+    /// - Parameters:
+    ///   - type: The type of help content to display, as defined in `SettingsViewModel.HelpType`.
+    ///   - onDismiss: A closure to execute when the help view is dismissed.
+    ///
+    /// - Discussion:
+    ///   This initializer maps the `HelpType` to its corresponding title and content, enabling
+    ///   dynamic creation of `HelpConfiguration` instances for different settings.
     init(
         type: SettingsViewModel.HelpType,
         onDismiss: @escaping HelpConfiguration.OnDismiss

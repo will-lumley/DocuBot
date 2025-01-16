@@ -9,6 +9,9 @@ public extension ConfigureProjectViewModel.FormValidationError {
 
     internal typealias Strings = L10n.Error.ConfigureProject.FormValidation
 
+    /// A localized description of the form validation error.
+    ///
+    /// - Returns: A string describing the specific form validation error, localized for the current locale.
     var errorDescription: String? {
         switch self {
         case .missingModel:

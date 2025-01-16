@@ -28,7 +28,16 @@ struct MenuButton: View {
 
 }
 
+// MARK: - Preview
+
 #Preview {
-    IconButton(viewModel: .mock )
-        .frame(width: 100, height: 100)
+    MenuButton(viewModel: .mock)
+}
+
+private extension MenuButtonViewModel {
+
+    static var mock: MenuButtonViewModel {
+        .init(text: "Hello, World!") { }
+    }
+
 }

@@ -43,7 +43,17 @@ struct IconButton: View {
 
 }
 
+// MARK: - Preview
+
 #Preview {
     IconButton(viewModel: .mock)
         .frame(width: 100, height: 100)
+}
+
+private extension IconButtonViewModel {
+
+    static var mock: IconButtonViewModel {
+        .init(symbol: .gear) { }
+    }
+
 }

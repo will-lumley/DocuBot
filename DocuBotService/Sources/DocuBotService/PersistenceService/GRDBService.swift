@@ -10,29 +10,49 @@ import DocuBotModel
 import Foundation
 import GRDB
 
-class GRDBService: PersistenceService {
+/// A concrete implementation of `PersistenceService` that uses GRDB for database operations.
+///
+/// The `GRDBService` provides asynchronous and publisher-based methods to manage and interact with
+/// persistent storage for projects, project settings, documents, and machine learning models.
+final class GRDBService: PersistenceService {
 
     // MARK: - Service
 
+    /// The unique key identifying the persistence service.
+    ///
+    /// This property registers the service under the `.persistenceStore` key.
     static var key: ServiceKey {
         .persistenceStore
     }
 
     // MARK: - Properties
 
+    /// The database queue for executing database operations.
     private let dbQueue: DatabaseQueue
+
+    /// The service container for accessing other registered services.
     private let serviceContainer: ServiceContainer
 
+    /// The flag service used to retrieve application-specific flags.
     private var flagService: FlagService {
         self.serviceContainer.flagService
     }
 
+    /// The log service used to log information and debug messages.
     private var logService: LogService {
         self.serviceContainer.logService
     }
 
     // MARK: - PersistenceService
 
+    /// Initializes a new instance of `GRDBService`.
+    ///
+    /// This initializer creates a database queue, either in memory or at a specified file path,
+    /// and runs necessary database migrations.
+    ///
+    /// - Parameters:
+    ///   - inMemory: A Boolean value indicating whether the database should be in-memory.
+    ///   - serviceContainer: The service container providing dependencies for the service.
     init(inMemory: Bool, serviceContainer: ServiceContainer) {
         self.serviceContainer = serviceContainer
 
@@ -276,16 +296,22 @@ class GRDBService: PersistenceService {
 
 private extension GRDBService {
 
+    /// The path to the documents directory for storing the database file.
     static var documentsDirectory: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 
+    /// The full path to the SQLite database file.
     static var databasePath: String {
         documentsDirectory
             .appendingPathComponent("database.sqlite")
             .path()
     }
 
+    /// Runs database migrations.
+    ///
+    /// This method registers and executes migrations based on the current schema and application flags.
+    /// If schema changes are detected and the corresponding flag is set, the database is erased and recreated.
     func runMigrations() {
         self.logService.log(with: .info, "DatabasePath: \(GRDBService.databasePath)")
 

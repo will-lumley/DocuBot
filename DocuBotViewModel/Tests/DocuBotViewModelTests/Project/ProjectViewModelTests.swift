@@ -1088,11 +1088,6 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
     }
 
-    @Test("Ask Question - Stop")
-    func askQuestionStop() async throws {
-
-    }
-
 }
 
 // MARK: - Private
@@ -1264,6 +1259,23 @@ private extension ProjectViewModel.SyncStage {
         return true
     }
 
+}
+
+// MARK: - GPTError.CaseIterable
+
+extension GPTError: @retroactive CaseIterable {
+
+    /// Provides a list of all possible `GPTError` cases.
+    ///
+    /// This is primarily useful for testing and enumerating all error types.
+    public static var allCases: [GPTError] {
+        [
+            .noModel(modelName: "Test Model"),
+            .failedToCreateLLMDecodingError,
+            .failedToCreateLLM(reason: "Test Reason"),
+            .llmNotInitialised
+        ]
+    }
 }
 
 // MARK: - Project.AlertStatus.CaseIterable

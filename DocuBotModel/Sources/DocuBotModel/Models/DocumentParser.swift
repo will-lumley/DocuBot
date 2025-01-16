@@ -10,36 +10,67 @@ import Foundation
 import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
 
+/// A class responsible for parsing and managing project documents.
+///
+/// The `DocumentParser` class provides functionality to securely access, parse, and index
+/// documents within a project. It also supports validation and checksum-based synchronization
+/// to track changes in the document set.
 public class DocumentParser {
 
     // MARK: - Types
 
+    /// Errors that may occur during document parsing.
     public enum DocumentError: LocalizedError {
+        /// Indicates that no bookmark data is available for the project.
         case noBookmarkData
+
+        /// Indicates that the bookmark data is stale and cannot be used.
         case bookmarkIsStale
     }
 
+    /// A structure representing the result of a document synchronization operation.
     public struct DocumentSyncReponse: Sendable {
+        /// The checksum of the synchronized documents.
         public let checksum: String
+
+        /// The array of synchronized documents.
         public let documents: [Document]
     }
 
+    /// A typealias for a closure that updates progress during synchronization.
+    ///
+    /// - Parameters:
+    ///   - progress: The current progress count.
+    ///   - total: The total number of steps to complete synchronization.
     public typealias OnSyncUpdate = (_ progress: Int, _ total: Int) -> Void
 
     // MARK: - Properties
 
+    /// The project whose documents are being parsed.
     private let project: Project
+
+    /// The settings for the project, defining how documents are processed.
     private let settings: ProjectSettings
+
+    /// A closure that is called to update synchronization progress.
     private let onSyncUpdate: OnSyncUpdate
 
+    /// A token splitter used for dividing content into chunks.
     private let tokenSplitter = CharacterSplitter(withSeparator: " ")
 
+    /// The list of formats supported by the project settings.
     private var formats: [ProjectSettings.DocumentationFormat] {
         self.settings.supportedFormats
     }
 
     // MARK: - Lifecycle
 
+    /// Creates a new `DocumentParser` instance.
+    ///
+    /// - Parameters:
+    ///   - project: The project whose documents are to be parsed.
+    ///   - settings: The settings for parsing and indexing the documents.
+    ///   - onSyncUpdate: A closure to handle synchronization progress updates.
     public init(
         project: Project,
         settings: ProjectSettings,
@@ -56,6 +87,13 @@ public class DocumentParser {
 
 public extension DocumentParser {
 
+    /// Parses and synchronizes documents for the project.
+    ///
+    /// This method resolves the project's bookmark data to access the document directory,
+    /// extracts files, creates document representations, and indexes them.
+    ///
+    /// - Returns: A `DocumentSyncReponse` containing the checksum and parsed documents.
+    /// - Throws: `DocumentError` if bookmark data is unavailable or stale.
     func createAndParse() async throws -> DocumentSyncReponse {
         // Pull out our URL Bookmark Data so we can access this data securely
         let urlBookmarkData = self.project.urlBookmarkData
@@ -95,6 +133,13 @@ public extension DocumentParser {
         return .init(checksum: checksum, documents: documents)
     }
 
+    /// Checks if the project's documents are "dirty," indicating changes since the last sync.
+    ///
+    /// This method calculates the checksum of the current documents and compares it
+    /// against the previously stored checksum.
+    ///
+    /// - Returns: `true` if the documents are dirty, otherwise `false`.
+    /// - Throws: `DocumentError` if bookmark data is unavailable or stale.
     func checkProjectIsDirty() async throws -> Bool {
         // Pull out our URL Bookmark Data so we can access this data securely
         let urlBookmarkData = self.project.urlBookmarkData
@@ -139,6 +184,14 @@ public extension DocumentParser {
 
 internal extension DocumentParser {
 
+    /// Extracts files from the specified directory.
+    ///
+    /// This method enumerates all files in the directory and filters them based on valid
+    /// documentation formats.
+    ///
+    /// - Parameter directory: The directory to extract files from.
+    /// - Returns: An array of valid file URLs.
+    /// - Throws: Errors related to file access or enumeration.
     func extractFilesFromDisk(from directory: URL) async throws -> [URL] {
         var files = [URL]()
 
@@ -161,6 +214,11 @@ internal extension DocumentParser {
         return files
     }
 
+    /// Creates `Document` instances from an array of file URLs.
+    ///
+    /// - Parameter files: The array of file URLs.
+    /// - Returns: An array of `Document` objects.
+    /// - Throws: `Document.ChecksumGenerationError` if checksum generation fails.
     func createDocuments(from files: [URL]) async throws -> [Document] {
         // This is going to hold the documents that represent the files
         // in our directory.
@@ -194,6 +252,14 @@ internal extension DocumentParser {
         return documents
     }
 
+    /// Indexes the given documents by calculating embeddings.
+    ///
+    /// This method splits document content into chunks and calculates embeddings
+    /// using the project's embedding model and similarity metric.
+    ///
+    /// - Parameter documents: The documents to index.
+    /// - Returns: An array of indexed `Document` objects.
+    /// - Throws: Errors during embedding calculation.
     func index(documents: [Document]) async throws -> [Document] {
         // For tracking our progress
         var current = 0
@@ -267,12 +333,27 @@ internal extension DocumentParser {
         return indexed
     }
 
+    /// Finds an existing document in the project with the specified URL.
+    ///
+    /// This method searches the project's loaded documents to determine if a document
+    /// with the given URL already exists.
+    ///
+    /// - Parameter url: The URL of the document to search for.
+    /// - Returns: The `Document` object with the matching URL, or `nil` if no such document exists.
     func existingDocument(with url: URL) -> Document? {
         return self.project.documents?.first(where: {
             $0.url == url
         })
     }
 
+    /// Splits the given content into overlapping chunks for processing.
+    ///
+    /// This method divides the input text into chunks of a specified size with an overlap
+    /// to ensure continuity across chunk boundaries. It uses a token splitter to perform
+    /// the chunking process.
+    ///
+    /// - Parameter content: The input text to be split into chunks.
+    /// - Returns: An array of string chunks derived from the input text.
     func chunks(from content: String) -> [String] {
         let chunkSize = 100
         let chunkOverlap = 20
@@ -283,18 +364,13 @@ internal extension DocumentParser {
             overlapSize: chunkOverlap
         )
 
-        // print("Chunks: \(chunks)")
-        // print("Tokens: \(tokens)")
-
         return chunks
     }
 
-    /// Retrieves the documentation file format from the provided URL based on its file extension.
+    /// Retrieves the documentation file format from the file URL's extension.
     ///
-    /// - Parameter url: The URL of the file to extract the extension from.
-    /// - Returns: The documentation format based on the file extension, or `nil` if
-    /// the extension is invalid.
-    ///
+    /// - Parameter url: The URL of the file.
+    /// - Returns: The `DocumentationFormat` of the file.
     func fileExtension(from url: URL) -> ProjectSettings.DocumentationFormat {
         let rawFileExtension = url.pathExtension
         return ProjectSettings.DocumentationFormat(rawValue: rawFileExtension)
@@ -307,7 +383,6 @@ internal extension DocumentParser {
     ///
     /// - Parameter url: The URL of the file to validate.
     /// - Returns: A Boolean value indicating whether the file is in a valid documentation format.
-    ///
     func validDocumentation(at url: URL) -> Bool {
         let fileExtension = self.fileExtension(from: url)
 
@@ -327,7 +402,6 @@ internal extension DocumentParser {
     ///
     /// - Parameter url: The URL of the directory to search through.
     /// - Returns: The number of valid documentation files found in the directory.
-    ///
     func documentationCount(at url: URL) -> Int {
         let enumerator = FileManager.default.enumerator(
             at: url,
@@ -353,6 +427,7 @@ internal extension DocumentParser {
 
 extension DocumentParser.DocumentError {
 
+    /// A localized description of the document parser error.
     public var errorDescription: String? {
         switch self {
         case .noBookmarkData:

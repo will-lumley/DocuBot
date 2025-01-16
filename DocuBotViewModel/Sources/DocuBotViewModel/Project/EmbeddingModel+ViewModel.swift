@@ -9,6 +9,9 @@ import DocuBotModel
 
 public extension ProjectSettings.EmbeddingModel {
 
+    /// A human-readable title for the embedding model.
+    ///
+    /// - Returns: A localized string representing the title of the embedding model.
     var title: String {
         switch self {
         case .distilbert:

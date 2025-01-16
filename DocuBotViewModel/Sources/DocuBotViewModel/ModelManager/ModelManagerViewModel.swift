@@ -13,27 +13,57 @@ import DocuBotToolbox
 import Foundation
 import UniformTypeIdentifiers
 
+/// A ViewModel for managing LLM models within the DocuBot application.
+///
+/// - Discussion:
+/// This ViewModel handles operations such as importing, deleting, downloading, and displaying models.
+/// It maintains state information and progress tracking for these operations.
 public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Types
 
+    /// Errors related to model management.
     public enum ModelError: LocalizedError {
+
+        /// No directory was provided or found.
         case noDirectory
+
+        /// Failed to delete the model.
         case failedToDelete
     }
 
+    /// Errors that can occur during the model download process.
     public enum ModelDownloadError: LocalizedError {
+
+        /// No application support directory was found.
         case noAppSupportDirectory
+
+        /// The download file is missing.
         case missingDownloadFile
+
+        /// Failed to create the required subdirectory.
         case failedToCreateSubdirectory
+
+        /// Failed to move the downloaded file to the application support directory.
         case failedToMoveToAppSupport
+
+        /// Unable to retrieve the file size of the downloaded model.
         case failedToGetFileSize
     }
 
+    /// Represents the state of the model list view.
     public enum ListViewState: Sendable, Equatable {
+
+        /// The list view has no state.
         case none
+
+        /// The list is empty and shows a specific configuration.
         case noModels(EmptyListConfiguration)
+
+        /// The list contains models.
         case models([ModelCellModel])
+
+        /// A model is being downloaded, showing progress.
         case downloading(Progress)
     }
 
@@ -63,6 +93,7 @@ public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
 
     // MARK: - Lifecycle
 
+    /// Configures reactive bindings for the `ModelManagerViewModel`.
     override public func configureBindings() {
         super.configureBindings()
 
@@ -100,6 +131,7 @@ public class ModelManagerViewModel: DocuBotViewModel, @unchecked Sendable {
 
 public extension ModelManagerViewModel {
 
+    /// A dialog configuration for confirming model deletion.
     var deleteModelConfirmationDialog: ConfirmationDialogConfiguration {
         .init(
             title: L10n.ModelManager.Delete.Confirmation.title,
@@ -128,6 +160,11 @@ public extension ModelManagerViewModel {
         L10n.ModelManager.windowTitle
     }
 
+    /// Handles the selection of a file to be imported as a model.
+    ///
+    /// - Parameter file: The URL of the selected file, or `nil` if no file was selected.
+    ///
+    /// - Throws: `ModelError.noDirectory` if no directory was provided.
     func fileSelected(_ file: URL?) async {
         do {
             guard let file else {
@@ -142,6 +179,7 @@ public extension ModelManagerViewModel {
         }
     }
 
+    /// Handles the "minus" button selection, prompting the deletion of the currently selected model.
     func minusButtonSelected() {
         guard let selectedModel = self.selectedModel else {
             return
@@ -150,6 +188,7 @@ public extension ModelManagerViewModel {
         self.promptDeletion(of: selectedModel.model)
     }
 
+    /// Opens a web page to allow users to download additional models.
     func downloadMoreButtonSelected() {
         let urlStr = "https://huggingface.co/models?search=GGUF"
         guard let url = URL(string: urlStr) else {
@@ -159,11 +198,19 @@ public extension ModelManagerViewModel {
         NSWorkspace.shared.open(url)
     }
 
+    /// Generates a title string for a given download progress.
+    ///
+    /// - Parameter progress: The progress of the download.
+    /// - Returns: A string representing the percentage completed.
     func progressTitle(for progress: Progress) -> String {
         let percentage = String(format: "%.2f", progress.percentage)
         return L10n.ModelManager.DownloadProgress.title(percentage)
     }
 
+    /// Generates a subtitle string for a given download progress.
+    ///
+    /// - Parameter progress: The progress of the download.
+    /// - Returns: A string showing the downloaded and total sizes in gigabytes.
     func progressSubtitle(for progress: Progress) -> String {
         return L10n.ModelManager.DownloadProgress.subtitle(
             Self.formatBytesToGB(progress.value),
@@ -171,6 +218,10 @@ public extension ModelManagerViewModel {
         )
     }
 
+    /// Formats a byte value into gigabytes (GB).
+    ///
+    /// - Parameter bytes: The size in bytes.
+    /// - Returns: A formatted string representing the size in gigabytes.
     static func formatBytesToGB(_ bytes: Double) -> String {
         let gbValue = bytes / (1024 * 1024 * 1024)
         return String(format: "%.2f", gbValue)
@@ -182,6 +233,15 @@ public extension ModelManagerViewModel {
 
 private extension ModelManagerViewModel {
 
+    /// The default URL for downloading the language model.
+    ///
+    /// - Returns: A `URL` object representing the default download location.
+    /// - Discussion:
+    /// This property retrieves the default model download URL from the application's secrets configuration.
+    /// If the URL string is invalid, the application terminates with a fatal error.
+    ///
+    /// - Note:
+    /// Ensure that `Secrets.ModelDownloads.defaultModel` is correctly configured and contains a valid URL string.
     var defaultDownloadURL: URL {
         let downloadStr = Secrets.ModelDownloads.defaultModel
         guard let downloadURL = URL(string: downloadStr) else {
@@ -191,6 +251,19 @@ private extension ModelManagerViewModel {
         return downloadURL
     }
 
+    /// The configuration for an empty model list view.
+    ///
+    /// - Returns: An `EmptyListConfiguration` object used when no models are available.
+    /// - Discussion:
+    /// This property defines the title, subtitle, and action for the empty model list view.
+    /// The action allows the user to download the default model by triggering
+    /// the `downloadDefaultModel()` method.
+    ///
+    /// - Components:
+    ///   - Title: A localized string indicating the absence of models.
+    ///   - Subtitle: A localized string providing additional context.
+    ///   - Icon: An arrow-down document icon representing the "download" action.
+    ///   - Action: A button to download the default model.
     var emptyListConfiguration: EmptyListConfiguration {
         .init(
             title: L10n.ModelManager.EmptyList.title,
@@ -206,6 +279,12 @@ private extension ModelManagerViewModel {
         )
     }
 
+    /// Downloads the default language model and persists it in the database.
+    ///
+    /// - Discussion:
+    /// This method retrieves the default model from a predefined URL and saves it
+    /// in the application's "Models" directory. It also updates the list state and
+    /// alerts the user in case of errors.
     func downloadDefaultModel() {
         Task {
             do {
@@ -264,6 +343,11 @@ private extension ModelManagerViewModel {
         }
     }
 
+    /// Imports a model file into the application's models directory.
+    ///
+    /// - Parameter sourceURL: The URL of the model file to be imported.
+    ///
+    /// - Throws: An error if the import fails, including file system or persistence issues.
     func importModel(from sourceURL: URL) async {
         do {
             // Get the destination directory for models
@@ -305,6 +389,9 @@ private extension ModelManagerViewModel {
         }
     }
 
+    /// Prompts the user to confirm deletion of a model.
+    ///
+    /// - Parameter model: The model to be deleted.
     func promptDeletion(of model: LLMModel) {
         self.deleteModelConfirmationPresented = true
         self.deleteModelAction = {
@@ -312,6 +399,10 @@ private extension ModelManagerViewModel {
         }
     }
 
+    /// Deletes a model from the database and optionally from disk.
+    ///
+    /// - Parameter model: The model to be deleted.
+    /// - Throws: `ModelError.failedToDelete` if the deletion fails.
     func delete(model: LLMModel) async {
         do {
             let success = try await persistenceService.delete(
@@ -329,6 +420,10 @@ private extension ModelManagerViewModel {
         }
     }
 
+    /// Retrieves the directory for storing language models.
+    ///
+    /// - Returns: The URL of the models directory.
+    /// - Throws: `ModelDownloadError` if the directory cannot be accessed or created.
     func getModelsDirectory() throws(ModelDownloadError) -> URL {
         // Firstly, we want to move our model from our temp URL
         // to our AppSupport directory
@@ -367,6 +462,10 @@ private extension URL {
 
     typealias ModelDownloadError = ModelManagerViewModel.ModelDownloadError
 
+    /// Retrieves the file size for the current URL.
+    ///
+    /// - Returns: The file size in bytes.
+    /// - Throws: `ModelDownloadError.failedToGetFileSize` if the file size cannot be determined.
     var fileSize: Int {
         get throws(ModelDownloadError) {
             do {
@@ -389,6 +488,7 @@ private extension URL {
 
 public extension ModelManagerViewModel.ModelError {
 
+    /// Provides a localized error description for `ModelError`.
     var errorDescription: String? {
         switch self {
         case .noDirectory:
@@ -406,6 +506,7 @@ public extension ModelManagerViewModel.ModelDownloadError {
 
     internal typealias Strings = L10n.Error.ModelManager.ModelDownloadError
 
+    /// Provides a localized error description for `ModelDownloadError`.
     var errorDescription: String? {
         switch self {
         case .missingDownloadFile:

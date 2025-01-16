@@ -151,3 +151,11 @@ public struct SettingsView: View {
 #Preview {
     SettingsView(viewModel: .mock)
 }
+
+private extension SettingsViewModel {
+
+    static var mock: SettingsViewModel {
+        .init(serviceContainer: .mock)
+    }
+
+}

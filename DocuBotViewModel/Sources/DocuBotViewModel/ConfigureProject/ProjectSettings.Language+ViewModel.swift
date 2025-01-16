@@ -10,6 +10,9 @@ import Foundation
 
 public extension ProjectSettings.Language {
 
+    /// The localized name of the language.
+    ///
+    /// - Returns: A string representing the language name, localized for the current locale.
     var name: String {
         switch self {
         case .english:

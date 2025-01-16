@@ -47,3 +47,13 @@ public struct WelcomeProjectCellView: View {
 #Preview {
     WelcomeProjectCellView(viewModel: .mock)
 }
+
+private extension WelcomeProjectCellModel {
+
+    static var mock: WelcomeProjectCellModel {
+        .init(
+            project: .mock()
+        )
+    }
+
+}

@@ -9,23 +9,37 @@ import Combine
 import Foundation
 import SFSafeSymbols
 
+/// A ViewModel representing an icon button with configurable symbols, state, and action.
 public final class IconButtonViewModel: ObservableObject {
 
     // MARK: - Types
 
+    /// A closure typealias for the action to perform when the button is selected.
     public typealias OnSelect = () -> Void
 
     // MARK: - Properties
 
+    /// The primary symbol (icon) displayed on the button.
     @Published public var symbol: SFSymbol
-    @Published public var hoverSymbol: SFSymbol?
-    @Published public var isEnabled = true
 
+    /// An optional symbol (icon) displayed when the button is hovered over.
+    @Published public var hoverSymbol: SFSymbol?
+
+    /// A flag indicating whether the button is enabled.
+    @Published public var isEnabled: Bool = true
+
+    /// The action to execute when the button is selected.
     private let onSelect: OnSelect
 
     // MARK: - Lifecycle
 
-    init(
+    /// Initializes a new `IconButtonViewModel`.
+    ///
+    /// - Parameters:
+    ///   - symbol: The primary symbol (icon) for the button.
+    ///   - hoverSymbol: An optional symbol to display when the button is hovered over. Defaults to `nil`.
+    ///   - onSelect: A closure to execute when the button is selected. Defaults to an empty closure.
+    public init(
         symbol: SFSymbol,
         hoverSymbol: SFSymbol? = nil,
         onSelect: @escaping OnSelect = { }
@@ -41,18 +55,9 @@ public final class IconButtonViewModel: ObservableObject {
 
 public extension IconButtonViewModel {
 
+    /// Executes the selection action associated with the icon button.
     func selected() {
         self.onSelect()
-    }
-
-}
-
-// MARK: - Preview Mock
-
-public extension IconButtonViewModel {
-
-    static var mock: IconButtonViewModel {
-        .init(symbol: .gear) { }
     }
 
 }
