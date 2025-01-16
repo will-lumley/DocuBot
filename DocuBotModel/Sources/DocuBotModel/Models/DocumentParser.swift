@@ -7,6 +7,7 @@
 
 import Foundation
 import SimilaritySearchKit
+import SimilaritySearchKitDistilbert
 import DocuBotToolbox
 
 public class DocumentParser {
@@ -105,7 +106,7 @@ private extension DocumentParser {
         var currentFile = 0
 
         let similarityIndex = await SimilarityIndex(
-            model: NativeEmbeddings(),
+            model: DistilbertEmbeddings(),
             metric: CosineSimilarity()
         )
 

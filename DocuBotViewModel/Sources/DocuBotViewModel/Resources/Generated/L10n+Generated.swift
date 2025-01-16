@@ -97,6 +97,19 @@ internal enum L10n {
       /// No Messages
       internal static let title = L10n.tr("Localizable", "Project.EmptyMessages.title", fallback: "No Messages")
     }
+    internal enum LlmQueryPrompt {
+      /// Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES").
+      ///             If you don't know the answer, just say that you don't know. Don't try to make up an answer.
+      ///             ALWAYS return a "SOURCES" part in your answer.
+      /// QUESTION: %@
+      /// =========
+      /// %@
+      /// =========
+      /// FINAL ANSWER:
+      internal static func template(_ p1: Any, _ p2: Any) -> String {
+        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Given the following extracted parts of a long document and a question, create a final answer with references (\"SOURCES\").\n            If you don't know the answer, just say that you don't know. Don't try to make up an answer.\n            ALWAYS return a \"SOURCES\" part in your answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:")
+      }
+    }
     internal enum NewChat {
       /// New Chat
       internal static let defaultTitle = L10n.tr("Localizable", "Project.NewChat.defaultTitle", fallback: "New Chat")

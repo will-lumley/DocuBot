@@ -10,6 +10,15 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
+  internal enum Document {
+    internal enum LlmReference {
+      /// SOURCES: %@
+      /// %@
+      internal static func template(_ p1: Any, _ p2: Any) -> String {
+        return L10n.tr("Localizable", "Document.LlmReference.template", String(describing: p1), String(describing: p2), fallback: "SOURCES: %@\n%@")
+      }
+    }
+  }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces

@@ -24,7 +24,7 @@ public class ChatViewModel: DocuBotViewModel, Identifiable {
 
     // MARK: - Properties
 
-    @Published public var chatText = ""
+    @Published public var chatText = "What is the difference between the SIT and Demo environment?"
     @Published public var messages: [MessageCellViewModel]?
 
     @Published public var loadingState = LoadingState.none
@@ -97,30 +97,17 @@ public extension ChatViewModel {
 
         Task {
             do {
-                let project = try await self.getProject(fetchDocuments: true)
-                let results = try await project.fetchRelevantDocumentation(for: query)
+                // Get the documents that are most relevant to this query
+                let documents = try await self.fetchRelevantDocumentation(with: query)
 
-                for result in results {
-                    print("Result: \(result)\n\n\n")
-                }
+                // Create a polished query with our relevant documents in tow
+                let formattedQuery = self.createQuery(with: documents, for: query)
 
-                // Pull out the IDs of our documents
-                let ids = results.compactMap { result -> Int64? in
-                    guard let idStr = result.metadata["id"] else {
-                        return nil
-                    }
-                    return Int64(idStr)
-                }
-                let documents = try await persistenceService.getDocuments(ids: ids)
-                
+                // Shoot it over to the LLM
+                await self.queryGPT(with: formattedQuery)
             } catch {
                 fatalError(error.localizedDescription)
             }
-        }
-
-        // Ask the GPT our question
-        Task {
-            // await self.queryGPT(with: foo)
         }
     }
 
@@ -177,6 +164,27 @@ private extension ChatViewModel {
         return project
     }
 
+    func fetchRelevantDocumentation(with message: String) async throws -> [Document] {
+        let project = try await self.getProject(fetchDocuments: true)
+        let results = try await project.fetchRelevantDocumentation(for: message)
+
+        // Pull out the IDs of our documents
+        let ids = results.compactMap { result -> Int64? in
+            guard let idStr = result.metadata["id"] else {
+                return nil
+            }
+            return Int64(idStr)
+        }
+
+        let documents = try await persistenceService.getDocuments(ids: ids)
+        return documents
+    }
+
+    func createQuery(with documents: [Document], for query: String) -> String {
+        let sources = documents.map(\.llmReference).joined(separator: "\n\n")
+        return L10n.Project.LlmQueryPrompt.template(query, sources)
+    }
+
     func queryGPT(with message: String) async {
         do {
             // Pull out our project
@@ -196,7 +204,6 @@ private extension ChatViewModel {
                     }
                 },
                 onComplete: { response in
-                    print("ChatID: \(self.id)")
                     DispatchQueue.main.async { self.loadingState = .none }
 
                     // Insert this message into our database
