@@ -9,8 +9,8 @@
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/Swift-6.0-orange.svg" alt="Swift 6.0">
-  <a href="https://twitter.com/wlumley95">
-    <img src="https://img.shields.io/badge/twitter-@wlumley95-blue.svg?style=flat" alt="Twitter">
+  <a href="https://bsky.app/profile/will-lumley.bsky.social">
+    <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff&label=will-lumley" alt="Bluesky">
   </a>
 </p>
 
