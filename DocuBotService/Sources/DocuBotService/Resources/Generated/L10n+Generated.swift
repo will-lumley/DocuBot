@@ -10,6 +10,14 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
+  internal enum Log {
+    internal enum LogType {
+      /// [ERROR]
+      internal static let error = L10n.tr("Localizable", "Log.LogType.error", fallback: "[ERROR]")
+      /// [INFO]
+      internal static let info = L10n.tr("Localizable", "Log.LogType.info", fallback: "[INFO]")
+    }
+  }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces

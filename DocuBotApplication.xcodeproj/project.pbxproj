@@ -9,18 +9,35 @@
 /* Begin PBXBuildFile section */
 		BE33E3CA2C3526B9009EDAA4 /* DocuBotViewModel in Frameworks */ = {isa = PBXBuildFile; productRef = BE33E3C92C3526B9009EDAA4 /* DocuBotViewModel */; };
 		BE45187E2C35244600F9E9E5 /* DocuBotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */; };
-		BE4518802C35244600F9E9E5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE45187F2C35244600F9E9E5 /* ContentView.swift */; };
 		BE4518822C35244700F9E9E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE4518812C35244700F9E9E5 /* Assets.xcassets */; };
 		BE4518852C35244700F9E9E5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE4518842C35244700F9E9E5 /* Preview Assets.xcassets */; };
+		BEB095C42C35780C00429AFD /* DocuBotModel in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095C32C35780C00429AFD /* DocuBotModel */; };
+		BEB095C62C35780C00429AFD /* DocuBotService in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095C52C35780C00429AFD /* DocuBotService */; };
+		BEB095C82C35780C00429AFD /* DocuBotToolbox in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095C72C35780C00429AFD /* DocuBotToolbox */; };
+		BEB095CA2C35780C00429AFD /* DocuBotUI in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095C92C35780C00429AFD /* DocuBotUI */; };
+		BEB095ED2C36604B00429AFD /* SettingsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB095EC2C36604B00429AFD /* SettingsApp.swift */; };
+		BEB095EF2C36604B00429AFD /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB095EE2C36604B00429AFD /* FlagView.swift */; };
+		BEB095F12C36604C00429AFD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BEB095F02C36604C00429AFD /* Assets.xcassets */; };
+		BEB095F42C36604C00429AFD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BEB095F32C36604C00429AFD /* Preview Assets.xcassets */; };
+		BEB095FA2C366CE200429AFD /* DocuBotService in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095F92C366CE200429AFD /* DocuBotService */; };
+		BEB095FD2C366D3200429AFD /* Vexil in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095FC2C366D3200429AFD /* Vexil */; };
+		BEB095FF2C366D3200429AFD /* Vexillographer in Frameworks */ = {isa = PBXBuildFile; productRef = BEB095FE2C366D3200429AFD /* Vexillographer */; };
+		BEB096012C36726300429AFD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB096002C36726300429AFD /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		BE45187A2C35244600F9E9E5 /* DocuBotApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DocuBotApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocuBotApp.swift; sourceTree = "<group>"; };
-		BE45187F2C35244600F9E9E5 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BE4518812C35244700F9E9E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BE4518842C35244700F9E9E5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BE4518862C35244700F9E9E5 /* DocuBot.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DocuBot.entitlements; sourceTree = "<group>"; };
+		BEB095EA2C36604B00429AFD /* Settings.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Settings.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BEB095EC2C36604B00429AFD /* SettingsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsApp.swift; sourceTree = "<group>"; };
+		BEB095EE2C36604B00429AFD /* FlagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagView.swift; sourceTree = "<group>"; };
+		BEB095F02C36604C00429AFD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BEB095F32C36604C00429AFD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		BEB095F52C36604C00429AFD /* Settings.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Settings.entitlements; sourceTree = "<group>"; };
+		BEB096002C36726300429AFD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,7 +45,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BEB095CA2C35780C00429AFD /* DocuBotUI in Frameworks */,
+				BEB095C62C35780C00429AFD /* DocuBotService in Frameworks */,
+				BEB095C82C35780C00429AFD /* DocuBotToolbox in Frameworks */,
+				BEB095FD2C366D3200429AFD /* Vexil in Frameworks */,
 				BE33E3CA2C3526B9009EDAA4 /* DocuBotViewModel in Frameworks */,
+				BEB095C42C35780C00429AFD /* DocuBotModel in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BEB095E72C36604B00429AFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BEB095FF2C366D3200429AFD /* Vexillographer in Frameworks */,
+				BEB095FA2C366CE200429AFD /* DocuBotService in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,7 +70,9 @@
 			isa = PBXGroup;
 			children = (
 				BE45187C2C35244600F9E9E5 /* Application */,
+				BEB095EB2C36604B00429AFD /* Settings */,
 				BE45187B2C35244600F9E9E5 /* Products */,
+				BEB095C22C35780C00429AFD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -47,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				BE45187A2C35244600F9E9E5 /* DocuBotApplication.app */,
+				BEB095EA2C36604B00429AFD /* Settings.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -56,7 +90,7 @@
 			children = (
 				BE4518812C35244700F9E9E5 /* Assets.xcassets */,
 				BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */,
-				BE45187F2C35244600F9E9E5 /* ContentView.swift */,
+				BEB096002C36726300429AFD /* AppDelegate.swift */,
 				BE4518862C35244700F9E9E5 /* DocuBot.entitlements */,
 				BE4518832C35244700F9E9E5 /* Preview Content */,
 			);
@@ -67,6 +101,33 @@
 			isa = PBXGroup;
 			children = (
 				BE4518842C35244700F9E9E5 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		BEB095C22C35780C00429AFD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BEB095EB2C36604B00429AFD /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				BEB095EC2C36604B00429AFD /* SettingsApp.swift */,
+				BEB095EE2C36604B00429AFD /* FlagView.swift */,
+				BEB095F02C36604C00429AFD /* Assets.xcassets */,
+				BEB095F52C36604C00429AFD /* Settings.entitlements */,
+				BEB095F22C36604C00429AFD /* Preview Content */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		BEB095F22C36604C00429AFD /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				BEB095F32C36604C00429AFD /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -89,9 +150,35 @@
 			name = DocuBotApplication;
 			packageProductDependencies = (
 				BE33E3C92C3526B9009EDAA4 /* DocuBotViewModel */,
+				BEB095C32C35780C00429AFD /* DocuBotModel */,
+				BEB095C52C35780C00429AFD /* DocuBotService */,
+				BEB095C72C35780C00429AFD /* DocuBotToolbox */,
+				BEB095C92C35780C00429AFD /* DocuBotUI */,
+				BEB095FC2C366D3200429AFD /* Vexil */,
 			);
 			productName = DocuBot;
 			productReference = BE45187A2C35244600F9E9E5 /* DocuBotApplication.app */;
+			productType = "com.apple.product-type.application";
+		};
+		BEB095E92C36604B00429AFD /* Settings */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BEB095F62C36604C00429AFD /* Build configuration list for PBXNativeTarget "Settings" */;
+			buildPhases = (
+				BEB095E62C36604B00429AFD /* Sources */,
+				BEB095E72C36604B00429AFD /* Frameworks */,
+				BEB095E82C36604B00429AFD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Settings;
+			packageProductDependencies = (
+				BEB095F92C366CE200429AFD /* DocuBotService */,
+				BEB095FE2C366D3200429AFD /* Vexillographer */,
+			);
+			productName = Settings;
+			productReference = BEB095EA2C36604B00429AFD /* Settings.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -107,6 +194,9 @@
 					BE4518792C35244600F9E9E5 = {
 						CreatedOnToolsVersion = 15.4;
 					};
+					BEB095E92C36604B00429AFD = {
+						CreatedOnToolsVersion = 15.4;
+					};
 				};
 			};
 			buildConfigurationList = BE4518752C35244600F9E9E5 /* Build configuration list for PBXProject "DocuBotApplication" */;
@@ -119,12 +209,14 @@
 			);
 			mainGroup = BE4518712C35244600F9E9E5;
 			packageReferences = (
+				BEB095FB2C366D3200429AFD /* XCRemoteSwiftPackageReference "Vexil" */,
 			);
 			productRefGroup = BE45187B2C35244600F9E9E5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				BE4518792C35244600F9E9E5 /* DocuBotApplication */,
+				BEB095E92C36604B00429AFD /* Settings */,
 			);
 		};
 /* End PBXProject section */
@@ -139,6 +231,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BEB095E82C36604B00429AFD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BEB095F42C36604C00429AFD /* Preview Assets.xcassets in Resources */,
+				BEB095F12C36604C00429AFD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -146,8 +247,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE4518802C35244600F9E9E5 /* ContentView.swift in Sources */,
+				BEB096012C36726300429AFD /* AppDelegate.swift in Sources */,
 				BE45187E2C35244600F9E9E5 /* DocuBotApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BEB095E62C36604B00429AFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BEB095EF2C36604B00429AFD /* FlagView.swift in Sources */,
+				BEB095ED2C36604B00429AFD /* SettingsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,6 +444,63 @@
 			};
 			name = Release;
 		};
+		BEB095F72C36604C00429AFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Settings/Settings.entitlements;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Settings/Preview Content\"";
+				DEVELOPMENT_TEAM = 4ELTP9RFTJ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.williamlumley.docubot.settings;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "DocuBot Settings - Development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=*]" = "DocuBot Settings - Development";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BEB095F82C36604C00429AFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Settings/Settings.entitlements;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Settings/Preview Content\"";
+				DEVELOPMENT_TEAM = 4ELTP9RFTJ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.williamlumley.docubot.settings;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "DocuBot Settings - Development";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -355,12 +522,62 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		BEB095F62C36604C00429AFD /* Build configuration list for PBXNativeTarget "Settings" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BEB095F72C36604C00429AFD /* Debug */,
+				BEB095F82C36604C00429AFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BEB095FB2C366D3200429AFD /* XCRemoteSwiftPackageReference "Vexil" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/unsignedapps/Vexil.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		BE33E3C92C3526B9009EDAA4 /* DocuBotViewModel */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DocuBotViewModel;
+		};
+		BEB095C32C35780C00429AFD /* DocuBotModel */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DocuBotModel;
+		};
+		BEB095C52C35780C00429AFD /* DocuBotService */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DocuBotService;
+		};
+		BEB095C72C35780C00429AFD /* DocuBotToolbox */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DocuBotToolbox;
+		};
+		BEB095C92C35780C00429AFD /* DocuBotUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DocuBotUI;
+		};
+		BEB095F92C366CE200429AFD /* DocuBotService */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DocuBotService;
+		};
+		BEB095FC2C366D3200429AFD /* Vexil */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BEB095FB2C366D3200429AFD /* XCRemoteSwiftPackageReference "Vexil" */;
+			productName = Vexil;
+		};
+		BEB095FE2C366D3200429AFD /* Vexillographer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BEB095FB2C366D3200429AFD /* XCRemoteSwiftPackageReference "Vexil" */;
+			productName = Vexillographer;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

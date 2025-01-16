@@ -7,7 +7,7 @@ let package = Package(
     name: "DocuBotToolbox",
     defaultLocalization: "en",
     platforms: [
-        .macOS(.v10_15)
+        .macOS(.v13)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
