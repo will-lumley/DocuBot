@@ -73,6 +73,10 @@ public struct Document: Hashable, Codable, Sendable {
 
 public extension Document {
 
+    var documentTitle: String {
+        self.url.lastPathComponent
+    }
+
     var llmReference: String {
         L10n.Document.LlmReference.template(self.url.path(), self.content)
     }

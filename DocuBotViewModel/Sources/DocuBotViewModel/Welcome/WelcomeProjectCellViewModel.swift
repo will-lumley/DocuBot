@@ -83,7 +83,7 @@ public extension WelcomeProjectCellViewModel {
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project_1",
                 isDirty: false,
-                urlBookmarkData: nil,
+                urlBookmarkData: .init(),
                 exampleQuestions: [],
                 createdAt: .now,
                 updatedAt: .now

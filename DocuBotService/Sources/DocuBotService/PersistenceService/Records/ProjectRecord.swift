@@ -15,7 +15,7 @@ public struct ProjectRecord: Record {
     public var id: Int64?
     public let path: String
     public let name: String
-    public let urlBookmarkData: Data?
+    public let urlBookmarkData: Data
     public var exampleQuestions: [String]
     public let createdAt: Date
     public let updatedAt: Date

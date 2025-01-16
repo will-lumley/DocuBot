@@ -1,10 +1,12 @@
 "Generics.cancel" = "Cancel";
+"Generics.showInFinder" = "Show in Finder";
 
 "Error.Welcome.FailedToDelete.title" = "Failed to Delete Project";
 "Error.Welcome.FailedToDelete.message" = "DocuBot failed to delete the project. Please try again.";
 "Error.ConfigureProject.Creating.FailedToCreate.title" = "Failed to Create Project";
 "Error.ConfigureProject.Editing.FailedToCreate.title" = "Failed to Update Project";
 "Error.ConfigureProject.ConfigurationError.noDirectory" = "No directory selected.";
+"Error.ConfigureProject.ConfigurationError.noDirectoryBookmarkData" = "No secure directory data is avaiable to DocuBot.";
 "Error.ConfigureProject.FormValidation.missingDirectory" = "Please ensure that a project directory has been selected.";
 "Error.ConfigureProject.FormValidation.missingName" = "Please ensure that a project name has been provided.";
 "Error.ConfigureProject.FormValidation.missingFormat" = "Please ensure that at least one format has been enabled.";
@@ -36,7 +38,6 @@
 "Welcome.Delete.Confirmation.cancelButton" = "Cancel";
 "Welcome.ProjectContextMenu.open" = "Open";
 "Welcome.ProjectContextMenu.delete" = "Delete";
-"Welcome.ProjectContextMenu.showInFinder" = "Show in Finder";
 
 "EmbeddingModel.Distilbert.title" = "Distilbert";
 "EmbeddingModel.MiniLme.title" = "Mini LME";
@@ -67,6 +68,9 @@
 "ConfigureProject.FormatSection.Format.other" = "Other";
 "ConfigureProject.FormatSection.Format.addFormatButton" = "Add Custom Format";
 
+"ConfigureProject.AdvancedSection.embeddingModel" = "Embedding Model";
+"ConfigureProject.AdvancedSection.similarityMetric" = "Similarity Metric";
+
 "ConfigureProject.AdvancedSection.seed" = "Seed";
 "ConfigureProject.AdvancedSection.topK" = "Top K";
 "ConfigureProject.AdvancedSection.topP" = "Top P";
@@ -76,15 +80,10 @@
 "ConfigureProject.AdvancedSection.stopSequence" = "Stop Sequence";
 "ConfigureProject.AdvancedSection.maxTokenCount" = "Maximum Token Count";
 "ConfigureProject.AdvancedSection.resetDefaults" = "Reset Default Values";
-
 "ConfigureProject.AdvancedSection.systemPrompt" = "System Prompt";
-"ConfigureProject.AdvancedSection.embeddingModel" = "Embedding Model";
-"ConfigureProject.AdvancedSection.similarityMetric" = "Similarity Metric";
+"ConfigureProject.AdvancedSection.strictMode" = "Strict Mode";
 
-"ConfigureProject.AdvancedSection.SystemPrompt.default" = "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base.";
-
-"ConfigureProject.Help.SystemPrompt.title" = "What does system prompt do?";
-"ConfigureProject.Help.SystemPrompt.content" = "A system message provides background context or guidance to the model to help it generate appropriate responses.\n\nIt defines the model’s role, tone, and behavior. For example, a system message might instruct the model to act as a helpful assistant, limiting its answers to a specific knowledge domain.";
+"ConfigureProject.AdvancedSection.SystemPrompt.default" = "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.";
 
 "ConfigureProject.Help.EmbeddingModel.title" = "What does the embedding model do?";
 "ConfigureProject.Help.EmbeddingModel.content" = "An embedding model transforms input data (like text) into numerical vectors that represent the semantic meaning of the data.\n\nThese embeddings are used to measure relationships and similarities between different pieces of content, allowing the model to understand the context and meaning of the input.\n\nDistilBERT is a small version of the BERT model that has been fine tuned for question & answers.\nMiniLM All, is a smaller model, but it is much faster.\nMulti-QA MiniLM is a small & fast model that has been fine tuned for question & answering.";
@@ -116,11 +115,21 @@
 "ConfigureProject.Help.MaxTokenCount.title" = "What does max token count do?";
 "ConfigureProject.Help.MaxTokenCount.content" = "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.";
 
+"ConfigureProject.Help.SystemPrompt.title" = "What does system prompt do?";
+"ConfigureProject.Help.SystemPrompt.content" = "A system message provides background context or guidance to the model to help it generate appropriate responses.\n\nIt defines the model’s role, tone, and behavior. For example, a system message might instruct the model to act as a helpful assistant, limiting its answers to a specific knowledge domain.";
+
+"ConfigureProject.Help.StrictMode.title" = "What does strict mode do?";
+"ConfigureProject.Help.StrictMode.content" = "Strict Mode ensures that DocuBot returns only the content from the documentation without additional commentary or elaboration from the AI model.\n\nIn this mode, the LLM will be disabled, and the response will strictly repeat excerpts from the provided documentation.";
+
 "ConfigureProject.Creating.createButton" = "Create Project";
 "ConfigureProject.Editing.createButton" = "Update Project";
 
 "ConfigureProject.AdvancedSection.title" = "Advanced Configuration";
 "ConfigureProject.AdvancedSection.subtitle" = "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.";
+
+"Project.placeholder" = "Write your question here...";
+"Project.StrictMode.responseTemplate" = "Here's some excerpts from your documentation based on your query.\n\n";
+"Project.StrictMode.sourceTemplate" = "# %@\n\n%@\n\n";
 
 "Project.SyncStage.ExtractingDocuments.title" = "Reading documents from disk";
 "Project.SyncStage.ExtractingDocuments.subtitle" = "This shouldn't take too long.";
@@ -129,12 +138,9 @@
 "Project.SyncStage.BuildingQuestions.title" = "Building some example questions for you 💡";
 "Project.SyncStage.BuildingQuestions.subtitle" = "We've made %@ out of %@ questions. Not long now!";
 
-"Project.ChatContextMenu.rename" = "Rename";
-"Project.ChatContextMenu.delete" = "Delete";
-
 "Project.LlmExampleQuestionPrompt.systemMessage" = "You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.\nWhen asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.\nRemember: do not include phrases like \"I hope this helps\" or \"Let me know if you need anything else.\" Focus only on delivering the requested content without deviation.";
 "Project.LlmExampleQuestionPrompt.prompt" = "Here is an excerpt from a file.\n\n%@\n\nBased on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.";
- "Project.LlmQueryPrompt.template" = "Given the following extracted parts of a long document and a question, create a final answer. If you don't know the answer, just say that you don't know. Don't try to make up an answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:";
+"Project.LlmQueryPrompt.template" = "Here is some information.\n%@\n%@";
 "Project.queryTitle" = "Ask any question about your project.";
 
 "ProjectSettings.windowTitle" = "Project Settings";

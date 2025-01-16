@@ -351,6 +351,21 @@ public struct ConfigureProjectView: View {
                 }
             }
 
+            // StrictMode
+            LabeledContent {
+                Toggle(isOn: $viewModel.strictMode, label: {
+                    EmptyView()
+                })
+                .toggleStyle(.checkbox)
+            } label: {
+                HStack {
+                    HelpButton {
+                        viewModel.helpButtonSelected(with: .strictMode)
+                    }
+                    Text(viewModel.strictModeTitle)
+                }
+            }
+
             // SystemPrompt
             LabeledContent {
                 TextField("", text: $viewModel.systemPrompt)

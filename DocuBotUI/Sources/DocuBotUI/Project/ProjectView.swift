@@ -6,7 +6,9 @@
 //
 
 import DocuBotViewModel
+import MarkdownUI
 import SFSafeSymbols
+import SwiftfulLoadingIndicators
 import SwiftUI
 
 public struct ProjectView: View {
@@ -18,7 +20,7 @@ public struct ProjectView: View {
     @Environment(\.openWindow) var openWindow
 
     @State var textEditorHeight = CGFloat(20)
-    @State var isSyncing = true
+    @State var revealSources = false
 
     @FocusState private var chatTextEditorFocused: Bool
 
@@ -36,8 +38,16 @@ public struct ProjectView: View {
             self.mainView
             self.syncView
         }
-        .animation(.easeInOut(duration: 1.0), value: isSyncing)
+        .animation(.easeInOut(duration: 1.0), value: viewModel.syncStage != .none)
         .toolbar {
+            ToolbarButton(viewModel: viewModel.sourcesButton)
+                .keyboardShortcut("i", modifiers: [.command])
+                .popover(isPresented: $viewModel.isShowingSources) {
+                    if let sources = viewModel.sources {
+                        SourcesView(viewModel: sources)
+                    }
+                }
+
             ToolbarButton(viewModel: viewModel.syncProjectButton)
                 .keyboardShortcut("s", modifiers: [.command, .shift])
             ToolbarButton(viewModel: viewModel.openSettingsButton)
@@ -93,7 +103,7 @@ public struct ProjectView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 20) {
-                    ForEach(viewModel.questionViewModels) { viewModel in
+                    ForEach(viewModel.questions) { viewModel in
                         ProjectQuestionView(viewModel: viewModel)
                             .frame(width: 300)
                    }
@@ -103,23 +113,44 @@ public struct ProjectView: View {
 
             VStack {
                 ChatTextEditorView(
+                    placeholder: viewModel.textEditorPlaceholder,
                     text: $viewModel.chatText,
                     height: $textEditorHeight,
                     onEnterSelected: viewModel.enterSelected
                 )
                 .frame(height: textEditorHeight)
                 .focused($chatTextEditorFocused)
+                .disabled(viewModel.expectingResponse)
             }
             .padding(10)
             .background(Asset.chatTextView.swiftUIColor)
             .cornerRadius(35)
             .padding(.horizontal)
 
-            ScrollView {
-                Text(viewModel.responseText)
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
+            switch viewModel.response {
+            case .none:
+                VStack {
+                    Spacer()
+                    LoadingIndicator(animation: .pulseOutlineRepeater)
+                        .hidden()
+                        .id(1)
+                    Spacer()
+                }
+            case .response(let response):
+                ScrollView {
+                    Markdown(response)
+                        .multilineTextAlignment(.leading)
+                        .font(.system(size: 16))
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            case .loading:
+                VStack {
+                    Spacer()
+                    LoadingIndicator(animation: .pulseOutlineRepeater)
+                        .id(2)
+                    Spacer()
+                }
             }
         }
         .disabled(viewModel.syncStage != nil)

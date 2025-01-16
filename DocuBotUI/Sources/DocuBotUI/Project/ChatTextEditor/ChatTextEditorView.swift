@@ -16,6 +16,7 @@ struct ChatTextEditorView: NSViewRepresentable {
 
     // MARK: - Properties
 
+    let placeholder: String?
     @Binding var text: String
     @Binding var height: CGFloat
 
@@ -29,7 +30,7 @@ struct ChatTextEditorView: NSViewRepresentable {
     // MARK: - NSViewRepresentable
 
     func makeNSView(context: Context) -> ChatTextEditor {
-        let textEditor = ChatTextEditor()
+        let textEditor = ChatTextEditor(placeholder: self.placeholder)
 
         textEditor.onEnterSelected = self.onEnterSelected
         textEditor.onHeightChange = { newHeight in

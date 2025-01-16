@@ -145,7 +145,7 @@ public extension WelcomeViewModel {
             .init(text: L10n.Welcome.ProjectContextMenu.delete) {
                 self.promptDeletion(project: cell.project)
             },
-            .init(text: L10n.Welcome.ProjectContextMenu.showInFinder) {
+            .init(text: L10n.Generics.showInFinder) {
                 self.showInFinder(project: cell.project)
             }
         ]

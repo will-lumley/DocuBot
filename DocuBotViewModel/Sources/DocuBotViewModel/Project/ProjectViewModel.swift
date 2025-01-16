@@ -8,7 +8,9 @@
 import Combine
 import DocuBotModel
 import DocuBotService
+import DocuBotToolbox
 import Foundation
+import SimilaritySearchKit
 
 public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
@@ -20,15 +22,16 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
          public let project: Project
     }
 
-    public struct Progress: Hashable, Sendable {
-        public let value: Int
-        public let total: Int
+    public enum ResponseStatus: Hashable, Sendable {
+        case none
+        case loading
+        case response(response: String)
     }
 
     public enum SyncStage: Hashable, Sendable {
         case extractingDocumentsFromDisk
-        case trainingDocuments(project: Project, progress: Progress)
-        case buildingExampleQuestions(project: Project, progress: Progress)
+        case trainingDocuments(project: Project, progress: DocuBotToolbox.Progress)
+        case buildingExampleQuestions(project: Project, progress: DocuBotToolbox.Progress)
     }
 
     // MARK: - Properties
@@ -37,7 +40,9 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     @Published public var chatText = ""
 
     /// The text our LLM has responded back with
-    @Published public var responseText = ""
+    @Published public var response = ResponseStatus.none
+
+    @Published public var expectingResponse = false
 
     /// The project that we're focussing on within this ViewModel
     @Published private var project: Project
@@ -46,13 +51,21 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     @Published public var syncStage: SyncStage?
 
     /// The ViewModels that make up our example questions
-    @Published public var questionViewModels = [ProjectQuestionViewModel]()
+    @Published public var questions = [ProjectQuestionViewModel]()
+
+    /// A flag that controls whether we're showing sources to the user or not
+    @Published public var isShowingSources = false
+
+    /// The ViewModel that displays our Sources content to the user
+    @Published public var sources: SourcesViewModel?
 
     /// Our "settings" ViewModel for this project
     @Published public var configureProjectViewModel: ConfigureProjectViewModel?
 
     /// This is used to create or close a generic `Alert`
     @Published public var alertConfiguration: AlertConfiguration?
+
+    @Published public var sourcesButton: ToolbarButtonViewModel
 
     /// This fires when we need to request the UI level to request folder permissions
     public let triggerFolderAccessRequest = PassthroughSubject<Void, Never>()
@@ -61,22 +74,15 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
     public init(project: Project, serviceContainer: ServiceContainer) {
         self.project = project
+        self.sourcesButton = .init(symbol: .docTextMagnifyingglass)
+
         super.init(serviceContainer: serviceContainer)
 
-        Task {
-            do {
-                // Prime our LLM with our settings
-                let settings = try await self.getProjectSettings()
-                try gptService.prime(with: settings)
-            } catch {
-                await MainActor.run {
-                    self.alertConfiguration = .init(
-                        title: L10n.Error.Project.FailedToExtractSettings.title,
-                        message: error.description
-                    )
-                }
-            }
+        self.sourcesButton.onSelect = { [weak self] in
+            self?.isShowingSources.toggle()
         }
+
+        self.primeLlm()
     }
 
     override public func configureBindings() {
@@ -89,6 +95,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         // Convert the project example questions into ViewModels
         self.$project
             .map(\.exampleQuestions)
+            .map { $0.shuffled() }
             .map { questions in
                 questions.map { question in
                     ProjectQuestionViewModel(content: question) {
@@ -96,7 +103,14 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
                     }
                 }
             }
-            .assign(to: &$questionViewModels)
+            .assign(to: &$questions)
+
+        // Enable the ViewSources button if we have any sources
+        self.$sources
+            .map { $0 != nil }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isEnabled, on: sourcesButton)
+            .store(in: &cancellables)
     }
 
 }
@@ -125,15 +139,21 @@ public extension ProjectViewModel {
         L10n.Project.queryTitle
     }
 
+    var textEditorPlaceholder: String {
+        L10n.Project.placeholder
+    }
+
     func openSettings() {
         Task {
             do {
                 let settings = try await self.getProjectSettings()
-                DispatchQueue.main.async {
+                await MainActor.run {
                     self.configureProjectViewModel = .init(
                         projectInfo: .init(project: self.project, settings: settings),
                         serviceContainer: self.serviceContainer
-                    )
+                    ) {
+                        self.primeLlm()
+                    }
                 }
             } catch {
                 await MainActor.run {
@@ -147,31 +167,107 @@ public extension ProjectViewModel {
     }
 
     func enterSelected() {
+        self.response = .loading
+        self.expectingResponse = true
+
         Task {
             do {
                 let query = self.chatText
                 let settings = try await self.getProjectSettings()
 
-                // Get the documents that are most relevant to this query
-                let documents = try await self.fetchRelevantDocumentation(with: query)
+                let limitCount = 3
 
-                // Create a polished query with our relevant documents in tow
-                let formattedQuery = self.createQuery(with: documents, for: query)
+                // Do a search for our most relevant documents
+                let results = try await self.fetchRelevantDocumentation(with: query)
 
-                logService.log(with: .info, "Query: \(query)")
-                logService.log(with: .info, "Formatted Query:\n\n \(formattedQuery)\n")
+                // Get the document IDs
+                let documentIDs = results
+                    .prefix(limitCount)
+                    .map(\.metadata)
+                    .compactMap { $0["id"] }
+                    .compactMap { Int64($0) }
 
-                // Shoot it over to the LLM
-                let response = try await self.gptService.respond(
-                    to: formattedQuery,
-                    with: settings.systemPrompt
-                ) { update in
-                    self.logService.log(with: .info, "Update: \(update)")
-                    self.responseText += update
+                // Get the top 3 results and pull out the text itself
+                let sources = results
+                    .prefix(limitCount)
+                    .map(\.text)
+
+                // Get the top 3 similarity scores
+                let similarityScores = results
+                    .prefix(limitCount)
+                    .map(\.score)
+
+                // Pull out the documents themselves
+                let documents = try await persistenceService.getDocuments(
+                    ids: documentIDs
+                )
+
+                // Merge the documents and scores
+                let documentsWithScores = zip(documents, similarityScores)
+
+                // Configure our sources
+                await MainActor.run {
+                    self.sources = SourcesViewModel(
+                        sources: documentsWithScores.map { documentWithScore in
+                            let document = documentWithScore.0
+                            let score = documentWithScore.1
+                            return SourceViewModel(document: document, score: score)
+                        }
+                    )
                 }
-                self.logService.log(with: .info, "Response: \(response)")
+
+                if settings.strictMode {
+                    // Merge the documents and excerpts
+                    let documentsWithExcerpts = zip(documents, sources)
+
+                    // Map the excerpts out into a response format
+                    let excerpts = documentsWithExcerpts.map {
+                        L10n.Project.StrictMode.sourceTemplate(
+                            "\($0.documentTitle)",
+                            $1
+                        )
+                    }
+
+                    var response = L10n.Project.StrictMode.responseTemplate
+                    for excerpt in excerpts {
+                        response.append(excerpt)
+                    }
+                    await MainActor.run { self.response = .response(response: response) }
+
+                } else {
+                    // Create a polished query with our relevant documents in tow
+                    let formattedQuery = self.createQuery(with: sources, for: query)
+
+                    logService.log(with: .info, "Query: \(query)")
+                    logService.log(with: .info, "Formatted Query:\n\n \(formattedQuery)\n")
+
+                    // Shoot it over to the LLM
+                    let response = try await self.gptService.respond(
+                        to: formattedQuery,
+                        with: settings.systemPrompt
+                    ) { update in
+                        guard self.expectingResponse else {
+                            return
+                        }
+
+                        // If we're not expecting a response, we cna ignore this
+                        self.logService.log(with: .info, "Update: \(update)")
+
+                        switch self.response {
+                        case .response(let currentResponse):
+                            let newText = currentResponse + update
+                            self.response = .response(response: newText)
+                        default:
+                            self.response = .response(response: update)
+                        }
+                    }
+                    await MainActor.run { self.expectingResponse = false }
+                    self.logService.log(with: .info, "Response: \(response)")
+                }
+
             } catch {
                 await MainActor.run {
+                    self.expectingResponse = false
                     self.alertConfiguration = .init(
                         title: L10n.Error.Project.GptTalk.title,
                         message: error.description
@@ -186,22 +282,22 @@ public extension ProjectViewModel {
     }
 
     func directorySelected(_ directory: URL?) {
-        guard let directory else {
-            return
-        }
-
-        let bookmarkData = try? directory.bookmarkData(
-            options: .securityScopeAllowOnlyReadAccess,
-            includingResourceValuesForKeys: nil,
-            relativeTo: nil
-        )
-
-        self.project.isDirty = true
-        self.project.path = directory.path
-        self.project.urlBookmarkData = bookmarkData
-
         Task {
             do {
+                guard let directory else {
+                    throw ConfigureProjectViewModel.ConfigurationError.noDirectory
+                }
+
+                let bookmarkData = try directory.bookmarkData(
+                    options: .securityScopeAllowOnlyReadAccess,
+                    includingResourceValuesForKeys: nil,
+                    relativeTo: nil
+                )
+
+                self.project.isDirty = true
+                self.project.path = directory.path
+                self.project.urlBookmarkData = bookmarkData
+
                 try await self.persistProject()
             } catch {
                 await MainActor.run {
@@ -219,6 +315,23 @@ public extension ProjectViewModel {
 // MARK: - Private
 
 private extension ProjectViewModel {
+
+    func primeLlm() {
+        Task {
+            do {
+                // Prime our LLM with our settings
+                let settings = try await self.getProjectSettings()
+                try gptService.prime(with: settings)
+            } catch {
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.FailedToExtractSettings.title,
+                        message: error.description
+                    )
+                }
+            }
+        }
+    }
 
     func sync() {
         self.syncStage = .extractingDocumentsFromDisk
@@ -272,7 +385,7 @@ private extension ProjectViewModel {
                         )
 
                         // Update the progress each time a question is created
-                        DispatchQueue.main.async {
+                        DispatchQueue.main.sync {
                             self.syncStage = .buildingExampleQuestions(
                                 project: self.project,
                                 progress: progress
@@ -292,7 +405,7 @@ private extension ProjectViewModel {
                     }
                     .compactMap(\.self)
                     .map { $0.replacingOccurrences(of: "Question: ", with: " ") }
-                    .map { $0.replacingOccurrences(of: "according to the provided excerpt?", with: "?") }
+                    .map { $0.replacingOccurrences(of: ", according to the provided excerpt?", with: "?") }
                     .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
 
                 // Update the project properties
@@ -306,7 +419,7 @@ private extension ProjectViewModel {
                 try await self.persist(documents: documents)
 
                 // Let the user interact with the UI again
-                DispatchQueue.main.async {
+                await MainActor.run {
                     self.syncStage = nil
                 }
             } catch let error as DocumentParser.DocumentError {
@@ -384,7 +497,7 @@ private extension ProjectViewModel {
 
     func fetchRelevantDocumentation(
         with message: String
-    ) async throws -> [String] {
+    ) async throws -> [SimilarityIndex.SearchResult] {
         let project = try await self.getProject(fetchDocuments: true)
         let settings = try await self.getProjectSettings()
 
@@ -392,26 +505,12 @@ private extension ProjectViewModel {
             for: message,
             with: settings
         )
-
         return results
-            .prefix(3)
-            .map(\.text)
-
-//        // Pull out the IDs of our documents
-//        let ids = results.compactMap { result -> Int64? in
-//            guard let idStr = result.metadata["id"] else {
-//                return nil
-//            }
-//            return Int64(idStr)
-//        }
-//
-//        let documents = try await persistenceService.getDocuments(ids: ids)
-//        return documents
     }
 
     func createQuery(with documents: [String], for query: String) -> String {
         let sources = documents.joined(separator: "\n\n")
-        return L10n.Project.LlmQueryPrompt.template(query, sources)
+        return L10n.Project.LlmQueryPrompt.template(sources, query)
     }
 
 }
@@ -442,7 +541,7 @@ public extension ProjectViewModel.SyncStage {
         }
     }
 
-    var progress: ProjectViewModel.Progress? {
+    var progress: DocuBotToolbox.Progress? {
         switch self {
         case .extractingDocumentsFromDisk:
             return nil
@@ -466,7 +565,7 @@ public extension ProjectViewModel {
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project 1",
                 isDirty: false,
-                urlBookmarkData: nil,
+                urlBookmarkData: .init(),
                 exampleQuestions: [
                     "Example example example",
                     "Example example example"

@@ -28,6 +28,8 @@ internal enum L10n {
       internal static let similarityMetric = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.similarityMetric", fallback: "Similarity Metric")
       /// Stop Sequence
       internal static let stopSequence = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.stopSequence", fallback: "Stop Sequence")
+      /// Strict Mode
+      internal static let strictMode = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.strictMode", fallback: "Strict Mode")
       /// These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.
       internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.subtitle", fallback: "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.")
       /// System Prompt
@@ -41,8 +43,8 @@ internal enum L10n {
       /// Top P
       internal static let topP = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.topP", fallback: "Top P")
       internal enum SystemPrompt {
-        /// You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base.
-        internal static let `default` = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.SystemPrompt.default", fallback: "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base.")
+        /// You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.
+        internal static let `default` = L10n.tr("Localizable", "ConfigureProject.AdvancedSection.SystemPrompt.default", fallback: "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.")
       }
     }
     internal enum Configuration {
@@ -166,6 +168,14 @@ internal enum L10n {
         /// What does stop sequence do?
         internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.StopSequence.title", fallback: "What does stop sequence do?")
       }
+      internal enum StrictMode {
+        /// Strict Mode ensures that DocuBot returns only the content from the documentation without additional commentary or elaboration from the AI model.
+        /// 
+        /// In this mode, the LLM will be disabled, and the response will strictly repeat excerpts from the provided documentation.
+        internal static let content = L10n.tr("Localizable", "ConfigureProject.Help.StrictMode.content", fallback: "Strict Mode ensures that DocuBot returns only the content from the documentation without additional commentary or elaboration from the AI model.\n\nIn this mode, the LLM will be disabled, and the response will strictly repeat excerpts from the provided documentation.")
+        /// What does strict mode do?
+        internal static let title = L10n.tr("Localizable", "ConfigureProject.Help.StrictMode.title", fallback: "What does strict mode do?")
+      }
       internal enum SystemPrompt {
         /// A system message provides background context or guidance to the model to help it generate appropriate responses.
         /// 
@@ -219,6 +229,8 @@ internal enum L10n {
       internal enum ConfigurationError {
         /// No directory selected.
         internal static let noDirectory = L10n.tr("Localizable", "Error.ConfigureProject.ConfigurationError.noDirectory", fallback: "No directory selected.")
+        /// No secure directory data is avaiable to DocuBot.
+        internal static let noDirectoryBookmarkData = L10n.tr("Localizable", "Error.ConfigureProject.ConfigurationError.noDirectoryBookmarkData", fallback: "No secure directory data is avaiable to DocuBot.")
       }
       internal enum Creating {
         internal enum FailedToCreate {
@@ -291,16 +303,14 @@ internal enum L10n {
   internal enum Generics {
     /// Cancel
     internal static let cancel = L10n.tr("Localizable", "Generics.cancel", fallback: "Cancel")
+    /// Show in Finder
+    internal static let showInFinder = L10n.tr("Localizable", "Generics.showInFinder", fallback: "Show in Finder")
   }
   internal enum Project {
+    /// Write your question here...
+    internal static let placeholder = L10n.tr("Localizable", "Project.placeholder", fallback: "Write your question here...")
     /// Ask any question about your project.
     internal static let queryTitle = L10n.tr("Localizable", "Project.queryTitle", fallback: "Ask any question about your project.")
-    internal enum ChatContextMenu {
-      /// Delete
-      internal static let delete = L10n.tr("Localizable", "Project.ChatContextMenu.delete", fallback: "Delete")
-      /// Rename
-      internal static let rename = L10n.tr("Localizable", "Project.ChatContextMenu.rename", fallback: "Rename")
-    }
     internal enum LlmExampleQuestionPrompt {
       /// Here is an excerpt from a file.
       /// 
@@ -316,14 +326,25 @@ internal enum L10n {
       internal static let systemMessage = L10n.tr("Localizable", "Project.LlmExampleQuestionPrompt.systemMessage", fallback: "You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.\nWhen asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.\nRemember: do not include phrases like \"I hope this helps\" or \"Let me know if you need anything else.\" Focus only on delivering the requested content without deviation.")
     }
     internal enum LlmQueryPrompt {
-      /// Given the following extracted parts of a long document and a question, create a final answer. If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-      /// QUESTION: %@
-      /// =========
+      /// Here is some information.
       /// %@
-      /// =========
-      /// FINAL ANSWER:
+      /// %@
       internal static func template(_ p1: Any, _ p2: Any) -> String {
-        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Given the following extracted parts of a long document and a question, create a final answer. If you don't know the answer, just say that you don't know. Don't try to make up an answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:")
+        return L10n.tr("Localizable", "Project.LlmQueryPrompt.template", String(describing: p1), String(describing: p2), fallback: "Here is some information.\n%@\n%@")
+      }
+    }
+    internal enum StrictMode {
+      /// Here's some excerpts from your documentation based on your query.
+      /// 
+      /// 
+      internal static let responseTemplate = L10n.tr("Localizable", "Project.StrictMode.responseTemplate", fallback: "Here's some excerpts from your documentation based on your query.\n\n")
+      /// # %@
+      /// 
+      /// %@
+      /// 
+      /// 
+      internal static func sourceTemplate(_ p1: Any, _ p2: Any) -> String {
+        return L10n.tr("Localizable", "Project.StrictMode.sourceTemplate", String(describing: p1), String(describing: p2), fallback: "# %@\n\n%@\n\n")
       }
     }
     internal enum SyncStage {
@@ -407,8 +428,6 @@ internal enum L10n {
       internal static let delete = L10n.tr("Localizable", "Welcome.ProjectContextMenu.delete", fallback: "Delete")
       /// Open
       internal static let `open` = L10n.tr("Localizable", "Welcome.ProjectContextMenu.open", fallback: "Open")
-      /// Show in Finder
-      internal static let showInFinder = L10n.tr("Localizable", "Welcome.ProjectContextMenu.showInFinder", fallback: "Show in Finder")
     }
   }
 }

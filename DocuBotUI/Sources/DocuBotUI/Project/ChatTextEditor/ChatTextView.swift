@@ -23,15 +23,29 @@ class ChatTextView: NSTextView {
     public private(set) var shiftHeldDown = false
     public var eventDelegate: EventDelegate?
 
+    @objc var placeholderAttributedString: NSAttributedString?
+
     // MARK: - Lifecycle
 
     init(
         frame frameRect: NSRect,
         textContainer container: NSTextContainer?,
+        placeholder: String?,
         eventDelegate: EventDelegate
     ) {
         super.init(frame: frameRect, textContainer: container)
         self.eventDelegate = eventDelegate
+
+        if let placeholder {
+            self.placeholderAttributedString = NSAttributedString(
+                string: placeholder,
+                attributes: [
+                    .foregroundColor: NSColor.secondaryLabelColor,
+                    .font: NSFont.systemFont(ofSize: 14)
+                ]
+            )
+        }
+
         self.setup()
     }
 
