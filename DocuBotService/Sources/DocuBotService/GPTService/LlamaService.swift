@@ -9,7 +9,6 @@ import Combine
 import DocuBotModel
 import DocuBotToolbox
 import Foundation
-import SwiftLlama
 
 class LlamaService: GPTService {
 
@@ -33,7 +32,7 @@ class LlamaService: GPTService {
     // MARK: - GPTService
 
     func prime(
-        with model: Model,
+        with model: LLMModel,
         with settings: ProjectSettings
     ) throws(GPTError) {
         // Create our LLM

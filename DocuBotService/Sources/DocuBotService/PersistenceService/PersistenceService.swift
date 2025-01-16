@@ -39,11 +39,11 @@ public protocol PersistenceService: Service {
     func delete(documents: [Document]) async throws -> Int
 
     func getModelCount() -> AnyPublisher<Int?, Never>
-    func getModels() -> AnyPublisher<[Model], Error>
-    func getModels() async throws -> [Model]
-    func getModel(id: Int64) async throws -> Model
-    func insert(model: Model) async throws -> Model
-    func update(model: Model) async throws -> Model
-    func delete(model: Model) async throws -> Bool
+    func getModels() -> AnyPublisher<[LLMModel], Error>
+    func getModels() async throws -> [LLMModel]
+    func getModel(id: Int64) async throws -> LLMModel
+    func insert(model: LLMModel) async throws -> LLMModel
+    func update(model: LLMModel) async throws -> LLMModel
+    func delete(model: LLMModel) async throws -> Bool
 
 }

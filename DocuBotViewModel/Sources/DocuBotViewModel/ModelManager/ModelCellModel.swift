@@ -13,11 +13,11 @@ public class ModelCellModel {
 
     // MARK: - Properties
 
-    let model: Model
+    let model: LLMModel
 
     // MARK: - Lifecycle
 
-    init(model: Model) {
+    init(model: LLMModel) {
         self.model = model
     }
 

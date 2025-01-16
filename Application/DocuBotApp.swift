@@ -44,6 +44,16 @@ struct DocuBotApp: App {
             }
         }
         .commands {
+            // Our About DocuBot view
+            CommandGroup(replacing: CommandGroupPlacement.appInfo) {
+                Button(action: delegate.showAboutPanel) {
+                    Text("About DocuBot")
+                }
+            }
+
+            // Removing the Help menu
+            CommandGroup(replacing: CommandGroupPlacement.help) { }
+
             // Open our Welcome View
             CommandGroup(after: .windowArrangement, addition: {
                 Button("Welcome to DocuBot") {

@@ -40,6 +40,9 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// The text our user is asking
     @Published public var chatText = ""
 
+    /// The content that will be shared when the user selects the ShareButton
+    @Published public var shareContent: String?
+
     /// The text our LLM has responded back with
     @Published public var response = ResponseStatus.none
 
@@ -79,10 +82,23 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
     /// The button for the project settings
     @Published public var projectSettingsButton: ToolbarButtonViewModel
 
+    /// The AlertStatus for the project that we're viewing
     @Published public var alertStatus: Project.AlertStatus?
+
+    /// The title for our Ask/Cancel button
+    @Published public var askButtonTitle = L10n.Project.QueryButton.Ask.title
+
+    /// The icon for our Ask/Cancel button
+    @Published public var askButtonIcon: SFSymbol = .playFill
+
+    /// The enabled/disabled state for our ShareButton
+    @Published public var shareButtonDisabled = false
 
     /// This fires when we need to request the UI level to request folder permissions
     public let triggerFolderAccessRequest = PassthroughSubject<Void, Never>()
+
+    /// This is the query task that's currently being implemented
+    private var currentTask: Task<(), Never>?
 
     // MARK: - Lifecycle
 
@@ -105,7 +121,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
         // Every x seconds we check if the project is dirty
         self.checkIfProjectIsDirty()
-        Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
             self.checkIfProjectIsDirty()
         }
 
@@ -175,10 +191,55 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             .assign(to: \.isEnabled, on: projectSettingsButton)
             .store(in: &cancellables)
 
-        // Disable the TextField if we're expecting a response OR we have an error
+        // Disable the TextField if we're expecting a response
+        // OR
+        // we have an error
         Publishers.CombineLatest($expectingResponse, $project)
             .map { $0 == true || $1.alertStatus.isError }
             .assign(to: &$disableTextField)
+
+        // Set the Ask button to say "Ask" if we are NOT expecting a response
+        // Set the Ask button to say "Stop" if we are expecting a response
+        self.$expectingResponse
+            .map {
+                if $0 {
+                    return L10n.Project.QueryButton.Cancel.title
+                } else {
+                    return L10n.Project.QueryButton.Ask.title
+                }
+            }
+            .assign(to: &$askButtonTitle)
+
+        // Set the Ask button to say "Stop" if we are expecting a response
+        self.$expectingResponse
+            .map {
+                if $0 {
+                    return SFSymbol.stopFill
+                } else {
+                    return SFSymbol.playFill
+                }
+            }
+            .assign(to: &$askButtonIcon)
+
+        // If we do NOT have ShareContent
+        // OR
+        // We are currently NOT waiting for the LLM to get back to us
+        // We disable our button
+        Publishers.CombineLatest(self.$shareContent, self.$expectingResponse)
+            .map { $0 == nil || $1 == true }
+            .assign(to: &$shareButtonDisabled)
+
+        // If we have a response, we can share it
+        self.$response
+            .compactMap { response -> String? in
+                switch response {
+                case .response(let value):
+                    return value
+                default:
+                    return nil
+                }
+            }
+            .assign(to: &$shareContent)
     }
 
 }
@@ -197,6 +258,10 @@ public extension ProjectViewModel {
 
     var textEditorPlaceholder: String {
         L10n.Project.placeholder
+    }
+
+    var shareButtonTitle: String {
+        L10n.Project.ShareButton.title
     }
 
     func openSettings() {
@@ -228,7 +293,7 @@ public extension ProjectViewModel {
         self.response = .loading
         self.expectingResponse = true
 
-        Task {
+        self.currentTask = Task {
             do {
                 let query = self.chatText
                 let settings = try await self.getProjectSettings()
@@ -290,11 +355,18 @@ public extension ProjectViewModel {
                     for excerpt in excerpts {
                         response.append(excerpt)
                     }
-                    await MainActor.run { self.response = .response(response: response) }
+
+                    await MainActor.run {
+                        self.response = .response(response: response)
+                        self.expectingResponse = false
+                    }
 
                 } else {
                     // Create a polished query with our relevant documents in tow
-                    let formattedQuery = self.createQuery(with: sources, for: query)
+                    let formattedQuery = self.createQuery(
+                        with: sources,
+                        for: query
+                    )
 
                     logService.log(with: .info, "Query: \(query)")
                     logService.log(with: .info, "Formatted Query:\n\n \(formattedQuery)\n")
@@ -350,7 +422,9 @@ public extension ProjectViewModel {
                     relativeTo: nil
                 )
 
-                self.project.set(alertStatus: .warning(warning: .directoryChanged))
+                self.project.set(
+                    alertStatus: .warning(warning: .directoryChanged)
+                )
                 self.project.path = directory.path
                 self.project.urlBookmarkData = bookmarkData
 
@@ -363,6 +437,17 @@ public extension ProjectViewModel {
                     )
                 }
             }
+        }
+    }
+
+    func askButtonSelected() {
+        if self.expectingResponse {
+            self.currentTask?.cancel()
+
+            self.response = .none
+            self.expectingResponse = false
+        } else {
+            self.enterSelected()
         }
     }
 
@@ -388,7 +473,7 @@ private extension ProjectViewModel {
                 )
                 // Are we dirty?
                 let isDirty = try await documentBuilder.checkProjectIsDirty()
-                logService.log(with: .info, "Project Dirty: \(isDirty)")
+                // logService.log(with: .info, "Project Dirty: \(isDirty)")
 
                 // If we are, persist it to the DB
                 await MainActor.run {
@@ -674,9 +759,15 @@ public extension ProjectViewModel.SyncStage {
         case .extractingDocumentsFromDisk:
             return L10n.Project.SyncStage.ExtractingDocuments.subtitle
         case .trainingDocuments(_, let progress):
-            return L10n.Project.SyncStage.TrainingDocuments.subtitle(progress.value, progress.total)
+            return L10n.Project.SyncStage.TrainingDocuments.subtitle(
+                Int(progress.value),
+                Int(progress.total)
+            )
         case .buildingExampleQuestions(_, let progress):
-            return L10n.Project.SyncStage.BuildingQuestions.subtitle(progress.value, progress.total)
+            return L10n.Project.SyncStage.BuildingQuestions.subtitle(
+                Int(progress.value),
+                Int(progress.total)
+            )
         }
     }
 
@@ -704,4 +795,4 @@ public extension ProjectViewModel {
         )
     }
 
-}
+} // swiftlint:disable:this file_length

@@ -1,5 +1,5 @@
 //
-//  ModelRecord+MockData.swift
+//  LLMModelRecord+MockData.swift
 //  DocuBotService
 //
 //  Created by William Lumley on 30/10/2024.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-extension ModelRecord {
+extension LLMModelRecord {
 
-    static func mocks() -> [ModelRecord] {
+    static func mocks() -> [LLMModelRecord] {
         return [
             .mock(
                 id: 1,
@@ -39,7 +39,7 @@ extension ModelRecord {
         size: Int64 = 100,
         createdAt: Date = .init(),
         updatedAt: Date = .init()
-    ) -> ModelRecord {
+    ) -> LLMModelRecord {
         .init(
             id: id,
             name: name,

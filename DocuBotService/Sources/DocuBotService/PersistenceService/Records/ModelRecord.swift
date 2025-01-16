@@ -1,5 +1,5 @@
 //
-//  ModelRecord.swift
+//  LLMModelRecord.swift
 //  DocuBotService
 //
 //  Created by William Lumley on 29/10/2024.
@@ -8,7 +8,7 @@
 import Foundation
 import GRDB
 
-public struct ModelRecord: Record {
+public struct LLMModelRecord: Record {
 
     // MARK: - Properties
 

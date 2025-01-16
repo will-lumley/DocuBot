@@ -18,12 +18,15 @@ let package = Package(
     dependencies: [
         .package(path: "../DocuBotModel"),
         .package(path: "../DocuBotToolbox"),
-        .package(url: "https://github.com/SwiftGen/SwiftGenPlugin", from: "6.6.2"),
-        .package(url: "https://github.com/groue/GRDB.swift.git", from: "6.29.0"),
         .package(
-            url: "https://github.com/ShenghaiWang/SwiftLlama.git",
-            revision: "abc2dd58ae445c15ea17aa0684259dbd1c772225"
-        )
+            url: "https://github.com/SwiftGen/SwiftGenPlugin",
+            from: "6.6.2"
+        ),
+        .package(
+            url: "https://github.com/groue/GRDB.swift.git",
+            from: "6.29.0"
+        ),
+        .package(url: "https://github.com/ggerganov/llama.cpp.git", branch: "master")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -33,8 +36,8 @@ let package = Package(
             dependencies: [
                 "DocuBotModel",
                 "DocuBotToolbox",
-                "SwiftLlama",
 
+                .product(name: "llama", package: "llama.cpp"),
                 .product(name: "GRDB", package: "GRDB.swift")
             ],
             plugins: [

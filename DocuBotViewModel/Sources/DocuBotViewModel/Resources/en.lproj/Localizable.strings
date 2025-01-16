@@ -38,6 +38,13 @@
 "Error.Project.StaleBookmark.message" = "It looks like the file's location has changed or is no longer accessible. Please select the file again to continue.";
 "Error.Project.StaleBookmark.action" = "Select Folder";
 
+"About.title" = "DocuBot";
+"About.subtitle" = "v%@(%@)";
+"About.licence" = "View Licence";
+"About.privacyPolicy" = "Privacy Policy";
+"About.ThirdPartyLibraries.title" = "Acknowledgements";
+"About.ThirdPartyLibraries.subtitles" = "DocuBot would not have been possible without these libraries:";
+
 "Welcome.title" = "Welcome to DocuBot";
 "Welcome.subtitle1" = "Developed by William Lumley";
 "Welcome.subtitle2" = "v%@(%@)";
@@ -157,6 +164,10 @@
 "Project.placeholder" = "Write your question here...";
 "Project.StrictMode.responseTemplate" = "Here's some excerpts from your documentation based on your query.\n\n";
 "Project.StrictMode.sourceTemplate" = "# %@\n\n%@\n\n";
+
+"Project.QueryButton.Ask.title" = "Ask Question";
+"Project.QueryButton.Cancel.title" = "Cancel";
+"Project.ShareButton.title" = "Share";
 
 "Project.Warning.isDirty" = "The project's documentation has changed on disk. A sync is required to ensure the latest changes are reflected.";
 "Project.Warning.directoryChanged" = "The project's location has been changed. A sync is required to ensure the latest changes are reflected.";
