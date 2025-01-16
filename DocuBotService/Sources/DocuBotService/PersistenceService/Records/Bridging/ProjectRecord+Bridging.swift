@@ -29,7 +29,7 @@ public extension ProjectRecord {
 
 }
 
-private extension ProjectRecord.AlertStatus {
+extension ProjectRecord.AlertStatus {
 
     init(model: Project.AlertStatus) {
         switch model {
@@ -44,7 +44,7 @@ private extension ProjectRecord.AlertStatus {
 
 }
 
-private extension ProjectRecord.AlertStatus.WarningState {
+extension ProjectRecord.AlertStatus.WarningState {
 
     init(model: Project.AlertStatus.WarningState) {
         switch model {
@@ -63,7 +63,7 @@ private extension ProjectRecord.AlertStatus.WarningState {
 
 }
 
-private extension ProjectRecord.AlertStatus.ErrorState {
+extension ProjectRecord.AlertStatus.ErrorState {
 
     init(model: Project.AlertStatus.ErrorState) {
         switch model {
@@ -95,7 +95,7 @@ public extension Project {
 
 }
 
-private extension Project.AlertStatus {
+extension Project.AlertStatus {
 
     init(record: ProjectRecord.AlertStatus) {
         switch record {
@@ -110,7 +110,7 @@ private extension Project.AlertStatus {
 
 }
 
-private extension Project.AlertStatus.WarningState {
+extension Project.AlertStatus.WarningState {
 
     init(record: ProjectRecord.AlertStatus.WarningState) {
         switch record {
@@ -129,7 +129,7 @@ private extension Project.AlertStatus.WarningState {
 
 }
 
-private extension Project.AlertStatus.ErrorState {
+extension Project.AlertStatus.ErrorState {
 
     init(record: ProjectRecord.AlertStatus.ErrorState) {
         switch record {

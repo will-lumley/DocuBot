@@ -319,7 +319,8 @@ private extension ModelManagerViewModel {
         Task {
             do {
                 let success = try await persistenceService.delete(
-                    model: model
+                    model: model,
+                    deleteModelOnDisk: true
                 )
                 if success == false {
                     throw ModelError.failedToDelete
