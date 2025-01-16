@@ -642,7 +642,7 @@ private extension ConfigureProjectViewModel {
                 id: projectInfo.settings.id,
                 projectID: projectInfo.settings.projectID,
                 modelID: self.model.id ?? -1,
-                supportedFormats: supportedFormats,
+                supportedFormats: self.supportedFormats,
                 language: self.selectedLanguage,
                 embeddingModel: self.embeddingModel,
                 similarityMetric: self.similarityMetric,

@@ -1293,7 +1293,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(onSavedCalled == true)
     }
 
-    // TODO: Test the saving of the ReSync properties
     @Test("Save Project - Editing")
     func editProject() async throws {
         var cancellables = [AnyCancellable]()
@@ -1339,7 +1338,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
         // We won't change the properties below as it will trigger a
         // resync warning - so we'll test the changing of these properties
-        // in a seperate test.
+        // in a the resync tests.
         /*
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
@@ -1458,7 +1457,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.batchSize == 2048)
         #expect(testSubject.stopSequence == "")
         #expect(testSubject.maxTokenCount == 1048576)
-        #expect(testSubject.systemPrompt == "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.") // swiftlint:disable:this line_length
+        #expect(testSubject.systemPrompt == "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.")
         #expect(testSubject.strictMode == false)
 
         // THEN nothing else has been changed
@@ -1702,7 +1701,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         await withCheckedContinuation { continuation in
             testSubject.$model.eraseToAnyPublisher()
                 .compactMap(\.self)
-                .sink { bar in
+                .sink { _ in
                     continuation.resume()
                 }
                 .store(in: &cancellables)
@@ -1916,7 +1915,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         // THEN the Project & Settings is saved
         let savedProject = await withCheckedContinuation { cont in
             persistenceService.getProject(id: 1)
-                .dropFirst()
                 .sink { newProject in
                     cont.resume(returning: newProject)
                 }
@@ -1928,14 +1926,18 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(savedProject.urlBookmarkData == .init())
     }
 
-    @Test("ReSync Message - Formats Changed - Editing", .disabled())
+    @Test("ReSync Message - Formats Changed - Editing")
     func resyncMessageFormatsChangedEditing() async throws {
         var cancellables = [AnyCancellable]()
 
         // GIVEN that we have an existing Project & Settings in the DB
         let model = await self.persistTestModel()
         let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: model.id ?? -1)
+        let settings = ProjectSettings.mock(
+            id: 1,
+            projectID: 1,
+            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
+        )
 
         _ = try await persistenceService.insert(project: project)
         _ = try await persistenceService.insert(settings: settings)
@@ -1951,28 +1953,56 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
         // WHEN we change the formats
         testSubject.formatConfigurations = [
-            .init(order: 1, format: .rtf, isEnabled: true)
+            .init(order: 1, format: .rtf, isEnabled: true),
+            .init(order: 2, format: .txt, isEnabled: true),
+            .init(order: 3, format: .md, isEnabled: false),
+            .init(order: 5, format: .other("foo"), isEnabled: false),
+            .init(order: 6, format: .other("bar"), isEnabled: true),
         ]
 
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
         // THEN ReSync Alert is correctly set
-        await withCheckedContinuation { continuation in
+        let alert = await withCheckedContinuation { continuation in
             testSubject.$alertConfiguration.eraseToAnyPublisher()
                 .compactMap(\.self)
                 .sink { newAlert in
-                    #expect(
-                        newAlert == .init(
-                            title: "Re-Sync Will Be Needed",
-                            message: "Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings."
-                        )
-                    )
-
-                    continuation.resume()
+                    continuation.resume(returning: newAlert)
                 }
                 .store(in: &cancellables)
         }
+        #expect(
+            alert == .init(
+                title: "Re-Sync Will Be Needed",
+                message: "Changing the formats of the documentation that DocuBot has access to will require a full re-sync to reflect the updates. You'll be prompted to initiate this after saving the settings.",
+                primaryAction: .init(title: "Save Settings") { }
+            )
+        )
+
+        // WHEN the alert's action is called
+        await MainActor.run {
+            alert.primaryAction?.onSelect()
+        }
+
+        // THEN the Project & Settings is saved
+        let savedSettings = await withCheckedContinuation { cont in
+            persistenceService.getProjectSettings(for: project)
+                .dropFirst()
+                .sink { newSettings in
+                    cont.resume(returning: newSettings)
+                }
+                .store(in: &cancellables)
+        }
+
+        // THEN the Formats have been updated correctly
+        #expect(
+            savedSettings.supportedFormats == [
+                .rtf,
+                .txt,
+                .other("bar")
+            ]
+        )
     }
 
     @Test("New Alert Status")
@@ -1984,8 +2014,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         let testSubject = ConfigureProjectViewModel(
             serviceContainer: self.serviceContainer
         )
-
-        
     }
 
     @Test("Help Button Selected")
