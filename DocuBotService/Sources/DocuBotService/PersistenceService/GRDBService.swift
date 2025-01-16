@@ -101,13 +101,9 @@ class GRDBService: PersistenceService {
     func update(project: Project) async throws -> Project {
         return try await self.dbQueue.write { db in
             let record = ProjectRecord(model: project)
-            print("Record: \(record)")
             try record.update(db)
 
-            let model = Project(record: record)
-            print("Model: \(model)")
-
-            return model
+            return Project(record: record)
         }
     }
 

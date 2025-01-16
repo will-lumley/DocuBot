@@ -3,6 +3,16 @@
 "Error.ConfigureProject.Creating.FailedToCreate.title" = "Failed to Create Project";
 "Error.ConfigureProject.Editing.FailedToCreate.title" = "Failed to Update Project";
 "Error.ConfigureProject.ConfigurationError.noDirectory" = "No directory selected.";
+"Error.ConfigureProject.FormValidation.missingDirectory" = "Please ensure that a project directory has been selected.";
+"Error.ConfigureProject.FormValidation.missingName" = "Please ensure that a project directory has been selected.";
+"Error.ConfigureProject.FormValidation.missingFormat" = "Please ensure that at least one format has been enabled.";
+"Error.ConfigureProject.FormValidation.missingSeed" = "Please ensure that a valid seed is provided.";
+"Error.ConfigureProject.FormValidation.missingTopK" = "Please ensure that a valid Top-K is provided.";
+"Error.ConfigureProject.FormValidation.missingContextLength" = "Please ensure that a valid context lenght is provided.";
+"Error.ConfigureProject.FormValidation.missingBatchSize" = "Please ensure that a valid batch size is provided.";
+"Error.ConfigureProject.FormValidation.missingMaxTokenCount" = "Please ensure that a valid maximum token count is provided.";
+"Error.ConfigureProject.FormValidation.missingSystemPrompt" = "Please ensure that a valid system prompt is provided.";
+
 "Error.Project.FailedToSync.title" = "Failed to Sync";
 "Error.Project.FailedToExtractSettings.title" = "Failed to get Project Settings";
 "Error.Project.GptTalk.title" = "Failed to get communicate with the LLM";

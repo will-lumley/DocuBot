@@ -232,6 +232,26 @@ internal enum L10n {
           internal static let title = L10n.tr("Localizable", "Error.ConfigureProject.Editing.FailedToCreate.title", fallback: "Failed to Update Project")
         }
       }
+      internal enum FormValidation {
+        /// Please ensure that a valid batch size is provided.
+        internal static let missingBatchSize = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingBatchSize", fallback: "Please ensure that a valid batch size is provided.")
+        /// Please ensure that a valid context lenght is provided.
+        internal static let missingContextLength = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingContextLength", fallback: "Please ensure that a valid context lenght is provided.")
+        /// Please ensure that a project directory has been selected.
+        internal static let missingDirectory = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingDirectory", fallback: "Please ensure that a project directory has been selected.")
+        /// Please ensure that at least one format has been enabled.
+        internal static let missingFormat = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingFormat", fallback: "Please ensure that at least one format has been enabled.")
+        /// Please ensure that a valid maximum token count is provided.
+        internal static let missingMaxTokenCount = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingMaxTokenCount", fallback: "Please ensure that a valid maximum token count is provided.")
+        /// Please ensure that a project directory has been selected.
+        internal static let missingName = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingName", fallback: "Please ensure that a project directory has been selected.")
+        /// Please ensure that a valid seed is provided.
+        internal static let missingSeed = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingSeed", fallback: "Please ensure that a valid seed is provided.")
+        /// Please ensure that a valid system prompt is provided.
+        internal static let missingSystemPrompt = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingSystemPrompt", fallback: "Please ensure that a valid system prompt is provided.")
+        /// Please ensure that a valid Top-K is provided.
+        internal static let missingTopK = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingTopK", fallback: "Please ensure that a valid Top-K is provided.")
+      }
     }
     internal enum Project {
       internal enum FailedToExtractSettings {
