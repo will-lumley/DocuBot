@@ -292,6 +292,7 @@ private extension ProjectViewModel {
                     }
                     .compactMap(\.self)
                     .map { $0.replacingOccurrences(of: "Question: ", with: " ") }
+                    .map { $0.replacingOccurrences(of: "according to the provided excerpt?", with: "?") }
                     .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
 
                 // Update the project properties
