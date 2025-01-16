@@ -38,6 +38,15 @@ let package = Package(
         ),
         .testTarget(
             name: "DocuBotModelTests",
-            dependencies: ["DocuBotModel"])
+            dependencies: [
+                "DocuBotModel",
+
+                .product(name: "SimilaritySearchKit", package: "similarity-search-kit"),
+                .product(name: "SimilaritySearchKitDistilbert", package: "similarity-search-kit"),
+                .product(name: "SimilaritySearchKitMiniLMMultiQA", package: "similarity-search-kit"),
+                .product(name: "SimilaritySearchKitMiniLMAll", package: "similarity-search-kit")
+
+            ]
+        )
     ]
 )

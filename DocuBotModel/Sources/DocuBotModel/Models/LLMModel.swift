@@ -69,3 +69,19 @@ public extension LLMModel {
     }
 
 }
+
+// MARK: - Equatable
+
+extension LLMModel: Equatable {
+
+    public static func == (lhs: LLMModel, rhs: LLMModel) -> Bool {
+        return
+            lhs.id == rhs.id &&
+            lhs.path == rhs.path &&
+            lhs.name == rhs.name &&
+            lhs.size == rhs.size &&
+            lhs.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            lhs.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
+    }
+
+}

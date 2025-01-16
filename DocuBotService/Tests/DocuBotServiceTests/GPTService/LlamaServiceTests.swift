@@ -33,8 +33,10 @@ struct LlamaServiceTests {
 
         // Our LLM primes correctly without crashing
         try testSubject.prime(
-            with: try .mock(path: try Self.testModelPath),
-            with: .mock
+            with: .mock(
+                path: try Self.testModelPath
+            ),
+            with: .mock()
         )
     }
 
@@ -45,8 +47,8 @@ struct LlamaServiceTests {
         // Our LLM primes correctly without crashing
         do {
             try testSubject.prime(
-                with: try .mock(path: "/invalid/path"),
-                with: .mock
+                with: .mock(path: "/invalid/path"),
+                with: .mock()
             )
             Issue.record("No error was thrown with invalid model path")
         } catch {
@@ -71,9 +73,9 @@ struct LlamaServiceTests {
         // Our LLM primes correctly without crashing
         do {
             try testSubject.prime(
-                with: try .mock(path: try Self.testModelPath),
+                with: .mock(path: try Self.testModelPath),
                 with: .init(
-                    record: .mock(contextLength: 2048)
+                    record: .init(model: .mock(contextLength: 2048))
                 )
             )
             Issue.record("No error was thrown with invalid model path")
@@ -172,35 +174,6 @@ struct LlamaServiceTests {
             }
             #expect(gptError == .llmNotInitialised)
         }
-    }
-
-}
-
-// MARK: - LLMModel
-
-private extension LLMModel {
-
-    static func mock(
-        path: String
-    ) throws -> LLMModel {
-        .init(
-            id: 1,
-            name: "Mock",
-            path: path,
-            size: 4000,
-            createdAt: .now,
-            updatedAt: .now
-        )
-    }
-
-}
-
-// MARK: - ProjectSettings
-
-private extension ProjectSettings {
-
-    static var mock: ProjectSettings {
-        .init(record: .mock())
     }
 
 }

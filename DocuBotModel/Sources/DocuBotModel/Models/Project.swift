@@ -9,7 +9,7 @@ import Foundation
 import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
 
-public struct Project: Hashable, Codable, Sendable, Equatable {
+public struct Project: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
@@ -161,6 +161,41 @@ public extension Project {
         if self.alertStatus.isDirty {
             self.alertStatus = .none
         }
+    }
+
+}
+
+// MARK: - Equatable
+
+extension Project: Equatable {
+
+    public static func == (lhs: Project, rhs: Project) -> Bool {
+        return lhs.id == rhs.id &&
+            lhs.path == rhs.path &&
+            lhs.name == rhs.name &&
+            lhs.urlBookmarkData == rhs.urlBookmarkData &&
+            lhs.documentationChecksum == rhs.documentationChecksum &&
+            lhs.documents == rhs.documents &&
+            lhs.exampleQuestions == rhs.exampleQuestions &&
+            lhs.alertStatus == rhs.alertStatus &&
+            lhs.needsFullResync == rhs.needsFullResync &&
+            lhs.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            lhs.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
+    }
+
+    public func isEqualToIgnoringID(
+        _ rhs: Project
+    ) -> Bool {
+        return self.path == rhs.path &&
+            self.name == rhs.name &&
+            self.urlBookmarkData == rhs.urlBookmarkData &&
+            self.documentationChecksum == rhs.documentationChecksum &&
+            self.documents == rhs.documents &&
+            self.exampleQuestions == rhs.exampleQuestions &&
+            self.alertStatus == rhs.alertStatus &&
+            self.needsFullResync == rhs.needsFullResync &&
+            self.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            self.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
     }
 
 }

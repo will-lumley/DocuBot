@@ -9,7 +9,7 @@ import DocuBotToolbox
 import Foundation
 import SimilaritySearchKit
 
-public struct Document: Hashable, Codable, Sendable, Equatable {
+public struct Document: Hashable, Codable, Sendable {
 
     // MARK: - Types
 
@@ -21,7 +21,7 @@ public struct Document: Hashable, Codable, Sendable, Equatable {
         case failedConversion
     }
 
-    public struct Embedding: Hashable, Codable, Sendable {
+    public struct Embedding: Hashable, Codable, Sendable, Equatable {
         public let chunk: String
         public let embedding: [Float]
 
@@ -79,6 +79,25 @@ public extension Document {
 
     var llmReference: String {
         L10n.Document.LlmReference.template(self.url.path(), self.content)
+    }
+
+}
+
+// MARK: - Equatable
+
+extension Document: Equatable {
+
+    public static func == (lhs: Document, rhs: Document) -> Bool {
+        return lhs.id == rhs.id &&
+            lhs.url == rhs.url &&
+            lhs.fileFormat == rhs.fileFormat &&
+            lhs.content == rhs.content &&
+            lhs.checksum == rhs.checksum &&
+            lhs.projectID == rhs.projectID &&
+            lhs.embeddings == rhs.embeddings &&
+            lhs.createdAt == rhs.createdAt &&
+            lhs.createdAt.secondsFrom1970 == rhs.createdAt.secondsFrom1970 &&
+            lhs.updatedAt.secondsFrom1970 == rhs.updatedAt.secondsFrom1970
     }
 
 }

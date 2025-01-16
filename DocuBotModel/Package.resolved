@@ -1,0 +1,33 @@
+{
+  "originHash" : "e8130137faf89cc544d488124536ff31eea80ffeaa3f5deb942e4aea1d358a4e",
+  "pins" : [
+    {
+      "identity" : "similarity-search-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZachNagengast/similarity-search-kit.git",
+      "state" : {
+        "revision" : "9bec54706c8124bb9b20a3a06d566066a9f55712",
+        "version" : "0.0.15"
+      }
+    },
+    {
+      "identity" : "swiftgenplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftGen/SwiftGenPlugin",
+      "state" : {
+        "revision" : "879b85a470cacd70c19e22eb7e11a3aed66f4068",
+        "version" : "6.6.2"
+      }
+    },
+    {
+      "identity" : "vexil",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/unsignedapps/Vexil",
+      "state" : {
+        "revision" : "9e07b284465effe2ababb8b2c2c16831cdca493f",
+        "version" : "2.2.3"
+      }
+    }
+  ],
+  "version" : 3
+}
