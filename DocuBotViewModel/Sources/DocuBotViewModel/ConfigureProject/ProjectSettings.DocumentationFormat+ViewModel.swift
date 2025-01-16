@@ -25,15 +25,6 @@ public extension ProjectSettings.DocumentationFormat {
         }
     }
 
-    var isOther: Bool {
-        switch self {
-        case .other:
-            return true
-        default:
-            return false
-        }
-    }
-
     var otherStr: String? {
         switch self {
         case .other(let value):

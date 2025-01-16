@@ -76,7 +76,7 @@ struct ConfirmationDialogConfigurationTests {
         ) {}
 
         // THEN the ID is set correctly
-        #expect(button.id == "Cancel")
+        #expect(button.id == "Cancelcancel")
     }
 
     @Test("Dialog with Multiple Buttons")

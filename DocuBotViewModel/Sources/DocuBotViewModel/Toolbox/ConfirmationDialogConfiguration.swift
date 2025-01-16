@@ -16,7 +16,7 @@ public struct ConfirmationDialogConfiguration {
 
     public struct ButtonConfiguration {
 
-        public enum Role {
+        public enum Role: String {
             case destructive
             case cancel
         }
@@ -43,10 +43,23 @@ extension ConfirmationDialogConfiguration: Identifiable {
 
 }
 
+// MARK: - ConfirmationDialogConfiguration.ButtonConfiguration
+
 extension ConfirmationDialogConfiguration.ButtonConfiguration: Identifiable {
 
     public var id: String {
-        self.title
+        self.title + self.role.rawValue
+    }
+
+}
+
+extension ConfirmationDialogConfiguration.ButtonConfiguration: Equatable {
+
+    public static func == (
+        lhs: ConfirmationDialogConfiguration.ButtonConfiguration,
+        rhs: ConfirmationDialogConfiguration.ButtonConfiguration
+    ) -> Bool {
+        return lhs.id == rhs.id
     }
 
 }
