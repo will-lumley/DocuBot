@@ -275,12 +275,6 @@ internal enum L10n {
   }
   internal enum Error {
     internal enum ConfigureProject {
-      internal enum ConfigurationError {
-        /// No directory selected.
-        internal static let noDirectory = L10n.tr("Localizable", "Error.ConfigureProject.ConfigurationError.noDirectory", fallback: "No directory selected.")
-        /// No secure directory data is avaiable to DocuBot.
-        internal static let noDirectoryBookmarkData = L10n.tr("Localizable", "Error.ConfigureProject.ConfigurationError.noDirectoryBookmarkData", fallback: "No secure directory data is avaiable to DocuBot.")
-      }
       internal enum Creating {
         internal enum FailedToCreate {
           /// Failed to Create Project
@@ -294,12 +288,16 @@ internal enum L10n {
         }
       }
       internal enum FormValidation {
+        /// Please ensure that the Top-P value is within the range of 0.0 and 1.0.
+        internal static let invalidTopP = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.invalidTopP", fallback: "Please ensure that the Top-P value is within the range of 0.0 and 1.0.")
         /// Please ensure that a valid batch size is provided.
         internal static let missingBatchSize = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingBatchSize", fallback: "Please ensure that a valid batch size is provided.")
-        /// Please ensure that a valid context lenght is provided.
-        internal static let missingContextLength = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingContextLength", fallback: "Please ensure that a valid context lenght is provided.")
+        /// Please ensure that a valid context length is provided.
+        internal static let missingContextLength = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingContextLength", fallback: "Please ensure that a valid context length is provided.")
         /// Please ensure that a project directory has been selected.
         internal static let missingDirectory = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingDirectory", fallback: "Please ensure that a project directory has been selected.")
+        /// No secure directory data is avaiable to DocuBot.
+        internal static let missingDirectoryData = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingDirectoryData", fallback: "No secure directory data is avaiable to DocuBot.")
         /// Please ensure that at least one format has been enabled.
         internal static let missingFormat = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingFormat", fallback: "Please ensure that at least one format has been enabled.")
         /// Please ensure that a valid maximum token count is provided.
@@ -308,12 +306,12 @@ internal enum L10n {
         internal static let missingModel = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingModel", fallback: "Please ensure that a model has been selected.")
         /// Please ensure that a project name has been provided.
         internal static let missingName = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingName", fallback: "Please ensure that a project name has been provided.")
-        /// Please ensure that a valid seed is provided.
-        internal static let missingSeed = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingSeed", fallback: "Please ensure that a valid seed is provided.")
+        /// Please ensure that a valid seed value is provided.
+        internal static let missingSeed = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingSeed", fallback: "Please ensure that a valid seed value is provided.")
         /// Please ensure that a valid system prompt is provided.
         internal static let missingSystemPrompt = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingSystemPrompt", fallback: "Please ensure that a valid system prompt is provided.")
-        /// Please ensure that a valid Top-K is provided.
-        internal static let missingTopK = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingTopK", fallback: "Please ensure that a valid Top-K is provided.")
+        /// Please ensure that a valid Top-K value is provided.
+        internal static let missingTopK = L10n.tr("Localizable", "Error.ConfigureProject.FormValidation.missingTopK", fallback: "Please ensure that a valid Top-K value is provided.")
       }
     }
     internal enum ModelManager {

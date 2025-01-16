@@ -427,7 +427,7 @@ public extension ProjectViewModel {
         Task {
             do {
                 guard let directory else {
-                    throw ConfigureProjectViewModel.ConfigurationError.noDirectory
+                    throw ConfigureProjectViewModel.FormValidationError.missingDirectory
                 }
 
                 let bookmarkData = try directory.bookmarkData(
