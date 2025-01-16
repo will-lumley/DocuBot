@@ -73,6 +73,8 @@ This project is structured with a modular design, with different responsibilitie
 - DocuBot is 100% native with 100% of the source code in Swift 6.
 - SwiftUI is used for the UI layer.
 - SwiftTesting is used for the unit tests.
+- A combination of `Combine` and `async/await` is used.
+- `GRDB` is used as the SQLite wrapper as it's an amazing library and fits into Swift's type safety perfectly.
 - Swift 6's strict concurrency is used, but admittedly I don't have a 100% grasp on it yet, so I feel like my current implementation of adapting to strict concurrency could be improved.
 
 ## Acknowledgments
