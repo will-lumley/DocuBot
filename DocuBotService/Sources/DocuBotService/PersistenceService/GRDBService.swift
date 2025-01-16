@@ -186,6 +186,13 @@ private extension GRDBService {
                 }
             }
 
+            // Import all the project settings
+            try self.dbQueue.write { db in
+                for var record in ProjectSettingsRecord.mocks() {
+                    try record.insert(db)
+                }
+            }
+
             // Import all the chats
             try self.dbQueue.write { db in
                 for var record in ChatRecord.mocks() {
@@ -195,8 +202,6 @@ private extension GRDBService {
 
             // Import all the messages
             try self.dbQueue.write { db in
-                try db.execute(sql: "PRAGMA foreign_keys = OFF")
-
                 for var record in MessageRecord.mocks() {
                     try record.insert(db)
                 }
