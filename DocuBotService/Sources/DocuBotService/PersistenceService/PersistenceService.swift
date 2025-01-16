@@ -12,7 +12,9 @@ import Foundation
 public protocol PersistenceService: Service {
 
     func getProjects() -> AnyPublisher<[Project], Error>
-    func getChats(for project: ProjectRecord) -> AnyPublisher<[Chat], Error>
-    func getMessages(for chat: ChatRecord) -> AnyPublisher<[Message], Error>
+    func delete(project: Project) async throws -> Bool
+
+    func getChats(for project: Project) -> AnyPublisher<[Chat], Error>
+    func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error>
 
 }

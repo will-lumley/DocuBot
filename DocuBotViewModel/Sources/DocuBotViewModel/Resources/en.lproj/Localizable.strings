@@ -6,3 +6,18 @@
 "ProjectPicker.emailDeveloper" = "Email the Developer";
 "ProjectPicker.emptyProjectTitle" = "Your project list is empty";
 "ProjectPicker.emptyProjectSubtitle" = "Your insights await – load a new project to get started";
+"ProjectPicker.Delete.Confirmation.title" = "Are you sure you want to delete this project?";
+"ProjectPicker.Delete.Confirmation.deleteButton" = "Delete this Project";
+"ProjectPicker.Delete.Confirmation.cancelButton" = "Cancel";
+"ProjectPicker.ProjectContextMenu.open" = "Open";
+"ProjectPicker.ProjectContextMenu.delete" = "Delete";
+"ProjectPicker.ProjectContextMenu.showInFinder" = "Show in Finder";
+
+"CreateProject.windowTitle" = "Create Project";
+"CreateProject.Configuration.ProjectDirectory.title" = "Project Directory";
+"CreateProject.Configuration.Format.title" = "What format is your documentation in?";
+"CreateProject.Configuration.Format.txt" = ".txt";
+"CreateProject.Configuration.Format.md" = ".md";
+"CreateProject.Configuration.Format.rtf" = ".rtf";
+"CreateProject.Configuration.Format.html" = ".html";
+"CreateProject.createButton" = "Create Project";

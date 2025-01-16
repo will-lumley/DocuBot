@@ -16,14 +16,16 @@ public struct Project: Hashable {
     public let name: String
     public var chats = [Chat]()
     public let createdAt: Date
+    public let updatedAt: Date
 
     // MARK: - Lifecycle
 
-    public init(id: Int, path: String, name: String, createdAt: Date) {
+    public init(id: Int, path: String, name: String, createdAt: Date, updatedAt: Date) {
         self.id = id
         self.path = path
         self.name = name
         self.createdAt = createdAt
+        self.updatedAt = updatedAt
     }
 
 }

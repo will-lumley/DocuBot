@@ -8,16 +8,22 @@
 import Foundation
 import DocuBotModel
 
+public protocol ProjectPickerCellViewModelDelegate {
+    func openProject(_ project: Project)
+}
+
 public class ProjectPickerCellViewModel: ObservableObject {
 
     // MARK: - Properties
 
-    private let project: Project
+    let project: Project
+    public var delegate: ProjectPickerCellViewModelDelegate?
 
     // MARK: - Lifecycle
 
-    init(project: Project) {
+    init(project: Project, delegate: ProjectPickerCellViewModelDelegate? = nil) {
         self.project = project
+        self.delegate = delegate
     }
 
 }
@@ -57,6 +63,11 @@ public extension ProjectPickerCellViewModel {
     var subtitle: String {
         self.project.path
     }
+
+    func openButtonSelected() {
+        self.delegate?.openProject(self.project)
+    }
+
 }
 
 // MARK: - Preview
@@ -69,7 +80,8 @@ public extension ProjectPickerCellViewModel {
                 id: 1,
                 path: "/Users/will/Desktop/Project_1",
                 name: "Project_1",
-                createdAt: .now
+                createdAt: .now,
+                updatedAt: .now
             )
         )
     }
