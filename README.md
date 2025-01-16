@@ -20,6 +20,8 @@ When a project is loaded into DocuBot, it scans the specified directory, iterati
 
 DocuBot stores these embeddings in a similarity index configured with user-selected metrics (such as Cosine similarity), enabling efficient searches. When you ask a question, DocuBot leverages this index to identify the most relevant chunks across all documents, measuring how closely each chunk aligns with your query. If “Strict Mode” is enabled, DocuBot will pull direct excerpts from the documentation, presenting them as-is to provide precise, source-based responses. Otherwise, it uses an on-device language model to generate a polished answer based on the relevant chunks.
 
+For generating answers, DocuBot harnesses the power of the open source LLaMA 3 through llama.cpp, a lightweight C++ library that allows for highly efficient model execution directly on your Mac. By leveraging llama.cpp, DocuBot achieves a significant performance boost, allowing LLaMA 3 to run smoothly on local hardware without compromising speed. Users can choose a model that suits their specific needs or download the default model directly within the app. This flexibility allows you to customize DocuBot’s performance, making it as lightweight or as powerful as your Mac can handle.
+
 With each query, DocuBot performs all computations locally on your Mac, ensuring your data remains private. As an open-source tool, DocuBot’s code is fully transparent, allowing users to verify its privacy-focused design. Periodically, DocuBot checks if any documentation has changed by comparing checksums, prompting you to re-sync when necessary to keep the information up-to-date.
 
 This combination of local processing, privacy protection, and flexible model configuration makes DocuBot a powerful and secure documentation assistant, perfectly tailored to developers’ needs.
@@ -29,7 +31,7 @@ This combination of local processing, privacy protection, and flexible model con
 This project is structured with a modular design, with different responsibilities and concerns handled by separate Swift Package Manager (SPM) modules. The project is structured with the following layers/modules:
 
 - [DocuBotUI](https://github.com/will-lumley/DocuBot/tree/main/DocuBotUI): Contains SwiftUI views used to create the user interface.
-- [DocuBotViewModel](https://github.com/will-lumley/DocuBot/tree/main/CraneViewModel): Manages the data and operations needed by the user interface.
+- [DocuBotViewModel](https://github.com/will-lumley/DocuBot/tree/main/DocuBotViewModel): Manages the data and operations needed by the user interface.
 - [DocuBotService](https://github.com/will-lumley/DocuBot/tree/main/DocuBotService): Handles interactions with external services such as API communication, analytics, etc.
 - [DocuBotModel](https://github.com/will-lumley/DocuBot/tree/main/DocuBotModel): Contains the business logic and data models used in the app.
 - [DocuBotToolbox](https://github.com/will-lumley/DocuBot/tree/main/DocuBotToolbox): A utility module containing basic data types and helper functions used throughout the app.
