@@ -156,7 +156,7 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
             }
             .assign(to: &$questions)
 
-        // If we are dirty, update the sync buttons icon
+        // If we have an alert status, update the sync buttons icon to have an "!"
         self.$project
             .map(\.alertStatus)
             .map { $0 != .none }

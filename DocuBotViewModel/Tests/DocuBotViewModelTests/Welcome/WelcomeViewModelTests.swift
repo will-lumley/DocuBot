@@ -209,6 +209,7 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // WHEN the ShowInFinder button is selected
         contextMenuConfigurations[2].onSelect()
+        try await Task.sleep(for: .seconds(2.0))
 
         // THEN the opened file path is correct
         let viewedFile = try #require(self.viewedFiles?.first)
@@ -252,18 +253,130 @@ class WelcomeViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     }
 
     @Test("List State - No Models")
-    func noModelListState() {
-        
+    func noModelListState() async {
+        typealias ListViewState = WelcomeViewModel.ListViewState
+
+        // GIVEN we have a WelcomeViewModel, and no Models in the DB
+        let testSubject = WelcomeViewModel(
+            serviceContainer: serviceContainer
+        )
+
+        // Create an iterator to get our values over time
+        var iteratorListView = testSubject.$listState.values.makeAsyncIterator()
+
+        // THEN the ListState is .none
+        #expect(await iteratorListView.next() == ListViewState.none)
+
+        // THEN the second ListState is .noModels
+        guard case .noModels(let configuration) = await iteratorListView.next() else {
+            Issue.record("ListState is of type: \(testSubject.listState)")
+            return
+        }
+
+        // THEN the empty configuration matches up
+        #expect(configuration.title == "Download a Model to get started")
+        #expect(configuration.subtitle == "Choose a model to enable DocuBot's AI features and start exploring your documentation.")
+        #expect(configuration.icon == .arrowDownDoc)
+        #expect(configuration.action?.title == "Open Model Manager")
+
+        let package = await confirmation { confirmation in
+            var package: WelcomeViewModel.OpenWindow?
+            testSubject.onOpen
+                .sink { newPackage in
+                    package = newPackage
+                    confirmation()
+                }
+                .store(in: &cancellables)
+
+            // WHEN we select the EmptyConfiguration action
+            configuration.action?.onSelect()
+            return package
+        }
+
+        // THEN the ModelManager is opened
+        #expect(package == .modelManager)
     }
 
     @Test("List State - No Projects")
-    func noProjectsListState() {
-        
+    func noProjectsListState() async throws {
+        typealias ListViewState = WelcomeViewModel.ListViewState
+
+        await self.persistTestModel()
+
+        // GIVEN we have a WelcomeViewModel, with Models in the DB
+        let testSubject = WelcomeViewModel(
+            serviceContainer: serviceContainer
+        )
+
+        // Create an iterator to get our values over time
+        var iteratorListView = testSubject.$listState.values.makeAsyncIterator()
+
+        // THEN the ListState is .none
+        #expect(await iteratorListView.next() == ListViewState.none)
+
+        // THEN the second ListState is .noProjects
+        guard case .noProjects(let configuration) = await iteratorListView.next() else {
+            Issue.record("ListState is of type: \(testSubject.listState)")
+            return
+        }
+
+        // THEN the empty configuration matches up
+        #expect(configuration.title == "Your project list is empty")
+        #expect(configuration.subtitle == "Your insights await – load a new project to get started")
+        #expect(configuration.icon == .booksVerticalFill)
+        #expect(configuration.action?.title == "Load New Project")
+
+        // WHEN we select the EmptyConfiguration action
+        configuration.action?.onSelect()
+
+        var iterator = testSubject.$configureProjectViewModel
+            .values
+            .makeAsyncIterator()
+
+        // THEN the ConfigureProject sheet is opened
+        let configureProjectViewModel = try #require(await iterator.next())
+
+        // THEN the ConfigureProject has no existing project
+        #expect(configureProjectViewModel?.projectInfo == nil)
     }
 
     @Test("List State - Projects")
-    func projectsListState() {
-        
+    func projectsListState() async throws {
+        typealias ListViewState = WelcomeViewModel.ListViewState
+
+        await self.persistTestModel()
+
+        var project1 = Project.mock(id: 1)
+        var project2 = Project.mock(id: 2)
+
+        project1 = try await persistenceService.insert(project: project1)
+        project2 = try await persistenceService.insert(project: project2)
+
+        // GIVEN we have a WelcomeViewModel, with Models and Projects in the DB
+        let testSubject = WelcomeViewModel(
+            serviceContainer: serviceContainer
+        )
+
+        // Create an iterator to get our values over time
+        var iteratorListView = testSubject.$listState.values.makeAsyncIterator()
+
+        // THEN the ListState is .none
+        #expect(await iteratorListView.next() == ListViewState.none)
+
+        // THEN the ListState is .projects
+        guard case .listProjects(let cells) = await iteratorListView.next() else {
+            Issue.record("ListState is of type: \(testSubject.listState)")
+            return
+        }
+
+        // THEN the cells we have in our ListState represent
+        // our Projects we inserted into the DB
+        #expect(
+            cells == [
+                .init(project: project1),
+                .init(project: project2)
+            ]
+        )
     }
 
 }

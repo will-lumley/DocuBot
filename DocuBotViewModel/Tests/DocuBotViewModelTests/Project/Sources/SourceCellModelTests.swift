@@ -52,6 +52,7 @@ class SourceCellModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // WHEN the context menu is selected
         testSubject.contextMenuConfigurations.first?.onSelect()
+        try await Task.sleep(for: .seconds(2.0))
 
         // THEN the opened file path is correct
         let viewedFile = try #require(self.viewedFiles?.first)

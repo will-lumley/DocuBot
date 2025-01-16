@@ -22,11 +22,11 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
         case project(ProjectViewModel.OpenWindowPackage)
     }
 
-    public enum ListViewState {
+    public enum ListViewState: Equatable {
         case none
         case listProjects([WelcomeProjectCellModel])
-        case noProject(EmptyListConfiguration)
-        case noModel(EmptyListConfiguration)
+        case noProjects(EmptyListConfiguration)
+        case noModels(EmptyListConfiguration)
     }
 
     public typealias OnDelete = () async -> Void
@@ -74,9 +74,9 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
             }
             .map { projects, modelCount -> ListViewState in
                 if modelCount == 0 {
-                    return .noModel(self.emptyModelConfiguration)
+                    return .noModels(self.emptyModelConfiguration)
                 } else if projects.count == 0 {
-                    return .noProject(self.emptyProjectConfiguration)
+                    return .noProjects(self.emptyProjectConfiguration)
                 }
 
                 return .listProjects(projects)
