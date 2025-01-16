@@ -30,10 +30,22 @@ public struct AlertConfiguration {
 
 }
 
+// MARK: - Identifiable
+
 extension AlertConfiguration: Identifiable {
 
     public var id: String {
         self.title + self.message
+    }
+
+}
+
+// MARK: - Equatable
+
+extension AlertConfiguration: Equatable {
+
+    public static func == (lhs: AlertConfiguration, rhs: AlertConfiguration) -> Bool {
+        return lhs.id == rhs.id
     }
 
 }

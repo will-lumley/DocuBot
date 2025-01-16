@@ -9,8 +9,8 @@ public enum Secrets {
     }
 
     public enum AppInfo {
-        public static let licnceURL = ""
-        public static let privacyPolicyURL = ""
+        public static let licenceURL = "https://github.com/will-lumley/DocuBot?tab=GPL-3.0-1-ov-file"
+        public static let privacyPolicyURL = "https://github.com/will-lumley/DocuBot/blob/main/PrivacyPolicy.pdf"
         public static let sourceCodeURL = "https://github.com/will-lumley/DocuBot"
         public static let developerEmail = "will@lumley.io"
     }

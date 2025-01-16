@@ -75,9 +75,9 @@ public struct AboutView: View {
             Divider()
                 .padding()
 
-            MenuButton(viewModel: viewModel.licence)
+            MenuButton(viewModel: viewModel.licenceButton)
                 .padding(2)
-            MenuButton(viewModel: viewModel.privacyPolicy)
+            MenuButton(viewModel: viewModel.privacyPolicyButton)
                 .padding(2)
         }
     }

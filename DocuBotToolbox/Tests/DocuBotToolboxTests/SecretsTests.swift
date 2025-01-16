@@ -25,6 +25,8 @@ struct SecretsTests {
 
         #expect(AppInfo.sourceCodeURL == "https://github.com/will-lumley/DocuBot")
         #expect(AppInfo.developerEmail == "will@lumley.io")
+        #expect(AppInfo.licenceURL == "https://github.com/will-lumley/DocuBot?tab=GPL-3.0-1-ov-file")
+        #expect(AppInfo.privacyPolicyURL == "https://github.com/will-lumley/DocuBot/blob/main/PrivacyPolicy.pdf")
     }
 
     @Test("Model Download Values")

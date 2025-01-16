@@ -5,6 +5,8 @@
 //  Created by William Lumley on 11/11/2024.
 //
 
+// Having to import AppKit makes me very sad, but necessary to open the URL
+import AppKit
 import DocuBotModel
 import DocuBotToolbox
 
@@ -26,15 +28,21 @@ public extension AboutViewModel {
         L10n.About.subtitle(Device.versionNumber, Device.buildNumber)
     }
 
-    var licence: MenuButtonViewModel {
+    var licenceButton: MenuButtonViewModel {
         .init(text: L10n.About.licence) {
-            // self.onOpen.send(.modelManager)
+            guard let url = URL(string: Secrets.AppInfo.licenceURL) else {
+                return
+            }
+            NSWorkspace.shared.open(url)
         }
     }
 
-    var privacyPolicy: MenuButtonViewModel {
+    var privacyPolicyButton: MenuButtonViewModel {
         .init(text: L10n.About.privacyPolicy) {
-            // self.onOpen.send(.modelManager)
+            guard let url = URL(string: Secrets.AppInfo.privacyPolicyURL) else {
+                return
+            }
+            NSWorkspace.shared.open(url)
         }
     }
 
