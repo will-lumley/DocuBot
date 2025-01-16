@@ -107,10 +107,10 @@ private extension NSSharingService {
 
     typealias SharedItem = DocuBotViewModelTestCase.SharedItem
     typealias OnPerform = (SharedItem) -> Void
-    
+
     nonisolated(unsafe) static var onPerformHandler: OnPerform?
     nonisolated(unsafe) private static var performIsSwizzled = false
-    
+
     static func swizzlePerform() {
         guard performIsSwizzled == false else {
             return
@@ -141,7 +141,7 @@ private extension NSSharingService {
     }
 
 }
-    
+
 // MARK: - NSWorkspace
 
 private extension NSWorkspace {

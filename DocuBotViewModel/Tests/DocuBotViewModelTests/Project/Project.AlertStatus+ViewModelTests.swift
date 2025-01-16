@@ -9,6 +9,8 @@ import DocuBotModel
 @testable import DocuBotViewModel
 import Testing
 
+// swiftlint:disable line_length
+
 struct ProjectAlertStatusViewModelTests {
 
     @Test("Title")
@@ -35,3 +37,5 @@ struct ProjectAlertStatusViewModelTests {
     }
 
 }
+
+// swiftlint:enable line_length

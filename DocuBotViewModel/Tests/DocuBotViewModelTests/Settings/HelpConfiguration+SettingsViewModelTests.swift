@@ -9,9 +9,11 @@ import DocuBotModel
 @testable import DocuBotViewModel
 import Testing
 
+// swiftlint:disable line_length
+
 @Suite("HelpConfigurationSettingsViewModelTests", .tags(.view))
 class HelpConfigurationSettingsViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
-    
+
     @Test(
         "Help Button Selected",
         arguments: SettingsViewModel.HelpType.allCases
@@ -21,22 +23,22 @@ class HelpConfigurationSettingsViewModelTests: DocuBotViewModelTestCase, @unchec
     ) async throws {
         // GIVEN a SettingsViewModel
         let testSubject = SettingsViewModel(serviceContainer: serviceContainer)
-        
+
         // WHEN the help button is selected
         testSubject.helpButtonSelected(with: type)
-        
+
         // THEN the help configuration is set
         let helpConfiguration = try #require(testSubject.helpConfiguration)
-        
+
         // THEN the help configuration has the correct content
         let title = self.helpConfigurationTitle(for: type)
         let content = self.helpConfigurationContent(for: type)
         #expect(helpConfiguration.title == title)
         #expect(helpConfiguration.content == content)
-        
+
         // WHEN the help configurations close-button is selected
         helpConfiguration.onDismiss()
-        
+
         // THEN we don't have any help configuration on our test subject
         #expect(testSubject.helpConfiguration == nil)
     }
@@ -78,3 +80,5 @@ private extension HelpConfigurationSettingsViewModelTests {
     }
 
 }
+
+// swiftlint:enable line_length

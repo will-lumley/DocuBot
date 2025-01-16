@@ -10,7 +10,7 @@ import Foundation
 import SFSafeSymbols
 
 public final class ToolbarButtonViewModel: ObservableObject {
- 
+
     // MARK: - Types
 
     public enum WarningState {
@@ -37,6 +37,7 @@ public final class ToolbarButtonViewModel: ObservableObject {
         name: String,
         symbol: SFSymbol,
         isEnabled: Bool = true,
+        warningState: WarningState = .none,
         onSelect: @escaping OnSelect = { }
     ) {
         self.name = name

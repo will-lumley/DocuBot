@@ -107,7 +107,8 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
 
         self.sourcesButton = .init(
             name: L10n.Project.Toolbar.sources,
-            symbol: .docTextMagnifyingglass
+            symbol: .docTextMagnifyingglass,
+            isEnabled: false
         )
         self.syncProjectButton = .init(
             name: L10n.Project.Toolbar.sync,

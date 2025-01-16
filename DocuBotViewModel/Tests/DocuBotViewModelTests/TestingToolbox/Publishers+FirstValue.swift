@@ -9,7 +9,7 @@ import Combine
 
 @MainActor
 extension Publisher {
-    
+
     /// Converts a Publisher to an async sequence and returns the first value emitted.
     func firstValue() async throws -> Output {
         try await withCheckedThrowingContinuation { continuation in
@@ -31,7 +31,7 @@ extension Publisher {
                 )
         }
     }
-    
+
     func firstCompactValue() async throws -> Output {
         try await withCheckedThrowingContinuation { continuation in
             var cancellable: AnyCancellable?
