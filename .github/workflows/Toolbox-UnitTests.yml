@@ -1,0 +1,33 @@
+name: Toolbox Unit Tests
+
+on:
+ push:
+   branches: [ "main" ]
+ pull_request:
+   branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: macos-13
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      with:
+          submodules: 'recursive'
+
+    - name: Setup Swift
+      uses: fwal/setup-swift@v1
+      with:
+        swift-version: '6.0'
+
+    - name: Install xcpretty
+      run: gem install xcpretty
+
+    - name: Navigate to Toolbox Directory
+      run: cd DocuBotToolbox
+
+    - name: Run Tests
+      run: swift test
+
