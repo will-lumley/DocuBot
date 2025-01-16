@@ -31,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		BE39ED072D38812F0099F91D /* ProjectViewModelStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectViewModelStore.swift; sourceTree = "<group>"; };
+		BE39ED092D38C55A0099F91D /* DocuBotApplication-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "DocuBotApplication-Info.plist"; sourceTree = "<group>"; };
 		BE45187A2C35244600F9E9E5 /* DocuBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DocuBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocuBotApp.swift; sourceTree = "<group>"; };
 		BE4518812C35244700F9E9E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -78,6 +79,7 @@
 		BE4518712C35244600F9E9E5 = {
 			isa = PBXGroup;
 			children = (
+				BE39ED092D38C55A0099F91D /* DocuBotApplication-Info.plist */,
 				BEC6F0F02CE42D26001634A1 /* README.md */,
 				BEC6F0F12CE42E72001634A1 /* CODE_OF_CONDUCT.md */,
 				BEC6F0F22CE42E72001634A1 /* CONTRIBUTING.md */,
@@ -443,6 +445,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "DocuBotApplication-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = DocuBot;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -479,6 +482,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "DocuBotApplication-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = DocuBot;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";

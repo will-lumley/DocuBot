@@ -98,9 +98,6 @@ final class LlamaService: GPTService {
             throw GPTError.llmNotInitialised
         }
 
-        print("Query: \(query)")
-        print("")
-
         var finalOutput = ""
         await llama.respond(to: query) { response in
             for await responseDelta in response {
