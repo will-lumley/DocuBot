@@ -79,12 +79,12 @@ struct AcknowledgementTests {
                 license: "MIT"
             ),
             (
-                author: "Shenghai Wang",
-                libraryName: "SwiftLlama",
+                author: "eastriverlee",
+                libraryName: "LLM.swift",
                 description: """
                 A Swift Package that provides a Swift-y API wrapper to llama.cpp.
                 """,
-                link: "https://github.com/ShenghaiWang/SwiftLlama",
+                link: "https://github.com/eastriverlee/LLM.swift",
                 license: "MIT"
             ),
             (

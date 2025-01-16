@@ -1006,13 +1006,19 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock(project)
-        testSubject.configureBindingsIfNeeded()
 
         // Let's listen in on our SyncStage
         var syncStageIterator = testSubject.$syncStage.values.makeAsyncIterator()
 
-        // THEN our next SyncStage is `extractingDocumentsFromDisk`
+        testSubject.configureBindingsIfNeeded()
+
+        // THEN our next SyncStage is `nil`
         var nextSyncStage = try #require(await syncStageIterator.next())
+
+        #expect(nextSyncStage == nil)
+
+        // THEN our next SyncStage is `extractingDocumentsFromDisk`
+        nextSyncStage = try #require(await syncStageIterator.next())
         #expect(nextSyncStage == .extractingDocumentsFromDisk)
 
         // THEN our next SyncStage is `trainingDocuments`

@@ -15,7 +15,7 @@ public struct ProjectView: View {
 
     // MARK: - Properties
 
-    @StateObject var viewModel: ProjectViewModel
+    @ObservedObject var viewModel: ProjectViewModel
 
     @Environment(\.openWindow) var openWindow
 
@@ -27,7 +27,7 @@ public struct ProjectView: View {
     // MARK: - Lifecycle
 
     public init(viewModel: ProjectViewModel) {
-        self._viewModel = StateObject(wrappedValue: viewModel)
+        self._viewModel = ObservedObject(initialValue: viewModel)
     }
 
     // MARK: - View

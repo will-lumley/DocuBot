@@ -15,22 +15,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Properties
 
+    /// The singular instance of `ServiceContainer` that's used throughout our
+    /// applications lifecycle.
     lazy var serviceContainer: ServiceContainer = {
         ServiceContainer(isTesting: Device.isUnitTesting)
     }()
 
-    private lazy var flagService: FlagService = {
-        self.serviceContainer.flagService
-    }()
-
+    /// This `WindowController` manages the window for our `AboutView`
     private var aboutBoxWindowController: NSWindowController?
+
+    /// This is where we store, retrieve, and create our `ProjectViewModel`s through
+    lazy var projectViewModelStore: ProjectViewModelStore = {
+        .init(serviceContainer: self.serviceContainer)
+    }()
 
     // MARK: - AppDelegate
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        _ = serviceContainer.gptService
         serviceContainer.logService.log(with: .info, "Starting application.")
-
         NSWindow.allowsAutomaticWindowTabbing = false
     }
 

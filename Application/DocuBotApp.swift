@@ -76,13 +76,14 @@ struct DocuBotApp: App {
         WindowGroup(for: ProjectViewModel.OpenWindowPackage.self) { $package in
             if let package {
                 ProjectView(
-                    viewModel: .init(
-                        project: package.project,
+                    viewModel: delegate.projectViewModelStore.viewModel(
+                        for: package.project,
                         serviceContainer: delegate.serviceContainer
                     )
                 )
             }
         }
+        .restorationBehavior(.disabled)
         .windowResizability(.contentSize)
 
         // This is our ModelManager window
@@ -98,6 +99,7 @@ struct DocuBotApp: App {
             }
         }
         .windowResizability(.contentSize)
+        .restorationBehavior(.disabled)
         .onChange(of: isModelViewOpen) { _, newValue in
             if newValue == false {
                 // If ModelView is closed, reset the state
@@ -131,7 +133,7 @@ struct DocuBotApp: App {
                 )
             )
         }
-
+        .restorationBehavior(.disabled)
     }
 
     private func focusWindow(with id: String) {

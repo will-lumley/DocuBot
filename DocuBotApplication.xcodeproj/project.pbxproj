@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BE33E3CA2C3526B9009EDAA4 /* DocuBotViewModel in Frameworks */ = {isa = PBXBuildFile; productRef = BE33E3C92C3526B9009EDAA4 /* DocuBotViewModel */; };
+		BE39ED082D38813F0099F91D /* ProjectViewModelStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE39ED072D38812F0099F91D /* ProjectViewModelStore.swift */; };
 		BE45187E2C35244600F9E9E5 /* DocuBotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */; };
 		BE4518822C35244700F9E9E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE4518812C35244700F9E9E5 /* Assets.xcassets */; };
 		BE4518852C35244700F9E9E5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE4518842C35244700F9E9E5 /* Preview Assets.xcassets */; };
@@ -29,6 +30,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BE39ED072D38812F0099F91D /* ProjectViewModelStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectViewModelStore.swift; sourceTree = "<group>"; };
 		BE45187A2C35244600F9E9E5 /* DocuBot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DocuBot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocuBotApp.swift; sourceTree = "<group>"; };
 		BE4518812C35244700F9E9E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 			children = (
 				BE4518812C35244700F9E9E5 /* Assets.xcassets */,
 				BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */,
+				BE39ED072D38812F0099F91D /* ProjectViewModelStore.swift */,
 				BEB096002C36726300429AFD /* AppDelegate.swift */,
 				BE4518862C35244700F9E9E5 /* DocuBot.entitlements */,
 				BE4518832C35244700F9E9E5 /* Preview Content */,
@@ -285,6 +288,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BEB096012C36726300429AFD /* AppDelegate.swift in Sources */,
+				BE39ED082D38813F0099F91D /* ProjectViewModelStore.swift in Sources */,
 				BE45187E2C35244600F9E9E5 /* DocuBotApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

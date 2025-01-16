@@ -134,13 +134,14 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         )
 
         super.init(serviceContainer: serviceContainer)
+        self.primeLlm()
 
         self.sourcesButton.onSelect = { [weak self] in self?.isShowingSources.toggle() }
         self.syncProjectButton.onSelect = self.sync
         self.projectSettingsButton.onSelect = self.openSettings
 
         if project.alertStatus.isFirstSync {
-            self.sync()
+            self.checkIfFirstSync()
         }
 
         // Every x seconds we check if the project is dirty
@@ -148,8 +149,6 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
             self.checkIfProjectIsDirty()
         }
-
-        self.primeLlm()
     }
 
     /// Configures bindings for the ViewModel.
@@ -862,7 +861,6 @@ private extension ProjectViewModel {
                 return question
             }
             .compactMap(\.self)
-            // .map { $0.removingLeading(patttern: "* ") }
             .map { $0.removing(value: "Question:") }
             .map { $0.removing(value: ", according to the provided excerpt") }
             .map { $0.removing(value: "according to the provided excerpt") }
@@ -872,7 +870,23 @@ private extension ProjectViewModel {
             .map { $0.removing(value: "in the given context") }
             .map { $0.removing(value: "<|eot_id|>") }
             .map { $0.removingPrefix(upTo: ":\n") }
+            .map { $0.removingLeading(pattern: "* ") }
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+    }
+
+    /// Pulls out the latest copy of the project from the database, and then
+    /// triggers a sync if need be.
+    func checkIfFirstSync() {
+        Task {
+            let fetchedProject = try await self.getProject(
+                fetchDocuments: false
+            )
+            if fetchedProject.alertStatus.isFirstSync {
+                self.sync()
+            }
+            self.project = fetchedProject
+        }
+
     }
 
 }

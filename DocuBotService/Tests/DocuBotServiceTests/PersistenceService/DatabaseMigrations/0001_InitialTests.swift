@@ -295,7 +295,7 @@ struct InitialMigrationTests { // swiftlint:disable:this type_body_length
 
             // THEN there is the correct amount of columns
             let columns = try db.columns(in: "project-settings")
-            #expect(columns.count == 19)
+            #expect(columns.count == 17)
 
             // THEN there is an ID column with the correct attributes
             #expect(columns[0].type == "INTEGER")
