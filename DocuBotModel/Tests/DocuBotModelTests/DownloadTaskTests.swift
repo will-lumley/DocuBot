@@ -10,7 +10,7 @@ import Combine
 import Foundation
 import Testing
 
-@Suite("DownloadTaskTests", .disabled("CI Flakiness"))
+@Suite("DownloadTaskTests")
 struct DownloadTaskTests {
 
     // MARK: - Properties

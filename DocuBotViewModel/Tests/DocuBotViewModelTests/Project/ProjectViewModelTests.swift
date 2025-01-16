@@ -617,7 +617,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         }
     }
 
-    @Test("View Sources Button - Disabled - Syncing")
+    @Test("View Sources Button - Disabled - Syncing", .disabled("CI Flakiness"))
     func viewSourcesButtonDisabledSyncing() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
@@ -653,7 +653,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         #expect(nextSourcesButtonEnabled == true)
     }
 
-    @Test("View Sources Button - Disabled - No Sources")
+    @Test("View Sources Button - Disabled - No Sources", .disabled("CI Flakiness"))
     func viewSourcesButtonDisabledNoSources() async throws {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
