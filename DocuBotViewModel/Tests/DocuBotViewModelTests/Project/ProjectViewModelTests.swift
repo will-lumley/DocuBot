@@ -675,17 +675,17 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
 
+        // Setup an iterator that listens to our SourcesButton isEnabled state
+        var isEnabledIterator = testSubject.sourcesButton.$isEnabled
+            .values
+            .makeAsyncIterator()
+
         // THEN our ViewSources button is disabled
         #expect(testSubject.sourcesButton.isEnabled == false)
 
         // WHEN a question is asked
         testSubject.chatText = "Give me some ways to improve my project with the ViewController?"
         testSubject.askButtonSelected()
-
-        // Setup an iterator that listens to our SourcesButton isEnabled state
-        var isEnabledIterator = testSubject.sourcesButton.$isEnabled
-            .values
-            .makeAsyncIterator()
 
         // THEN the ViewSources button is at first NOT enabled
         var nextSourcesButtonEnabled = await isEnabledIterator.next()
@@ -701,11 +701,13 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         // GIVEN we have a ProjectViewModel
         let testSubject = try await self.mock()
 
+        // Setup an iterator that listens to our SyncButton isEnabled state
+        var isEnabledIterator = testSubject.syncProjectButton.$isEnabled
+            .values
+            .makeAsyncIterator()
+
         // THEN our SyncButton is enabled
         #expect(testSubject.syncProjectButton.isEnabled == true)
-
-        // Setup an iterator that listens to our SyncButton isEnabled state
-        var isEnabledIterator = testSubject.syncProjectButton.$isEnabled.values.makeAsyncIterator()
 
         // THEN the SyncButton is at first enabled
         var nextSyncButtonEnabled = await isEnabledIterator.next()
