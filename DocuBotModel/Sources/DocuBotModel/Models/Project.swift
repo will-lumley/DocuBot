@@ -54,10 +54,6 @@ public struct Project: Hashable, Codable, Sendable {
     /// This is a transitive property and is only stored on the model layer.
     public var documents: [Document]?
 
-    /// An array of all the chats that belong to this Project.
-    /// Will be `nil` until `loadChats(chats:)` is called.
-    public var chats: [Chat]?
-
     /// An array of example questions that are relevant to this Project.
     public var exampleQuestions: [String]
 
@@ -97,16 +93,8 @@ public struct Project: Hashable, Codable, Sendable {
 
 public extension Project {
 
-    var loadedChats: Bool {
-        self.chats != nil
-    }
-
     var loadedDocments: Bool {
         self.documents != nil
-    }
-
-    mutating func load(chats: [Chat]) {
-        self.chats = chats
     }
 
     mutating func load(documents: [Document]) {
