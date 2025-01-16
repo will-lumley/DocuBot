@@ -1,3 +1,5 @@
+"Generics.cancel" = "Cancel";
+
 "Error.Welcome.FailedToDelete.title" = "Failed to Delete Project";
 "Error.Welcome.FailedToDelete.message" = "DocuBot failed to delete the project. Please try again.";
 "Error.ConfigureProject.Creating.FailedToCreate.title" = "Failed to Create Project";
@@ -16,6 +18,10 @@
 "Error.Project.FailedToSync.title" = "Failed to Sync";
 "Error.Project.FailedToExtractSettings.title" = "Failed to get Project Settings";
 "Error.Project.GptTalk.title" = "Failed to get communicate with the LLM";
+"Error.Project.UpdateBookmark.title" = "Failed to restore folder access";
+"Error.Project.StaleBookmark.title" = "Folder Access Issue";
+"Error.Project.StaleBookmark.message" = "It looks like the file's location has changed or is no longer accessible. Please select the file again to continue.";
+"Error.Project.StaleBookmark.action" = "Select Folder";
 
 "Welcome.title" = "Welcome to DocuBot";
 "Welcome.subtitle1" = "Developed by William Lumley";

@@ -423,7 +423,7 @@ public extension ConfigureProjectViewModel {
                 // Insert the Project into the DB
                 let project = try self.finalisedProject()
                 let inserted = try await self.persist(project: project)
-                let projectID = try project.id.orThrow(Project.ProjectError.missingID)
+                let projectID = try inserted.id.orThrow(Project.ProjectError.missingID)
 
                 // Insert the ProjectSettings into the DB
                 let settings = try self.finalisedSettings(for: projectID)
@@ -505,7 +505,6 @@ private extension ConfigureProjectViewModel {
                 name: self.projectName,
                 isDirty: false,
                 urlBookmarkData: self.projectDirectoryBookmarkData,
-                urlBookmarkDataIsStale: false,
                 exampleQuestions: project.exampleQuestions,
                 createdAt: project.createdAt,
                 updatedAt: .now
@@ -518,7 +517,6 @@ private extension ConfigureProjectViewModel {
                 name: self.projectName,
                 isDirty: false,
                 urlBookmarkData: self.projectDirectoryBookmarkData,
-                urlBookmarkDataIsStale: false,
                 exampleQuestions: [],
                 createdAt: .now,
                 updatedAt: .now
@@ -668,7 +666,7 @@ public extension ConfigureProjectViewModel.ConfigurationError {
 // MARK: - FormValidationError
 
 public extension ConfigureProjectViewModel.FormValidationError {
-    
+
     var errorDescription: String? {
         switch self {
         case .missingName:

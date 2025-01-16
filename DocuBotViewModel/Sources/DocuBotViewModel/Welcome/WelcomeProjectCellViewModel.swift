@@ -84,7 +84,6 @@ public extension WelcomeProjectCellViewModel {
                 name: "Project_1",
                 isDirty: false,
                 urlBookmarkData: nil,
-                urlBookmarkDataIsStale: true,
                 exampleQuestions: [],
                 createdAt: .now,
                 updatedAt: .now
