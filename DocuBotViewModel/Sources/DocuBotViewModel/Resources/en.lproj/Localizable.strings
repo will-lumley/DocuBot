@@ -4,7 +4,7 @@
 "Error.ConfigureProject.Editing.FailedToCreate.title" = "Failed to Update Project";
 "Error.ConfigureProject.ConfigurationError.noDirectory" = "No directory selected.";
 "Error.ConfigureProject.FormValidation.missingDirectory" = "Please ensure that a project directory has been selected.";
-"Error.ConfigureProject.FormValidation.missingName" = "Please ensure that a project directory has been selected.";
+"Error.ConfigureProject.FormValidation.missingName" = "Please ensure that a project name has been provided.";
 "Error.ConfigureProject.FormValidation.missingFormat" = "Please ensure that at least one format has been enabled.";
 "Error.ConfigureProject.FormValidation.missingSeed" = "Please ensure that a valid seed is provided.";
 "Error.ConfigureProject.FormValidation.missingTopK" = "Please ensure that a valid Top-K is provided.";
