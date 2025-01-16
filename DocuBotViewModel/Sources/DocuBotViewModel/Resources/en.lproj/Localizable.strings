@@ -46,3 +46,6 @@
 "Project.Chat.NothingSelected.title" = "No chat selected";
 "Project.ChatContextMenu.rename" = "Rename";
 "Project.ChatContextMenu.delete" = "Delete";
+
+"ProjectSettings.windowTitle" = "Project Settings";
+"ProjectSettings.saveButton" = "Save Settings";

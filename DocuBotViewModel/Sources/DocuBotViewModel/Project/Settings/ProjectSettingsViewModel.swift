@@ -1,5 +1,5 @@
 //
-//  CreateProjectViewModel.swift
+//  ProjectSettingsViewModel.swift
 //
 //
 //  Created by William Lumley on 14/8/2024.
@@ -10,16 +10,19 @@ import DocuBotModel
 import DocuBotService
 import Foundation
 
-public class CreateProjectViewModel: DocuBotViewModel {
+public class ProjectSettingsViewModel: DocuBotViewModel {
 
     // MARK: - Types
 
-    public enum OpenWindow {
-        case project(ProjectViewModel.OpenWindowPackage)
+    public enum LoadState {
+        case idle
+        case creating
+        case created
     }
 
     public struct OpenWindowPackage: Hashable, Codable {
-        
+        public let project: Project
+        public let projectSettings: ProjectSettings
     }
 
     public typealias Format = ProjectSettings.DocumentationFormat
@@ -34,13 +37,10 @@ public class CreateProjectViewModel: DocuBotViewModel {
         }
     }
 
-    public enum LoadState {
-        case idle
-        case creating
-        case created
-    }
-
     // MARK: - Properties
+
+    private let project: Project
+    private let projectSettings: ProjectSettings
 
     @Published public var loadState = LoadState.idle
     @Published public var continueButtonEnabled = false
@@ -49,26 +49,32 @@ public class CreateProjectViewModel: DocuBotViewModel {
 
     @Published public var projectDirectory: URL?
     @Published public var projectName = ""
-    @Published public var formatConfigurations: [DocumentationFormatConfiguration]
+    @Published public var formatConfigurations = [DocumentationFormatConfiguration]()
     @Published public var selectedLanguage: ProjectSettings.Language
-
-    /// This will be called when we want to open a new window, along with the info that dictates which window
-    @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
 
     /// This will be called when this ViewModel wants the UI layer to close/dismiss the current window
     @Published public var onDismiss = PassthroughSubject<Void, Never>()
 
     // MARK: - Lifecycle
 
-    public override init(serviceContainer: ServiceContainer) {
-        self.directoryText = L10n.CreateProject.Configuration.Directory.select
-        self.selectedLanguage = .english
+    public init(project: Project, projectSettings: ProjectSettings, serviceContainer: ServiceContainer) {
+        self.project = project
+        self.projectSettings = projectSettings
 
-        self.formatConfigurations = Format.allCases
-            .enumerated()
-            .map { index, format in
-                .init(order: index, format: format, isEnabled: format.isOther == false)
-            }
+        self.projectDirectory = URL(filePath: self.project.path)
+        self.directoryText = self.project.path
+        self.selectedLanguage = self.projectSettings.language
+
+        var formatConfigurations = [DocumentationFormatConfiguration]()
+        for (index, format) in projectSettings.supportedFormats.enumerated() {
+            let configuration = DocumentationFormatConfiguration(
+                order: index,
+                format: format,
+                isEnabled: true
+            )
+            formatConfigurations.append(configuration)
+        }
+        self.formatConfigurations = formatConfigurations
 
         super.init(serviceContainer: serviceContainer)
     }
@@ -116,14 +122,14 @@ public class CreateProjectViewModel: DocuBotViewModel {
 
 // MARK: - Public
 
-public extension CreateProjectViewModel {
+public extension ProjectSettingsViewModel {
 
     var windowTitle: String {
-        L10n.CreateProject.windowTitle
+        L10n.ProjectSettings.windowTitle
     }
 
-    var formTitle: String {
-        L10n.CreateProject.formTitle
+    var title: String {
+        self.project.name
     }
 
     var projectNameTitle: String {
@@ -146,8 +152,8 @@ public extension CreateProjectViewModel {
         L10n.CreateProject.Configuration.FormatSection.title
     }
 
-    var createProjectButtonTitle: String {
-        L10n.CreateProject.createButton
+    var saveButtonTitle: String {
+        L10n.ProjectSettings.saveButton
     }
 
     func set(formatConfiguration: DocumentationFormatConfiguration, isEnabled: Bool) {
@@ -216,91 +222,43 @@ public extension CreateProjectViewModel {
         self.formatConfigurations.remove(at: index)
     }
 
-    func createProjectButtonSelected() {
-        guard let directory = self.projectDirectory else {
-            return
-        }
-
-        let formats = self.formatConfigurations
-            .map(\.format)
-
-        // Extract all our relevant documents (each document = one string)
-        let documents = self.loadDocumentationFiles(from: directory, formats: formats)
-        guard let checksum = try? documents.generateChecksum() else {
-            return
-        }
-        print("Checksum: \(checksum)")
-
-        let project = Project(
-            path: directory.path(),
-            name: self.projectName,
-            documentationChecksum: checksum,
-            createdAt: .now,
-            updatedAt: .now
-        )
-
-        Task {
-            do {
-                // Insert the Project into the DB
-                let inserted = try await persistenceService.insert(project: project)
-                guard let id = inserted.id else {
-                    return
-                }
-
-                // Insert the ProjectSettings into the DB
-                let settings = ProjectSettings(
-                    projectID: id,
-                    supportedFormats: self.formatConfigurations.map(\.format),
-                    respondWithDocumentsOnly: false,
-                    language: self.selectedLanguage,
-                    createdAt: .now,
-                    updatedAt: .now
-                )
-                _ = try await persistenceService.insert(settings: settings)
-
-                // Open the Window with the project that we just inserted
-                DispatchQueue.main.async {
-                    self.onOpen.send(
-                        .project(
-                            .init(project: inserted)
-                        )
-                    )
-                }
-            } catch {
-                fatalError(error.localizedDescription)
-            }
-        }
+    func saveButtonSelected() {
+        print("SAVE")
     }
 
 }
 
 // MARK: - Private
 
-private extension CreateProjectViewModel {
+private extension ProjectSettingsViewModel {
 
-    func loadDocumentationFiles(from directory: URL, formats: [Format]) -> [Document] {
-        var strs = [String]()
-        let enumerator = FileManager.default.enumerator(at: directory, includingPropertiesForKeys: nil)
-
-        while let fileURL = enumerator?.nextObject() as? URL {
-            if formats.map(\.extensionName).contains(fileURL.pathExtension) {
-                if let content = try? String(contentsOf: fileURL) {
-                    strs.append(content)
-                }
-            }
-        }
-
-        return strs.map(Document.init)
+    func configureFromProjectSettings() {
+        
     }
-
 }
 
 // MARK: - Preview
 
-public extension CreateProjectViewModel {
+public extension ProjectSettingsViewModel {
 
-    static var mock: CreateProjectViewModel {
+    static var mock: ProjectSettingsViewModel {
         .init(
+            project: .init(
+                id: 1,
+                path: "/Users/will/Desktop/Project_1",
+                name: "Project 1",
+                documentationChecksum: "123abc",
+                createdAt: .now,
+                updatedAt: .now
+            ),
+            projectSettings: .init(
+                projectID: 1,
+                supportedFormats: [.rtf, .html],
+                respondWithDocumentsOnly: true,
+                language: .english,
+                createdAt: .now,
+                updatedAt: .now
+            ),
             serviceContainer: .mock
         )
     }

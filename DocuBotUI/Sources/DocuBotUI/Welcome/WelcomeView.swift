@@ -45,6 +45,11 @@ public struct WelcomeView: View {
                 .padding(.top, -16)
         }
 
+        // Listen to our OnDismiss listener
+        .onReceive(viewModel.onDismiss) { _ in
+            self.dismiss()
+        }
+
         .confirmationDialog(
             viewModel.deleteProjectConfirmationDialog.title,
             isPresented: $viewModel.deleteProjectConfirmationDialogPresented,

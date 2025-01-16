@@ -7,6 +7,7 @@
 
 import DocuBotViewModel
 import SwiftUI
+import AppKit
 import SFSafeSymbols
 
 public struct MessageCellView: View {
@@ -18,16 +19,28 @@ public struct MessageCellView: View {
     // MARK: - View
 
     public var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text("")
-                    .font(.body)
-                    .padding([.horizontal])
-                    .padding(.bottom, 2)
-                    .padding(.top, 4)
+        if viewModel.originIsUser {
+            HStack {
+                Spacer()
+                messageView
+            }
+        } else {
+            HStack {
+                messageView
+                Spacer()
             }
         }
+    }
 
+    var messageView: some View {
+        Text(viewModel.messageContent)
+            .font(.body)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 15, style: .circular)
+                    .fill(viewModel.originIsUser ? Color.blue : Color.gray)
+            )
     }
 }
 

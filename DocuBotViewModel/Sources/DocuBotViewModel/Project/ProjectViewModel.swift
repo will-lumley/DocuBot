@@ -14,8 +14,14 @@ public class ProjectViewModel: DocuBotViewModel {
 
     // MARK: - Types
 
+    /// This is a struct that contains the information used to open this view
+    /// (ie. the `ProjectView`) itself.
     public struct OpenWindowPackage: Hashable, Codable {
          public let project: Project
+    }
+
+    public enum OpenWindow {
+        case settings(ProjectSettingsViewModel.OpenWindowPackage)
     }
 
     public typealias OnDelete = () -> Void
@@ -31,6 +37,9 @@ public class ProjectViewModel: DocuBotViewModel {
 
     /// Indicative of if we want to display/hide our Delete Project confirmation dialog
     @Published public var deleteChatConfirmationDialogPresented = false
+
+    /// This will be called when we want to open a new window, along with the info that dictates which window
+    @Published public var onOpen = PassthroughSubject<OpenWindow, Never>()
 
     private let project: Project
 
@@ -64,6 +73,12 @@ public class ProjectViewModel: DocuBotViewModel {
 // MARK: - Public
 
 public extension ProjectViewModel {
+
+    var openSettingsButton: ToolbarButtonViewModel {
+        .init(symbol: .gear) {
+            self.openSettings()
+        }
+    }
 
     var createChatButton: ToolbarButtonViewModel {
         .init(symbol: .squareAndPencil) {
@@ -105,6 +120,23 @@ public extension ProjectViewModel {
 
     var noChatSelectedTitle: String {
         L10n.Project.Chat.NothingSelected.title
+    }
+
+    func openSettings() {
+        Task {
+            do {
+                let settings = try await persistenceService.getProjectSettings(for: project)
+                DispatchQueue.main.async {
+                    self.onOpen.send(
+                        .settings(
+                            .init(project: self.project, projectSettings: settings)
+                        )
+                    )
+                }
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+        }
     }
 
     func contextMenuConfigurations(for cell: ChatCellViewModel) -> [ContextMenuConfiguration] {

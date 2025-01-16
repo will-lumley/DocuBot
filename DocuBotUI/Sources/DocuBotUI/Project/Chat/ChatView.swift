@@ -21,8 +21,34 @@ public struct ChatView: View {
     // MARK: - View
 
     public var body: some View {
-        VStack{
-            Spacer()
+        VStack {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack {
+                        if let messages = viewModel.messages {
+                            ForEach(messages) { message in
+                                MessageCellView(viewModel: message)
+                                    .id(message.id)
+                            }
+                        } else {
+                            EmptyView()
+                        }
+                    }
+                    .padding(.top, 4)
+                    .padding(.horizontal, 10)
+                }
+                .defaultScrollAnchor(.bottom)
+                .onReceive(viewModel.$messages) { messages in
+                    guard let lastMessage = messages?.last else {
+                        return
+                    }
+                    DispatchQueue.main.async {
+                        withAnimation(.easeOut) {
+                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                        }
+                    }
+                }
+            }
 
             HStack(alignment: .center) {
                 VStack {
@@ -48,6 +74,7 @@ public struct ChatView: View {
             }
         }
         .onAppear {
+            // When we load the ChatView, we want the TextView to be in focus
             self.chatTextEditorFocused = true
         }
     }

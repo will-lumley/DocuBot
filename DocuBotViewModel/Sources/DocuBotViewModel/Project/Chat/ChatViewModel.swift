@@ -8,10 +8,8 @@
 import Combine
 import DocuBotModel
 import DocuBotService
+import DocuBotToolbox
 import Foundation
-
-import CoreGraphics
-import SwiftUI
 
 public class ChatViewModel: DocuBotViewModel, Identifiable {
 
@@ -19,6 +17,9 @@ public class ChatViewModel: DocuBotViewModel, Identifiable {
 
     @Published public var chatText = ""
     @Published public var messages: [MessageCellViewModel]?
+
+    /// This publisher is called whenever a new message is received
+    @Published public var newMessagePublisher = PassthroughSubject<MessageCellViewModel, Never>()
 
     public var id: Int64 {
         self.chat.id ?? -1
@@ -40,7 +41,8 @@ public class ChatViewModel: DocuBotViewModel, Identifiable {
         persistenceService.getMessages(for: self.chat)
             .map { $0.map { MessageCellViewModel(message: $0) } }
             .replaceError(with: [])
-            .assign(to: &$messages)
+            .assign(to: \.messages, on: self)
+            .store(in: &cancellables)
     }
 
 }
@@ -58,7 +60,36 @@ public extension ChatViewModel {
     }
 
     func enterSelected() {
-        print("ENTER SELECTED")
+        // If we don't have a chat ID, bail (this should never happen)
+        guard let chatID = self.chat.id else {
+            return
+        }
+
+        guard self.chatText.isEmpty == false else {
+            return
+        }
+
+        // Create our message
+        let message = Message(
+            content: self.chatText,
+            author: .user,
+            chatID: chatID,
+            createdAt: .now
+        )
+
+        Task {
+            do {
+                // Insert the message into the database
+                _ = try await persistenceService.insert(message: message)
+
+                // Clear out the TextView chat
+                DispatchQueue.main.async {
+                    self.chatText = ""
+                }
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+        }
     }
 
 }

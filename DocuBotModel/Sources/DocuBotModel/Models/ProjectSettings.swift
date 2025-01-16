@@ -7,16 +7,16 @@
 
 import Foundation
 
-public struct ProjectSettings: Hashable {
+public struct ProjectSettings: Hashable, Codable {
 
     // MARK: - Types
 
-    public enum Language: Hashable, CaseIterable {
+    public enum Language: Hashable, CaseIterable, Codable {
         case english
         case espanol
     }
 
-    public enum DocumentationFormat: Hashable, CaseIterable {
+    public enum DocumentationFormat: Hashable, CaseIterable, Codable {
         public static var allCases: [ProjectSettings.DocumentationFormat] {
             [.rtf, .txt, .html, .md]
         }

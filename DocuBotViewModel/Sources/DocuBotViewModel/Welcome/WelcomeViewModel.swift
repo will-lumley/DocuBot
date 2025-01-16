@@ -17,7 +17,6 @@ public class WelcomeViewModel: DocuBotViewModel {
 
     // MARK: - Types
 
-    public typealias OnCloseWindow = () -> Void
     public typealias OnDelete = () -> Void
 
     public enum OpenWindow {
@@ -26,9 +25,6 @@ public class WelcomeViewModel: DocuBotViewModel {
     }
 
     // MARK: - Properties
-
-    /// The closure that will be called when the CloseWindow button is selected
-    private let onCloseWindow: OnCloseWindow
 
     /// The ViewModels that represent our project cells/rows
     @Published public var projects: [WelcomeProjectCellViewModel]?
@@ -46,11 +42,6 @@ public class WelcomeViewModel: DocuBotViewModel {
     @Published public var deleteProjectConfirmationDialogPresented = false
 
     // MARK: - Lifecycle
-
-    public init(onCloseWindow: @escaping OnCloseWindow, serviceContainer: ServiceContainer) {
-        self.onCloseWindow = onCloseWindow
-        super.init(serviceContainer: serviceContainer)
-    }
 
     public override func configureBindings() {
         super.configureBindings()
@@ -84,7 +75,9 @@ public extension WelcomeViewModel {
     }
 
     var closeButton: IconButtonViewModel {
-        .init(symbol: .xmarkCircle, hoverSymbol: .xmarkCircleFill, onSelect: onCloseWindow)
+        .init(symbol: .xmarkCircle, hoverSymbol: .xmarkCircleFill) {
+            self.onDismiss.send(())
+        }
     }
 
     var newProjectButton: MenuButtonViewModel {
@@ -216,7 +209,7 @@ extension WelcomeViewModel: WelcomeProjectCellViewModelDelegate {
 public extension WelcomeViewModel {
 
     static var mock: WelcomeViewModel {
-        .init(onCloseWindow: { }, serviceContainer: .mock)
+        .init(serviceContainer: .mock)
     }
 
 }

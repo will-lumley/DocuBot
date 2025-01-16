@@ -23,12 +23,7 @@ struct DocuBotApp: App {
         // This is our Welcome Window
         WindowGroup(id: WelcomeView.id) {
             WelcomeView(
-                viewModel: .init(
-                    onCloseWindow: {
-                        NSApplication.shared.windows.first?.close()
-                    },
-                    serviceContainer: delegate.serviceContainer
-                )
+                viewModel: .init(serviceContainer: delegate.serviceContainer)
             )
         }
         .windowResizability(.contentSize)
@@ -59,6 +54,20 @@ struct DocuBotApp: App {
                 ProjectView(
                     viewModel: .init(
                         project: package.project,
+                        serviceContainer: delegate.serviceContainer
+                    )
+                )
+            }
+        }
+        .windowResizability(.contentSize)
+
+        // This is our ProjectSettings window
+        WindowGroup(for: ProjectSettingsViewModel.OpenWindowPackage.self) { $package in
+            if let package {
+                ProjectSettingsView(
+                    viewModel: .init(
+                        project: package.project, 
+                        projectSettings: package.projectSettings,
                         serviceContainer: delegate.serviceContainer
                     )
                 )
