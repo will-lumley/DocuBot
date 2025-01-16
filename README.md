@@ -1,7 +1,6 @@
 # DocuBot - macOS
 
-(![Header](https://github.com/user-attachments/assets/90c256cf-08ae-4941-97de-9a70242a387b)
-
+![Header](https://github.com/user-attachments/assets/3b7fbde2-cdc3-4aff-941e-5f82b99f1fa1)
 
 ![Unit Tests](https://github.com/will-lumley/DocuBot/actions/workflows/UnitTests.yml/badge.svg?branch=main)
 ![UI Tests](https://github.com/will-lumley/DocuBot/actions/workflows/UITests.yml/badge.svg?branch=main)
