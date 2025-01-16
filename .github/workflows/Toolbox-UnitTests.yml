@@ -24,4 +24,6 @@ jobs:
       run: cd DocuBotToolbox/Sources/DocuBotToolbox
 
     - name: Run Tests
-      run: swift test
+      run: |
+        pwd
+        swift test
