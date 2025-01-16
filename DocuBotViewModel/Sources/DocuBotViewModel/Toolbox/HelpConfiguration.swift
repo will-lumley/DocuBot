@@ -31,6 +31,25 @@ public extension HelpConfiguration {
 
 }
 
+// MARK: - Hashable
+
+extension HelpConfiguration: Hashable {
+
+    public static func == (
+        lhs: HelpConfiguration,
+        rhs: HelpConfiguration
+    ) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        hasher.combine(content)
+    }
+
+    
+}
+
 // MARK: - Identifiable
 
 extension HelpConfiguration: Identifiable {

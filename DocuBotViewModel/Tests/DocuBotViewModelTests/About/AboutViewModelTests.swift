@@ -14,8 +14,6 @@ import Testing
 @Suite("AboutViewModelTests", .serialized)
 class AboutViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
 
-    // MARK: - Tests
-
     @Test("Label Values")
     func labelValues() {
         // GIVEN we have an AboutViewModel

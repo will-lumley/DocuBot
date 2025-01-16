@@ -15,7 +15,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     // MARK: - Types
 
-    public enum HelpType {
+    public enum HelpType: CaseIterable, Sendable {
         case embeddingModel
         case similarityMetric
         case seed
@@ -54,7 +54,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         case editing
     }
 
-    public struct FormatConfiguration: Identifiable {
+    public struct FormatConfiguration: Identifiable, Hashable {
         public let order: Int
         public let format: Format
         public let isEnabled: Bool
@@ -67,6 +67,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     public struct ProjectInfo {
         public let project: Project
         public let settings: ProjectSettings
+        public let model: LLMModel
     }
 
     public typealias Format = ProjectSettings.DocumentationFormat
@@ -82,7 +83,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var projectDirectoryText = ""
     @Published public var projectName = ""
     @Published public var selectedLanguage: ProjectSettings.Language
-    @Published public var model: LLMModel!
+    @Published public var selectedModel: LLMModel
 
     @Published public var formatConfigurations: [FormatConfiguration]
 
@@ -101,7 +102,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var strictMode: Bool
 
     /// This will be called when the user saves their settings
-    private let onSave: OnSave?
+    var onSave: OnSave?
 
     /// The encrypted data that makes up the secure directory bookmark
     public var projectDirectoryBookmarkData: Data?
@@ -125,7 +126,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var onDismiss = PassthroughSubject<Void, Never>()
 
     /// This is used to create or close an `Alert`
-    @Published public var alertConfiguration: AlertConfiguration?
+    @Published public var alertConfiguration: AsyncAlertConfiguration?
 
     /// This is used to display help information to our user
     @Published public var helpConfiguration: HelpConfiguration?
@@ -134,12 +135,18 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     public init(
         projectInfo: ProjectInfo? = nil,
+        availableModels: [LLMModel],
         serviceContainer: ServiceContainer,
         onSave: OnSave? = nil
     ) {
+        self.onSave = onSave
+        self.availableModels = availableModels
+
         // If we're modifying an existing project/settings
         if let projectInfo {
             self.projectInfo = projectInfo
+
+            self.selectedModel = projectInfo.model
 
             self.projectDirectory = URL(fileURLWithPath: projectInfo.project.path)
             self.projectDirectoryBookmarkData = projectInfo.project.urlBookmarkData
@@ -183,6 +190,12 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         // This is a brand new project/settings
         else {
             self.projectInfo = nil
+
+            guard let firstModel = availableModels.first else {
+                fatalError()
+            }
+            self.selectedModel = firstModel
+
             self.selectedLanguage = .english
             self.projectDirectoryText = L10n.ConfigureProject.GeneralSection.Directory.select
 
@@ -210,11 +223,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.similarityMetric = .cosine
         }
 
-        self.onSave = onSave
-
         super.init(serviceContainer: serviceContainer)
-
-        self.loadModels()
     }
 
     override public func configureBindings() {
@@ -239,182 +248,6 @@ public extension ConfigureProjectViewModel {
        case .editing:
            return L10n.ConfigureProject.Editing.formTitle
        }
-    }
-
-    // MARK: General Section
-
-    var generalSectionTitle: String {
-        L10n.ConfigureProject.GeneralSection.title
-    }
-
-    var generalSectionSubtitle: String {
-        L10n.ConfigureProject.GeneralSection.subtitle
-    }
-
-    var projectNameTitle: String {
-        L10n.ConfigureProject.GeneralSection.Name.title
-    }
-
-    var projectDirectoryTitle: String {
-        L10n.ConfigureProject.GeneralSection.Directory.title
-    }
-
-    var languageTitle: String {
-        L10n.ConfigureProject.GeneralSection.Language.title
-    }
-
-    var modelTitle: String {
-        L10n.ConfigureProject.GeneralSection.Model.title
-    }
-
-    // MARK: Format Section
-
-    var formatSectionTitle: String {
-        L10n.ConfigureProject.FormatSection.title
-    }
-
-    var formatSectionSubtitle: String {
-        L10n.ConfigureProject.FormatSection.subtitle
-    }
-
-    func set(
-        formatConfiguration: FormatConfiguration,
-        isEnabled: Bool
-    ) {
-        guard let index = formatConfigurations.firstIndex(where: { $0.id == formatConfiguration.id }) else {
-            return
-        }
-
-        let oldConfiguration = self.formatConfigurations[index]
-
-        // We only want to flip the `isEnabled`
-        let newConfiguration = FormatConfiguration(
-            order: oldConfiguration.order,
-            format: oldConfiguration.format,
-            isEnabled: isEnabled
-        )
-
-        self.formatConfigurations[index] = newConfiguration
-    }
-
-    func update(
-        formatConfiguration: FormatConfiguration,
-        otherStr: String
-    ) {
-        guard let index = formatConfigurations.firstIndex(where: { $0.id == formatConfiguration.id }) else {
-            return
-        }
-
-        var formattedOtherStr = otherStr
-
-        // Is the first character NOT a full-stop? If not, add one in
-        if formattedOtherStr.first != "." {
-            formattedOtherStr = ".\(formattedOtherStr)"
-        }
-
-        let oldConfiguration = self.formatConfigurations[index]
-
-        let format = Format.other(formattedOtherStr)
-
-        // We only want to update the `format`
-        let newConfiguration = FormatConfiguration(
-            order: oldConfiguration.order,
-            format: format,
-            isEnabled: oldConfiguration.isEnabled
-        )
-
-        self.formatConfigurations[index] = newConfiguration
-    }
-
-    func createNewFormat() {
-        self.formatConfigurations.append(
-            .init(
-                order: self.formatConfigurations.count + 1,
-                format: .other("."),
-                isEnabled: true
-            )
-        )
-    }
-
-    func remove(formatConfiguration: FormatConfiguration) {
-        // We only want to remove `other` formats
-        guard formatConfiguration.format.isOther else {
-            return
-        }
-
-        guard let index = formatConfigurations.firstIndex(where: { $0.id == formatConfiguration.id }) else {
-            return
-        }
-
-        self.formatConfigurations.remove(at: index)
-    }
-
-    // MARK: Similarity Section
-
-    var similaritySectionTitle: String {
-        L10n.ConfigureProject.SimilaritySection.title
-    }
-
-    var similaritySectionSubtitle: String {
-        L10n.ConfigureProject.SimilaritySection.subtitle
-    }
-
-    var embeddingModelTitle: String {
-        L10n.ConfigureProject.AdvancedSection.embeddingModel
-    }
-
-    var similarityMetricTitle: String {
-        L10n.ConfigureProject.AdvancedSection.similarityMetric
-    }
-
-    // MARK: LLM Section
-
-    var llmSectionTitle: String {
-        L10n.ConfigureProject.LlmSection.title
-    }
-
-    var llmSectionSubitle: String {
-        L10n.ConfigureProject.LlmSection.subtitle
-    }
-
-    var systemPromptTitle: String {
-        L10n.ConfigureProject.AdvancedSection.systemPrompt
-    }
-
-    var seedTitle: String {
-        L10n.ConfigureProject.AdvancedSection.seed
-    }
-
-    var topKTitle: String {
-        L10n.ConfigureProject.AdvancedSection.topK
-    }
-
-    var topPTitle: String {
-        L10n.ConfigureProject.AdvancedSection.topP
-    }
-
-    var contextLengthTitle: String {
-        L10n.ConfigureProject.AdvancedSection.contextLength
-    }
-
-    var temperatureTitle: String {
-        L10n.ConfigureProject.AdvancedSection.temperature
-    }
-
-    var batchSizeTitle: String {
-        L10n.ConfigureProject.AdvancedSection.batchSize
-    }
-
-    var stopSequenceTitle: String {
-        L10n.ConfigureProject.AdvancedSection.stopSequence
-    }
-
-    var maxTokenCountTitle: String {
-        L10n.ConfigureProject.AdvancedSection.maxTokenCount
-    }
-
-    var strictModeTitle: String {
-        L10n.ConfigureProject.AdvancedSection.strictMode
     }
 
     // MARK: Other
@@ -467,24 +300,6 @@ public extension ConfigureProjectViewModel {
         self.helpConfiguration = .init(type: type) {
             self.helpConfiguration = nil
         }
-    }
-
-    func resetSimilarityOptions() {
-        self.embeddingModel = .distilbert
-        self.similarityMetric = .cosine
-    }
-
-    func resetLlmOptions() {
-        self.seed = 1234
-        self.topK = 40
-        self.topP = 0.9
-        self.contextLength = 2048
-        self.temperature = 0.2
-        self.batchSize = 2048
-        self.stopSequence = ""
-        self.maxTokenCount = 1024*1024
-        self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
-        self.strictMode = false
     }
 
 }
@@ -570,27 +385,6 @@ private extension ConfigureProjectViewModel {
         self.projectInfo != nil ? .editing : .creating
     }
 
-    func loadModels() {
-        Task {
-            self.availableModels = try await persistenceService.getModels()
-
-            // If we have a preloaded settings, pull that model
-            if let projectInfo {
-                self.model = try await persistenceService.getModel(
-                    id: projectInfo.settings.modelID
-                )
-            }
-
-            // If we are a blank slate, just load the first model we have
-            else {
-                guard let firstAvailableModel = availableModels.first else {
-                    fatalError()
-                }
-                self.model = firstAvailableModel
-            }
-        }
-    }
-
     func finalisedProject() throws -> Project {
         guard let directory = self.projectDirectory else {
             throw FormValidationError.missingDirectory
@@ -638,10 +432,12 @@ private extension ConfigureProjectViewModel {
     func finalisedSettings(for projectID: Int64) throws -> ProjectSettings {
         // We're modifying an existing project
         if let projectInfo = self.projectInfo {
+            let modelID = try self.selectedModel.id.orThrow(LLMModel.ModelError.missingID)
+
             return ProjectSettings(
                 id: projectInfo.settings.id,
                 projectID: projectInfo.settings.projectID,
-                modelID: self.model.id ?? -1,
+                modelID: modelID,
                 supportedFormats: self.supportedFormats,
                 language: self.selectedLanguage,
                 embeddingModel: self.embeddingModel,
@@ -662,9 +458,11 @@ private extension ConfigureProjectViewModel {
         }
         // We're creating a brand new project
         else {
+            let modelID = try self.selectedModel.id.orThrow(LLMModel.ModelError.missingID)
+
             return ProjectSettings(
                 projectID: projectID,
-                modelID: self.model.id ?? -1,
+                modelID: modelID,
                 supportedFormats: supportedFormats,
                 language: self.selectedLanguage,
                 embeddingModel: self.embeddingModel,
@@ -776,19 +574,17 @@ private extension ConfigureProjectViewModel {
             // Do we need to warn the user of a full-resync?
             if self.resyncNeeded && showResyncWarnings {
                 if let message = self.resyncMessage {
-                    await MainActor.run {
-                        self.alertConfiguration = .init(
-                            title: L10n.ConfigureProject.Resync.title,
-                            message: message,
-                            primaryAction: .init(title: L10n.ConfigureProject.Resync.saveButton) {
-                                Task {
-                                    await self.save(
-                                        showResyncWarnings: false
-                                    )
-                                }
-                            }
-                        )
-                    }
+                    self.alertConfiguration = .init(
+                        title: L10n.ConfigureProject.Resync.title,
+                        message: message,
+                        primaryAction: .init(
+                            title: L10n.ConfigureProject.Resync.saveButton
+                        ) {
+                            await self.save(
+                                showResyncWarnings: false
+                            )
+                        }
+                    )
                     return
                 }
             }
@@ -842,43 +638,6 @@ private extension ConfigureProjectViewModel {
 
 }
 
-// MARK: - FormValidationError
-
-public extension ConfigureProjectViewModel.FormValidationError {
-
-    internal typealias Strings = L10n.Error.ConfigureProject.FormValidation
-
-    var errorDescription: String? {
-        switch self {
-        case .missingModel:
-            return Strings.missingModel
-        case .missingName:
-            return Strings.missingName
-        case .missingFormat:
-            return Strings.missingFormat
-        case .missingSeed:
-            return Strings.missingSeed
-        case .missingTopK:
-            return Strings.missingTopK
-        case .invalidTopP:
-            return Strings.invalidTopP
-        case .missingContextLength:
-            return Strings.missingContextLength
-        case .missingBatchSize:
-            return Strings.missingBatchSize
-        case .missingMaxTokenCount:
-            return Strings.missingMaxTokenCount
-        case .missingSystemPrompt:
-            return Strings.missingSystemPrompt
-        case .missingDirectory:
-            return Strings.missingDirectory
-        case .missingDirectoryData:
-            return Strings.missingDirectoryData
-        }
-    }
-
-}
-
 // MARK: - Preview
 
 public extension ConfigureProjectViewModel {
@@ -886,8 +645,9 @@ public extension ConfigureProjectViewModel {
     static var mock: ConfigureProjectViewModel {
         .init(
             projectInfo: nil,
+            availableModels: [.mock()],
             serviceContainer: .mock
         )
     }
 
-} // swiftlint:disable:this file_length
+}

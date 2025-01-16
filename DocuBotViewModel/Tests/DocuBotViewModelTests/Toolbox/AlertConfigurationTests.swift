@@ -21,7 +21,7 @@ struct AlertConfigurationTests {
     }
 
     @Test("Primary Action")
-    func primaryAction() {
+    func primaryAction() async {
         var primaryActionSelected = false
 
         // GIVEN we have an AlertConfiguration

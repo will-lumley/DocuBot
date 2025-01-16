@@ -277,12 +277,17 @@ public extension ProjectViewModel {
         Task {
             do {
                 let settings = try await self.getProjectSettings()
+                let allModels = try await persistenceService.getModels()
+                let model = try await persistenceService.getModel(id: settings.modelID)
+
                 await MainActor.run {
                     self.configureProjectViewModel = .init(
                         projectInfo: .init(
                             project: self.project,
-                            settings: settings
+                            settings: settings,
+                            model: model
                         ),
+                        availableModels: allModels,
                         serviceContainer: self.serviceContainer,
                         onSave: self.primeLlm
                     )

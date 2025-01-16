@@ -82,7 +82,9 @@ public struct ConfigureProjectView: View {
                     message: Text(configuration.message),
                     primaryButton: .default(
                         Text(primaryAction.title),
-                        action: primaryAction.onSelect
+                        action: {
+                            Task { await primaryAction.onSelect() }
+                        }
                     ),
                     secondaryButton: .cancel()
                 )
@@ -134,7 +136,7 @@ public struct ConfigureProjectView: View {
             TextField(viewModel.projectNameTitle, text: $viewModel.projectName)
 
             // LLM Model
-            Picker(viewModel.modelTitle, selection: $viewModel.model) {
+            Picker(viewModel.modelTitle, selection: $viewModel.selectedModel) {
                 ForEach(viewModel.availableModels) { model in
                     Text(model.name)
                         .tag(model)

@@ -20,15 +20,66 @@ import Testing
 )
 class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable { // swiftlint:disable:this type_body_length
 
-    @Test("Label Values")
-    func labelValues() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
+    // MARK: - Properties
 
-        // GIVEN we have a ConfigureProjectViewModel
+    var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Mock
+
+    func mockForCreating() async -> ConfigureProjectViewModel {
+        // Load a testing model into our DB
+        let model = await self.persistTestModel()
+
         let testSubject = ConfigureProjectViewModel(
+            availableModels: [model],
             serviceContainer: self.serviceContainer
         )
+        testSubject.configureBindingsIfNeeded()
+
+        return testSubject
+    }
+
+    func mockForEditing(
+        with alertStatus: Project.AlertStatus = .none
+    ) async throws -> ConfigureProjectViewModel {
+        // Load a testing model into our DB
+        let insertedModel = await self.persistTestModel()
+
+        let projectID = Int64(1)
+        let project = Project.mock(
+            id: projectID,
+            alertStatus: alertStatus
+        )
+        let settings = ProjectSettings.mock(
+            projectID: projectID,
+            modelID: try insertedModel.id.orThrow(LLMModel.ModelError.missingID)
+        )
+
+        // Insert our Project & Settings into the DB
+        let insertedProject = try await persistenceService.insert(project: project)
+        let insertedSettings = try await persistenceService.insert(settings: settings)
+
+        let testSubject = ConfigureProjectViewModel(
+            projectInfo: .init(
+                project: insertedProject,
+                settings: insertedSettings,
+                model: insertedModel
+            ),
+            availableModels: [insertedModel],
+            serviceContainer: self.serviceContainer
+        )
+        testSubject.configureBindingsIfNeeded()
+
+        return testSubject
+    }
+
+    // MARK: - Tests
+
+    @Test("Label Values")
+    func labelValues() async {
+
+        // GIVEN we have a ConfigureProjectViewModel
+        let testSubject = await self.mockForCreating()
 
         // THEN our labels, titles, etc have the correct values
         #expect(testSubject.generalSectionTitle == "General")
@@ -68,13 +119,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("Initialisation - Creating")
     func initialisationCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
         // GIVEN a new ConfigureProjectViewModel for creating a project
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        let testSubject = await self.mockForCreating()
 
         // THEN properties are set to default values
         #expect(testSubject.projectInfo == nil)
@@ -87,38 +133,23 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
     }
 
     @Test("Initialisation - Editing")
-    func initialisationEditing() async {
-        // GIVEN a mock ProjectInfo
-        let projectInfo = ConfigureProjectViewModel.ProjectInfo(
-            project: Project.mock(),
-            settings: ProjectSettings.mock()
-        )
-
-        // WHEN we initialise the ConfigureProjectViewModel for editing
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: projectInfo,
-            serviceContainer: self.serviceContainer
-        )
+    func initialisationEditing() async throws {
+        // GIVEN we have a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
         // THEN properties are set based on the ProjectInfo
         #expect(testSubject.projectInfo != nil)
-        #expect(testSubject.projectDirectory == URL(fileURLWithPath: projectInfo.project.path))
-        #expect(testSubject.projectName == projectInfo.project.name)
-        #expect(testSubject.selectedLanguage == projectInfo.settings.language)
-        #expect(testSubject.embeddingModel == projectInfo.settings.embeddingModel)
-        #expect(testSubject.similarityMetric == projectInfo.settings.similarityMetric)
+        #expect(testSubject.projectDirectory == URL(fileURLWithPath: "/Users/will/Desktop/Project_1"))
+        #expect(testSubject.projectName == "Project 1")
+        #expect(testSubject.selectedLanguage == .english)
+        #expect(testSubject.embeddingModel == .distilbert)
+        #expect(testSubject.similarityMetric == .cosine)
     }
 
     @Test("Project Directory Text")
     func projectDirectoryText() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
         // GIVEN we have our ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
-        testSubject.configureBindingsIfNeeded()
+        let testSubject = await self.mockForCreating()
 
         // THEN our ProjectDirectoryText is empty
         #expect(testSubject.projectDirectoryText == "Select a Directory")
@@ -132,34 +163,17 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("Form Title - Creating")
     func formTitleCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // WHEN we initialise the ConfigureProjectViewModel for editing
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN we have our ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // THEN the form title is correctly set
         #expect(testSubject.formTitle == L10n.ConfigureProject.Creating.formTitle)
     }
 
     @Test("Form Title - Editing")
-    func formTitleEditing() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a mock ProjectInfo
-        let projectInfo = ConfigureProjectViewModel.ProjectInfo(
-            project: Project.mock(),
-            settings: ProjectSettings.mock()
-        )
-
-        // WHEN we initialise the ConfigureProjectViewModel for editing
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: projectInfo,
-            serviceContainer: self.serviceContainer
-        )
+    func formTitleEditing() async throws {
+        // GIVEN we have our ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
         // THEN the form title is correctly set
         #expect(testSubject.formTitle == L10n.ConfigureProject.Editing.formTitle)
@@ -167,34 +181,17 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("Save Button Title - Creating")
     func saveButtonTitleCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // WHEN we initialise the ConfigureProjectViewModel for editing
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN we have our ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // THEN the form title is correctly set
         #expect(testSubject.saveButtonTitle == L10n.ConfigureProject.Creating.createButton)
     }
 
     @Test("Save Button Title - Editing")
-    func saveButtonTitleEditing() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a mock ProjectInfo
-        let projectInfo = ConfigureProjectViewModel.ProjectInfo(
-            project: Project.mock(),
-            settings: ProjectSettings.mock()
-        )
-
-        // WHEN we initialise the ConfigureProjectViewModel for editing
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: projectInfo,
-            serviceContainer: self.serviceContainer
-        )
+    func saveButtonTitleEditing() async throws {
+        // GIVEN we have our ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
         // THEN the form title is correctly set
         #expect(testSubject.saveButtonTitle == L10n.ConfigureProject.Editing.createButton)
@@ -202,121 +199,75 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("Form Validation - Creating - Missing Directory")
     func formValidationCreatingMissingDirectory() async throws {
-        var cancellables = [AnyCancellable]()
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
-
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a project directory has been selected."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a project directory has been selected."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing Directory Data")
     func formValidationCreatingMissingDirectoryData() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not the secure URL data
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "No secure directory data is avaiable to DocuBot."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "No secure directory data is avaiable to DocuBot."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing Name")
     func formValidationCreatingMissingName() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not the project name
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a project name has been provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a project name has been provided."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing Format")
     func formValidationCreatingMissingFormat() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not our format types
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -324,38 +275,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.projectName = "Test Name"
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: false)]
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that at least one format has been enabled."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that at least one format has been enabled."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing Seed")
     func formValidationCreatingMissingSeed() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not our seed
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -364,38 +302,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a valid seed value is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a valid seed value is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing TopK")
     func formValidationCreatingMissingTopK() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not our TopK
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -405,38 +330,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 10
         testSubject.topK = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a valid Top-K value is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a valid Top-K value is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Invalid TopP - Lower Bounds")
     func formValidationCreatingInvalidTopPLower() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not a valid input for our TopP
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -447,38 +359,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 10
         testSubject.topP = -1
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Invalid TopP - Upper Bounds")
     func formValidationCreatingInvalidTopPUpper() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not a valid input for our TopP
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -489,38 +388,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 10
         testSubject.topP = 11
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing Context Length")
     func formValidationCreatingMissingContextLength() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not our Context Length
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -531,38 +417,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 5
         testSubject.contextLength = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a valid context length is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a valid context length is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing Batch Size")
     func formValidationCreatingMissingBatchSize() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not our Batch Size
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -574,38 +447,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.contextLength = 10
         testSubject.batchSize = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a valid batch size is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a valid batch size is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing Token Count")
     func formValidationCreatingMissingTokenCount() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not our Token Count
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -618,38 +478,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.batchSize = 15
         testSubject.maxTokenCount = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a valid maximum token count is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a valid maximum token count is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Creating - Missing System Prompt")
     func formValidationCreatingMissingSystemPrompt() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating a new Project & Settings
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out some of the details, but not our Token Count
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -663,153 +510,97 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = ""
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Create Project",
-                            message: "Please ensure that a valid system prompt is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Create Project",
+                message: "Please ensure that a valid system prompt is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Directory")
     func formValidationEditingMissingDirectory() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not the project directory
         testSubject.projectDirectory = nil
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a project directory has been selected."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a project directory has been selected."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Directory Data")
     func formValidationEditingMissingDirectoryData() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not the secure URL data
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = nil
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "No secure directory data is avaiable to DocuBot."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "No secure directory data is avaiable to DocuBot."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Name")
     func formValidationEditingMissingName() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not the project name
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
         testSubject.projectName = ""
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a project name has been provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a project name has been provided."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Format")
     func formValidationEditingMissingFormat() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not our format types
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -817,39 +608,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.projectName = "Test Name"
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: false)]
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that at least one format has been enabled."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that at least one format has been enabled."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Seed")
     func formValidationEditingMissingSeed() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not our seed
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -858,39 +635,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.formatConfigurations = [.init(order: 1, format: .rtf, isEnabled: true)]
         testSubject.seed = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a valid seed value is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a valid seed value is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing TopK")
     func formValidationEditingMissingTopK() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not our TopK
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -900,39 +663,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.seed = 10
         testSubject.topK = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a valid Top-K value is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a valid Top-K value is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Invalid TopP - Lower Bounds")
     func formValidationEditingInvalidTopPLower() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not a valid input for our TopP
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -943,38 +692,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 10
         testSubject.topP = -1
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
-                        )
-                    )
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
+
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Invalid TopP - Upper Bounds")
     func formValidationEditingInvalidTopPUpper() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not a valid input for our TopP
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -985,39 +721,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 10
         testSubject.topP = 11
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that the Top-P value is within the range of 0.0 and 1.0."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Context Length")
     func formValidationEditingMissingContextLength() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not our Context Length
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -1028,39 +750,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.topK = 5
         testSubject.contextLength = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a valid context length is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a valid context length is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Batch Size")
     func formValidationEditingMissingBatchSize() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not our Batch Size
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -1072,39 +780,25 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.contextLength = 10
         testSubject.batchSize = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a valid batch size is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a valid batch size is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing Token Count")
     func formValidationEditingMissingTokenCount() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we ensure we have filled out some of the details, but not our Token Count
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -1117,40 +811,26 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.batchSize = 15
         testSubject.maxTokenCount = 0
 
-        // WHEN we validate the form
+        // WHEN try and save
         await testSubject.saveButtonSelected()
 
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a valid maximum token count is provided."
-                        )
-                    )
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a valid maximum token count is provided."
+            )
+        )
     }
 
     @Test("Form Validation - Editing - Missing System Prompt")
     func formValidationEditingMissingSystemPrompt() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: .mock(), settings: .mock()),
-            serviceContainer: self.serviceContainer
-        )
-
+        // GIVEN a ConfigureProjectViewModel for modifying an existing Project & Settings
+        let testSubject = try await self.mockForEditing()
+        
         // WHEN we ensure we have filled out some of the details, but not our system prompt
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
@@ -1162,47 +842,30 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.batchSize = 15
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = ""
-
-        // WHEN we validate the form
+        
+        // WHEN try and save
         await testSubject.saveButtonSelected()
-
-        // THEN the correct error is shown
-        await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration
-                .compactMap(\.self)
-                .sink { newValue in
-                    #expect(
-                        newValue == .init(
-                            title: "Failed to Update Project",
-                            message: "Please ensure that a valid system prompt is provided."
-                        )
-                    )
-
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        
+        // THEN an alert is presented
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
+        
+        // THEN the alert has the correct title and message
+        #expect(
+            alert == .init(
+                title: "Failed to Update Project",
+                message: "Please ensure that a valid system prompt is provided."
+            )
+        )
     }
 
     @Test("Save Project - Creating")
     func createProject() async throws {
-        var cancellables = [AnyCancellable]()
-
-        var onSavedCalled = false
-
-        // Ensure that there is no Projects in the DB
+        // Ensure that there is no Projects in the DB before we start
         let allProjects = try await persistenceService.getProjects()
         #expect(allProjects.count == 0)
 
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel with no existing Project
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        ) {
-            onSavedCalled = true
-        }
+        // GIVEN a ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // WHEN we ensure we have filled out all of the details
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -1229,35 +892,28 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         await testSubject.saveButtonSelected()
 
         // THEN a new Project has been created on the DB
-        var newProject: Project!
-        await withCheckedContinuation { continuation in
-            self.persistenceService.getProjects()
-                .replaceError(with: [])
-                .sink { allProjects in
-                    // THEN there is only one newly create Project
-                    #expect(allProjects.count == 1)
-                    newProject = allProjects.first!
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
 
-                    // THEN the Project has the correct attributes
-                    #expect(newProject.id == 1)
-                    #expect(newProject.path == "/example/path")
-                    #expect(newProject.name == "Test Name")
-                    #expect(newProject.urlBookmarkData == Data())
-                    #expect(newProject.documentationChecksum == nil)
-                    #expect(newProject.exampleQuestions == [])
-                    #expect(newProject.alertStatus == .error(error: .firstSync))
-                    #expect(newProject.needsFullResync == true)
-                    #expect(
-                        newProject.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
-                    )
-                    #expect(
-                        newProject.updatedAt.secondsFrom1970 == Date.now.secondsFrom1970
-                    )
+        // THEN there is only one new created Project
+        #expect(savedProjects.count == 1)
+        let savedProject = try #require(savedProjects.first)
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the Project has the correct attributes
+        #expect(savedProject.id == 1)
+        #expect(savedProject.path == "/example/path")
+        #expect(savedProject.name == "Test Name")
+        #expect(savedProject.urlBookmarkData == Data())
+        #expect(savedProject.documentationChecksum == nil)
+        #expect(savedProject.exampleQuestions == [])
+        #expect(savedProject.alertStatus == .error(error: .firstSync))
+        #expect(savedProject.needsFullResync == true)
+        #expect(
+            savedProject.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
+        )
+        #expect(
+            savedProject.updatedAt.secondsFrom1970 == Date.now.secondsFrom1970
+        )
 
         // THEN a new ProjectSettings has been created on the DB
         let settings = try await persistenceService.getProjectSettings(
@@ -1285,48 +941,22 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         let newWindow = try #require(testSubject.onOpen.value)
         #expect(
             newWindow == .project(
-                .init(project: newProject)
+                .init(project: savedProject)
             )
         )
-
-        // THEN onSave has been called
-        #expect(onSavedCalled == true)
     }
 
     @Test("Save Project - Editing")
     func editProject() async throws {
-        var cancellables = [AnyCancellable]()
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
-        var onSavedCalled = false
-
-        // Ensure that there is no Projects in the DB
-        let allProjects = try await persistenceService.getProjects()
-        #expect(allProjects.count == 0)
-
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
-
-        // GIVEN that we have an existing Project & Settings in the DB
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        ) {
-            onSavedCalled = true
-        }
+        // THEN there is only 1 project
+        #expect(try await persistenceService.getProjects().count == 1)
 
         // WHEN we ensure we have filled out all of the details
-        testSubject.model = .mock(id: 1)
-        testSubject.projectName = "Test Name"
+        testSubject.selectedModel = .mock(id: 1)
+        testSubject.projectName = "Test Name 2"
         testSubject.seed = 20
         testSubject.topK = 5
         testSubject.topP = 0.5
@@ -1335,10 +965,11 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.maxTokenCount = 1024
         testSubject.systemPrompt = "This is a system prompt"
         testSubject.strictMode = true
+        testSubject.stopSequence = "xyz"
 
         // We won't change the properties below as it will trigger a
         // resync warning - so we'll test the changing of these properties
-        // in a the resync tests.
+        // in a the "resync" warning tests.
         /*
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
@@ -1347,7 +978,6 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
             .init(order: 2, format: .md, isEnabled: false),
             .init(order: 2, format: .txt, isEnabled: true)
         ]
-
         testSubject.embeddingModel = .multiQaMiniLm
         testSubject.similarityMetric = .euclideanDistance
          */
@@ -1356,76 +986,55 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         await testSubject.saveButtonSelected()
 
         // THEN a new Project has been created on the DB
-        await withCheckedContinuation { continuation in
-            self.persistenceService.getProjects()
-                .replaceError(with: [])
-                .sink { allProjects in
-                    // THEN there is only one newly create Project
-                    #expect(allProjects.count == 1)
-                    let project = allProjects.first!
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
 
-                    // THEN the Project has the correct attributes
-                    #expect(project.id == 1)
-                    // #expect(project.path == "/example/path")
-                    // #expect(project.urlBookmarkData == Data())
-                    #expect(project.name == "Test Name")
-                    #expect(project.documentationChecksum == "123")
-                    #expect(project.exampleQuestions == ["foo", "bar"])
-                    #expect(project.alertStatus == .error(error: .firstSync))
-                    #expect(project.needsFullResync == false)
-                    #expect(
-                        project.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
-                    )
-                    #expect(
-                        project.updatedAt.secondsFrom1970 == Date.now.secondsFrom1970
-                    )
+        // THEN there is only one new created Project
+        #expect(savedProjects.count == 1)
+        let savedProject = try #require(savedProjects.first)
 
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // THEN the Project has the correct attributes
+        #expect(savedProject.id == 1)
+        #expect(savedProject.name == "Test Name 2")
+        #expect(savedProject.urlBookmarkData == Data())
+        #expect(
+            savedProject.createdAt.secondsFrom1970 == Date.now.secondsFrom1970
+        )
+        #expect(
+            savedProject.updatedAt.secondsFrom1970 == Date.now.secondsFrom1970
+        )
 
         // THEN a new ProjectSettings has been created on the DB
-        let fetchedSettings = try await persistenceService.getProjectSettings(
+        let settings = try await persistenceService.getProjectSettings(
             for: .mock(id: 1)
         )
 
         // THEN the ProjectSettings has the correct attributes
-        #expect(fetchedSettings.id == 1)
-        #expect(fetchedSettings.projectID == 1)
-        #expect(fetchedSettings.modelID == 1)
-        // #expect(fetchedSettings.supportedFormats == [.rtf, .txt])
-        #expect(fetchedSettings.language == .english)
-        // #expect(fetchedSettings.embeddingModel == .multiQaMiniLm)
-        // #expect(fetchedSettings.similarityMetric == .euclideanDistance)
-        #expect(fetchedSettings.seed == 20)
-        #expect(fetchedSettings.topK == 5)
-        #expect(fetchedSettings.topP == 0.5)
-        #expect(fetchedSettings.batchSize == 15)
-        #expect(fetchedSettings.maxTokenCount == 1024)
-        #expect(fetchedSettings.systemPrompt == "This is a system prompt")
-        #expect(fetchedSettings.strictMode == true)
+        #expect(settings.id == 1)
+        #expect(settings.projectID == 1)
+        #expect(settings.modelID == 1)
+        #expect(settings.language == .english)
+        #expect(settings.seed == 20)
+        #expect(settings.topK == 5)
+        #expect(settings.topP == 0.5)
+        #expect(settings.batchSize == 15)
+        #expect(settings.stopSequence == "xyz")
+        #expect(settings.maxTokenCount == 1024)
+        #expect(settings.systemPrompt == "This is a system prompt")
+        #expect(settings.strictMode == true)
 
-        // THEN onSave has been called
-        #expect(onSavedCalled == true)
-
-        // THEN we haven't opened up any new window
+        // THEN there is no new window that's presented
         #expect(testSubject.onOpen.value == nil)
     }
 
     @Test("Reset LLM Options")
-    func resetLlmOptions() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel with custom LLM options
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+    func resetLlmOptions() async throws {
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
-        testSubject.model = .mock(id: 1)
+        testSubject.selectedModel = .mock(id: 1)
         testSubject.projectName = "Test Name"
         testSubject.formatConfigurations = [
             .init(order: 1, format: .rtf, isEnabled: true),
@@ -1465,21 +1074,24 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.projectDirectory == URL(fileURLWithPath: "/example/path"))
         #expect(testSubject.embeddingModel == .multiQaMiniLm)
         #expect(testSubject.similarityMetric == .euclideanDistance)
+        #expect(testSubject.selectedLanguage == .english)
+        #expect(
+            testSubject.formatConfigurations == [
+                .init(order: 1, format: .rtf, isEnabled: true),
+                .init(order: 2, format: .md, isEnabled: false),
+                .init(order: 2, format: .txt, isEnabled: true)
+            ]
+        )
     }
 
     @Test("Reset Similarity Options")
     func resetSimilarityOptions() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
         testSubject.projectDirectoryBookmarkData = Data()
-        testSubject.model = .mock(id: 1)
+        testSubject.selectedModel = .mock(id: 1)
         testSubject.projectName = "Test Name"
         testSubject.formatConfigurations = [
             .init(order: 1, format: .rtf, isEnabled: true),
@@ -1499,7 +1111,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.embeddingModel = .multiQaMiniLm
         testSubject.similarityMetric = .euclideanDistance
 
-        // WHEN the resetLlmOptions method is called
+        // WHEN the resetSimilarityOptions button is selected
         testSubject.resetSimilarityOptions()
 
         // THEN the similarity options are reset to their default values
@@ -1523,13 +1135,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - None - Creating")
     func noResyncMessageCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel with an empty slate
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // WHEN we have our details filled out
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -1552,13 +1159,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - Metric Changed - Creating")
     func resyncMessageMetricChangedCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel with an empty slate
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // WHEN we change the metric
         testSubject.similarityMetric = .dotProduct
@@ -1582,13 +1184,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - EmbeddedModel Changed - Creating")
     func resyncMessageEmbeddedModelChangedCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel with an empty slate
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // WHEN we change the embedding model
         testSubject.embeddingModel = .miniLmAll
@@ -1612,13 +1209,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - Directory Changed - Creating")
     func resyncMessageDirectoryChangedCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel with an empty slate
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // WHEN we change the directory
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
@@ -1641,13 +1233,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - Formats Changed - Creating")
     func resyncMessageFormatsChangedCreating() async {
-        // Load a testing model into our DB
-        await self.persistTestModel()
-
-        // GIVEN a ConfigureProjectViewModel with an empty slate
-        let testSubject = ConfigureProjectViewModel(
-            serviceContainer: self.serviceContainer
-        )
+        // GIVEN a ConfigureProjectViewModel for creating
+        let testSubject = await self.mockForCreating()
 
         // WHEN we change the formats
         testSubject.formatConfigurations = [
@@ -1673,39 +1260,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - None - Editing")
     func noResyncMessageEditing() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // GIVEN that we have an existing Project & Settings in the DB
-        let model = await self.persistTestModel()
-        let modelID = try model.id.orThrow(LLMModel.ModelError.missingID)
-        let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: modelID
-        )
-
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
@@ -1716,55 +1272,22 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - Metric Changed - Editing")
     func resyncMessageMetricChangedEditing() async throws {
-        var cancellables = [AnyCancellable]()
-
-        let model = await self.persistTestModel()
-        let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
-        )
-
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        #expect(settings.similarityMetric != .dotProduct)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
-
-        // WHEN we change the metric
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
+        
+        // GIVEN that our metric isn't dotProduct
+        #expect(testSubject.similarityMetric != .dotProduct)
+        
+        // WHEN we change the metric to dotProduct
         testSubject.similarityMetric = .dotProduct
-
+        
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
-
+        
         // THEN ReSync Alert is correctly set
-        let alert = await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { newAlert in
-                    continuation.resume(returning: newAlert)
-                }
-                .store(in: &cancellables)
-        }
+        let alert = try await testSubject.$alertConfiguration
+            .firstCompactValue()
+        
         #expect(
             alert == .init(
                 title: "Re-Sync Will Be Needed",
@@ -1774,19 +1297,18 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
 
         // WHEN the alert's action is called
-        await MainActor.run {
-            alert.primaryAction?.onSelect()
-        }
+        await alert?.primaryAction?.onSelect()
 
         // THEN the Project & Settings is saved
-        let savedSettings = await withCheckedContinuation { cont in
-            persistenceService.getProjectSettings(for: project)
-                .dropFirst()
-                .sink { newSettings in
-                    cont.resume(returning: newSettings)
-                }
-                .store(in: &cancellables)
-        }
+        let savedProjects = try await persistenceService
+            .getProjects()
+
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+        let savedSettings = try await persistenceService
+            .getProjectSettings(for: savedProject)
 
         // THEN the Metric has been updated correctly
         #expect(savedSettings.similarityMetric == .dotProduct)
@@ -1794,53 +1316,21 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - EmbeddedModel Changed - Editing")
     func resyncMessageEmbeddedModelChangedEditing() async throws {
-        var cancellables = [AnyCancellable]()
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
-        // GIVEN that we have an existing Project & Settings in the DB
-        let model = await self.persistTestModel()
-        let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
-        )
+        // GIVEN that our metric isn't dotProduct
+        #expect(testSubject.embeddingModel != .miniLmAll)
 
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
-
-        // WHEN we change the embedding model
+        // WHEN we change the model to dotProduct
         testSubject.embeddingModel = .miniLmAll
 
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
-        let alert = await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { newAlert in
-                    continuation.resume(returning: newAlert)
-                }
-                .store(in: &cancellables)
-        }
+        // THEN ReSync Alert is correctly set
+        let alert = try await testSubject.$alertConfiguration
+            .firstCompactValue()
         #expect(
             alert == .init(
                 title: "Re-Sync Will Be Needed",
@@ -1850,19 +1340,17 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
 
         // WHEN the alert's action is called
-        await MainActor.run {
-            alert.primaryAction?.onSelect()
-        }
+        await alert?.primaryAction?.onSelect()
 
         // THEN the Project & Settings is saved
-        let savedSettings = await withCheckedContinuation { cont in
-            persistenceService.getProjectSettings(for: project)
-                .dropFirst()
-                .sink { newSettings in
-                    cont.resume(returning: newSettings)
-                }
-                .store(in: &cancellables)
-        }
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
+
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+        let savedSettings = try await persistenceService.getProjectSettings(for: savedProject)
 
         // THEN the Metric has been updated correctly
         #expect(savedSettings.embeddingModel == .miniLmAll)
@@ -1870,55 +1358,23 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("ReSync Message - Directory Changed - Editing")
     func resyncMessageDirectoryChangedEditing() async throws {
-        var cancellables = [AnyCancellable]()
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
-        // GIVEN that we have an existing Project & Settings in the DB
-        let model = await self.persistTestModel()
-        let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
-        )
-
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // GIVEN that our directory isn't /example/path
+        #expect(testSubject.projectDirectory != URL(fileURLWithPath: "/example/path"))
 
         // WHEN we change the directory
         testSubject.projectDirectory = URL(fileURLWithPath: "/example/path")
-        testSubject.projectDirectoryBookmarkData = Data()
+        testSubject.projectDirectoryBookmarkData = Data(
+            repeating: 1, count: 10
+        )
 
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
         // THEN ReSync Alert is correctly set
-        let alert = await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { newAlert in
-                    continuation.resume(returning: newAlert)
-                }
-                .store(in: &cancellables)
-        }
+        let alert = try await testSubject.$alertConfiguration.firstCompactValue()
         #expect(
             alert == .init(
                 title: "Re-Sync Will Be Needed",
@@ -1928,58 +1384,27 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
 
         // WHEN the alert's action is called
-        await MainActor.run {
-            alert.primaryAction?.onSelect()
-        }
+        await alert?.primaryAction?.onSelect()
 
         // THEN the Project & Settings is saved
-        let savedProject = await withCheckedContinuation { cont in
-            persistenceService.getProject(id: 1)
-                .sink { newProject in
-                    cont.resume(returning: newProject)
-                }
-                .store(in: &cancellables)
-        }
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
 
-        // THEN the Directory has been updated correctly
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+
         #expect(savedProject.path == "/example/path")
-        #expect(savedProject.urlBookmarkData == .init())
+        #expect(
+            savedProject.urlBookmarkData == Data(repeating: 1, count: 10)
+        )
     }
 
     @Test("ReSync Message - Formats Changed - Editing")
     func resyncMessageFormatsChangedEditing() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // GIVEN that we have an existing Project & Settings in the DB
-        let model = await self.persistTestModel()
-        let project = Project.mock(id: 1)
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
-        )
-
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we change the formats
         testSubject.formatConfigurations = [
@@ -1987,21 +1412,15 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
             .init(order: 2, format: .txt, isEnabled: true),
             .init(order: 3, format: .md, isEnabled: false),
             .init(order: 5, format: .other("foo"), isEnabled: false),
-            .init(order: 6, format: .other("bar"), isEnabled: true),
+            .init(order: 6, format: .other("bar"), isEnabled: true)
         ]
 
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
         // THEN ReSync Alert is correctly set
-        let alert = await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { newAlert in
-                    continuation.resume(returning: newAlert)
-                }
-                .store(in: &cancellables)
-        }
+        let alert = try await testSubject.$alertConfiguration
+            .firstCompactValue()
         #expect(
             alert == .init(
                 title: "Re-Sync Will Be Needed",
@@ -2011,19 +1430,18 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
 
         // WHEN the alert's action is called
-        await MainActor.run {
-            alert.primaryAction?.onSelect()
-        }
+        await alert?.primaryAction?.onSelect()
 
         // THEN the Project & Settings is saved
-        let savedSettings = await withCheckedContinuation { cont in
-            persistenceService.getProjectSettings(for: project)
-                .dropFirst()
-                .sink { newSettings in
-                    cont.resume(returning: newSettings)
-                }
-                .store(in: &cancellables)
-        }
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
+
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+        let savedSettings = try await persistenceService
+            .getProjectSettings(for: savedProject)
 
         // THEN the Formats have been updated correctly
         #expect(
@@ -2037,51 +1455,17 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("New Alert Status - None - Editing")
     func newAlertStatusNoneEditing() async throws {
-        var cancellables = [AnyCancellable]()
-
-        // GIVEN that we have an existing Project & Settings in the DB
-        let model = await self.persistTestModel()
-        let project = Project.mock(
-            id: 1,
-            alertStatus: .none
-        )
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
-        )
-
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        // GIVEN a ConfigureProjectViewModel with a Project & Settings
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(project: project, settings: settings),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
         // WHEN we change nothing
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
         // THEN the Project & Settings is saved
-        let savedProject = await withCheckedContinuation { cont in
-            persistenceService.getProject(id: 1)
-                .sink { newProject in
-                    cont.resume(returning: newProject)
-                }
-                .store(in: &cancellables)
-        }
+        let savedProject = try await persistenceService.getProject(
+            id: try #require(testSubject.projectInfo?.project.id)
+        )
 
         // THEN there is no alert status on the model
         #expect(savedProject.alertStatus == .none)
@@ -2089,75 +1473,36 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("New Alert Status - Metric Changed - Editing")
     func newAlertStatusMetricEditing() async throws {
-        var cancellables = [AnyCancellable]()
-
-        let model = await self.persistTestModel()
-        let project = Project.mock(
-            id: 1,
-            alertStatus: .none
-        )
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
-        )
-
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        #expect(settings.similarityMetric != .dotProduct)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
-
-        // WHEN we change the metric
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
+        
+        // GIVEN that our metric isn't dotProduct
+        #expect(testSubject.similarityMetric != .dotProduct)
+        
+        // WHEN we change the metric to dotProduct
         testSubject.similarityMetric = .dotProduct
-
+        
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
-
+        
         // THEN ReSync Alert is correctly set
-        let alert = await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { newAlert in
-                    continuation.resume(returning: newAlert)
-                }
-                .store(in: &cancellables)
-        }
-        #expect(alert != nil)
+        let alert = try #require(
+            try await testSubject.$alertConfiguration.firstCompactValue()
+        )
 
         // WHEN the alert's action is called
-        await MainActor.run {
-            alert.primaryAction?.onSelect()
-        }
+        await alert.primaryAction?.onSelect()
 
         // THEN the Project & Settings is saved
-        let savedProject = await withCheckedContinuation { cont in
-            persistenceService.getProject(id: 1)
-                .sink { newProject in
-                    cont.resume(returning: newProject)
-                }
-                .store(in: &cancellables)
-        }
+        let savedProjects = try await persistenceService
+            .getProjects()
 
-        // THEN the Metric warning has been given to the Project
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+
+        // THEN the AlertStatus has been set appropriately
         #expect(
             savedProject.alertStatus == .warning(warning: .metricChanged)
         )
@@ -2165,93 +1510,149 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     @Test("New Alert Status - Embedded Model Changed - Editing")
     func newAlertStatusModelEditing() async throws {
-        var cancellables = [AnyCancellable]()
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
 
-        let model = await self.persistTestModel()
-        let project = Project.mock(
-            id: 1,
-            alertStatus: .none
-        )
-        let settings = ProjectSettings.mock(
-            id: 1,
-            projectID: 1,
-            modelID: try model.id.orThrow(LLMModel.ModelError.missingID)
-        )
+        // GIVEN that our metric isn't miniLmAll
+        #expect(testSubject.embeddingModel != .miniLmAll)
 
-        _ = try await persistenceService.insert(project: project)
-        _ = try await persistenceService.insert(settings: settings)
-
-        #expect(settings.embeddingModel != .miniLmAll)
-
-        // GIVEN a ConfigureProjectViewModel with an existing Project
-        let testSubject = ConfigureProjectViewModel(
-            projectInfo: .init(
-                project: project,
-                settings: settings
-            ),
-            serviceContainer: self.serviceContainer
-        )
-
-        // We need to wait for the model to be loaded before proceeding
-        await withCheckedContinuation { continuation in
-            testSubject.$model.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { _ in
-                    continuation.resume()
-                }
-                .store(in: &cancellables)
-        }
-
-        // WHEN we change the model
+        // WHEN we change the model to miniLmAll
         testSubject.embeddingModel = .miniLmAll
 
         // WHEN we try and save the Project & Settings
         await testSubject.saveButtonSelected()
 
         // THEN ReSync Alert is correctly set
-        let alert = await withCheckedContinuation { continuation in
-            testSubject.$alertConfiguration.eraseToAnyPublisher()
-                .compactMap(\.self)
-                .sink { newAlert in
-                    continuation.resume(returning: newAlert)
-                }
-                .store(in: &cancellables)
-        }
-        #expect(alert != nil)
+        let alert = try #require(
+            try await testSubject.$alertConfiguration.firstCompactValue()
+        )
 
         // WHEN the alert's action is called
-        await MainActor.run {
-            alert.primaryAction?.onSelect()
-        }
+        await alert.primaryAction?.onSelect()
 
         // THEN the Project & Settings is saved
-        let savedProject = await withCheckedContinuation { cont in
-            persistenceService.getProject(id: 1)
-                .sink { newProject in
-                    cont.resume(returning: newProject)
-                }
-                .store(in: &cancellables)
-        }
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
 
-        // THEN the Metric warning has been given to the Project
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+
+        // THEN the AlertStatus has been set appropriately
         #expect(
             savedProject.alertStatus == .warning(warning: .modelChanged)
         )
     }
 
-    @Test("Help Button Selected")
-    func helpButtonSelected() {
+    @Test("New Alert Status - Directory Changed - Editing")
+    func newAlertStatusDirectoryEditing() async throws {
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
+
+        // WHEN we change the directory
+        testSubject.projectDirectory = URL(fileURLWithPath: "/foo/bar")
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN ReSync Alert is correctly set
+        let alert = try #require(
+            try await testSubject.$alertConfiguration.firstCompactValue()
+        )
+
+        // WHEN the alert's action is called
+        await alert.primaryAction?.onSelect()
+
+        // THEN the Project & Settings is saved
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
+
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+
+        // THEN the AlertStatus has been set appropriately
+        #expect(
+            savedProject.alertStatus == .warning(warning: .directoryChanged)
+        )
+    }
+
+    @Test("New Alert Status - Formats Changed - Editing")
+    func newAlertStatusFormatsEditing() async throws {
+        // GIVEN a ConfigureProjectViewModel for editing
+        let testSubject = try await self.mockForEditing()
+
+        // GIVEN that our metric isn't miniLmAll
+        #expect(
+            testSubject.formatConfigurations != [
+                .init(order: 1, format: .rtf, isEnabled: true),
+                .init(order: 2, format: .md, isEnabled: true),
+                .init(order: 3, format: .txt, isEnabled: true),
+            ]
+        )
+
+        // WHEN we change the model to miniLmAll
+        testSubject.formatConfigurations = [
+            .init(order: 1, format: .rtf, isEnabled: true),
+            .init(order: 2, format: .md, isEnabled: true),
+            .init(order: 3, format: .txt, isEnabled: true),
+        ]
+
+        // WHEN we try and save the Project & Settings
+        await testSubject.saveButtonSelected()
+
+        // THEN ReSync Alert is correctly set
+        let alert = try #require(
+            try await testSubject.$alertConfiguration.firstCompactValue()
+        )
+
+        // WHEN the alert's action is called
+        await alert.primaryAction?.onSelect()
+
+        // THEN the Project & Settings is saved
+        let savedProjects = try await persistenceService.getProjects()
+            .firstCompactValue()
+
+        // THEN there is only one project in the DB
+        #expect(savedProjects.count == 1)
+
+        let savedProject = try #require(savedProjects.first)
+
+        // THEN the AlertStatus has been set appropriately
+        #expect(
+            savedProject.alertStatus == .warning(warning: .formatsChanged)
+        )
+    }
+
+    @Test(
+        "Help Button Selected",
+        arguments: ConfigureProjectViewModel.HelpType.allCases
+    )
+    func helpButtonEmbeddedSelected(
+        type: ConfigureProjectViewModel.HelpType
+    ) async throws {
         // GIVEN a ConfigureProjectViewModel
-//        let testSubject = ConfigureProjectViewModel(
-//            serviceContainer: .mock
-//        )
-//
-//        // WHEN the help button is selected
-//        testSubject.helpButtonSelected(with: .embeddingModel)
-//
-//        // THEN the help configuration is set
-//        #expect(testSubject.helpConfiguration != nil)
-//        #expect(testSubject.helpConfiguration?.title == L10n.ConfigureProject.Help.embeddingModel)
+        let testSubject = await self.mockForCreating()
+
+        // WHEN the help button is selected
+        testSubject.helpButtonSelected(with: type)
+
+        // THEN the help configuration is set
+        let helpConfiguration = try #require(testSubject.helpConfiguration)
+
+        // THEN the help configuration has the correct content
+        let title = self.helpConfigurationTitle(for: type)
+        let content = self.helpConfigurationContent(for: type)
+        #expect(helpConfiguration.title == title)
+        #expect(helpConfiguration.content == content)
+
+        // WHEN the help configurations close-button is selected
+        helpConfiguration.onDismiss()
+
+        // THEN we don't have any help configuration on our test subject
+        #expect(testSubject.helpConfiguration == nil)
     }
 
     @Test("Directory Selected")
@@ -2279,6 +1680,11 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 //        #expect(addedFormatCount == removedFormatCount + 1)
     }
 
+    @Test("Default Values")
+    func defaultValues() {
+        
+    }
+
     @Test("FormValidationError Descriptions")
     func formValidationErrorDescriptions() {
         typealias Error = ConfigureProjectViewModel.FormValidationError
@@ -2299,5 +1705,73 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         )
     }
 
-    // swiftlint:enable line_length
 } // swiftlint:disable:this file_length
+
+// MARK: - Private
+
+private extension ConfigureProjectViewModelTests {
+
+    func helpConfigurationTitle(
+        for type: ConfigureProjectViewModel.HelpType
+    ) -> String {
+        switch type {
+        case .embeddingModel:
+            return "What does the embedding model do?"
+        case .similarityMetric:
+            return "What does the similarity metric do?"
+        case .seed:
+            return "What does seed do?"
+        case .topK:
+            return "What does top-k do?"
+        case .topP:
+            return "What does top-p do?"
+        case .contextLength:
+            return "What does context length do?"
+        case .temperature:
+            return "What does temperature do?"
+        case .batchSize:
+            return "What does batch size do?"
+        case .stopSequence:
+            return "What does stop sequence do?"
+        case .maxTokenCount:
+            return "What does max token count do?"
+        case .systemPrompt:
+            return "What does system prompt do?"
+        case .strictMode:
+            return "What does strict mode do?"
+        }
+    }
+
+    func helpConfigurationContent(
+        for type: ConfigureProjectViewModel.HelpType
+    ) -> String {
+        switch type {
+        case .embeddingModel:
+            return "An embedding model transforms input data (like text) into numerical vectors that represent the semantic meaning of the data.\n\nThese embeddings are used to measure relationships and similarities between different pieces of content, allowing the model to understand the context and meaning of the input.\n\nDistilBERT is a small version of the BERT model that has been fine tuned for question & answers.\nMiniLM All, is a smaller model, but it is much faster.\nMulti-QA MiniLM is a small & fast model that has been fine tuned for question & answering."
+        case .similarityMetric:
+            return "A similarity metric is a mathematical function used to compare the embeddings of two pieces of data.\n\nIt helps quantify how closely related two inputs are. Common similarity metrics include cosine similarity, which measures the angle between two vectors, and Euclidean distance, which measures the straight-line distance between them."
+        case .seed:
+            return "The seed value is used to initialise the random number generator, which influences how the model generates text.\n\nBy setting a seed, you ensure that the generation process is deterministic - running the same input with the same seed will result in the same output. This is useful for reproducibility."
+        case .topK:
+            return "Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).\n\nBy default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred."
+        case .topP:
+            return "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation."
+        case .contextLength:
+            return "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text."
+        case .temperature:
+            return "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens."
+        case .batchSize:
+            return "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation."
+        case .stopSequence:
+            return "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition."
+        case .maxTokenCount:
+            return "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens."
+        case .systemPrompt:
+            return "A system message provides background context or guidance to the model to help it generate appropriate responses.\n\nIt defines the model’s role, tone, and behavior. For example, a system message might instruct the model to act as a helpful assistant, limiting its answers to a specific knowledge domain."
+        case .strictMode:
+            return "Strict Mode ensures that DocuBot returns only the content from the documentation without additional commentary or elaboration from the AI model.\n\nIn this mode, the LLM will be disabled, and the response will strictly repeat excerpts from the provided documentation."
+        }
+    }
+
+    // swiftlint:enable line_length
+}
