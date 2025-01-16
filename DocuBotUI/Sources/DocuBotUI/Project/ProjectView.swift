@@ -72,6 +72,7 @@ public struct ProjectView: View {
 
         .toolbar {
             ToolbarButton(viewModel: viewModel.openSettingsButton)
+                .keyboardShortcut(",", modifiers: [.command])
             ToolbarButton(viewModel: viewModel.createChatButton)
         }
 

@@ -247,10 +247,14 @@ public extension CreateProjectViewModel {
                     return
                 }
 
+                let supportedFormats = self.formatConfigurations
+                    .filter { $0.isEnabled }
+                    .map(\.format)
+
                 // Insert the ProjectSettings into the DB
                 let settings = ProjectSettings(
                     projectID: id,
-                    supportedFormats: self.formatConfigurations.map(\.format),
+                    supportedFormats: supportedFormats,
                     respondWithDocumentsOnly: false,
                     language: self.selectedLanguage,
                     createdAt: .now,

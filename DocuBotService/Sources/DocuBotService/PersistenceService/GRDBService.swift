@@ -49,6 +49,8 @@ class GRDBService: PersistenceService {
         self.injectDemoData()
     }
 
+    // MARK: Projects
+
     func insert(project: Project) async throws -> Project {
         return try await self.dbQueue.write { db in
             var record = ProjectRecord(model: project)
@@ -73,6 +75,8 @@ class GRDBService: PersistenceService {
         }
     }
 
+    // MARK: ProjectSettings
+
     func insert(settings: ProjectSettings) async throws -> ProjectSettings {
         return try await self.dbQueue.write { db in
             var record = ProjectSettingsRecord(model: settings)
@@ -92,6 +96,14 @@ class GRDBService: PersistenceService {
             return ProjectSettings(record: record)
         }
     }
+
+    func update(projectSettings: ProjectSettings) async throws {
+        try await self.dbQueue.write { db in
+            try ProjectSettingsRecord(model: projectSettings).update(db)
+        }
+    }
+
+    // MARK: Chats
 
     func getChats(for project: Project) -> AnyPublisher<[Chat], Error> {
         return ValueObservation.tracking { db in
@@ -123,6 +135,8 @@ class GRDBService: PersistenceService {
             try ChatRecord(model: chat).update(db)
         }
     }
+
+    // MARK: Messages
 
     func getMessages(for chat: Chat) -> AnyPublisher<[Message], Error> {
         return ValueObservation.tracking { db in

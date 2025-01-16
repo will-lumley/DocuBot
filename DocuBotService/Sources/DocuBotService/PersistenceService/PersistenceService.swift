@@ -21,6 +21,7 @@ public protocol PersistenceService: Service {
 
     func insert(settings: ProjectSettings) async throws -> ProjectSettings
     func getProjectSettings(for project: Project) async throws -> ProjectSettings
+    func update(projectSettings: ProjectSettings) async throws
 
     func getChats(for project: Project) -> AnyPublisher<[Chat], Error>
     func insert(chat: Chat) async throws -> Chat

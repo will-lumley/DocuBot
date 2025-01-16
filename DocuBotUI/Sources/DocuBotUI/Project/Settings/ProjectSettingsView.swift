@@ -81,39 +81,27 @@ public struct ProjectSettingsView: View {
                             
                             if configuration.format.isOther {
                                 // This is our `other` format
-                                Toggle(isOn: .init(
-                                    get: {
-                                        return configuration.isEnabled
-                                    },
-                                    set: { newValue in
-                                        viewModel.set(
-                                            formatConfiguration: configuration,
-                                            isEnabled: newValue
-                                        )
-                                    })
-                                ) {
-                                    HStack {
-                                        TextField("", text: .init(
-                                            get: {
-                                                return configuration.format.otherStr ?? ""
-                                            },
-                                            set: { newValue in
-                                                viewModel.update(formatConfiguration: configuration, otherStr: newValue)
-                                            })
-                                        )
-                                        .textFieldStyle(.roundedBorder)
-                                        .disabled(configuration.isEnabled == false)
-                                        .padding(.leading, -8)
-                                        
-                                        Button {
-                                            viewModel.remove(formatConfiguration: configuration)
-                                        } label: {
-                                            Image(systemSymbol: .trash)
-                                                .padding(1)
-                                        }
-                                    }
+                                HStack {
+                                    TextField("", text: .init(
+                                        get: {
+                                            return configuration.format.otherStr ?? ""
+                                        },
+                                        set: { newValue in
+                                            viewModel.update(formatConfiguration: configuration, otherStr: newValue)
+                                        })
+                                    )
+                                    .textFieldStyle(.roundedBorder)
+                                    .disabled(configuration.isEnabled == false)
+//                                    .frame(maxWidth: .infinity, alignment: .leading)
+//                                    .padding(.leading, -8)
+
+//                                    Button {
+//                                        viewModel.remove(formatConfiguration: configuration)
+//                                    } label: {
+//                                        Image(systemSymbol: .trash)
+//                                            .padding(1)
+//                                    }
                                 }
-                                .toggleStyle(.switch)
                             } else {
                                 // This is our standard format
                                 Toggle(isOn: .init(
