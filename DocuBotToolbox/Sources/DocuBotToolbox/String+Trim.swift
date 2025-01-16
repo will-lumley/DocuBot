@@ -42,6 +42,28 @@ public extension String {
         return self
     }
 
+    /// Removes a specified leading pattern from the string using a regular expression.
+    ///
+    /// This method searches for the provided regular expression pattern at the beginning of the string
+    /// and removes it if a match is found. If the pattern is invalid or does not match, the original
+    /// string is returned unchanged.
+    ///
+    /// - Parameter pattern: A `String` representing the regular expression pattern to match at the
+    ///   beginning of the string. For example, `"^\\*\\s"` matches a leading `* ` (an asterisk followed
+    ///   by a space).
+    /// - Returns: A new `String` with the matched leading pattern removed. If the pattern is not found
+    ///   or invalid, the original string is returned unchanged.
+    func removingLeading(pattern: String) -> String {
+        let regexPattern = #"^\*\s"# // Matches "* " at the beginning of the string
+        guard let regex = try? NSRegularExpression(pattern: regexPattern, options: []) else {
+            return self
+        }
+
+        let range = NSRange(self.startIndex..<self.endIndex, in: self)
+        let cleanedString = regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: "")
+        return cleanedString
+    }
+
     /// Removes all trailing newline characters (`\n`, `\r`, `\r\n`) from the end of the string.
     ///
     /// - Returns: A new string with all trailing newline characters removed.

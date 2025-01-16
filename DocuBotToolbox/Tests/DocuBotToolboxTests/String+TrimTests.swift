@@ -45,4 +45,12 @@ struct StringTrimTests {
         #expect(modified == "1234")
     }
 
+    @Test("Remove Leading")
+    func removingLeading() {
+        let testSubject = "* What is up my dudes * "
+        let modified = testSubject.removingLeading(pattern: "* ")
+
+        #expect(modified == "What is up my dudes * ")
+    }
+
 }
