@@ -17,11 +17,16 @@ jobs:
       with:
           submodules: 'recursive'
 
-
     - name: Download Swift 6
       run: |
         curl -O https://download.swift.org/swift-6.0-release/xcode/swift-6.0-RELEASE/swift-6.0-RELEASE-osx.pkg
         sudo installer -pkg swift-6.0-RELEASE-osx.pkg -target /
+
+    - name: Use Installed Swift
+      run: |
+        export PATH="/Library/Developer/Toolchains/swift-6.0-RELEASE.xctoolchain/usr/bin:$PATH"
+        echo "Swift version in use:"
+        swift --version
 
     - name: Get swift version
       run: swift --version
