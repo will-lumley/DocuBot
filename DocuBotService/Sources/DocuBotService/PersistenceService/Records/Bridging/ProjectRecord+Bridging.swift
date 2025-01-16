@@ -19,6 +19,7 @@ public extension ProjectRecord {
             name: model.name,
             urlBookmarkData: model.urlBookmarkData,
             isDirty: model.isDirty,
+            documentationChecksum: model.documentationChecksum,
             exampleQuestions: model.exampleQuestions,
             createdAt: model.createdAt,
             updatedAt: model.updatedAt

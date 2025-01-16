@@ -97,6 +97,12 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         self.syncProjectButton.onSelect = self.sync
         self.projectSettingsButton.onSelect = self.openSettings
 
+        // Every x seconds we check if the project is dirty
+        self.checkIfProjectIsDirty()
+        Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+            self.checkIfProjectIsDirty()
+        }
+
         self.primeLlm()
     }
 
@@ -110,7 +116,6 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         // Convert the project example questions into ViewModels
         self.$project
             .map(\.exampleQuestions)
-            .map { $0.shuffled() }
             .map { questions in
                 questions.map { question in
                     ProjectQuestionViewModel(content: question) {
@@ -371,6 +376,41 @@ public extension ProjectViewModel {
 // MARK: - Private
 
 private extension ProjectViewModel {
+
+    func checkIfProjectIsDirty() {
+        Task {
+            do {
+                // Pull out the settings
+                let settings = try await persistenceService.getProjectSettings(
+                    for: project
+                )
+
+                // Setup our DocumentBuilder
+                let documentBuilder = DocumentParser(
+                    project: self.project,
+                    settings: settings,
+                    onSyncUpdate: { _, _ in }
+                )
+                // Are we dirty?
+                let isDirty = try await documentBuilder.checkProjectIsDirty()
+                logService.log(with: .info, "Project Dirty: \(isDirty)")
+
+                // If we are, persist it to the DB
+                await MainActor.run { self.project.isDirty = isDirty }
+                try await self.persistProject()
+
+            } catch {
+                logService.log(with: .error, "Failed to check project. \(error.description)")
+
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.FailedToCheckProject.title,
+                        message: error.description
+                    )
+                }
+            }
+        }
+    }
 
     func primeLlm() {
         Task {

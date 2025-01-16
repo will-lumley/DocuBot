@@ -18,6 +18,7 @@
 "Error.ConfigureProject.FormValidation.missingSystemPrompt" = "Please ensure that a valid system prompt is provided.";
 
 "Error.Project.FailedToSync.title" = "Failed to Sync";
+"Error.Project.FailedToCheckProject.title" = "Failed to Check Project's Documents";
 "Error.Project.FailedToExtractSettings.title" = "Failed to get Project Settings";
 "Error.Project.GptTalk.title" = "Failed to get communicate with the LLM";
 "Error.Project.UpdateBookmark.title" = "Failed to restore folder access";

@@ -51,11 +51,11 @@ struct ToolbarButton: View {
     }
 
     var foregroundStyle: some ShapeStyle {
-        switch self.viewModel.warningState {
+        switch viewModel.warningState {
         case .none:
-            Color.secondary
+            viewModel.isEnabled ? Color.secondary : Color.secondary.opacity(0.5)
         case .warning:
-            Color.yellow
+            viewModel.isEnabled ? Color.yellow : Color.yellow.opacity(0.5)
         }
     }
 
