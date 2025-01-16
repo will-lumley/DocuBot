@@ -23,6 +23,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
 
     // MARK: - Properties
 
+    /// Storage for our subscriptions
     var cancellables = Set<AnyCancellable>()
 
     // MARK: - Mock

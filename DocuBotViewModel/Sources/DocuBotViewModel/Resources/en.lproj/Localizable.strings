@@ -31,12 +31,13 @@
 
 "Error.Project.FailedToSync.title" = "Failed to Sync";
 "Error.Project.FailedToCheckProject.title" = "Failed to Check Project's Documents";
-"Error.Project.FailedToExtractSettings.title" = "Failed to get Project Settings";
+"Error.Project.FailedToStartLlm.title" = "Failed to initialise LLM";
 "Error.Project.GptTalk.title" = "Failed to get communicate with the LLM";
 "Error.Project.UpdateBookmark.title" = "Failed to get folder access";
 "Error.Project.StaleBookmark.title" = "Folder Access Issue";
 "Error.Project.StaleBookmark.message" = "It looks like the file's location has changed or is no longer accessible. Please select the file again to continue.";
 "Error.Project.StaleBookmark.action" = "Select Folder";
+"Error.Project.FailedToExtractData.title" = "Failed to extract the necessary data out of the database";
 
 "About.title" = "DocuBot";
 "About.subtitle" = "v%@(%@)";

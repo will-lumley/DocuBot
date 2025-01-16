@@ -35,9 +35,12 @@ public class MockGPTService: GPTService {
     public var primeResponse: PrimeResponse!
     public let primePublisher: CurrentValueSubject<PrimeContent?, GPTError>
 
+    public var responseResult: Result<String, GPTError>
+
     // MARK: - Lifecycle
 
     init() {
+        self.responseResult = .success("")
         self.primePublisher = .init(nil)
     }
 
@@ -54,6 +57,7 @@ public class MockGPTService: GPTService {
             )
         case .error(let error):
             self.primePublisher.send(completion: .failure(error))
+            throw error
         case .none:
             fatalError()
         }
@@ -64,7 +68,17 @@ public class MockGPTService: GPTService {
         with systemMessage: String,
         onUpdate: OutputUpdated?
     ) async throws -> String {
-        return ""
+        switch self.responseResult {
+        case .success(let string):
+            for char in string {
+                try await Task.sleep(for: .seconds(1))
+                await onUpdate?(String(char))
+            }
+
+            return string
+        case .failure(let failure):
+            throw failure
+        }
     }
 
     public func stop() {

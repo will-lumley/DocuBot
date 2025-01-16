@@ -69,3 +69,16 @@ struct EmptyListView: View {
     EmptyListView(configuration: .mock)
         .frame(width: 200, height: 400)
 }
+
+public extension EmptyListConfiguration {
+
+    static var mock: EmptyListConfiguration {
+        .init(
+            title: "Empty Title Empty",
+            subtitle: "Empty Subtitle Empty Subtitle",
+            icon: .booksVerticalFill,
+            action: .init(title: "Click me", onSelect: {})
+        )
+    }
+
+}

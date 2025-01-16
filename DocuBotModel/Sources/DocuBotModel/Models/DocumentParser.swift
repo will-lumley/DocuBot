@@ -19,7 +19,7 @@ public class DocumentParser {
         case bookmarkIsStale
     }
 
-    public struct DocumentSyncReponse {
+    public struct DocumentSyncReponse: Sendable {
         public let checksum: String
         public let documents: [Document]
     }

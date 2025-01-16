@@ -41,3 +41,13 @@ extension ProjectQuestionViewModel: Identifiable {
     }
 
 }
+
+// MARK: - Equatable
+
+extension ProjectQuestionViewModel: Equatable {
+
+    public static func == (lhs: ProjectQuestionViewModel, rhs: ProjectQuestionViewModel) -> Bool {
+        return lhs.content == rhs.content
+    }
+
+}

@@ -351,9 +351,13 @@ internal enum L10n {
         /// Failed to Check Project's Documents
         internal static let title = L10n.tr("Localizable", "Error.Project.FailedToCheckProject.title", fallback: "Failed to Check Project's Documents")
       }
-      internal enum FailedToExtractSettings {
-        /// Failed to get Project Settings
-        internal static let title = L10n.tr("Localizable", "Error.Project.FailedToExtractSettings.title", fallback: "Failed to get Project Settings")
+      internal enum FailedToExtractData {
+        /// Failed to extract the necessary data out of the database
+        internal static let title = L10n.tr("Localizable", "Error.Project.FailedToExtractData.title", fallback: "Failed to extract the necessary data out of the database")
+      }
+      internal enum FailedToStartLlm {
+        /// Failed to initialise LLM
+        internal static let title = L10n.tr("Localizable", "Error.Project.FailedToStartLlm.title", fallback: "Failed to initialise LLM")
       }
       internal enum FailedToSync {
         /// Failed to Sync

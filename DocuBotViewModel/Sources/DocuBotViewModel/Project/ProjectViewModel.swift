@@ -296,7 +296,7 @@ public extension ProjectViewModel {
             } catch {
                 await MainActor.run {
                     self.alertConfiguration = .init(
-                        title: L10n.Error.Project.FailedToExtractSettings.title,
+                        title: L10n.Error.Project.FailedToExtractData.title,
                         message: error.description
                     )
                 }
@@ -304,7 +304,60 @@ public extension ProjectViewModel {
         }
     }
 
-    func enterSelected() {
+    func exampleQuestionSelected(_ question: String) {
+        self.chatText = question
+    }
+
+    func directorySelected(_ directory: URL?) {
+        Task {
+            do {
+                guard let directory else {
+                    throw ConfigureProjectViewModel.FormValidationError.missingDirectory
+                }
+
+                let bookmarkData = try directory.bookmarkData(
+                    options: .securityScopeAllowOnlyReadAccess,
+                    includingResourceValuesForKeys: nil,
+                    relativeTo: nil
+                )
+
+                self.project.set(
+                    alertStatus: .warning(warning: .directoryChanged)
+                )
+                self.project.path = directory.path
+                self.project.urlBookmarkData = bookmarkData
+
+                try await self.persistProject()
+            } catch {
+                await MainActor.run {
+                    self.alertConfiguration = .init(
+                        title: L10n.Error.Project.UpdateBookmark.title,
+                        message: error.description
+                    )
+                }
+            }
+        }
+    }
+
+    func askButtonSelected() {
+        if self.expectingResponse {
+            self.currentTask?.cancel()
+            gptService.stop()
+
+            self.response = .none
+            self.expectingResponse = false
+        } else {
+            self.parseQuestion()
+        }
+    }
+
+}
+
+// MARK: - Private
+
+private extension ProjectViewModel {
+
+    func parseQuestion() {
         self.response = .loading
         self.expectingResponse = true
 
@@ -425,59 +478,6 @@ public extension ProjectViewModel {
         }
     }
 
-    func exampleQuestionSelected(_ question: String) {
-        self.chatText = question
-    }
-
-    func directorySelected(_ directory: URL?) {
-        Task {
-            do {
-                guard let directory else {
-                    throw ConfigureProjectViewModel.FormValidationError.missingDirectory
-                }
-
-                let bookmarkData = try directory.bookmarkData(
-                    options: .securityScopeAllowOnlyReadAccess,
-                    includingResourceValuesForKeys: nil,
-                    relativeTo: nil
-                )
-
-                self.project.set(
-                    alertStatus: .warning(warning: .directoryChanged)
-                )
-                self.project.path = directory.path
-                self.project.urlBookmarkData = bookmarkData
-
-                try await self.persistProject()
-            } catch {
-                await MainActor.run {
-                    self.alertConfiguration = .init(
-                        title: L10n.Error.Project.UpdateBookmark.title,
-                        message: error.description
-                    )
-                }
-            }
-        }
-    }
-
-    func askButtonSelected() {
-        if self.expectingResponse {
-            self.currentTask?.cancel()
-            gptService.stop()
-
-            self.response = .none
-            self.expectingResponse = false
-        } else {
-            self.enterSelected()
-        }
-    }
-
-}
-
-// MARK: - Private
-
-private extension ProjectViewModel {
-
     func checkIfProjectIsDirty() {
         Task {
             do {
@@ -535,7 +535,7 @@ private extension ProjectViewModel {
             } catch {
                 await MainActor.run {
                     self.alertConfiguration = .init(
-                        title: L10n.Error.Project.FailedToExtractSettings.title,
+                        title: L10n.Error.Project.FailedToStartLlm.title,
                         message: error.description
                     )
                 }

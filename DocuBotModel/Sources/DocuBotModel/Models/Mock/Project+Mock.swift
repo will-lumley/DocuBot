@@ -16,7 +16,7 @@ public extension Project {
         urlBookmarkData: Data = .init(),
         documentationChecksum: String = "123",
         exampleQuestions: [String] = ["foo", "bar"],
-        alertStatus: AlertStatus = .error(error: .firstSync),
+        alertStatus: AlertStatus = .none,
         needsFullResync: Bool = true,
         createdAt: Date = .now,
         updatedAt: Date = .now

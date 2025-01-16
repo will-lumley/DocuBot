@@ -46,3 +46,18 @@ struct HelpView: View {
 #Preview {
     HelpView(configuration: .mock)
 }
+
+public extension HelpConfiguration {
+
+    static var mock: HelpConfiguration {
+        .init(
+            title: "This is a help title",
+            content:
+                """
+                This is a help content string that is very long and will wrap to the next line.
+                When it does wrap, it will be truncated to 100 characters. Then it will finish typing.
+                """
+        ) { }
+    }
+
+}

@@ -1,4 +1,4 @@
-"Error.Persistence.valueNotFound" = "Failed to find value.";
+"Error.Persistence.valueNotFound" = "Failed to find the necessary data in the database for this operation.";
 "Error.GPT.noModel" = "Failed to find the selected model, %@.";
 "Error.GPT.failedToCreateLLM" = "Failed to create LLM. %@.";
 "Error.GPT.failedToCreateLLMDecodingError" = "Failed to create LLM due to a decoding error.";

@@ -17,6 +17,14 @@ public struct HelpConfiguration {
     public let content: String
     public let onDismiss: OnDismiss
 
+    // MARK: - Lifecycle
+
+    public init(title: String, content: String, onDismiss: @escaping OnDismiss) {
+        self.title = title
+        self.content = content
+        self.onDismiss = onDismiss
+    }
+
 }
 
 // MARK: - Public
@@ -55,23 +63,6 @@ extension HelpConfiguration: Identifiable {
 
     public var id: String {
         self.title + self.content
-    }
-
-}
-
-// MARK: - Preview
-
-public extension HelpConfiguration {
-
-    static var mock: HelpConfiguration {
-        .init(
-            title: "This is a help title",
-            content:
-                """
-                This is a help content string that is very long and will wrap to the next line.
-                When it does wrap, it will be truncated to 100 characters. Then it will finish typing.
-                """
-        ) { }
     }
 
 }
