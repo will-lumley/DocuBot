@@ -1,0 +1,42 @@
+{
+  "originHash" : "bbd82bee3e5e6252a7a26ef71ef9eab817ae5b329dd125979e36da6e7ac790fc",
+  "pins" : [
+    {
+      "identity" : "swift-async-algorithms",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-async-algorithms.git",
+      "state" : {
+        "revision" : "5c8bd186f48c16af0775972700626f0b74588278",
+        "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "671108c96644956dddcd89dd59c203dcdb36cec7",
+        "version" : "1.1.4"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "4c6cc0a3b9e8f14b3ae2307c5ccae4de6167ac2c",
+        "version" : "600.0.0-prerelease-2024-06-12"
+      }
+    },
+    {
+      "identity" : "vexil",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/unsignedapps/Vexil.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d0caf391a48cb25269d56afbe88f3c52c8f09305"
+      }
+    }
+  ],
+  "version" : 3
+}

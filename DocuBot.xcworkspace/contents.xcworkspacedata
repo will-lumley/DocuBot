@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Service.xctestplan">
+   </FileRef>
+   <FileRef
       location = "group:DocuBotApplication.xcodeproj">
    </FileRef>
    <FileRef
