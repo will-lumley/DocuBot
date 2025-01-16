@@ -33,6 +33,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     public enum FormValidationError: LocalizedError {
         case missingDirectory
         case missingName
+        case missingModel
         case missingFormat
         case missingSeed
         case missingTopK
@@ -84,6 +85,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var projectDirectoryText = ""
     @Published public var projectName = ""
     @Published public var selectedLanguage: ProjectSettings.Language
+    @Published public var model: Model!
 
     @Published public var formatConfigurations: [FormatConfiguration]
 
@@ -106,6 +108,9 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
 
     /// The encrypted data that makes up the secure directory bookmark
     public var projectDirectoryBookmarkData: Data?
+
+    /// All the embedding models the user can choose from
+    public var availableModels = [Model]()
 
     /// All the languages available for the user to choose from
     public let availableLanguages = ProjectSettings.Language.allCases
@@ -182,7 +187,7 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         else {
             self.projectInfo = nil
             self.selectedLanguage = .english
-            self.projectDirectoryText = L10n.ConfigureProject.Configuration.Directory.select
+            self.projectDirectoryText = L10n.ConfigureProject.GeneralSection.Directory.select
 
             self.formatConfigurations = Format.allCases
                 .enumerated()
@@ -209,7 +214,10 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
         }
 
         self.onSave = onSave
+
         super.init(serviceContainer: serviceContainer)
+
+        self.loadModels()
     }
 
     override public func configureBindings() {
@@ -256,6 +264,10 @@ public extension ConfigureProjectViewModel {
 
     var languageTitle: String {
         L10n.ConfigureProject.GeneralSection.Language.title
+    }
+
+    var modelTitle: String {
+        L10n.ConfigureProject.GeneralSection.Model.title
     }
 
     // MARK: Format Section
@@ -437,7 +449,7 @@ public extension ConfigureProjectViewModel {
         }
     }
 
-    var createProjectButtonTitle: String {
+    var saveButtonTitle: String {
         switch self.configureType {
         case .creating:
             return L10n.ConfigureProject.Creating.createButton
@@ -464,7 +476,7 @@ public extension ConfigureProjectViewModel {
         return nil
     }
 
-    func createProjectButtonSelected() {
+    func saveButtonSelected() {
         // Do we need to warn the user of a full-resync?
         if self.resyncNeeded {
             if let message = self.resyncMessage {
@@ -577,6 +589,27 @@ private extension ConfigureProjectViewModel {
         self.projectInfo != nil ? .editing : .creating
     }
 
+    func loadModels() {
+        Task {
+            self.availableModels = try await persistenceService.getModels()
+
+            // If we have a preloaded settings, pull that model
+            if let projectInfo {
+                self.model = try await persistenceService.getModel(
+                    id: projectInfo.settings.modelID
+                )
+            }
+
+            // If we are a blank slate, just load the first model we have
+            else {
+                guard let firstAvailableModel = availableModels.first else {
+                    fatalError()
+                }
+                self.model = firstAvailableModel
+            }
+        }
+    }
+
     func finalisedProject() throws -> Project {
         guard let directory = self.projectDirectory else {
             throw ConfigurationError.noDirectory
@@ -627,6 +660,7 @@ private extension ConfigureProjectViewModel {
             return ProjectSettings(
                 id: projectInfo.settings.id,
                 projectID: projectInfo.settings.projectID,
+                modelID: self.model.id ?? -1,
                 supportedFormats: supportedFormats,
                 language: self.selectedLanguage,
                 embeddingModel: self.embeddingModel,
@@ -649,6 +683,7 @@ private extension ConfigureProjectViewModel {
         else {
             return ProjectSettings(
                 projectID: projectID,
+                modelID: self.model.id ?? -1,
                 supportedFormats: supportedFormats,
                 language: self.selectedLanguage,
                 embeddingModel: self.embeddingModel,
@@ -812,26 +847,30 @@ public extension ConfigureProjectViewModel.ConfigurationError {
 
 public extension ConfigureProjectViewModel.FormValidationError {
 
+    internal typealias Strings = L10n.Error.ConfigureProject.FormValidation
+
     var errorDescription: String? {
         switch self {
+        case .missingModel:
+            return Strings.missingModel
         case .missingName:
-            return L10n.Error.ConfigureProject.FormValidation.missingName
+            return Strings.missingName
         case .missingFormat:
-            return L10n.Error.ConfigureProject.FormValidation.missingFormat
+            return Strings.missingFormat
         case .missingSeed:
-            return L10n.Error.ConfigureProject.FormValidation.missingSeed
+            return Strings.missingSeed
         case .missingTopK:
-            return L10n.Error.ConfigureProject.FormValidation.missingTopK
+            return Strings.missingTopK
         case .missingContextLength:
-            return L10n.Error.ConfigureProject.FormValidation.missingContextLength
+            return Strings.missingContextLength
         case .missingBatchSize:
-            return L10n.Error.ConfigureProject.FormValidation.missingBatchSize
+            return Strings.missingBatchSize
         case .missingMaxTokenCount:
-            return L10n.Error.ConfigureProject.FormValidation.missingMaxTokenCount
+            return Strings.missingMaxTokenCount
         case .missingSystemPrompt:
-            return L10n.Error.ConfigureProject.FormValidation.missingSystemPrompt
+            return Strings.missingSystemPrompt
         case .missingDirectory:
-            return L10n.Error.ConfigureProject.FormValidation.missingDirectory
+            return Strings.missingDirectory
         }
     }
 

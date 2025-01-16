@@ -6,11 +6,17 @@
 //
 
 public struct Progress: Hashable, Sendable {
-    public let value: Int
-    public let total: Int
 
-    public init(value: Int, total: Int) {
+    public let value: Double
+    public let total: Double
+
+    public var percentage: Double {
+        value / total * 100
+    }
+
+    public init(value: Double, total: Double) {
         self.value = value
         self.total = total
     }
+
 }

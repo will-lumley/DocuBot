@@ -13,7 +13,7 @@ public class ModelCellModel {
 
     // MARK: - Properties
 
-    private let model: Model
+    let model: Model
 
     // MARK: - Lifecycle
 
@@ -32,7 +32,23 @@ public extension ModelCellModel {
     }
 
     var subtitle: String {
-        "\(self.model.size) bytes"
+        let size = Double(self.model.size)
+        let sizeFormat = ModelManagerViewModel.formatBytesToGB(size)
+        return L10n.ModelManager.Cell.subtitle(sizeFormat)
+    }
+
+}
+
+// MARK: - Hashable
+
+extension ModelCellModel: Hashable {
+
+    public static func == (lhs: ModelCellModel, rhs: ModelCellModel) -> Bool {
+        return lhs.model == rhs.model
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(model)
     }
 
 }

@@ -20,7 +20,7 @@ public struct ModelCellView: View {
 
     public var body: some View {
         HStack {
-            VStack {
+            VStack(alignment: .leading) {
                 Text(viewModel.title)
                     .font(.headline)
 

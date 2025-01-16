@@ -38,6 +38,7 @@ extension ProjectSettingsRecord {
     static func mock(
         id: Int64 = 0,
         projectID: Int64 = 0,
+        modelID: Int64 = 0,
         supportedFormats: [DocumentationFormat] = DocumentationFormat.allCases,
         language: Language = .english,
         embeddingModel: EmbeddingModel = .distilbert,
@@ -58,6 +59,7 @@ extension ProjectSettingsRecord {
         .init(
             id: id,
             project: projectID,
+            model: modelID,
             supportedFormats: supportedFormats,
             language: language,
             embeddingModel: embeddingModel,

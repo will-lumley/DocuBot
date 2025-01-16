@@ -44,10 +44,15 @@ public struct ConfigureProjectView: View {
             }
             .formStyle(GroupedFormStyle())
 
-            Button(viewModel.createProjectButtonTitle) {
-                viewModel.createProjectButtonSelected()
-            }
+            Button(
+                action: viewModel.saveButtonSelected,
+                label: {
+                    Text(viewModel.saveButtonTitle)
+                        .frame(maxWidth: .infinity)
+                }
+            )
             .buttonStyle(BorderedProminentButtonStyle())
+            .controlSize(.extraLarge)
             .padding()
         }
         .frame(minWidth: 475, minHeight: 600)
@@ -122,6 +127,15 @@ public struct ConfigureProjectView: View {
 
             // Project Name
             TextField(viewModel.projectNameTitle, text: $viewModel.projectName)
+
+            // LLM Model
+            Picker(viewModel.modelTitle, selection: $viewModel.model) {
+                ForEach(viewModel.availableModels) { model in
+                    Text(model.name)
+                        .tag(model)
+                }
+            }
+            .pickerStyle(.menu)
 
             // Project Language
             Picker(viewModel.languageTitle, selection: $viewModel.selectedLanguage) {

@@ -198,6 +198,56 @@ class GRDBService: PersistenceService {
         .eraseToAnyPublisher()
     }
 
+    func getModels() async throws -> [Model] {
+        return try await dbQueue.read { db in
+            let records = try ModelRecord.fetchAll(db)
+            return records.map(Model.init)
+        }
+    }
+
+    func getModel(id: Int64) async throws -> Model {
+        return try await dbQueue.read { db in
+            let request = ModelRecord.filter(Column("id") == id)
+            guard let record = try ModelRecord.fetchOne(db, request) else {
+                throw PersistenceError.valueNotFound
+            }
+
+            return Model(record: record)
+        }
+    }
+
+    func insert(model: Model) async throws -> Model {
+        return try await self.dbQueue.write { db in
+            var record = ModelRecord(model: model)
+            try record.insert(db)
+
+            return Model(record: record)
+        }
+    }
+
+    func update(model: Model) async throws -> Model {
+        return try await self.dbQueue.write { db in
+            let record = ModelRecord(model: model)
+            try record.update(db)
+
+            return Model(record: record)
+        }
+    }
+
+    func delete(model: Model) async throws -> Bool {
+        return try await self.dbQueue.write { db in
+            let success = try ModelRecord.deleteOne(db, id: model.id)
+            // If we successfully deleted this row, delete the
+            // corressponding path
+            if success {
+                try FileManager.default.removeItem(
+                    atPath: model.path
+                )
+            }
+            return success
+        }
+    }
+
 }
 
 // MARK: - Private

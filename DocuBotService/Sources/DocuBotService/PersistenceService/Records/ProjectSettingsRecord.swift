@@ -14,7 +14,6 @@ public struct ProjectSettingsRecord: Record {
 
     public enum Language: String, Hashable, Codable, Sendable {
         case english
-        case espanol
     }
 
     public enum EmbeddingModel: String, Hashable, Codable, Sendable {
@@ -45,6 +44,7 @@ public struct ProjectSettingsRecord: Record {
 
     public var id: Int64?
     public let project: Int64
+    public let model: Int64
 
     public let supportedFormats: [DocumentationFormat]
     public let language: Language

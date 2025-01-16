@@ -205,7 +205,10 @@ public extension ProjectViewModel {
                 let settings = try await self.getProjectSettings()
                 await MainActor.run {
                     self.configureProjectViewModel = .init(
-                        projectInfo: .init(project: self.project, settings: settings),
+                        projectInfo: .init(
+                            project: self.project,
+                            settings: settings
+                        ),
                         serviceContainer: self.serviceContainer,
                         onSave: self.primeLlm
                     )
@@ -415,7 +418,14 @@ private extension ProjectViewModel {
             do {
                 // Prime our LLM with our settings
                 let settings = try await self.getProjectSettings()
-                try gptService.prime(with: settings)
+                let model = try await persistenceService.getModel(
+                    id: settings.modelID
+                )
+
+                try gptService.prime(
+                    with: model,
+                    with: settings
+                )
             } catch {
                 await MainActor.run {
                     self.alertConfiguration = .init(
@@ -451,7 +461,10 @@ private extension ProjectViewModel {
                         DispatchQueue.main.async {
                             self.syncStage = .trainingDocuments(
                                 project: self.project,
-                                progress: .init(value: progress, total: total)
+                                progress: .init(
+                                    value: Double(progress),
+                                    total: Double(total)
+                                )
                             )
                         }
                     }
@@ -482,8 +495,8 @@ private extension ProjectViewModel {
                     .map { L10n.Project.LlmExampleQuestionPrompt.prompt($0) }
                     .asyncMap { prompt in
                         let progress = Progress(
-                            value: completedQuestions,
-                            total: totalQuestions
+                            value: Double(completedQuestions),
+                            total: Double(totalQuestions)
                         )
 
                         // Update the progress each time a question is created

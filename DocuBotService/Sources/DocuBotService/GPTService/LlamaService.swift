@@ -32,15 +32,10 @@ class LlamaService: GPTService {
 
     // MARK: - GPTService
 
-    func prime(with settings: ProjectSettings) throws(GPTError) {
-        let modelName = "llama-2-7b-chat.Q5_K_S"
-        guard let modelPath = Bundle.main.path(
-            forResource: modelName,
-            ofType: "gguf"
-        ) else {
-            throw GPTError.noModel(modelName: modelName)
-        }
-
+    func prime(
+        with model: Model,
+        with settings: ProjectSettings
+    ) throws(GPTError) {
         // Create our LLM
         do {
             // Create the configuration from the settings
@@ -48,11 +43,13 @@ class LlamaService: GPTService {
 
             // Create our LLM
             self.llama = try SwiftLlama(
-                modelPath: modelPath,
+                modelPath: model.path,
                 modelConfiguration: configuration
             )
         } catch {
-            throw GPTError.failedToCreateLLM(reason: error.localizedDescription)
+            throw GPTError.failedToCreateLLM(
+                reason: error.localizedDescription
+            )
         }
 
     }
