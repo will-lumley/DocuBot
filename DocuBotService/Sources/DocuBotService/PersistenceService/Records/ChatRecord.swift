@@ -12,7 +12,7 @@ public struct ChatRecord: Record {
 
     // MARK: - Types
 
-    public enum NameType: Hashable, Codable {
+    public enum NameType: Hashable, Codable, Sendable {
         case userSet
         case docuBotSet
         case automatic

@@ -9,7 +9,7 @@ import Foundation
 import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
 
-public struct Project: Hashable, Codable {
+public struct Project: Hashable, Codable, Sendable {
 
     // MARK: - Types
 

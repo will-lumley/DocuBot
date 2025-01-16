@@ -90,7 +90,7 @@
 		BE45187C2C35244600F9E9E5 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				BE81DB112C8EC9DE009DDD60 /* llama */,
+				BE667F562CB38BC70053C9ED /* Resources */,
 				BE4518812C35244700F9E9E5 /* Assets.xcassets */,
 				BE45187D2C35244600F9E9E5 /* DocuBotApp.swift */,
 				BEB096002C36726300429AFD /* AppDelegate.swift */,
@@ -108,12 +108,12 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		BE81DB112C8EC9DE009DDD60 /* llama */ = {
+		BE667F562CB38BC70053C9ED /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				BE81DB132C8ECA98009DDD60 /* llama-2-7b-chat.Q5_K_S.gguf */,
 			);
-			path = llama;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		BEB095C22C35780C00429AFD /* Frameworks */ = {
@@ -200,7 +200,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					BE4518792C35244600F9E9E5 = {
 						CreatedOnToolsVersion = 15.4;
@@ -310,6 +310,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -373,6 +374,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -404,6 +406,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Application/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = 4ELTP9RFTJ;
@@ -415,6 +418,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.williamlumley.docubot;
 				PRODUCT_NAME = DocuBot;
@@ -435,6 +439,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Application/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = 4ELTP9RFTJ;
@@ -446,6 +451,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.williamlumley.docubot;
 				PRODUCT_NAME = DocuBot;
@@ -465,6 +471,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Settings/Preview Content\"";
 				DEVELOPMENT_TEAM = 4ELTP9RFTJ;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -494,6 +501,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Settings/Preview Content\"";
 				DEVELOPMENT_TEAM = 4ELTP9RFTJ;
 				ENABLE_HARDENED_RUNTIME = YES;

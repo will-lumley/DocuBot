@@ -11,6 +11,7 @@ class ChatTextView: NSTextView {
 
     // MARK: - Types
 
+    @MainActor
     protocol EventDelegate {
         func textChanged()
         func recalculateHeight()

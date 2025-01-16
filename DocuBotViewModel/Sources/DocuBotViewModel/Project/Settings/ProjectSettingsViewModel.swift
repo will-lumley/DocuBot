@@ -233,6 +233,7 @@ public extension ProjectSettingsViewModel {
     }
 
     func saveButtonSelected() {
+        /*
         Task {
             guard let projectID = self.project.id else {
                 return
@@ -279,6 +280,7 @@ public extension ProjectSettingsViewModel {
                 fatalError(error.localizedDescription)
             }
         }
+         */
     }
 
 }

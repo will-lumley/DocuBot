@@ -11,8 +11,8 @@
    inputs:
      - Resources/Assets.xcassets
    outputs:
-     #- templatePath: ../Configurations/Templates/xcassets/assets_swift5_swiftui.stencil
-     - templateName: swift5
+     - templatePath: Resources/Templates/xcassets/assets_swift5_swiftui.stencil
+     #- templateName: swift5
        params:
          forceProvidesNamespaces: true
        output: Resources/Generated/Assets+Generated.swift

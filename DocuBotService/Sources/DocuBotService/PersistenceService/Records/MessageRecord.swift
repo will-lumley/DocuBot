@@ -12,7 +12,7 @@ public struct MessageRecord: Record {
 
     // MARK: - Types
 
-    public enum Author: Hashable, Codable {
+    public enum Author: Hashable, Codable, Sendable {
         case docubot
         case user
     }
