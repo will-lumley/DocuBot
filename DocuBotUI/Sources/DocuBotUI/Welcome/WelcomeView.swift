@@ -130,12 +130,15 @@ private extension WelcomeView {
         // Listen to our OnOpen listener
         .onReceive(viewModel.onOpen) { open in
             switch open {
-            case .createProject(let package):
-                self.openWindow(value: package)
             case .project(let package):
                 self.openWindow(value: package)
             }
         }
+
+        .sheet(item: $viewModel.createProjectViewModel) { viewModel in
+            ConfigureProjectView(viewModel: viewModel)
+        }
+
     }
 
     var projectListView: some View {
@@ -160,10 +163,19 @@ private extension WelcomeView {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+        .alert(item: $viewModel.alertConfiguration) { configuration in
+            Alert(
+                title: Text(configuration.title),
+                message: Text(configuration.message)
+            )
+        }
     }
 
     func moveWindow(by offset: CGSize) {
-        if let window = NSApplication.shared.windows.last {
+        if let window = NSApp.windows.first(where: {
+            $0.identifier?.rawValue.contains(WelcomeView.id) ?? false
+        }) {
             var newFrame = window.frame
             newFrame.origin.x += offset.width
             newFrame.origin.y -= offset.height

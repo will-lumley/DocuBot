@@ -7,6 +7,7 @@
 
 import Combine
 import DocuBotModel
+import DocuBotToolbox
 import Foundation
 import SwiftLlama
 
@@ -30,15 +31,15 @@ class LlamaService: GPTService {
             forResource: "llama-2-7b-chat.Q5_K_S",
             ofType: "gguf"
         ) else {
-            fatalError()
+            fatalError("Failed to find model")
         }
 
         // Create our LLM
         do {
-            let configuration = Configuration(maxTokenCount: 1024 * 1024)
+            let configuration = Configuration()
             self.llama = try SwiftLlama(modelPath: modelPath, modelConfiguration: configuration)
         } catch {
-            fatalError(error.localizedDescription)
+            fatalError("Failed to create LLM. \(error)")
         }
     }
 
@@ -46,11 +47,11 @@ class LlamaService: GPTService {
 
     func respond(
         to query: String,
-        from chat: DocuBotModel.Chat,
         from project: Project,
         onUpdate: @escaping OutputUpdated,
         onComplete: @escaping OutputComplete
     ) async throws {
+        // Create our prompt
         let prompt = Prompt(
             type: .llama3,
             systemPrompt: self.systemMessage,
@@ -58,16 +59,51 @@ class LlamaService: GPTService {
             history: []
         )
 
+        /*
+         chat.messages.map { message in
+             switch message.author {
+             case .docubot:
+                 return .init(user: "", bot: message.content)
+             case .user:
+                 return .init(user: message.content, bot: "")
+             }
+         }
+         */
+
+        // We'll keep an eye on how many newlines there are
+        // so we can stop the AI from spamming \n
+        var newlineCount = 0
+
+        // This is where we'll store the output
         var output = ""
+
+        // Iterate over every value we have
         for try await value in await self.llama.start(for: prompt) {
-            output += value
+            // Strip the null terminators from the string
+            let formattedValue = value.replacingOccurrences(of: "\0", with: "")
+
+            // If our last output was a newline, and this is also a newline, let's bail out
+            if newlineCount == 2 {
+                // break
+            }
+
+            // Append the value to the output
+            output += formattedValue
+
+            // Send out the update to the caller
             Task {
-                await onUpdate(value)
+                await onUpdate(formattedValue)
+            }
+
+            // If we're a newline, update the newline count
+            if formattedValue == "\n" {
+                newlineCount += 1
             }
         }
 
+        // We've left the for loop, so we're done here
         Task {
-            await onComplete(output)
+            await onComplete(output.trimmingTrailingNewlines())
         }
     }
 
@@ -87,11 +123,5 @@ private extension LlamaService {
         Do not reply to this message.
         """
     }
-
-}
-
-// MARK: - DocuBotModel.Chat
-
-extension DocuBotModel.Chat {
 
 }

@@ -1,38 +1,82 @@
-"ProjectPicker.title" = "Welcome to DocuBot";
-"ProjectPicker.subtitle1" = "Developed by William Lumley";
-"ProjectPicker.subtitle2" = "v%@(%@)";
-"ProjectPicker.loadNewProject" = "Load New Project";
-"ProjectPicker.viewSourceCode" = "View Source Code";
-"ProjectPicker.emailDeveloper" = "Email the Developer";
-"ProjectPicker.emptyProjectTitle" = "Your project list is empty";
-"ProjectPicker.emptyProjectSubtitle" = "Your insights await – load a new project to get started";
-"ProjectPicker.Delete.Confirmation.title" = "Are you sure you want to delete this project?";
-"ProjectPicker.Delete.Confirmation.deleteButton" = "Delete this Project";
-"ProjectPicker.Delete.Confirmation.cancelButton" = "Cancel";
-"ProjectPicker.ProjectContextMenu.open" = "Open";
-"ProjectPicker.ProjectContextMenu.delete" = "Delete";
-"ProjectPicker.ProjectContextMenu.showInFinder" = "Show in Finder";
+"Welcome.title" = "Welcome to DocuBot";
+"Welcome.subtitle1" = "Developed by William Lumley";
+"Welcome.subtitle2" = "v%@(%@)";
+"Welcome.loadNewProject" = "Load New Project";
+"Welcome.viewSourceCode" = "View Source Code";
+"Welcome.emailDeveloper" = "Email the Developer";
+"Welcome.emptyProjectTitle" = "Your project list is empty";
+"Welcome.emptyProjectSubtitle" = "Your insights await – load a new project to get started";
+"Welcome.Delete.Confirmation.title" = "Are you sure you want to delete this project?";
+"Welcome.Delete.Confirmation.deleteButton" = "Delete this Project";
+"Welcome.Delete.Confirmation.cancelButton" = "Cancel";
+"Welcome.ProjectContextMenu.open" = "Open";
+"Welcome.ProjectContextMenu.delete" = "Delete";
+"Welcome.ProjectContextMenu.showInFinder" = "Show in Finder";
+"Welcome.Error.FailedToDelete.title" = "Failed to Delete Project";
+"Welcome.Error.FailedToDelete.message" = "DocuBot failed to delete the project. Please try again.";
 
-"CreateProject.formTitle" = "Project Settings";
+
+"CreateProject.formTitle" = "Create your new project";
 "CreateProject.windowTitle" = "Create Project";
 
-"CreateProject.Configuration.GeneralSection.title" = "General";
-"CreateProject.Configuration.ProjectDirectory.title" = "Project Directory";
-"CreateProject.Configuration.Language.title" = "Language";
-
-"CreateProject.Configuration.Language.english" = "English";
-"CreateProject.Configuration.Language.espanol" = "Español";
-
-"CreateProject.Configuration.Name.title" = "Project Name";
-"CreateProject.Configuration.FormatSection.title" = "What format is your documentation in?";
-"CreateProject.Configuration.Format.txt" = ".txt";
-"CreateProject.Configuration.Format.md" = ".md";
-"CreateProject.Configuration.Format.rtf" = ".rtf";
-"CreateProject.Configuration.Format.html" = ".html";
-"CreateProject.Configuration.Format.other" = "Other";
-"CreateProject.Configuration.Format.addFormatButton" = "Add Custom Format";
-"CreateProject.createButton" = "Create Project";
+"CreateProject.GeneralSection.title" = "General";
+"CreateProject.GeneralSection.subtitle" = "Tell us a bit about your project.";
+"CreateProject.GeneralSection.Name.title" = "Project Name";
+"CreateProject.GeneralSection.Directory.title" = "Project Directory";
 "CreateProject.Configuration.Directory.select" = "Select a Directory";
+"CreateProject.GeneralSection.Language.title" = "Language";
+"CreateProject.GeneralSection.Language.english" = "English";
+"CreateProject.GeneralSection.Language.espanol" = "Español";
+
+"CreateProject.FormatSection.title" = "What format is your documentation in?";
+"CreateProject.FormatSection.subtitle" = "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.";
+"CreateProject.FormatSection.Format.txt" = ".txt";
+"CreateProject.FormatSection.Format.md" = ".md";
+"CreateProject.FormatSection.Format.rtf" = ".rtf";
+"CreateProject.FormatSection.Format.html" = ".html";
+"CreateProject.FormatSection.Format.other" = "Other";
+"CreateProject.FormatSection.Format.addFormatButton" = "Add Custom Format";
+
+"CreateProject.AdvancedSection.seed" = "Seed";
+"CreateProject.AdvancedSection.topK" = "Top K";
+"CreateProject.AdvancedSection.topP" = "Top P";
+"CreateProject.AdvancedSection.contextLength" = "Context Length";
+"CreateProject.AdvancedSection.temperature" = "Temperature";
+"CreateProject.AdvancedSection.batchSize" = "Batch Size";
+"CreateProject.AdvancedSection.stopSequence" = "Stop Sequence";
+"CreateProject.AdvancedSection.maxTokenCount" = "Maximum Token Count";
+"CreateProject.AdvancedSection.resetDefaults" = "Reset Default Values";
+
+"CreateProject.Help.Seed.title" = "What does seed do?";
+"CreateProject.Help.Seed.content" = "The seed value is used to initialise the random number generator, which influences how the model generates text.\n\nBy setting a seed, you ensure that the generation process is deterministic - running the same input with the same seed will result in the same output. This is useful for reproducibility.";
+
+"CreateProject.Help.TopK.title" = "What does top-k do?";
+"CreateProject.Help.TopK.content" = "Top-K sampling limits the model to choosing from only the top K most likely next tokens (words, subwords, etc.).\n\nBy default, K is set to 40, meaning the model will only consider the 40 most probable next tokens, adding an element of randomness while ensuring more likely tokens are preferred.";
+
+"CreateProject.Help.TopP.title" = "What does top-p do?";
+"CreateProject.Help.TopP.content" = "Top-P sampling (also known as nucleus sampling) dynamically selects the smallest possible set of tokens whose cumulative probability exceeds P.\n\nBy default, P is 0.9, so the model will sample from the top 90 percent of the probability mass, making it more flexible than top-K and helping balance between randomness and determinism in the generation.";
+
+"CreateProject.Help.ContextLength.title" = "What does context length do?";
+"CreateProject.Help.ContextLength.content" = "The context length defines how many tokens the model can consider at once when generating text.\n\nBy default, the model can use up to 2048 tokens of context, allowing it to maintain and use information over a relatively long span of generated text.";
+
+"CreateProject.Help.Temperature.title" = "What does temperature do?";
+"CreateProject.Help.Temperature.content" = "Temperature controls the \"creativity\" or randomness of the output.\n\nA lower temperature (e.g., 0.2) makes the model more conservative and focused on high-probability tokens, leading to more predictable and repetitive outputs. A higher temperature makes the model more creative and prone to selecting less likely tokens.";
+
+"CreateProject.Help.BatchSize.title" = "What does batch size do?";
+"CreateProject.Help.BatchSize.content" = "This parameter defines the number of tokens processed in one batch during the generation or training phase.\n\nA batch size of 2048 means the model processes up to 2048 tokens at once. This can affect both the memory usage and performance during generation.";
+
+"CreateProject.Help.StopSequence.title" = "What does stop sequence do?";
+"CreateProject.Help.StopSequence.content" = "If a stop sequence is specified, the generation will stop when the model generates the provided string sequence.\n\nThis is useful when you want to halt the model’s output after a certain phrase or token appears. If set to blank, the model will continue generating text until it reaches the maximum token limit or another stopping condition.";
+
+"CreateProject.Help.MaxTokenCount.title" = "What does max token count do?";
+"CreateProject.Help.MaxTokenCount.content" = "This sets the maximum number of tokens the model is allowed to generate.\n\nEven if the model hasn’t hit a stopping condition (such as a stop sequence), it will stop once it generates the specified amount of tokens.";
+
+"CreateProject.createButton" = "Create Project";
+"CreateProject.Error.FailedToCreate.title" = "Failed to Create Project";
+
+"CreateProject.AdvancedSection.title" = "Advanced Configuration";
+"CreateProject.AdvancedSection.subtitle" = "These settings are optional, and the defaults work for most cases. Adjust them only if you need something specific.";
+
 
 "Project.EmptyChat.title" = "No Chats";
 "Project.EmptyChat.subtitle" = "Create a chat with the button below to get started";
@@ -49,6 +93,7 @@
 "Project.LlmQueryPrompt.template" = "Given the following extracted parts of a long document and a question, create a final answer with references (\"SOURCES\").
             If you don't know the answer, just say that you don't know. Don't try to make up an answer.
             ALWAYS return a \"SOURCES\" part in your answer.\nQUESTION: %@\n=========\n%@\n=========\nFINAL ANSWER:";
+"Project.queryTitle" = "Ask any question about your project.";
 
 "ProjectSettings.windowTitle" = "Project Settings";
 "ProjectSettings.saveButton" = "Save Settings";

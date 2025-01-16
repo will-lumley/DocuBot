@@ -16,7 +16,6 @@ public protocol GPTService: Service {
 
     func respond(
         to query: String,
-        from chat: DocuBotModel.Chat,
         from project: Project,
         onUpdate: @escaping OutputUpdated,
         onComplete: @escaping OutputComplete

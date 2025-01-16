@@ -17,6 +17,9 @@ public struct ProjectView: View {
 
     @StateObject var viewModel: ProjectViewModel
 
+    @State var textEditorHeight = CGFloat(20)
+    @FocusState private var chatTextEditorFocused: Bool
+
     // MARK: - Lifecycle
 
     public init(viewModel: ProjectViewModel) {
@@ -26,59 +29,32 @@ public struct ProjectView: View {
     // MARK: - View
 
     public var body: some View {
-        NavigationSplitView(
-            sidebar: {
-                VStack {
-                    if let chats = viewModel.chats {
-                        if chats.isEmpty {
-                            EmptyListView(configuration: viewModel.emptyChatConfiguration)
-                        } else {
-                            List(chats, id: \.self, selection: $viewModel.selectedChat) { cellViewModel in
-                                ChatCellView(viewModel: cellViewModel)
-                                    .tag(cellViewModel.id)
-                                    .contextMenu {
-                                        ForEach(
-                                            viewModel.contextMenuConfigurations(for: cellViewModel)
-                                        ) { configuration in
-                                            Button(configuration.text, action: configuration.onSelect)
-                                        }
-                                    }
-                            }
-                            .listStyle(.sidebar)
-                        }
-                    }
-                }
-            },
-            detail: {
-                if let chatViewModel = viewModel.selectedChatViewModel {
-                    ChatView(viewModel: chatViewModel)
-                        .id(chatViewModel.id)
-                } else {
-                    Text(viewModel.noChatSelectedTitle)
-                        .font(.title)
-                        .foregroundStyle(Color.gray)
-                }
-            }
-        )
 
-        .confirmationDialog(
-            viewModel.deleteChatConfirmationDialog.title,
-            isPresented: $viewModel.deleteChatConfirmationDialogPresented,
-            actions: {
-                ForEach(viewModel.deleteChatConfirmationDialog.buttons) { button in
-                    Button(button.title, role: button.role.buttonRole, action: button.action)
-                }
+        VStack {
+            Text(viewModel.queryTitle)
+                .font(.title)
+                .bold()
+
+            VStack {
+                ChatTextEditorView(
+                    text: $viewModel.chatText,
+                    height: $textEditorHeight,
+                    onEnterSelected: viewModel.enterSelected
+                )
+                .frame(height: textEditorHeight)
+                .focused($chatTextEditorFocused)
             }
-        )
-        .dialogIcon(.init(systemSymbol: .trashCircleFill))
+            .padding(10)
+            .background(Asset.chatTextView.swiftUIColor)
+            .cornerRadius(35)
+            .padding(.horizontal)
+        }
 
         .toolbar {
             ToolbarButton(viewModel: viewModel.syncProjectButton)
                 .keyboardShortcut("s", modifiers: [.command, .shift])
             ToolbarButton(viewModel: viewModel.openSettingsButton)
                 .keyboardShortcut(",", modifiers: .command)
-            ToolbarButton(viewModel: viewModel.createChatButton)
-                .keyboardShortcut("n", modifiers: .command)
         }
 
         // Listen to our OnOpen listener

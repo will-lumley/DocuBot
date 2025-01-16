@@ -61,16 +61,6 @@ struct DocuBotApp: App {
             })
         }
 
-        // This is our CreateProject window
-        WindowGroup(for: CreateProjectViewModel.OpenWindowPackage.self) { _ in
-            CreateProjectView(
-                viewModel: .init(
-                    serviceContainer: delegate.serviceContainer
-                )
-            )
-        }
-        .windowResizability(.contentSize)
-
         // This is our Project window
         WindowGroup(for: ProjectViewModel.OpenWindowPackage.self) { $package in
             if let package {
@@ -101,7 +91,9 @@ struct DocuBotApp: App {
     }
 
     private func focusWelcomeWindow() {
-        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == WelcomeView.id }) {
+        if let window = NSApp.windows.first(where: {
+            $0.identifier?.rawValue == WelcomeView.id
+        }) {
             window.makeKeyAndOrderFront(nil)
 
             // Bring the app to the front if needed

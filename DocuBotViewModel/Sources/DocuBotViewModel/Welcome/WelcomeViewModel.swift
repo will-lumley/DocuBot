@@ -1,11 +1,11 @@
 //
-//  ProjectPickerViewModel.swift
+//  WelcomeViewModel.swift
 //
 //
 //  Created by William Lumley on 4/7/2024.
 //
 
-// Having to import AppKit is very sad, but necessary to open the URL
+// Having to import AppKit makes me very sad, but necessary to open the URL
 import AppKit
 import Combine
 import DocuBotModel
@@ -20,7 +20,6 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
     public typealias OnDelete = () -> Void
 
     public enum OpenWindow {
-        case createProject(CreateProjectViewModel.OpenWindowPackage)
         case project(ProjectViewModel.OpenWindowPackage)
     }
 
@@ -41,6 +40,10 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
     /// Indicative of if we want to display/hide our Delete Project confirmation dialog
     @Published public var deleteProjectConfirmationDialogPresented = false
 
+    @Published public var alertConfiguration: AlertConfiguration?
+
+    @Published public var createProjectViewModel: ConfigureProjectViewModel?
+
     // MARK: - Lifecycle
 
     override public func configureBindings() {
@@ -60,18 +63,15 @@ public class WelcomeViewModel: DocuBotViewModel, @unchecked Sendable {
 public extension WelcomeViewModel {
 
     var title: String {
-        L10n.ProjectPicker.title
+        L10n.Welcome.title
     }
 
     var subtitle1: String {
-        L10n.ProjectPicker.subtitle1
+        L10n.Welcome.subtitle1
     }
 
     var subtitle2: String {
-        let versionNumber = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "1"
-        let buildNumber = (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "1.0"
-
-        return L10n.ProjectPicker.subtitle2(versionNumber, buildNumber)
+        L10n.Welcome.subtitle2(Device.versionNumber, Device.buildNumber)
     }
 
     var closeButton: IconButtonViewModel {
@@ -81,19 +81,17 @@ public extension WelcomeViewModel {
     }
 
     var newProjectButton: MenuButtonViewModel {
-        .init(text: L10n.ProjectPicker.loadNewProject) {
+        .init(text: L10n.Welcome.loadNewProject) {
             // Close our window
-            self.onDismiss.send(())
+            // self.onDismiss.send(())
 
-            // Open the CreateProject window
-            self.onOpen.send(
-                .createProject(.init())
-            )
+            // Open the CreateProject
+            self.createProjectViewModel = .init(serviceContainer: self.serviceContainer)
         }
     }
 
     var viewSourceCodeButton: MenuButtonViewModel {
-        .init(text: L10n.ProjectPicker.viewSourceCode) {
+        .init(text: L10n.Welcome.viewSourceCode) {
             guard let url = URL(string: Secrets.AppInfo.sourceCodeURL) else {
                 return
             }
@@ -102,7 +100,7 @@ public extension WelcomeViewModel {
     }
 
     var emailDeveloper: MenuButtonViewModel {
-        .init(text: L10n.ProjectPicker.emailDeveloper) {
+        .init(text: L10n.Welcome.emailDeveloper) {
             let service = NSSharingService(named: NSSharingService.Name.composeEmail)
             service?.recipients = [Secrets.AppInfo.developerEmail]
             service?.perform(withItems: [""])
@@ -111,25 +109,25 @@ public extension WelcomeViewModel {
 
     var emptyProjectConfiguration: EmptyListConfiguration {
         .init(
-            title: L10n.ProjectPicker.emptyProjectTitle,
-            subtitle: L10n.ProjectPicker.emptyProjectSubtitle,
+            title: L10n.Welcome.emptyProjectTitle,
+            subtitle: L10n.Welcome.emptyProjectSubtitle,
             icon: .booksVerticalFill
         )
     }
 
     var deleteProjectConfirmationDialog: ConfirmationDialogConfiguration {
         .init(
-            title: L10n.ProjectPicker.Delete.Confirmation.title,
+            title: L10n.Welcome.Delete.Confirmation.title,
             buttons: [
                 .init(
-                    title: L10n.ProjectPicker.Delete.Confirmation.deleteButton,
+                    title: L10n.Welcome.Delete.Confirmation.deleteButton,
                     role: .destructive,
                     action: {
                         self.deleteProjectAction?()
                     }
                 ),
                 .init(
-                    title: L10n.ProjectPicker.Delete.Confirmation.cancelButton,
+                    title: L10n.Welcome.Delete.Confirmation.cancelButton,
                     role: .cancel,
                     action: { }
                 )
@@ -137,15 +135,17 @@ public extension WelcomeViewModel {
         )
     }
 
-    func contextMenuConfigurations(for cell: WelcomeProjectCellViewModel) -> [ContextMenuConfiguration] {
+    func contextMenuConfigurations(
+        for cell: WelcomeProjectCellViewModel
+    ) -> [ContextMenuConfiguration] {
         return [
-            .init(text: L10n.ProjectPicker.ProjectContextMenu.open) {
+            .init(text: L10n.Welcome.ProjectContextMenu.open) {
                 self.open(project: cell.project)
             },
-            .init(text: L10n.ProjectPicker.ProjectContextMenu.delete) {
+            .init(text: L10n.Welcome.ProjectContextMenu.delete) {
                 self.promptDeletion(project: cell.project)
             },
-            .init(text: L10n.ProjectPicker.ProjectContextMenu.showInFinder) {
+            .init(text: L10n.Welcome.ProjectContextMenu.showInFinder) {
                 self.showInFinder(project: cell.project)
             }
         ]
@@ -156,10 +156,16 @@ public extension WelcomeViewModel {
             do {
                 let success = try await persistenceService.delete(project: project)
                 if success == false {
-                    fatalError("Error: no deleting")
+                    self.alertConfiguration = .init(
+                        title: L10n.Welcome.Error.FailedToDelete.title,
+                        message: L10n.Welcome.Error.FailedToDelete.message
+                    )
                 }
             } catch {
-                fatalError(error.localizedDescription)
+                self.alertConfiguration = .init(
+                    title: L10n.Welcome.Error.FailedToDelete.title,
+                    message: error.localizedDescription
+                )
             }
         }
     }
