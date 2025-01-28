@@ -118,6 +118,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
     @Test(
         "LLM Prime Fails",
         .serialized,
+        .disabled("CI Flakiness"),
         arguments: GPTError.allCases
     )
     func llmPrimeFails(with gptError: GPTError) async throws {

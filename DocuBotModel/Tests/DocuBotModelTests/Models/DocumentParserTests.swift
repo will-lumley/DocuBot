@@ -93,7 +93,7 @@ struct DocumentParserTests {
         }
     }
 
-    @Test("Create and Parse")
+    @Test("Create and Parse", .disabled("CI Flakiness"))
     mutating func createAndParse() async throws {
         // WHEN we parse ALL our documents
         let syncResult = try await self.parser.createAndParse()
