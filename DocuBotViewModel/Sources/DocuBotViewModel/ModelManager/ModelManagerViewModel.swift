@@ -243,7 +243,7 @@ private extension ModelManagerViewModel {
     /// - Note:
     /// Ensure that `Secrets.ModelDownloads.defaultModel` is correctly configured and contains a valid URL string.
     var defaultDownloadURL: URL {
-        let downloadStr = Secrets.ModelDownloads.defaultModel
+        let downloadStr = Secrets.ModelDownloads.testModel
         guard let downloadURL = URL(string: downloadStr) else {
             fatalError()
         }
@@ -292,13 +292,9 @@ private extension ModelManagerViewModel {
                 let modelsDirectory = try self.getModelsDirectory()
                 let fileName = sourceURL.lastPathComponent
 
-                // Define the destination URL for your file
-                // within the Models subdirectory.
-                let destinationURL = modelsDirectory.appendingPathComponent(fileName)
-
                 let downloadTask = DownloadTask(
                     sourceURL: self.defaultDownloadURL,
-                    destinationURL: destinationURL,
+                    destinationURL: modelsDirectory,
                     onUpdatedPublisher: self.downloadProgress
                 )
 
