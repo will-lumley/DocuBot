@@ -243,7 +243,7 @@ private extension ModelManagerViewModel {
     /// - Note:
     /// Ensure that `Secrets.ModelDownloads.defaultModel` is correctly configured and contains a valid URL string.
     var defaultDownloadURL: URL {
-        let downloadStr = Secrets.ModelDownloads.testModel
+        let downloadStr = Secrets.ModelDownloads.defaultModel
         guard let downloadURL = URL(string: downloadStr) else {
             fatalError()
         }
