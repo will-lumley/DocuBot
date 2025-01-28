@@ -222,10 +222,6 @@ public struct ConfigureProjectView: View {
                                 .padding(4)
                         }
                     }
-
-                    DisclosureGroup("Advanced Shit") {
-                        Text("Hello")
-                    }
                 }
             }
         )
