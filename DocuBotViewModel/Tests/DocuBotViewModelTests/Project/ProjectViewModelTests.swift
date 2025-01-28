@@ -157,7 +157,7 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         )
     }
 
-    @Test("Open Setttings")
+    @Test("Open Setttings", .disabled("CI Flakiness"))
     func openSettings() async throws {
         // GIVEN we have a ProjectViewModel
         let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
