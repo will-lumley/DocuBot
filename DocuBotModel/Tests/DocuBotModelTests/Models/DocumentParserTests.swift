@@ -11,9 +11,8 @@ import SimilaritySearchKit
 import SimilaritySearchKitDistilbert
 import Testing
 
-// swiftlint:disable:next type_body_length
 @Suite("DocumentParserTests", .serialized)
-struct DocumentParserTests {
+struct DocumentParserTests { // swiftlint:disable:this type_body_length
 
     // MARK: - Properties
 

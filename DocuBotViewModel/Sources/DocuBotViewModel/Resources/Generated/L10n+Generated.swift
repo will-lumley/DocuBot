@@ -70,8 +70,8 @@ internal enum L10n {
       internal static let formTitle = L10n.tr("Localizable", "ConfigureProject.Editing.formTitle", fallback: "Update your project")
     }
     internal enum FormatSection {
-      /// We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.
-      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.FormatSection.subtitle", fallback: "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later.")
+      /// We don't yet support any video formats, but we hope to support more complex formats later.
+      internal static let subtitle = L10n.tr("Localizable", "ConfigureProject.FormatSection.subtitle", fallback: "We don't yet support any video formats, but we hope to support more complex formats later.")
       /// What format is your documentation in?
       internal static let title = L10n.tr("Localizable", "ConfigureProject.FormatSection.title", fallback: "What format is your documentation in?")
       internal enum Format {
@@ -434,12 +434,10 @@ internal enum L10n {
     }
     internal enum LlmExampleQuestionPrompt {
       /// Here is an excerpt from a file.
-      /// 
       /// %@
-      /// 
       /// Based on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.
       internal static func prompt(_ p1: Any) -> String {
-        return L10n.tr("Localizable", "Project.LlmExampleQuestionPrompt.prompt", String(describing: p1), fallback: "Here is an excerpt from a file.\n\n%@\n\nBased on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.")
+        return L10n.tr("Localizable", "Project.LlmExampleQuestionPrompt.prompt", String(describing: p1), fallback: "Here is an excerpt from a file.\n%@\nBased on this content, generate a question that would help someone engage with or better understand the key concepts discussed. Write only the question, nothing else.")
       }
       /// You are a formal assistant whose role is to help generate content-specific questions based on provided excerpts. Your primary directive is to **strictly follow the given instructions** without adding any extra commentary, conversational language, or filler.
       /// When asked to generate a question, **only write the question itself** in a clear and concise format. Avoid adding any greetings, explanations, or follow-up statements. Your output should consist solely of the question that addresses the key concepts of the provided content.

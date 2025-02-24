@@ -134,7 +134,6 @@ public class ProjectViewModel: DocuBotViewModel, @unchecked Sendable {
         )
 
         super.init(serviceContainer: serviceContainer)
-        self.primeLlm()
 
         self.sourcesButton.onSelect = { [weak self] in self?.isShowingSources.toggle() }
         self.syncProjectButton.onSelect = self.sync
@@ -318,7 +317,9 @@ public extension ProjectViewModel {
                         ),
                         availableModels: allModels,
                         serviceContainer: self.serviceContainer,
-                        onSave: self.primeLlm
+                        onSave: {
+                            Task { await self.primeLlm() }
+                        }
                     )
                 }
             } catch {
@@ -420,7 +421,7 @@ private extension ProjectViewModel {
 
         self.currentTask = Task {
             defer {
-                self.expectingResponse = false
+                DispatchQueue.main.sync { self.expectingResponse = false }
             }
 
             do {
@@ -505,6 +506,7 @@ private extension ProjectViewModel {
                     logService.log(with: .info, "Formatted Query:\n\(formattedQuery)\n")
 
                     // Shoot it over to the LLM
+                    await self.primeLlm()
                     let response = try await self.gptService.respond(
                         to: formattedQuery,
                         with: settings.systemPrompt
@@ -591,25 +593,23 @@ private extension ProjectViewModel {
     /// 1. Retrieve the project's settings and model.
     /// 2. Configure the LLM with the retrieved data.
     /// 3. Handle any errors that occur during the priming process by displaying alerts.
-    func primeLlm() {
-        Task {
-            do {
-                // Prime our LLM with our settings
-                let settings = try await self.getProjectSettings()
-                let model = try await persistenceService.getModel(
-                    id: settings.modelID
-                )
+    func primeLlm() async {
+        do {
+            // Prime our LLM with our settings
+            let settings = try await self.getProjectSettings()
+            let model = try await persistenceService.getModel(
+                id: settings.modelID
+            )
 
-                try gptService.prime(
-                    with: model,
-                    with: settings
-                )
-            } catch {
-                self.alertConfiguration = .init(
-                    title: L10n.Error.Project.FailedToStartLlm.title,
-                    message: error.description
-                )
-            }
+            try gptService.prime(
+                with: model,
+                with: settings
+            )
+        } catch {
+            self.alertConfiguration = .init(
+                title: L10n.Error.Project.FailedToStartLlm.title,
+                message: error.description
+            )
         }
     }
 
@@ -625,9 +625,8 @@ private extension ProjectViewModel {
     /// 3. Generate example questions.
     /// 4. Update and persist the project's state.
     func sync() {
-        self.syncStage = .extractingDocumentsFromDisk
-
         Task {
+            await MainActor.run { self.syncStage = .extractingDocumentsFromDisk }
             do {
                 // After we've done everything, we want the `syncStage`
                 // to go back to `nil`
@@ -812,6 +811,11 @@ private extension ProjectViewModel {
         from documents: [Document],
         with settings: ProjectSettings
     ) async throws -> [String] {
+//        logService.log(with: .info, "Documents to source from:")
+//        documents.forEach {
+//            logService.log(with: .info, "\($0.content)\n\n")
+//        }
+
         // Create the example questions.
         // Ideally this would be done on the Model layer,
         // however due to the fact that we're using GPTService
@@ -819,7 +823,74 @@ private extension ProjectViewModel {
         let totalQuestions     = preferenceStoreService.numberOfExampleQuestions
         var completedQuestions = 0
 
-        // We'll pull 10 random documents from the project
+        self.logService.log(
+            with: .info,
+            "Building \(totalQuestions) example questions."
+        )
+
+        /*
+        let documentsToUse = documents
+            .filter { $0.content.isEmpty == false }
+            .shuffled()
+            .prefix(totalQuestions)
+
+        logService.log(with: .info, "Documents for example questions:")
+        documentsToUse.forEach {
+            logService.log(with: .info, "\($0.content)\n\n")
+        }
+
+        var exampleQuestions = [String]()
+        for document in documentsToUse {
+            let content = document.content
+            let trimmedContent = content.trim(by: 150)
+            let formattedPrompt = L10n.Project.LlmExampleQuestionPrompt.prompt(
+                trimmedContent
+            )
+
+            let progress = Progress(
+                value: Double(completedQuestions),
+                total: Double(totalQuestions)
+            )
+
+            logService.log(with: .info, "Content: \(content)")
+            logService.log(with: .info, "TrimmedContent: \(trimmedContent)")
+            logService.log(with: .info, "FormattedPrompt: \(formattedPrompt)")
+
+            // Update the progress each time a question is created
+            await MainActor.run {
+                self.logService.log(
+                    with: .info,
+                    "Example Questions Progress: \(progress)"
+                )
+                self.syncStage = .buildingExampleQuestions(
+                    project: self.project,
+                    progress: progress
+                )
+            }
+
+            completedQuestions += 1
+
+            do {
+                logService.log(with: .info, "Prompting GPTService with: \(formattedPrompt)")
+                let question = try await self.gptService.respond(
+                    to: formattedPrompt,
+                    with: settings.systemPrompt,
+                    onUpdate: nil
+                )
+                logService.log(
+                    with: .info,
+                    "Built question: \(String(describing: question))"
+                )
+                exampleQuestions.append(question)
+            } catch {
+                fatalError("Failed to build question: \(error)" )
+            }
+        }
+
+        return exampleQuestions
+         */
+
+        // We'll pull n random documents from the project
         // Pull out their content
         // Trim the content to a maximum length of 150 characters
         // Put the trimmed content into a prompt template for our LLM
@@ -827,6 +898,7 @@ private extension ProjectViewModel {
         // Filter out any nils
         // Tidy up any decorations the LLM can put on
         return await documents
+            .filter { $0.content.isEmpty == false }
             .shuffled()
             .prefix(totalQuestions)
             .map(\.content)
@@ -839,7 +911,11 @@ private extension ProjectViewModel {
                 )
 
                 // Update the progress each time a question is created
-                DispatchQueue.main.sync {
+                await MainActor.run {
+                    self.logService.log(
+                        with: .info,
+                        "Example Questions Progress: \(progress)"
+                    )
                     self.syncStage = .buildingExampleQuestions(
                         project: self.project,
                         progress: progress
@@ -848,19 +924,21 @@ private extension ProjectViewModel {
 
                 completedQuestions += 1
 
-                let question = try? await self.gptService.respond(
-                    to: prompt,
-                    with: settings.systemPrompt,
-                    onUpdate: nil
-                )
-                logService.log(
-                    with: .info,
-                    "Built question: \(String(describing: question))"
-                )
-
-                return question
+                do {
+                    let question = try await self.gptService.respond(
+                        to: prompt,
+                        with: settings.systemPrompt,
+                        onUpdate: nil
+                    )
+                    logService.log(
+                        with: .info,
+                        "Built question: \(String(describing: question))"
+                    )
+                    return question
+                } catch {
+                    fatalError("Failed to build question: \(error)" )
+                }
             }
-            .compactMap(\.self)
             .map { $0.removing(value: "Question:") }
             .map { $0.removing(value: ", according to the provided excerpt") }
             .map { $0.removing(value: "according to the provided excerpt") }
@@ -884,7 +962,8 @@ private extension ProjectViewModel {
             if fetchedProject.alertStatus.isFirstSync {
                 self.sync()
             }
-            self.project = fetchedProject
+
+            await MainActor.run { self.project = fetchedProject }
         }
 
     }

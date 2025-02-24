@@ -244,8 +244,8 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.topK = 40
             self.topP = 0.9
             self.temperature = 0.2
-            self.stopSequence = ""
-            self.maxTokenCount = 1024*1024
+            self.stopSequence = "<|eot_id|>"
+            self.maxTokenCount = 1024
             self.strictMode = false
 
             self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default

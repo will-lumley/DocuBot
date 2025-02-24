@@ -98,7 +98,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.similarityMetricTitle == "Similarity Metric")
         #expect(testSubject.llmSectionTitle == "LLM Configuration")
         #expect(
-            testSubject.formatSectionSubtitle == "We don't yet support any formats like Microsoft Word or PDF, but we hope to support more complex formats later."
+            testSubject.formatSectionSubtitle == "We don't yet support any video formats, but we hope to support more complex formats later."
         )
         #expect(
             testSubject.similaritySectionSubtitle == "These options determine how the similarity between query inputs and documentation is calculated, affecting the accuracy of results. Adjust them only if you need something specific.\nChanging these will require a full resync of your project."
@@ -942,8 +942,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.9)
         #expect(testSubject.temperature == 0.2)
-        #expect(testSubject.stopSequence == "")
-        #expect(testSubject.maxTokenCount == 1048576)
+        #expect(testSubject.stopSequence == "<|eot_id|>")
+        #expect(testSubject.maxTokenCount == 1024)
         #expect(testSubject.systemPrompt == "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.")
         #expect(testSubject.strictMode == false)
 
@@ -1778,8 +1778,8 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.topP == 0.9)
 
         #expect(testSubject.temperature == 0.2)
-        #expect(testSubject.stopSequence == "")
-        #expect(testSubject.maxTokenCount == 1048576)
+        #expect(testSubject.stopSequence == "<|eot_id|>")
+        #expect(testSubject.maxTokenCount == 1024)
         #expect(testSubject.strictMode == false)
         #expect(testSubject.availableModels.count == 1)
         #expect(testSubject.availableLanguages == ProjectSettings.Language.allCases)

@@ -9,7 +9,7 @@ import Combine
 import DocuBotModel
 import DocuBotToolbox
 import Foundation
-import LLM
+import Metal
 
 /// An implementation of the `GPTService` protocol that integrates with `llama.cpp`.
 ///
@@ -62,7 +62,6 @@ final class LlamaService: GPTService {
         if FileManager.default.fileExists(atPath: model.path) == false {
             throw .noModel(modelName: model.name)
         }
-
         self.llama = LLM(
             from: model.path,
             stopSequence: settings.stopSequence,
@@ -72,9 +71,9 @@ final class LlamaService: GPTService {
             temp: Float(settings.temperature),
             maxTokenCount: Int32(settings.maxTokenCount)
         )
-
+        // self.llama?.template = .chatML(settings.systemPrompt)
         self.llama?.template = .llama(settings.systemPrompt)
-        self.llama?.postprocess = { _ in }
+        // self.llama?.postprocess = { _ in }
     }
 
     /// Generates a response to a query, optionally providing real-time updates.
@@ -97,10 +96,12 @@ final class LlamaService: GPTService {
         guard let llama else {
             throw GPTError.llmNotInitialised
         }
+        print("[DOCUBOT] Prompting: \(query)")
 
         var finalOutput = ""
         await llama.respond(to: query) { response in
             for await responseDelta in response {
+                print("ResponseDelta: \(responseDelta)")
                 finalOutput += responseDelta
 
                 // Clean up our output
@@ -111,9 +112,11 @@ final class LlamaService: GPTService {
 
                 await onUpdate?(finalOutput)
             }
+            print("[DOCUBOT] FinalOutput: \(finalOutput)")
             return finalOutput
         }
 
+        print("[DOCUBOT] FinalOutput: \(finalOutput)")
         return finalOutput
     }
 

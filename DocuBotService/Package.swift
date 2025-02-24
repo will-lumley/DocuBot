@@ -27,7 +27,10 @@ let package = Package(
             url: "https://github.com/groue/GRDB.swift.git",
             from: "6.29.0"
         ),
-        .package(url: "https://github.com/eastriverlee/LLM.swift/", branch: "pinned")
+        .package(
+            url: "https://github.com/ggml-org/llama.cpp",
+            revision: "cc98896db858df7aa40d0e16a505883ef196a482"
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -38,7 +41,7 @@ let package = Package(
                 "DocuBotModel",
                 "DocuBotToolbox",
 
-                .product(name: "LLM", package: "LLM.swift"),
+                .product(name: "llama", package: "llama.cpp"),
                 .product(name: "GRDB", package: "GRDB.swift")
             ],
             plugins: [
