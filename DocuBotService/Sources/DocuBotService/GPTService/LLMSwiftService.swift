@@ -15,7 +15,7 @@ import Metal
 ///
 /// The `LlamaService` uses `SwiftLlama` as an interface to manage language model
 /// interactions, including priming the model and generating responses.
-final class LlamaService: GPTService {
+final class LLMSwiftService: GPTService {
 
     // MARK: - Service
 

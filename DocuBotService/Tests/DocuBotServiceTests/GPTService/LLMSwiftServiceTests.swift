@@ -10,7 +10,7 @@ import DocuBotModel
 import Foundation
 import Testing
 
-struct LlamaServiceTests {
+struct LLMSwiftServiceTests {
 
     // MARK: - Properties
 
@@ -36,7 +36,7 @@ struct LlamaServiceTests {
     func prime() throws {
         // GIVEN we have the LlamaService
         // WHEN we instantiate it
-        let testSubject = LlamaService()
+        let testSubject = LLMSwiftService()
 
         // THEN we can prime it throwing an error
         try testSubject.prime(
@@ -121,7 +121,7 @@ struct LlamaServiceTests {
     @Test("Error is thrown when LLM is not primed")
     func errorIsThrownWhenLlmIsNotPrimed() async throws {
         // GIVEN we have the LlamaService
-        let testSubject = LlamaService()
+        let testSubject = LLMSwiftService()
 
         await #expect(throws: GPTError.llmNotInitialised) {
             // WHEN we query for a response without priming
