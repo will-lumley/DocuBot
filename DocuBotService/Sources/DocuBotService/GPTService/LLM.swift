@@ -215,23 +215,26 @@ open class LLM: ObservableObject, @unchecked Sendable {
         llama_sampler_chain_add(sampler, llama_sampler_init_temp(temp))
         llama_sampler_chain_add(sampler, llama_sampler_init_dist(seed))
 
-        let i = batch.n_tokens - 1
-        let token = llama_sampler_sample(sampler, context.pointer, i)
+        let lastTokenIndex = batch.n_tokens - 1
+        let lastToken = llama_sampler_sample(sampler, context.pointer, lastTokenIndex)
         
+        // print("[DEBUG] Batch Before Clear: \(batch.tokens)")
         batch.clear()
-        batch.add(token, currentCount, [0], true)
+        // print("[DEBUG] Batch After Clear: \(batch.tokens)")
+        
+        batch.add(lastToken, currentCount, [0], true)
         context.decode(batch)
 
-        print("[LLM] Predicted Token ID: \(token)")
-        print("[LLM] Decoded Token: \(decode(token))")
+        print("[LLM] Predicted Token ID: \(lastToken)")
+        print("[LLM] Decoded Token: \(decode(lastToken))")
 
-        return token
+        return lastToken
     }
     
     private var currentCount: Int32!
     private var decoded = ""
     
-    open func recoverFromLengthy(_ input: borrowing String, to output:  borrowing AsyncStream<String>.Continuation) {
+    open func recoverFromLengthy(_ input: borrowing String, to output: borrowing AsyncStream<String>.Continuation) {
         output.yield("tl;dr")
     }
     
