@@ -1,8 +1,8 @@
 //
-//  LlamaServiceTests.swift
+//  SwiftLlamaServiceTests.swift
 //  DocuBotService
 //
-//  Created by William Lumley on 13/11/2024.
+//  Created by William Lumley on 26/2/2025.
 //
 
 import DocuBotModel
@@ -10,14 +10,14 @@ import DocuBotModel
 import Foundation
 import Testing
 
-struct LLMSwiftServiceTests {
+struct SwiftLlamaServiceTests {
 
     // MARK: - Properties
 
     /// This will fetch a very intentionally small model that is garbage, but does the
     /// job for testing purposes.
     ///
-    /// - Returns: The file path for a test model
+    /// - returns: The file path for a test model
     ///
     static var testModelPath: String {
         get throws {
@@ -36,9 +36,9 @@ struct LLMSwiftServiceTests {
     func prime() throws {
         // GIVEN we have the LlamaService
         // WHEN we instantiate it
-        let testSubject = LLMSwiftService()
+        let testSubject = SwiftLlamaService()
 
-        // THEN we can prime it throwing an error
+        // THEN we can prime it without throwing an error
         try testSubject.prime(
             with: .mock(
                 path: try Self.testModelPath
@@ -47,19 +47,15 @@ struct LLMSwiftServiceTests {
         )
     }
 
-    /*
     @Test("Prime with Missing Model")
     func primeWithMissingModel() {
         // GIVEN we have the LlamaService
-        let testSubject = LlamaService()
+        let testSubject = SwiftLlamaService()
 
-        #expect(throws: GPTError.noModel(modelName: "Random Model")) {
+        #expect(throws: GPTError.noModel(modelName: "Cool Model Name")) {
             // WHEN we prime the LLM with an invalid model path
             try testSubject.prime(
-                with: .mock(
-                    name: "Random Model",
-                    path: "/invalid/path"
-                ),
+                with: .mock(path: "/invalid/path"),
                 with: .mock()
             )
         }
@@ -69,12 +65,19 @@ struct LLMSwiftServiceTests {
     func onUpdateIsCalled() async throws {
         // We will create a pretend LLM here that is pre-set
         // to return a determined series of responses.
-        let mockLlama = try MockLLM(
+        let mockLlama = try MockLlama(
+            modelPath: try Self.testModelPath,
             responses: ["Hello", " ", "world", "!"]
         )
 
         // GIVEN we have the LlamaService
-        let testSubject = LlamaService()
+        let testSubject = SwiftLlamaService()
+        try testSubject.prime(
+            with: .mock(
+                path: try Self.testModelPath
+            ),
+            with: .mock()
+        )
         testSubject.llama = mockLlama
 
         // Here we're just going to setup and listen to our updates
@@ -86,42 +89,53 @@ struct LLMSwiftServiceTests {
         // WHEN we query for a response
         _ = try await testSubject.respond(
             to: "test",
-            with: "systemMessage",
             onUpdate: onUpdate
         )
 
         // THEN our onUpdate correctly received the updates
-        #expect(updates == ["Hello", " ", "world", "!"])
+        #expect(
+            updates == [
+                "Hello",
+                "Hello ",
+                "Hello world",
+                "Hello world!"
+            ]
+        )
     }
 
     @Test("Response Returns Correctly")
     func responseReturnsCorrectly() async throws {
         // We will create a pretend LLM here that is pre-set
         // to return a determined series of responses.
-        let mockLlama = try MockLLM(
+        let mockLlama = try MockLlama(
+            modelPath: try Self.testModelPath,
             responses: ["Hello", " ", "world", "!"]
         )
 
         // GIVEN we have the LlamaService
-        let testSubject = LlamaService()
+        let testSubject = SwiftLlamaService()
+        try testSubject.prime(
+            with: .mock(
+                path: try Self.testModelPath
+            ),
+            with: .mock()
+        )
         testSubject.llama = mockLlama
 
         // WHEN we query for a response
         let response = try await testSubject.respond(
             to: "test",
-            with: "systemMessage",
             onUpdate: nil
         )
 
         // THEN our response is the finalised chain of the pre-set response chains
         #expect(response == "Hello world!")
     }
-     */
 
     @Test("Error is thrown when LLM is not primed")
     func errorIsThrownWhenLlmIsNotPrimed() async throws {
         // GIVEN we have the LlamaService
-        let testSubject = LLMSwiftService()
+        let testSubject = SwiftLlamaService()
 
         await #expect(throws: GPTError.llmNotInitialised) {
             // WHEN we query for a response without priming
