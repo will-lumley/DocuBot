@@ -35,8 +35,8 @@ struct ProjectSettingsBridgingTests {
         let language = ProjectSettings.Language.english
         let embeddingModel = ProjectSettings.EmbeddingModel.distilbert
         let similarityMetric = ProjectSettings.SimilarityMetric.cosine
-        let seed = 12345
-        let topK = 10
+        let seed = UInt32(12345)
+        let topK = Int32(10)
         let topP = 0.9
         let temperature = 0.7
         let stopSequence = "###"
@@ -100,8 +100,8 @@ struct ProjectSettingsBridgingTests {
         let language = ProjectSettingsRecord.Language.english
         let embeddingModel = ProjectSettingsRecord.EmbeddingModel.distilbert
         let similarityMetric = ProjectSettingsRecord.SimilarityMetric.cosine
-        let seed = 12345
-        let topK = 10
+        let seed = UInt32(12345)
+        let topK = Int32(10)
         let topP = 0.9
         let temperature = 0.7
         let stopSequence = "###"

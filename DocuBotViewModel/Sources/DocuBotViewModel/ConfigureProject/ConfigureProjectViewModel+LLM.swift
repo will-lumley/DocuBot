@@ -96,12 +96,12 @@ public extension ConfigureProjectViewModel {
     /// print(viewModel.temperature) // Outputs 0.2
     /// ```
     func resetLlmOptions() {
-        self.seed = 1234
+        self.seed = UInt32.random(in: UInt32.min...UInt32.max)
         self.topK = 40
         self.topP = 0.9
         self.temperature = 0.2
-        self.stopSequence = ""
-        self.maxTokenCount = 1024*1024
+        self.stopSequence = "<|eot_id|>"
+        self.maxTokenCount = 8192
         self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
         self.strictMode = false
     }

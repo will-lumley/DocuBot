@@ -80,7 +80,7 @@ private extension ServiceContainer {
     /// Configures services for the production environment.
     func configureServices() {
         self.register(service: VexilFlagService())
-        self.register(service: LlamaService())
+        self.register(service: SwiftLlamaService())
         self.register(service: LocalUserDefaultsService())
         self.configureLogService()
         self.register(service: GRDBService(inMemory: false, serviceContainer: self))

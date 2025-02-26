@@ -33,7 +33,7 @@ struct ServiceContainerTests {
 
         // Ensure our GPTService has the production type
         let gptService = testSubject.gptService
-        #expect(gptService is LlamaService)
+        #expect(gptService is SwiftLlamaService)
     }
 
     @Test("Registry Test Setup")

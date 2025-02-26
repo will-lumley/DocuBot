@@ -938,13 +938,13 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.resetLlmOptions()
 
         // THEN the LLM options are reset to their default values
-        #expect(testSubject.seed == 1234)
+        #expect(testSubject.seed != 20)
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.9)
         #expect(testSubject.temperature == 0.2)
         #expect(testSubject.stopSequence == "<|eot_id|>")
-        #expect(testSubject.maxTokenCount == 1024)
-        #expect(testSubject.systemPrompt == "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.")
+        #expect(testSubject.maxTokenCount == 8192)
+        #expect(testSubject.systemPrompt == "You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base in Markdown format. If you don't know the answer, simply say that.")
         #expect(testSubject.strictMode == false)
 
         // THEN nothing else has been changed
@@ -1773,13 +1773,13 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.similarityMetric == .cosine)
 
         #expect(testSubject.systemPrompt == self.defaultSystemPrompt)
-        #expect(testSubject.seed == 1234)
+        #expect(testSubject.seed != 0)
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.9)
 
         #expect(testSubject.temperature == 0.2)
         #expect(testSubject.stopSequence == "<|eot_id|>")
-        #expect(testSubject.maxTokenCount == 1024)
+        #expect(testSubject.maxTokenCount == 8196)
         #expect(testSubject.strictMode == false)
         #expect(testSubject.availableModels.count == 1)
         #expect(testSubject.availableLanguages == ProjectSettings.Language.allCases)
@@ -1863,7 +1863,7 @@ private extension ConfigureProjectViewModelTests {
 
     var defaultSystemPrompt: String {
         """
-        You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base. If you don't know the answer, simply say that. Avoid long paragraphs and break them up with newlines if need be. All responses you generate should be formatted in Markdown. Use `#` for headers, `*` or `-` for bullet points, and backticks (`) for inline code and code blocks. Include links using [text](URL) format.
+        You are a helpful assistant named DocuBot. DocuBot is a macOS app powered by an open-source LLM, designed to intelligently answer documentation queries. You have been trained on a directory that contains the relevant documentation. You are expected to answer the user's questions to their code base in Markdown format. If you don't know the answer, simply say that.
         """
     }
 

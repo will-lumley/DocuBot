@@ -114,25 +114,25 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
     public let similarityMetric: SimilarityMetric
 
     /// A random seed used for reproducibility.
-    public let seed: Int
+    public var seed: UInt32
 
     /// The top K value for controlling token generation.
-    public let topK: Int
+    public var topK: Int32
 
     /// The top P value for controlling token generation.
-    public let topP: Double
+    public var topP: Double
 
     /// The temperature value for controlling randomness in token generation.
-    public let temperature: Double
+    public var temperature: Double
 
     /// The stop sequence used to terminate text generation.
-    public let stopSequence: String?
+    public var stopSequence: String?
 
     /// The maximum token count for text generation.
-    public let maxTokenCount: Int
+    public var maxTokenCount: Int
 
     /// The system prompt used to provide context to the model.
-    public let systemPrompt: String
+    public var systemPrompt: String
 
     /// A flag indicating whether strict mode is enabled.
     public let strictMode: Bool
@@ -173,8 +173,8 @@ public struct ProjectSettings: Hashable, Codable, Sendable {
         language: Language,
         embeddingModel: EmbeddingModel,
         similarityMetric: SimilarityMetric,
-        seed: Int,
-        topK: Int,
+        seed: UInt32,
+        topK: Int32,
         topP: Double,
         temperature: Double,
         stopSequence: String?,

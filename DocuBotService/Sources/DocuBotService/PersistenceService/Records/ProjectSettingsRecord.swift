@@ -96,10 +96,10 @@ public struct ProjectSettingsRecord: Record {
     public let similarityMetric: SimilarityMetric
 
     /// The random seed value for reproducibility.
-    public let seed: Int
+    public let seed: UInt32
 
     /// The maximum number of results to return for a query.
-    public let topK: Int
+    public let topK: Int32
 
     /// The probability threshold for nucleus sampling.
     public let topP: Double

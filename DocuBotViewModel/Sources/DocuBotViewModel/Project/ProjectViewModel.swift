@@ -508,8 +508,7 @@ private extension ProjectViewModel {
                     // Shoot it over to the LLM
                     await self.primeLlm()
                     let response = try await self.gptService.respond(
-                        to: formattedQuery,
-                        with: settings.systemPrompt
+                        to: formattedQuery
                     ) { update in
                         guard self.expectingResponse else {
                             return
@@ -816,6 +815,23 @@ private extension ProjectViewModel {
 //            logService.log(with: .info, "\($0.content)\n\n")
 //        }
 
+        func prime() async throws {
+            let settings = try await self.getProjectSettings()
+            let model = try await persistenceService.getModel(id: settings.modelID)
+
+            var primeSettings = settings
+            primeSettings.seed = UInt32.random(in: UInt32.min...UInt32.max)
+            primeSettings.topK = Int32.random(in: 0...10)
+            primeSettings.topP = Double.random(in: 0...1)
+            primeSettings.temperature = Double.random(in: 0...1)
+            primeSettings.systemPrompt = "Create an example question as per the prompt."
+
+            try gptService.prime(
+                with: model,
+                with: primeSettings
+            )
+        }
+
         // Create the example questions.
         // Ideally this would be done on the Model layer,
         // however due to the fact that we're using GPTService
@@ -925,11 +941,12 @@ private extension ProjectViewModel {
                 completedQuestions += 1
 
                 do {
+                    try await prime()
                     let question = try await self.gptService.respond(
                         to: prompt,
-                        with: settings.systemPrompt,
                         onUpdate: nil
                     )
+
                     logService.log(
                         with: .info,
                         "Built question: \(String(describing: question))"

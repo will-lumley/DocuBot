@@ -10,17 +10,19 @@
 import Foundation
 import llama
 
-public typealias Token = llama_token
-public typealias Model = OpaquePointer
-public typealias Chat = (role: Role, content: String)
+extension LLM {
+    public typealias Token = llama_token
+    public typealias Model = OpaquePointer
+    public typealias Chat = (role: Role, content: String)
+}
 
 open class LLM: ObservableObject, @unchecked Sendable {
     public var model: Model
-    public var history: [Chat]
-    public var preprocess: (_ input: String, _ history: [Chat]) -> String = { input, _ in return input }
+    public var history: [LLM.Chat]
+    public var preprocess: (_ input: String, _ history: [LLM.Chat]) -> String = { input, _ in return input }
     public var postprocess: (_ output: String) -> Void                    = { print($0) }
     public var update: (_ outputDelta: String?) -> Void                   = { _ in }
-    public var template: Template? = nil {
+    public var template: Template? {
         didSet {
             guard let template else {
                 preprocess = { input, _ in return input }
@@ -108,7 +110,7 @@ open class LLM: ObservableObject, @unchecked Sendable {
         print("TotalTokenCount: \(totalTokenCount)")
         print("NewlineToken: \(newlineToken)")
         print("ProcessorCount: \(processorCount)")
-        print("Batch: \(batch)")
+        print("Batch: \(String(describing: batch))")
         print("")
     }
 
@@ -151,7 +153,7 @@ open class LLM: ObservableObject, @unchecked Sendable {
         temp: Float = 0.8,
         historyLimit: Int = 8,
         maxTokenCount: Int32 = 2048,
-        updateProgress: @escaping (Double) -> Void = { print(String(format: "downloaded(%.2f%%)", $0 * 100)) }
+        updateProgress: @Sendable @escaping (Double) -> Void = { print(String(format: "downloaded(%.2f%%)", $0 * 100)) }
     ) async throws {
         let url = try await huggingFaceModel.download(to: url, as: name) { progress in
             updateProgress(progress)
@@ -307,7 +309,7 @@ open class LLM: ObservableObject, @unchecked Sendable {
             } else if found {
                 saved.stopSequenceEndIndex = 0
                 if !saved.letters.isEmpty {
-                    word = String(cString: saved.letters + [0]) + word
+                    word = (String(cString: saved.letters + [0], encoding: .utf8) ?? "") + word
                     saved.letters.removeAll()
                 }
                 output.yield(word)
@@ -315,7 +317,9 @@ open class LLM: ObservableObject, @unchecked Sendable {
             }
             letters.append(letter)
         }
-        if !letters.isEmpty { output.yield(found ? String(cString: letters + [0]) : word) }
+        if !letters.isEmpty {
+            output.yield(found ? String(cString: letters + [0], encoding: .utf8) ?? "" : word)
+        }
         return true
     }
     
@@ -445,24 +449,23 @@ extension Model {
     }
 }
 
-private class Context {
-    let pointer: OpaquePointer
-    init(_ model: Model, _ params: llama_context_params) {
-        self.pointer = llama_new_context_with_model(model, params)
-    }
-    deinit {
-        llama_free(pointer)
-    }
-    func decode(_ batch: llama_batch) {
-        guard llama_decode(pointer, batch) == 0 else { fatalError("llama_decode failed") }
+private extension LLM {
+    private class Context {
+        let pointer: OpaquePointer
+        init(_ model: Model, _ params: llama_context_params) {
+            self.pointer = llama_new_context_with_model(model, params)
+        }
+        deinit {
+            llama_free(pointer)
+        }
+        func decode(_ batch: llama_batch) {
+            guard llama_decode(pointer, batch) == 0 else { fatalError("llama_decode failed") }
+        }
     }
 }
 
 extension llama_batch {
-    mutating func clear() {
-        self.n_tokens = 0
-    }
-    
+
     mutating func add(_ token: Token, _ position: Int32, _ ids: [Int], _ logit: Bool) {
         let i = Int(self.n_tokens)
         self.token[i] = token
@@ -528,7 +531,7 @@ public struct Template {
         self.shouldDropLast = shouldDropLast
     }
     
-    public var preprocess: (_ input: String, _ history: [Chat]) -> String {
+    public var preprocess: (_ input: String, _ history: [LLM.Chat]) -> String {
         return { [self] input, history in
             var processed = prefix
             if let systemPrompt {
@@ -663,7 +666,7 @@ public struct HuggingFaceModel {
         return nil
     }
     
-    public func download(to directory: URL = .documentsDirectory, as name: String? = nil, _ updateProgress: @escaping (Double) -> Void) async throws -> URL {
+    public func download(to directory: URL = .documentsDirectory, as name: String? = nil, _ updateProgress: @Sendable @escaping (Double) -> Void) async throws -> URL {
         var destination: URL
         if let name {
             destination = directory.appending(path: name)
@@ -697,14 +700,16 @@ extension URL {
         guard statusCode / 100 == 2 else { throw HuggingFaceError.network(statusCode: statusCode) }
         return data
     }
-    fileprivate func downloadData(to destination: URL, _ updateProgress: @escaping (Double) -> Void) async throws {
+    fileprivate func downloadData(to destination: URL, _ updateProgress: @Sendable @escaping (Double) -> Void) async throws {
         var observation: NSKeyValueObservation!
         let url: URL = try await withCheckedThrowingContinuation { continuation in
             let task = URLSession.shared.downloadTask(with: self) { url, response, error in
                 if let error { return continuation.resume(throwing: error) }
                 guard let url else { return continuation.resume(throwing: HuggingFaceError.urlIsNilForSomeReason) }
                 let statusCode = (response as! HTTPURLResponse).statusCode
-                guard statusCode / 100 == 2 else { return continuation.resume(throwing: HuggingFaceError.network(statusCode: statusCode)) }
+                guard statusCode / 100 == 2 else {
+                    return continuation.resume(throwing: HuggingFaceError.network(statusCode: statusCode))
+                }
                 continuation.resume(returning: url)
             }
             observation = task.progress.observe(\.fractionCompleted) { progress, _ in

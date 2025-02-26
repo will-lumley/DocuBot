@@ -56,7 +56,7 @@ struct AcknowledgementTests {
 
         // THEN we have the expected acknowledgements
         #expect(acknowledgements.isEmpty == false)
-        #expect(acknowledgements.count == 10)
+        #expect(acknowledgements.count == 11)
 
         // Define expected values for all acknowledgements
         // swiftlint:disable line_length large_tuple
@@ -76,6 +76,15 @@ struct AcknowledgementTests {
                 making it easy to integrate SQLite into Swift applications with type safety and efficiency.
                 """,
                 link: "https://github.com/groue/GRDB.swift.git",
+                license: "MIT"
+            ),
+            (
+                author: "Shenghai Wang",
+                libraryName: "SwiftLlama",
+                description: """
+                A Swift Package that provides a Swift-y API wrapper to llama.cpp.
+                """,
+                link: "https://github.com/ShenghaiWang/SwiftLlama",
                 license: "MIT"
             ),
             (
