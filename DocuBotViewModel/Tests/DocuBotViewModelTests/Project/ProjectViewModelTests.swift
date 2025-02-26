@@ -103,11 +103,15 @@ class ProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Sendable {
         let project = Project.mock(id: 1)
         let settings = ProjectSettings.mock(id: 1, projectID: 1, modelID: 1)
         let model = LLMModel.mock(id: 1)
-        _ = try await self.mock(project, model, settings)
+        let projectViewModel = try await self.mock(project, model, settings)
 
         // THEN our prime state is at first `nil`
         var next = try #require(try await primedIterator.next())
         #expect(next == nil)
+
+        // WHEN we ask it a question, it is primed
+        projectViewModel.chatText = "Hello!"
+        projectViewModel.askButtonSelected()
 
         // THEN our next prime state is one with the model and settings in our Project
         next = try #require(try await primedIterator.next())

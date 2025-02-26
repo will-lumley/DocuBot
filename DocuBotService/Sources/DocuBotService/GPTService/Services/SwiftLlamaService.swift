@@ -113,7 +113,6 @@ final class SwiftLlamaService: GPTService {
             history: []
         )
 
-        var newlineCount = 0
         var finalOutput = ""
 
         for try await value in await llama.start(for: prompt) {
@@ -121,24 +120,6 @@ final class SwiftLlamaService: GPTService {
 
             finalOutput += formattedValue
             await onUpdate?(finalOutput)
-
-            /*
-
-            if formattedValue == "\n" {
-                newlineCount += 1
-            } else {
-                newlineCount = 0
-            }
-
-            if newlineCount == 3 {
-                // swiftlint:disable:next direct_print
-                print("[DOCUBOT] [INFO] Breaking due to newline overload.")
-                break
-            }
-
-            output += formattedValue
-            await onUpdate?(formattedValue)
-             */
         }
         self.llama?.clear()
 

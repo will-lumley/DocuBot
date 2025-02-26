@@ -99,6 +99,18 @@ private extension AboutViewModelTests {
 
 
         ---
+        ### SwiftLlama
+
+        **Author**: Shenghai Wang
+
+        **Description**: A Swift Package that provides a Swift-y API wrapper to llama.cpp.
+
+        **License**: MIT
+
+        **Link**: [https://github.com/ShenghaiWang/SwiftLlama](https://github.com/ShenghaiWang/SwiftLlama)
+
+
+        ---
         ### LLM.swift
 
         **Author**: eastriverlee
