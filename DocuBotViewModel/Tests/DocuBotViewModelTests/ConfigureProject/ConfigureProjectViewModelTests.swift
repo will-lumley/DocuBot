@@ -938,7 +938,7 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         testSubject.resetLlmOptions()
 
         // THEN the LLM options are reset to their default values
-        #expect(testSubject.seed == 1234)
+        #expect(testSubject.seed != 20)
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.9)
         #expect(testSubject.temperature == 0.2)
@@ -1773,13 +1773,13 @@ class ConfigureProjectViewModelTests: DocuBotViewModelTestCase, @unchecked Senda
         #expect(testSubject.similarityMetric == .cosine)
 
         #expect(testSubject.systemPrompt == self.defaultSystemPrompt)
-        #expect(testSubject.seed == 1234)
+        #expect(testSubject.seed != 0)
         #expect(testSubject.topK == 40)
         #expect(testSubject.topP == 0.9)
 
         #expect(testSubject.temperature == 0.2)
         #expect(testSubject.stopSequence == "<|eot_id|>")
-        #expect(testSubject.maxTokenCount == 1024)
+        #expect(testSubject.maxTokenCount == 8196)
         #expect(testSubject.strictMode == false)
         #expect(testSubject.availableModels.count == 1)
         #expect(testSubject.availableLanguages == ProjectSettings.Language.allCases)

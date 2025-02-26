@@ -240,12 +240,13 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
             self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
             self.embeddingModel = .distilbert
             self.similarityMetric = .cosine
-            self.seed = 1234
+
+            self.seed = UInt32.random(in: UInt32.min...UInt32.max)
             self.topK = 40
             self.topP = 0.9
             self.temperature = 0.2
             self.stopSequence = "<|eot_id|>"
-            self.maxTokenCount = 1024
+            self.maxTokenCount = 8196
             self.strictMode = false
 
             self.systemPrompt = L10n.ConfigureProject.AdvancedSection.SystemPrompt.default
