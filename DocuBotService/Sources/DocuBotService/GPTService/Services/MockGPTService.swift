@@ -106,13 +106,11 @@ public final class MockGPTService: GPTService {
     ///
     /// - Parameters:
     ///   - query: The user's input query.
-    ///   - systemMessage: A system-level prompt providing context or instructions for the response.
     ///   - onUpdate: An optional closure that provides incremental updates to the response text.
     /// - Returns: The full response string if the operation is successful.
     /// - Throws: A `GPTError` if the `responseResult` is configured to simulate an error.
     public func respond(
         to query: String,
-        with systemMessage: String,
         onUpdate: OutputUpdated?
     ) async throws -> String {
         switch self.responseResult {

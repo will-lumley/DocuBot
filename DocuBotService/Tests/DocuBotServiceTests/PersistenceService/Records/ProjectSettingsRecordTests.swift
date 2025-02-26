@@ -56,8 +56,8 @@ struct ProjectSettingsRecordTests {
         let language = ProjectSettingsRecord.Language.english
         let embeddingModel = ProjectSettingsRecord.EmbeddingModel.miniLmAll
         let similarityMetric = ProjectSettingsRecord.SimilarityMetric.cosine
-        let seed = 12345
-        let topK = 10
+        let seed = UInt32(12345)
+        let topK = Int32(10)
         let topP = 0.9
         let temperature = 0.7
         let stopSequence = "###"

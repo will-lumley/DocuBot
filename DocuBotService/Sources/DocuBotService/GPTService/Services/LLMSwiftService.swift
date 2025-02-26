@@ -84,24 +84,20 @@ final class LLMSwiftService: GPTService {
     ///
     /// - Parameters:
     ///   - query: The user's input query.
-    ///   - systemMessage: A system-level prompt providing context or instructions for the response.
     ///   - onUpdate: An optional closure that provides incremental updates to the response text.
     /// - Returns: The full response string after generation is complete.
     /// - Throws: A `GPTError` if the model is not initialized or if response generation fails.
     public func respond(
         to query: String,
-        with systemMessage: String,
         onUpdate: OutputUpdated?
     ) async throws -> String {
         guard let llama else {
             throw GPTError.llmNotInitialised
         }
-        print("[DOCUBOT] Prompting: \(query)")
 
         var finalOutput = ""
         await llama.respond(to: query) { response in
             for await responseDelta in response {
-                print("ResponseDelta: \(responseDelta)")
                 finalOutput += responseDelta
 
                 // Clean up our output
@@ -112,11 +108,9 @@ final class LLMSwiftService: GPTService {
 
                 await onUpdate?(finalOutput)
             }
-            print("[DOCUBOT] FinalOutput: \(finalOutput)")
             return finalOutput
         }
 
-        print("[DOCUBOT] FinalOutput: \(finalOutput)")
         return finalOutput
     }
 

@@ -120,8 +120,8 @@ public class ConfigureProjectViewModel: DocuBotViewModel, Identifiable, @uncheck
     @Published public var similarityMetric: ProjectSettings.SimilarityMetric
 
     /// Advanced configuration options for LLMs.
-    @Published public var seed: Int
-    @Published public var topK: Int
+    @Published public var seed: UInt32
+    @Published public var topK: Int32
     @Published public var topP: Double
     @Published public var temperature: Double
     @Published public var stopSequence: String?

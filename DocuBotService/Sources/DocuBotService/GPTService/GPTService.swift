@@ -48,7 +48,6 @@ public protocol GPTService: Service {
     /// - Throws: An error if the response generation fails.
     func respond(
         to query: String,
-        with systemMessage: String,
         onUpdate: OutputUpdated?
     ) async throws -> String
 
