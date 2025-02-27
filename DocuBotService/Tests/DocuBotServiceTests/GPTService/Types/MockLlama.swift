@@ -2,14 +2,6 @@
 //  MockLlama.swift
 //  DocuBotService
 //
-//  Created by William Lumley on 26/2/2025.
-//
-
-
-//
-//  MockLlama.swift
-//  DocuBotService
-//
 //  Created by William Lumley on 13/11/2024.
 //
 
