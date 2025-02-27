@@ -32,9 +32,14 @@ class LlamaModel {
         guard let context = llama_new_context_with_model(model, configuration.contextParameters) else {
             throw SwiftLlamaError.others("Cannot load model context")
         }
+
+        let maxTokenCount = min(
+            Int(configuration.maxTokenCount), Int(llama_n_ctx_train(model))
+        )
+
         self.context = context
         self.tokens = []
-        self.batch = llama_batch_init(Int32(self.configuration.maxTokenCount), 0, 1)
+        self.batch = llama_batch_init(Int32(maxTokenCount), 0, 1)
 
         self.sampler = llama_sampler_chain_init(llama_sampler_chain_default_params())
 
@@ -42,17 +47,15 @@ class LlamaModel {
         llama_sampler_chain_add(sampler, llama_sampler_init_top_p(configuration.topP, 1))
         llama_sampler_chain_add(sampler, llama_sampler_init_temp(configuration.temperature))
         llama_sampler_chain_add(sampler, llama_sampler_init_dist(configuration.seed))
-
-        try checkContextLength(context: context, model: model)
     }
 
-    private func checkContextLength(context: Context, model: Model) throws {
-        let n_ctx = llama_n_ctx(context)
-        let n_ctx_train = llama_n_ctx_train(model)
-        if n_ctx > n_ctx_train {
-            throw SwiftLlamaError.others("Model was trained on \(n_ctx_train) context but tokens \(n_ctx) specified")
-        }
-    }
+//    private func checkContextLength(context: Context, model: Model) throws {
+//        let n_ctx = llama_n_ctx(context)           // 8224
+//        let n_ctx_train = llama_n_ctx_train(model) // 8192
+//        if n_ctx > n_ctx_train {
+//            throw SwiftLlamaError.others("Model was trained on \(n_ctx_train) context but tokens \(n_ctx) specified")
+//        }
+//    }
 
     func start(for prompt: SwiftLlama.Prompt) throws {
         ended = false

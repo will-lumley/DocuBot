@@ -953,7 +953,7 @@ private extension ProjectViewModel {
                     )
                     return question
                 } catch {
-                    fatalError("Failed to build question: \(error)" )
+                    fatalError("Failed to build question: \(error)")
                 }
             }
             .map { $0.removing(value: "Question:") }

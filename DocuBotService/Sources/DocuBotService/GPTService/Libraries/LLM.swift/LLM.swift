@@ -5,7 +5,7 @@
 //  Created by William Lumley on 19/2/2025.
 //
 
-// swiftlint:disable force_try force_cast type_body_length type_name trailing_whitespace direct_print
+// swiftlint:disable force_try force_cast type_body_length type_name trailing_whitespace direct_print line_length trailing_semicolon
 
 import Foundation
 import llama
@@ -405,7 +405,7 @@ extension Model {
     public var newLineToken: Token { llama_token_nl(self) }
     
     public func shouldAddBOS() -> Bool {
-        let addBOS = llama_add_bos_token(self);
+        let addBOS = llama_add_bos_token(self)
         guard !addBOS else {
             return llama_vocab_type(self) == LLAMA_VOCAB_TYPE_SPM
         }
@@ -741,4 +741,4 @@ package extension String {
         return String(content[Range(match.range, in: content)!])
     }
 }
-// swiftlint:enable force_try force_cast type_body_length type_name
+// swiftlint:enable force_try force_cast type_body_length type_name direct_print line_length trailing_semicolon
